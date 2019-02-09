@@ -1,109 +1,101 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/orangeMainTheme"
-    android:orientation="vertical"
-    tools:context=".postActivity.NextActivity">
+<?xml version="1.0" encoding="utf-8"?><!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:background="@color/orangeMainTheme"--><!--android:orientation="vertical"--><!--tools:context=".postActivity.NextActivity">-->
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<ScrollView
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="@color/orange"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp">
 
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="0dp">
+            android:id="@+id/relLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:id="@+id/relLayout1"
+            <include layout="@layout/snippet_share_post_toolbar" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:backgroundTint="@color/orange"
+            android:id="@id/relLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/relLayout1">
+
+            <ImageView
+                android:id="@+id/image_tobe_shared"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="40dp"
+                android:background="@color/white"
+                android:contentDescription="@string/selected_image"
+                android:scaleType="centerCrop" />
+
+            <EditText
+                android:id="@+id/image_desc_edittext"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <include layout="@layout/snippet_share_post_toolbar" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@id/relLayout2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/relLayout1"
-                android:background="@drawable/grey_border_bottom">
-
-                <ImageView
-                    android:id="@+id/image_tobe_shared"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="40dp"
-                    android:contentDescription="@string/selected_image"
-                    android:scaleType="centerCrop" />
-
-                <EditText
-                    android:maxLength="40"
-                    android:id="@+id/image_desc_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="100sp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_toEndOf="@+id/image_tobe_shared"
-                    android:background="@null"
-                    android:hint="@string/image_description_share"
-                    android:importantForAutofill="no"
-                    tools:targetApi="o" />
-
-            </RelativeLayout>
-
-
-            <RelativeLayout
-                android:id="@id/relLayout3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/relLayout2"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/grey_border_bottom">
-
-                <EditText
-                    android:id="@+id/image_ingredients_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="120sp"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerInParent="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="0dp"
-                    android:background="@null"
-                    android:hint="@string/image_ingredients_share"
-                    android:importantForAutofill="no"
-                    tools:targetApi="o" />
-
-            </RelativeLayout>
-
-
-            <RelativeLayout
-                android:id="@id/relLayout4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/relLayout3"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/grey_border_bottom">
-
-                <EditText
-                    android:id="@+id/image_recipe_edittext"
-                    android:layout_width="match_parent"
-                    android:layout_height="120sp"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerInParent="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="0dp"
-                    android:background="@null"
-                    android:hint="@string/string_recipe"
-                    android:importantForAutofill="no"
-                    tools:targetApi="o" />
-
-            </RelativeLayout>
+                android:layout_height="100sp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="20dp"
+                android:layout_toEndOf="@+id/image_tobe_shared"
+                android:background="@color/white"
+                android:hint="@string/image_description_share"
+                android:maxLength="40" />
 
         </RelativeLayout>
 
-    </ScrollView>
-</LinearLayout>
+
+        <RelativeLayout
+            android:id="@id/relLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/relLayout2"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/grey_border_bottom">
+
+            <EditText
+                android:id="@+id/image_ingredients_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="120sp"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="0dp"
+                android:background="@null"
+                android:hint="@string/image_ingredients_share"
+                android:importantForAutofill="no" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@id/relLayout4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/relLayout3"
+            android:layout_marginTop="20dp"
+            android:background="@color/orange">
+
+            <EditText
+                android:id="@+id/image_recipe_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="120sp"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="0dp"
+                android:background="@color/white"
+                android:hint="@string/string_recipe"
+                android:importantForAutofill="no" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</ScrollView>

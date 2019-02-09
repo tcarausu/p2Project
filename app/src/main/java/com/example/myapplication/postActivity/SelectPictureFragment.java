@@ -21,7 +21,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -41,6 +40,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.List;
 import java.util.Objects;
@@ -69,7 +69,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     //layout-intents
     private ImageView galleryImageView;
-    private Button mSelectPicButton;
+    private FloatingActionButton mSelectPicButton;
     private Uri mUri, savedUri;
     private Intent intent;
     private TextView nextText;
@@ -184,17 +184,15 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        assert data != null;
         boolean besoins = resultCode == RESULT_OK && requestCode == CAMERA_REQUEST && mUri != null;
 
         try {
-
             if (besoins) {
-                Glide.with(this).load(mUri).centerCrop().into(galleryImageView);
+                Glide.with(this).load(mUri).fitCenter().into(galleryImageView);
                 intent.putExtra("imageUri", mUri.toString());
             } else if (resultCode == RESULT_OK) {
                 mUri = data.getData();
-                Glide.with(this).load(mUri).centerCrop().into(galleryImageView);
+                Glide.with(this).load(mUri).fitCenter().into(galleryImageView);
                 intent.putExtra("imageUri", mUri.toString());
             }
         } catch (Exception e) {
@@ -271,18 +269,13 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
 
-            /*
-             * ClickListener which will start the HomeActivity
-             */
+
             case R.id.close_share:
                 mFirebaseMethods.goToWhereverWithFlags(getActivity(), HomeActivity.class);
                 getActivity().overridePendingTransition(R.anim.left_enter,R.anim.right_out);
                 getActivity().finish();
                 break;
-            /*
-             * ClickListener that will open AddPostActivity if
-             * galleryImageView is not empty
-             */
+
             case R.id.textview_next:
                 if (mUri == null) {
                     Toast.makeText(getActivity(), R.string.please_select_picture,

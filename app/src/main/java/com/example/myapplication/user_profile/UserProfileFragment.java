@@ -78,6 +78,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private Toolbar toolbar;
 
     private User user;
+    private Post post;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
@@ -281,14 +282,14 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
             Query query = reference
-                    .child(getString(R.string.dbname_posts))
-                    .child(mAuth.getCurrentUser().getUid());
+                    .child(getString(R.string.dbname_posts));
 
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
+            if (mAuth.getCurrentUser().getUid() != null) {
+             ((DatabaseReference) query).child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                        Post post = new Post();
+                        post = singleSnapshot.getValue(Post.class);
                         Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
                         post.setmDescription(objectMap.get(getString(R.string.field_description)).toString());
                         post.setmFoodImgUrl(objectMap.get(getString(R.string.field_food_photo)).toString());
@@ -336,11 +337,13 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 }
             });
+        }
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Error: Nothing to display", Toast.LENGTH_SHORT).show();
 
             firebaseMethods.goToWhereverWithFlags(getActivity(), AddPostActivity.class);
         }
+
     }
 
     /**

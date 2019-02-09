@@ -201,7 +201,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         newComment.setUserId(currentUserId);
 
         // ADD HERE TO THE ARRAYLIST AND RETRIEVE DATA IN HOMEFRAGMENT
-        if (currentPost.getCommentList().size() == 0) {
+        if (currentPost != null && currentPost.getCommentList() != null) {
+
             commentsList.add(newComment);
             currentPost.setCommentList(commentsList);
             mAdapter.notifyDataSetChanged();

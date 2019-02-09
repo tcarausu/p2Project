@@ -247,7 +247,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         Button mobileDataButton = layoutView.findViewById(R.id.DATA);
         ImageButton cancelButton = layoutView.findViewById(R.id.CANCEL);
 
-        OurAlertDialog.Builder myDialogBuilder = new OurAlertDialog.Builder(getApplicationContext());
+        OurAlertDialog.Builder myDialogBuilder = new OurAlertDialog.Builder(this);
         myDialogBuilder.setView(layoutView);
         myDialogBuilder.setIcon(R.mipmap.chefood_icones);
         final AlertDialog alertDialog = myDialogBuilder.create();

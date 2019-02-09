@@ -1,5 +1,6 @@
 package com.example.myapplication.home;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -95,7 +96,7 @@ public class HomeFragment extends Fragment {
         mComments = new ArrayList<>();
         mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts);
         mRecyclerView.setAdapter(mAdapter);
-        getData = new GetData();
+        getData = new GetData(getActivity());
         getData.execute();
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -150,8 +151,15 @@ public class HomeFragment extends Fragment {
 
 
     protected class GetData extends AsyncTask<Void, Void, Void> {
-        public GetData() {
+        private Context mContext ;
+
+        public GetData(Context context) {
+            synchronized (GetData.class){
+            mContext = context;
+            }
         }
+
+
 
         private void getPostsInfo() {
             mProgressBar.setVisibility(View.VISIBLE);
