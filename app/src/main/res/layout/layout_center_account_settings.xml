@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <RelativeLayout
+        android:animateLayoutChanges="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -14,17 +15,67 @@
             android:layout_height="wrap_content"
             android:background="@drawable/grey_border_bottom"
             android:text="@string/account_settings"
-            android:textColor="@color/black"
+            android:textColor="@color/orange"
             android:fontFamily="@font/almendra"
             android:textSize="35sp" />
 
+        <ImageView
+            android:id="@+id/fst_dash"
+            android:src="@drawable/dash_icon"
+            android:layout_below="@id/textSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/dash_icon"
+            android:layout_alignEnd="@id/fst_dash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/dash_icon"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+<!---->
+        <ImageView
+            android:src="@drawable/dash_icon"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/dash_icon"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/textSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/dash_icon"
+           android:layout_alignParentEnd="true"
+            android:layout_below="@id/textSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+
+
         <ListView
+
+            android:background="@drawable/input_fields_round_orange"
+            android:layout_marginTop="10dp"
             android:id="@+id/listViewAccountSettings"
             android:clickable="true"
             android:focusable="true"
-            android:cacheColorHint="@color/black"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:cacheColorHint="@color/white"
+            android:clipToPadding="true"
+            android:clipChildren="true"
+            android:visibility="visible"
+            android:touchscreenBlocksFocus="true"
+            android:animateLayoutChanges="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/textSettings">
 
 

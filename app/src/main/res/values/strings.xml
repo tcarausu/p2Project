@@ -44,7 +44,7 @@
     <string name="hint_email">Email</string>
 
     <!--Button texts-->
-    <string name="btn_log_in">Log In</string>
+    <string name="btn_log_in">Sign in</string>
     <string name="or">OR</string>
 
 
@@ -92,7 +92,7 @@
     <!--Forgot password fragment strings -->
 
     <string name="hint_forgot_password_email">Enter your email here</string>
-    <string name="forgot_password_text">Forgot Password</string>
+    <string name="forgot_password_text">Forgot Password?</string>
     <string name="password_receive_text">Your password will be sent to your email</string>
     <string name="button_send_password">Send Mail</string>
     <string name="confirm_sing_out">Are you sure you want to SignOut?</string>
@@ -159,7 +159,8 @@
     <string name="finish">Finish</string>
     <string name="string_recipe">Write down the recipe..</string>
     <string name="please_select_picture">Please select a picture</string>
-    <string name="go_back_signUpFragment">go back</string>
+    <string name="go_back_signUpFragment">Back</string>
+    <string name="click_here_or_on_the_profile_picture_to_change_profile_photo">click on profile picture to change profile photo</string>
 
 
 </resources>
