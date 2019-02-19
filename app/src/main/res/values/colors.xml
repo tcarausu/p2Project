@@ -8,6 +8,9 @@
     <color name="colorAccent">#ffffff</color>
     <color name="colorAccentOnSignOut">#FFA000</color>
     <color name="darkOrange">#683E01</color>
+    <color name="orange_input">#CF6442</color>
+    <color name="warm_red">#EB4116</color>
+    <color name="warm_orange">#F76B1C</color>
 
     <color name="colorEditTextUnderline">#FFFFFF</color>
     <color name="hints">#99FFFFFF</color>

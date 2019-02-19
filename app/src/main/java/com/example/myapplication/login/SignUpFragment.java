@@ -2,7 +2,6 @@ package com.example.myapplication.login;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,9 +18,12 @@ import com.example.myapplication.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Objects;
-
-
+/**@author Mo.Msaad
+ * @class SignUpFragment
+ * @extends Fragment
+ * @implements View.OnClickListener
+ * create auth link to fire-base, with email verification.
+ * **/
 public class SignUpFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "SignUpFragment";
 
@@ -55,8 +57,14 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         goBack.setOnClickListener(this);
         signUpButton.setOnClickListener(this);
 
+        buttonListeners();
 
         return view;
+    }
+
+    private void buttonListeners() {
+        goBack.setOnClickListener(this);
+        signUpButton.setOnClickListener(this);
     }
 
     private void findWidgets(View view) {
@@ -75,15 +83,15 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
 
         //checking if any is empty or pass doesn't match, the rest mAuth takes care of
         if (TextUtils.isEmpty(email)) {
-            mEmail.setError("");
+            mEmail.setError("Required");
             Toast.makeText(getContext(), "Please type in email or phone", Toast.LENGTH_SHORT).show();
 
         } else if (TextUtils.isEmpty(password)) {
-            mPassword.setError("");
+            mPassword.setError("Required");
             Toast.makeText(getContext(), "Please chose password", Toast.LENGTH_SHORT).show();
 
         } else if (TextUtils.isEmpty(confPass)) {
-            mConfirmPassword.setError("");
+            mConfirmPassword.setError("Required");
             Toast.makeText(getContext(), "Please confirm password", Toast.LENGTH_SHORT).show();
         } else if (!password.equals(confPass)) {
 
@@ -91,27 +99,13 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
             mConfirmPassword.setError("");
             Toast.makeText(getContext(), "Error: MUST match Password", Toast.LENGTH_SHORT).show();
 
-        } else {
-            loadingBar.setTitle("Creating account...");
-            loadingBar.setMessage("Please wait while your account is being created.");
-            loadingBar.show();
-            loadingBar.setCanceledOnTouchOutside(false);
-        }
-        if (TextUtils.isEmpty(confPass)) {
-            mConfirmPassword.setError("");
-            Toast.makeText(getContext(), "Please confirm password", Toast.LENGTH_SHORT).show();
-        } else if (!password.equals(confPass)) {
-            mPassword.setError("");
-            mConfirmPassword.setError("");
-            Toast.makeText(getContext(), "Error: MUST match Password", Toast.LENGTH_SHORT).show();
-        } else {
+        }  else {
             loadingBar.setTitle("Creating account...");
             loadingBar.setMessage("Please wait while your account is being created...");
             loadingBar.setIcon(R.drawable.chefood);
             loadingBar.show();
             loadingBar.setCanceledOnTouchOutside(false);
             //if all are fine, then try to create a user
-
 
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                 // if success
@@ -120,10 +114,9 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                     loadingBar.dismiss();
                     Toast.makeText(getContext(), R.string.registration_success, Toast.LENGTH_SHORT).show();
                     sendVerifyEmail();
-                    mAuth.signOut();
-                    // could use a thread instead if needed
 
-                    new Handler().postDelayed(() -> goToLogin(), Toast.LENGTH_SHORT);
+                    mAuth.signOut();
+                    new Handler().postDelayed(() -> ((LoginActivity)getActivity()).goTosWithFlags(getActivity(),LoginActivity.class), Toast.LENGTH_SHORT);
 
                 } else {
                     loadingBar.dismiss();
@@ -141,12 +134,13 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     private void sendVerifyEmail() {
 
         FirebaseUser user = mAuth.getCurrentUser();// check user
-        if (user != null) {
+        if (mAuth != null && user != null) {
 
             user.sendEmailVerification().addOnCompleteListener(task -> {
 
                 if (task.isSuccessful()) {
                     mAuth.signOut();// need to sign out the user every time until he confirms email
+
                 } else {
                     String error = task.getException().getMessage();// get error from fireBase
                     Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
@@ -197,8 +191,6 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
 
             case R.id.sign_up:
                 createUserWithEmail();
-
-
                 break;
         }
     }
