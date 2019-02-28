@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">FireBase Authentication</string>
 
+    <string name="fb_login_protocol_scheme">fb2102918419798140</string>
+
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="signUp">Sign Up</string>
