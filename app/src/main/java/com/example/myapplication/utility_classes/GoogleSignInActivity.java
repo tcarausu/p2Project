@@ -1,14 +1,14 @@
-package com.example.myapplication;
+package com.example.myapplication.utility_classes;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.myapplication.utility_classes.BaseActivity;
+import com.example.myapplication.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -22,7 +22,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class MainActivity extends BaseActivity implements
+/**
+ * Demonstrate Firebase Authentication using a Google ID Token.
+ */
+public class GoogleSignInActivity extends BaseActivity implements
         View.OnClickListener {
 
     private static final String TAG = "GoogleActivity";
@@ -39,7 +42,7 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_google_sign_in);
 
         // Views
         mStatusTextView = findViewById(R.id.status);
@@ -64,7 +67,6 @@ public class MainActivity extends BaseActivity implements
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
-
     }
 
     // [START on_start_check_user]
@@ -120,7 +122,7 @@ public class MainActivity extends BaseActivity implements
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(R.id.google_main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                             updateUI(null);
                         }
 

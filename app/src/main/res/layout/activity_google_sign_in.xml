@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_layout"
+    android:id="@+id/google_main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grey_100"
     android:orientation="vertical"
-    android:weightSum="4"
-    tools:context=".MainActivity">
+    android:weightSum="4">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/title_bottom_margin"
-            android:text="@string/user_title_text"
+            android:text="@string/google_title_text"
             android:theme="@style/ThemeOverlay.MyTitleText" />
 
         <TextView
@@ -90,6 +89,5 @@
         </LinearLayout>
 
     </RelativeLayout>
-
 
 </LinearLayout>
