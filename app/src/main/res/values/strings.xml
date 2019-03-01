@@ -64,7 +64,7 @@
 
     <string name="user_status_fmt">User: %s</string>
     <string name="user_title_text">User Sign In</string>
-    
+
     <string name="firebase_status_fmt">Firebase User: %s</string>
     <string name="firebase_user_management">Firebase User Management</string>
 
