@@ -427,5 +427,39 @@ public class LoginActivity extends BaseActivity implements
             revokeAccess();
         }
 
+        //Facebook actions
+        if (i == R.id.buttonFacebookSignout) {
+            signOutWithFacebook();
+        }
+
+        //Simple Login actions
+        if (i == R.id.signInCreate) {
+            createAccountWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
+        } else if (i == R.id.signInEmail) {
+            signInWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
+        } else if (i == R.id.signOutOnSimpleLoginButton) {
+            signOutFromEmail();
+        } else if (i == R.id.verifyEmailButton) {
+            sendEmailVerification();
+        }
+
+        if (i == R.id.sendfoodz) {
+            sendUIDData();
+        }
+    }
+
+    private void sendUIDData() {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        String userUid = null;
+
+        if (user != null) {
+            userUid = user.getUid();
+        }
+
+        Intent sendFoodzIntent = new Intent(LoginActivity.this, MainActivity.class);
+        sendFoodzIntent.putExtra("userUid", userUid);
+
+        startActivity(sendFoodzIntent);
     }
 }
