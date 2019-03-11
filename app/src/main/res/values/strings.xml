@@ -102,4 +102,7 @@
     <string name="btn_log_in">Log In</string>
     <string name="or">OR</string>
 
+
+    <string name="twitterUserName">\@twitterUserName</string>
+
 </resources>

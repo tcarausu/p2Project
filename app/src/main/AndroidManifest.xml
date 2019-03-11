@@ -39,6 +39,8 @@
         <activity android:name=".utility_classes.FacebookLoginActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".UserProfileUI">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <!--<action android:name="android.intent.action.Login" />-->
