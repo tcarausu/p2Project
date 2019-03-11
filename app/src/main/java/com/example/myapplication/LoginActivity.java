@@ -460,6 +460,10 @@ public class LoginActivity extends BaseActivity implements
         Intent sendFoodzIntent = new Intent(LoginActivity.this, MainActivity.class);
         sendFoodzIntent.putExtra("userUid", userUid);
 
+        Intent sendFoodzIntentToUserInfo = new Intent(LoginActivity.this, UserProfileUI.class);
+        sendFoodzIntentToUserInfo.putExtra("userUid", userUid);
+
         startActivity(sendFoodzIntent);
+        startActivity(sendFoodzIntentToUserInfo);
     }
 }

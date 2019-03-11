@@ -41,6 +41,8 @@
         <activity android:name=".LoginActivity">
         <activity android:name=".LoginActivity" />
         <activity android:name=".UserProfileUI">
+        <activity android:name=".UserProfileUI" />
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <!--<action android:name="android.intent.action.Login" />-->

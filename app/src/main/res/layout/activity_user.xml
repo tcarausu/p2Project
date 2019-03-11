@@ -12,19 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/grad"
-        android:paddingBottom="20dp">
+        android:paddingBottom="5dp">
 
         <RelativeLayout
             android:id="@+id/imgUsr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:background="@drawable/circle_border">
 
             <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_margin="9dp"
                 android:adjustViewBounds="true"
                 android:background="@drawable/circle"
@@ -44,7 +44,7 @@
             android:fontFamily="sans-serif-light"
             android:text="CALL ME JIMMY"
             android:textColor="@color/white"
-            android:textSize="32sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/ty_address"
@@ -75,8 +75,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/relative1"
-        android:weightSum="3"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="3">
 
 
         <RelativeLayout
@@ -115,6 +115,7 @@
             </LinearLayout>
 
         </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -189,19 +190,91 @@
 
         </RelativeLayout>
 
-
-
     </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/grad"
-        android:layout_below="@+id/linear1">
+        android:layout_below="@+id/linear1"
+        android:background="@drawable/grad">
+
+        <LinearLayout
+            android:id="@+id/structured_posts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="4">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="15dp"
+                    android:adjustViewBounds="true"
+                    android:gravity="center"
+                    android:scaleType="center"
+                    app:srcCompat="@drawable/ic_settings" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="15dp"
+                    android:adjustViewBounds="true"
+                    android:gravity="center"
+                    android:scaleType="center"
+                    app:srcCompat="@drawable/ic_settings" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="15dp"
+                    android:adjustViewBounds="true"
+                    android:gravity="center"
+                    android:scaleType="center"
+                    app:srcCompat="@drawable/ic_settings" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="15dp"
+                    android:adjustViewBounds="true"
+                    android:gravity="center"
+                    android:scaleType="center"
+                    app:srcCompat="@drawable/ic_settings" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/structured_posts"
             android:layout_centerInParent="true"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="20dp"
@@ -318,52 +391,6 @@
                     android:background="@color/grey" />
 
             </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="15dp"
-                android:adjustViewBounds="true"
-                android:scaleType="center"
-                app:srcCompat="@drawable/ic_settings" />
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="15dp"
-                android:adjustViewBounds="true"
-                android:scaleType="center"
-                app:srcCompat="@drawable/ic_settings" />
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="15dp"
-                android:adjustViewBounds="true"
-                android:scaleType="center"
-                app:srcCompat="@drawable/ic_settings" />
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="15dp"
-                android:adjustViewBounds="true"
-                android:scaleType="center"
-                app:srcCompat="@drawable/ic_settings" />
 
         </LinearLayout>
 
