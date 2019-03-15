@@ -104,7 +104,7 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
         final FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
         fragTransaction.setCustomAnimations(R.anim.left_enter, R.anim.left_out);
 
-        if (fragment.isHidden()) {  
+        if (fragment.isHidden()) {
             fragTransaction.show(fragment);
             Log.d("hidden", "Show");
         } else {
