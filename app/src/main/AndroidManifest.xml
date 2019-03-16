@@ -38,7 +38,10 @@
         <activity android:name=".utility_classes.EmailPasswordActivity" />
         <activity android:name=".utility_classes.FacebookLoginActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".dimosLogin.ProfileSetActivity" />
+        <activity android:name=".dimosLogin.RegisterActivity" />
+        <activity android:name=".dimosLogin.SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <!--<action android:name="android.intent.action.Login" />-->

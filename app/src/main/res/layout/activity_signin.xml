@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:weightSum="100"
+    tools:context=".SignInActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="50"
+        android:background="#F79862"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/email_id_logIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="5dp"
+            android:autofillHints=""
+            android:drawableStart="@drawable/icon_mail_envelop"
+            android:drawablePadding="10dp"
+            android:ems="10"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress"
+            android:minWidth="200dp"
+            android:shadowColor="@android:color/holo_red_dark"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textColorHighlight="@android:color/darker_gray"
+            android:textColorHint="@color/hints"
+            android:textSize="16sp"
+            app:backgroundTint="@color/colorEditTextUnderline" />
+
+        <EditText
+            android:id="@+id/password_id_logIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/colorAccent"
+            android:drawableStart="@drawable/icon_password_lock"
+            android:drawablePadding="10dp"
+            android:ems="10"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            android:minWidth="200dp"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textColorHighlight="@android:color/darker_gray"
+            android:textColorHint="@color/hints"
+            android:textSize="16sp" />
+
+        <!--<ImageButton-->
+            <!--android:id="@+id/logInButton"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:background="@drawable/button_log_in_custom_drawable" />-->
+
+        <Button
+            android:id="@+id/button_id_logIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/button_log_in_simple_rounded"
+            android:drawableEnd="@drawable/log_in_icon_small"
+            android:drawablePadding="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="5dp"
+            android:text="@string/btn_log_in"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/textView_id_forgotPass_logIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="5dp"
+            android:text="@string/hint_forgot_password"
+            android:textColor="@color/hints"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="50"
+        android:weightSum="50">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="OR"
+            android:textAlignment="center"
+            android:textColor="#F79862"
+            android:drawableStart="@drawable/dash_icon"
+            android:drawableEnd="@drawable/dash_icon"
+            android:drawablePadding="20dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="15"
+            android:gravity="center"
+            android:orientation="vertical"
+            tools:ignore="NestedWeights">
+
+            <!--Google Button-->
+            <!--<Button-->
+            <!--android:id="@+id/button"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@drawable/button_with_background_drawable_facebook"-->
+            <!--android:paddingLeft="10dp"-->
+            <!--android:paddingRight="10dp"-->
+            <!--android:text="Log In with Google"-->
+            <!--android:textColor="#F79862"-->
+            <!--android:textStyle="bold" />-->
+
+            <ImageButton
+                android:id="@+id/button_id_google_logIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/button_with_background_drawable_google" />
+
+            <ImageButton
+                android:id="@+id/button_id_facebook_logIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/button_with_background_drawable_facebook" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="35"
+            android:gravity="bottom|center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView_id_register"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/textview_clickable_register"
+                android:maxWidth="160dp"
+                android:padding="5dp"
+                android:text="@string/hint_register"
+                android:textAlignment="center"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textStyle="normal"
+                app:autoSizeMaxTextSize="0dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
