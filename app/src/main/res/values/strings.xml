@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FireBase Authentication</string>
+    <string name="app_name">Chefood</string>
 
     <string name="fb_login_protocol_scheme">fb2102918419798140</string>
 
@@ -93,4 +93,12 @@
 
     <string name="id_fmt">User ID: %s</string>
     <string name="email_fmt">Email: %s</string>
+
+    <!--Hints-->
+    <string name="hint_forgot_password">Forgot your password ?</string>
+    <string name="hint_register">Don\'t have an account? Register here</string>
+
+    <!--Button texts-->
+    <string name="btn_log_in">Log In</string>
+
 </resources>
