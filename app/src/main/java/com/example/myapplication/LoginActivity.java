@@ -49,7 +49,7 @@ public class LoginActivity extends BaseActivity implements
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
 
-    private TextView mStatusTextView, mDetailTextView,textView_id_register,orView;
+    private TextView mStatusTextView, mDetailTextView, textView_id_register, orView;
     private EditText mEmailField, mPasswordField;
 
     @Override
@@ -57,12 +57,12 @@ public class LoginActivity extends BaseActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-       initViews();
-       buttonListners();
+        initViews();
+        buttonListners();
     }
 
 
-    public void initViews(){
+    public void initViews() {
         // Views
         mStatusTextView = findViewById(R.id.status);
         mDetailTextView = findViewById(R.id.detail);
@@ -75,7 +75,7 @@ public class LoginActivity extends BaseActivity implements
     }
 
 
-    public void buttonListners(){
+    public void buttonListners() {
 
         // Button listeners
         findViewById(R.id.signInEmail).setOnClickListener(this);
@@ -132,8 +132,6 @@ public class LoginActivity extends BaseActivity implements
         // [END initialize_fblogin]
 
     }
-
-
 
     // [START on_start_check_user]
     @Override
@@ -442,12 +440,7 @@ public class LoginActivity extends BaseActivity implements
             revokeAccess();
         }
 
-        //Facebook actions
-        if (i == R.id.buttonFacebookSignout) {
-            signOutWithFacebook();
-        }
-
-        //Simple Login actions
+              //Simple Login actions
         if (i == R.id.signInCreate) {
             createAccountWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
         } else if (i == R.id.signInEmail) {
