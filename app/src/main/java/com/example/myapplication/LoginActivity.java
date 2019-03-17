@@ -49,21 +49,33 @@ public class LoginActivity extends BaseActivity implements
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
 
-    private TextView mStatusTextView;
-    private TextView mDetailTextView;
-    private EditText mEmailField;
-    private EditText mPasswordField;
+    private TextView mStatusTextView, mDetailTextView,textView_id_register,orView;
+    private EditText mEmailField, mPasswordField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+       initViews();
+       buttonListners();
+    }
+
+
+    public void initViews(){
         // Views
         mStatusTextView = findViewById(R.id.status);
         mDetailTextView = findViewById(R.id.detail);
         mEmailField = findViewById(R.id.simple_login_email);
         mPasswordField = findViewById(R.id.simple_login_password);
+
+        textView_id_register = findViewById(R.id.textView_id_register);
+        orView = findViewById(R.id.orView);
+
+    }
+
+
+    public void buttonListners(){
 
         // Button listeners
         findViewById(R.id.signInEmail).setOnClickListener(this);
@@ -73,10 +85,6 @@ public class LoginActivity extends BaseActivity implements
         findViewById(R.id.signInButton).setOnClickListener(this);
         findViewById(R.id.signOutButton).setOnClickListener(this);
         findViewById(R.id.disconnectButton).setOnClickListener(this);
-
-        //simple login buttons
-        findViewById(R.id.signOutOnSimpleLoginButton).setOnClickListener(this);
-        findViewById(R.id.verifyEmailButton).setOnClickListener(this);
 
         // [START config_signin]
         // Configure Google Sign In
@@ -124,6 +132,8 @@ public class LoginActivity extends BaseActivity implements
         // [END initialize_fblogin]
 
     }
+
+
 
     // [START on_start_check_user]
     @Override
@@ -402,9 +412,6 @@ public class LoginActivity extends BaseActivity implements
 
             findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
-            findViewById(R.id.signedInButtons).setVisibility(View.VISIBLE);
-
-            findViewById(R.id.verifyEmailButton).setEnabled(!user.isEmailVerified());
 
             findViewById(R.id.signInButton).setVisibility(View.GONE);
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.VISIBLE);
@@ -414,7 +421,6 @@ public class LoginActivity extends BaseActivity implements
 
             findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
-            findViewById(R.id.signedInButtons).setVisibility(View.GONE);
 
             findViewById(R.id.signInButton).setVisibility(View.VISIBLE);
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.GONE);
@@ -446,10 +452,7 @@ public class LoginActivity extends BaseActivity implements
             createAccountWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
         } else if (i == R.id.signInEmail) {
             signInWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.signOutOnSimpleLoginButton) {
-            signOutFromEmail();
-        } else if (i == R.id.verifyEmailButton) {
-            sendEmailVerification();
         }
+
     }
 }
