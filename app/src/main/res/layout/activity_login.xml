@@ -12,193 +12,223 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="45"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_weight="50"
+        android:background="#F79862"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:weightSum="50">
 
-        <ImageView
-            android:id="@+id/googleIcon"
-            style="@style/ThemeOverlay.FirebaseIcon"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/desc_firebase_lockup"
-            android:src="@mipmap/firebase_lockup_400" />
+            android:layout_weight="20"
+            android:gravity="center"
+            tools:ignore="InefficientWeight">
 
-        <TextView
-            android:id="@+id/titleText"
-            android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/email_id_logIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="5dp"
+                android:drawableStart="@drawable/icon_mail_envelop"
+                android:drawablePadding="10dp"
+                android:ems="10"
+                android:hint="@string/hint_email"
+                android:inputType="textEmailAddress"
+                android:minWidth="200dp"
+                android:shadowColor="@android:color/holo_red_dark"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textColorHighlight="@android:color/darker_gray"
+                android:textColorHint="@color/hints"
+                android:textSize="16sp"
+                app:backgroundTint="@color/colorEditTextUnderline" />
+
+            <EditText
+                android:id="@+id/password_id_logIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawableStart="@drawable/icon_password_lock"
+                android:drawablePadding="10dp"
+                android:ems="10"
+                android:hint="@string/hint_password"
+                android:inputType="textPassword"
+                android:minWidth="200dp"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textColorHighlight="@android:color/darker_gray"
+                android:textColorHint="@color/hints"
+                android:textSize="16sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/title_bottom_margin"
-            android:text="@string/user_title_text"
-            android:theme="@style/ThemeOverlay.MyTitleText" />
+            android:layout_weight="15"
+            android:gravity="center">
 
-        <TextView
-            android:id="@+id/status"
-            style="@style/ThemeOverlay.MyTextDetail"
-            android:text="@string/signed_out" />
+            <Button
+                android:id="@+id/button_id_logIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_log_in_simple_rounded"
+                android:drawableEnd="@drawable/log_in_icon_small"
+                android:drawablePadding="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="5dp"
+                android:text="@string/btn_log_in"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="24sp" />
 
-        <TextView
-            android:id="@+id/detail"
-            style="@style/ThemeOverlay.MyTextDetail"
-            tools:text="Firebase User ID: 123456789abc" />
+            <TextView
+                android:id="@+id/textView_id_forgotPass_logIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/hint_forgot_password"
+                android:textColor="@color/hints"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="15"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/status"
+                style="@style/ThemeOverlay.MyTextDetail"
+                android:text="@string/signed_out" />
+
+            <TextView
+                android:id="@+id/detail"
+                style="@style/ThemeOverlay.MyTextDetail"
+                tools:text="Firebase User ID: 123456789abc" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="5"
+        android:layout_weight="50"
         android:orientation="vertical"
-        android:weightSum="20">
+        android:weightSum="50">
 
         <LinearLayout
-            android:id="@+id/emailPasswordFields"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/simple_login_email"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/orView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_email"
-                android:inputType="textEmailAddress" />
-
-            <EditText
-                android:id="@+id/simple_login_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_password"
-                android:inputType="textPassword" />
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:drawableStart="@drawable/dash_icon"
+                android:drawableEnd="@drawable/dash_icon"
+                android:drawablePadding="20dp"
+                android:text="@string/or"
+                android:textAlignment="center"
+                android:textColor="#F79862" />
 
         </LinearLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20">
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/signInButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="visible"
+                tools:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/signOutAndDisconnect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="horizontal"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <Button
+                    android:id="@+id/signOutButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sign_out"
+                    android:theme="@style/ThemeOverlay.MyDarkButton" />
+
+                <Button
+                    android:id="@+id/disconnectButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/disconnect"
+                    android:theme="@style/ThemeOverlay.MyDarkButton" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20">
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/buttonFacebookLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
+
+
+        </RelativeLayout>
+
         <LinearLayout
-            android:id="@+id/emailPasswordButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="10"
+            android:gravity="bottom|center"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/signInEmail"
+            <TextView
+                android:id="@+id/textView_id_register"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/sign_in" />
-
-            <Button
-                android:id="@+id/signInCreate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="@string/create_account" />
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/textview_clickable_register"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="5dp"
+                android:text="@string/hint_register"
+                android:textAlignment="center"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textStyle="normal"
+                app:autoSizeMaxTextSize="0dp" />
 
         </LinearLayout>
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/orView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:drawableStart="@drawable/dash_icon"
-            android:drawableEnd="@drawable/dash_icon"
-            android:drawablePadding="20dp"
-            android:text="@string/or"
-            android:textAlignment="center"
-            android:textColor="#F79862" />
-
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="20">
-
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/signInButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="visible"
-            tools:visibility="gone" />
-
-        <LinearLayout
-            android:id="@+id/signOutAndDisconnect"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <Button
-                android:id="@+id/signOutButton"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/sign_out"
-                android:theme="@style/ThemeOverlay.MyDarkButton" />
-
-            <Button
-                android:id="@+id/disconnectButton"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/disconnect"
-                android:theme="@style/ThemeOverlay.MyDarkButton" />
-        </LinearLayout>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="20">
-
-        <com.facebook.login.widget.LoginButton
-            android:id="@+id/buttonFacebookLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
-
-
-    </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="10"
-        android:gravity="bottom|center"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView_id_register"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:background="@drawable/textview_clickable_register"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="5dp"
-            android:text="@string/hint_register"
-            android:textAlignment="center"
-            android:textColor="@android:color/holo_orange_dark"
-            android:textStyle="normal"
-            app:autoSizeMaxTextSize="0dp" />
-
     </LinearLayout>
 
 </LinearLayout>

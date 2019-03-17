@@ -66,8 +66,8 @@ public class LoginActivity extends BaseActivity implements
         // Views
         mStatusTextView = findViewById(R.id.status);
         mDetailTextView = findViewById(R.id.detail);
-        mEmailField = findViewById(R.id.simple_login_email);
-        mPasswordField = findViewById(R.id.simple_login_password);
+        mEmailField = findViewById(R.id.email_id_logIn);
+        mPasswordField = findViewById(R.id.password_id_logIn);
 
         textView_id_register = findViewById(R.id.textView_id_register);
         orView = findViewById(R.id.orView);
@@ -76,10 +76,6 @@ public class LoginActivity extends BaseActivity implements
 
 
     public void buttonListners() {
-
-        // Button listeners
-        findViewById(R.id.signInEmail).setOnClickListener(this);
-        findViewById(R.id.signInCreate).setOnClickListener(this);
 
         //Google+General firebase button
         findViewById(R.id.signInButton).setOnClickListener(this);
@@ -408,8 +404,8 @@ public class LoginActivity extends BaseActivity implements
             mStatusTextView.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
             mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
 
-            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
-            findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
+//            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
+//            findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
 
             findViewById(R.id.signInButton).setVisibility(View.GONE);
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.VISIBLE);
@@ -417,8 +413,8 @@ public class LoginActivity extends BaseActivity implements
             mStatusTextView.setText(R.string.signed_out);
             mDetailTextView.setText(null);
 
-            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
-            findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
+//            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
+//            findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
 
             findViewById(R.id.signInButton).setVisibility(View.VISIBLE);
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.GONE);
@@ -438,13 +434,6 @@ public class LoginActivity extends BaseActivity implements
 
         } else if (i == R.id.disconnectButton) {
             revokeAccess();
-        }
-
-              //Simple Login actions
-        if (i == R.id.signInCreate) {
-            createAccountWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.signInEmail) {
-            signInWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
         }
 
     }
