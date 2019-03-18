@@ -4,64 +4,63 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".utility_classes.LogInActivityElena">
-
+    tools:context=".dimosLogin.RegisterActivity">
 
     <EditText
-        android:id="@+id/email_id"
+        android:id="@+id/email_id_register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="104dp"
+        android:layout_marginTop="168dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
-        android:hint="Enter e-mail"
-        android:inputType="textEmailAddress"
+        android:inputType="textPersonName"
+        android:hint="Email"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/password_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="68dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:hint="Enter password"
-        android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="@+id/email_id"
-        app:layout_constraintHorizontal_bias="0.562"
-        app:layout_constraintStart_toStartOf="@+id/email_id"
-        app:layout_constraintTop_toBottomOf="@+id/email_id" />
-
-    <Button
-        android:id="@+id/log_in_button_id"
+        android:id="@+id/password_id_register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="Log in"
-        app:layout_constraintEnd_toEndOf="@+id/password_id"
-        app:layout_constraintStart_toStartOf="@+id/password_id"
-        app:layout_constraintTop_toBottomOf="@+id/password_id" />
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email_id_register" />
+
+    <EditText
+        android:id="@+id/password_id_registerRepeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Repeat Password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/password_id_register" />
 
     <Button
-        android:id="@+id/sign_up_button1_id"
+        android:id="@+id/button_id_register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Sign up"
+        android:text="Register"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/log_in_button_id"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="@+id/log_in_button_id"
-        app:layout_constraintTop_toBottomOf="@+id/log_in_button_id"
-        app:layout_constraintVertical_bias="0.405" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/password_id_registerRepeat"
+        app:layout_constraintVertical_bias="0.163" />
 </android.support.constraint.ConstraintLayout>

@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#039BE5</color>
-    <color name="colorPrimaryDark">#0288D1</color>
-    <color name="colorAccent">#FFA000</color>
-    <color name="colorAccent1">#D81B60</color>
 
+    <!--General Colors-->
+    <!--<color name="colorPrimary">#039BE5</color>-->
+    <!--<color name="colorPrimaryDark">#0288D1</color>-->
+    <!--<color name="colorAccent">#FFA000</color>-->
+
+    <color name="colorPrimary">#FF9800</color>
+    <color name="colorPrimaryDark">#F79862</color>
+    <color name="colorAccent">#ffffff</color>
+    <color name="colorAccentOnSignOut">#FFA000</color>
+
+    <color name="colorEditTextUnderline">#FFFFFF</color>
+    <color name="hints">#99FFFFFF</color>
 
     <color name="grey_100">#F5F5F5</color>
     <color name="grey_300">#E0E0E0</color>

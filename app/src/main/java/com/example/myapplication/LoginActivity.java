@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.dimosLogin.RegisterActivity;
+import com.example.myapplication.dimosLogin.SignInActivity;
 import com.example.myapplication.utility_classes.BaseActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -49,34 +51,36 @@ public class LoginActivity extends BaseActivity implements
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
 
-    private TextView mStatusTextView;
-    private TextView mDetailTextView;
-    private EditText mEmailField;
-    private EditText mPasswordField;
+    private TextView signUp, orView;
+    private EditText mEmailField, mPasswordField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Views
-        mStatusTextView = findViewById(R.id.status);
-        mDetailTextView = findViewById(R.id.detail);
-        mEmailField = findViewById(R.id.simple_login_email);
-        mPasswordField = findViewById(R.id.simple_login_password);
+        initViews();
+        buttonListners();
+    }
 
-        // Button listeners
-        findViewById(R.id.signInEmail).setOnClickListener(this);
-        findViewById(R.id.signInCreate).setOnClickListener(this);
+
+    public void initViews() {
+//         Views
+        mEmailField = findViewById(R.id.email_id_logIn);
+        mPasswordField = findViewById(R.id.password_id_logIn);
+
+        signUp = findViewById(R.id.textView_id_register);
+        orView = findViewById(R.id.orView);
+
+    }
+
+
+    public void buttonListners() {
 
         //Google+General firebase button
         findViewById(R.id.signInButton).setOnClickListener(this);
         findViewById(R.id.signOutButton).setOnClickListener(this);
         findViewById(R.id.disconnectButton).setOnClickListener(this);
-
-        //simple login buttons
-        findViewById(R.id.signOutOnSimpleLoginButton).setOnClickListener(this);
-        findViewById(R.id.verifyEmailButton).setOnClickListener(this);
 
         // [START config_signin]
         // Configure Google Sign In
@@ -287,7 +291,7 @@ public class LoginActivity extends BaseActivity implements
 
                         // [START_EXCLUDE]
                         if (!task.isSuccessful()) {
-                            mStatusTextView.setText(R.string.auth_failed);
+//                            mStatusTextView.setText(R.string.auth_failed);
                         }
                         hideProgressDialog();
                         // [END_EXCLUDE]
@@ -397,24 +401,10 @@ public class LoginActivity extends BaseActivity implements
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
         if (user != null) {
-            mStatusTextView.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
-            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-
-            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
-            findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
-            findViewById(R.id.signedInButtons).setVisibility(View.VISIBLE);
-
-            findViewById(R.id.verifyEmailButton).setEnabled(!user.isEmailVerified());
 
             findViewById(R.id.signInButton).setVisibility(View.GONE);
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.VISIBLE);
         } else {
-            mStatusTextView.setText(R.string.signed_out);
-            mDetailTextView.setText(null);
-
-            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
-            findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
-            findViewById(R.id.signedInButtons).setVisibility(View.GONE);
 
             findViewById(R.id.signInButton).setVisibility(View.VISIBLE);
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.GONE);
@@ -426,6 +416,10 @@ public class LoginActivity extends BaseActivity implements
         int i = v.getId();
 
         //Google Actions
+        if (i == R.id.textView_id_register) {
+            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        }
         if (i == R.id.signInButton) {
             signIn();
         } else if (i == R.id.signOutButton) {
@@ -436,20 +430,5 @@ public class LoginActivity extends BaseActivity implements
             revokeAccess();
         }
 
-        //Facebook actions
-        if (i == R.id.buttonFacebookSignout) {
-            signOutWithFacebook();
-        }
-
-        //Simple Login actions
-        if (i == R.id.signInCreate) {
-            createAccountWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.signInEmail) {
-            signInWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.signOutOnSimpleLoginButton) {
-            signOutFromEmail();
-        } else if (i == R.id.verifyEmailButton) {
-            sendEmailVerification();
-        }
     }
 }
