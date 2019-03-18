@@ -416,6 +416,9 @@ public class LoginActivity extends BaseActivity implements
         //Google Actions
         if (i == R.id.textView_id_register) {
             Toast.makeText(this, "Register me", Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+//            startActivity(intent);
+            sendUIDData();
         }
         if (i == R.id.signInButton) {
             signIn();
@@ -432,20 +435,6 @@ public class LoginActivity extends BaseActivity implements
             signOutWithFacebook();
         }
 
-        //Simple Login actions
-        if (i == R.id.signInCreate) {
-            createAccountWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.signInEmail) {
-            signInWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.signOutOnSimpleLoginButton) {
-            signOutFromEmail();
-        } else if (i == R.id.verifyEmailButton) {
-            sendEmailVerification();
-        }
-
-        if (i == R.id.sendfoodz) {
-            sendUIDData();
-        }
     }
 
     private void sendUIDData() {
