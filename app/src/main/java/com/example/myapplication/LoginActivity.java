@@ -63,9 +63,9 @@ public class LoginActivity extends BaseActivity implements
 
 
     public void initViews() {
-        // Views
-        mStatusTextView = findViewById(R.id.status);
-        mDetailTextView = findViewById(R.id.detail);
+//         Views
+//        mStatusTextView = findViewById(R.id.status);
+//        mDetailTextView = findViewById(R.id.detail);
         mEmailField = findViewById(R.id.email_id_logIn);
         mPasswordField = findViewById(R.id.password_id_logIn);
 
@@ -401,8 +401,8 @@ public class LoginActivity extends BaseActivity implements
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
         if (user != null) {
-            mStatusTextView.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
-            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+//            mStatusTextView.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
+//            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
 
 //            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
 //            findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
@@ -410,8 +410,8 @@ public class LoginActivity extends BaseActivity implements
             findViewById(R.id.signInButton).setVisibility(View.GONE);
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.VISIBLE);
         } else {
-            mStatusTextView.setText(R.string.signed_out);
-            mDetailTextView.setText(null);
+//            mStatusTextView.setText(R.string.signed_out);
+//            mDetailTextView.setText(null);
 
 //            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
 //            findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
