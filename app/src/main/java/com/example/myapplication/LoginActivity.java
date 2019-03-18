@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.dimosLogin.RegisterActivity;
+import com.example.myapplication.dimosLogin.SignInActivity;
 import com.example.myapplication.utility_classes.BaseActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -49,7 +51,7 @@ public class LoginActivity extends BaseActivity implements
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
 
-    private TextView mStatusTextView, mDetailTextView, textView_id_register, orView;
+    private TextView signUp, orView;
     private EditText mEmailField, mPasswordField;
 
     @Override
@@ -64,12 +66,10 @@ public class LoginActivity extends BaseActivity implements
 
     public void initViews() {
 //         Views
-//        mStatusTextView = findViewById(R.id.status);
-//        mDetailTextView = findViewById(R.id.detail);
         mEmailField = findViewById(R.id.email_id_logIn);
         mPasswordField = findViewById(R.id.password_id_logIn);
 
-        textView_id_register = findViewById(R.id.textView_id_register);
+        signUp = findViewById(R.id.textView_id_register);
         orView = findViewById(R.id.orView);
 
     }
@@ -291,7 +291,7 @@ public class LoginActivity extends BaseActivity implements
 
                         // [START_EXCLUDE]
                         if (!task.isSuccessful()) {
-                            mStatusTextView.setText(R.string.auth_failed);
+//                            mStatusTextView.setText(R.string.auth_failed);
                         }
                         hideProgressDialog();
                         // [END_EXCLUDE]
@@ -401,20 +401,10 @@ public class LoginActivity extends BaseActivity implements
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
         if (user != null) {
-//            mStatusTextView.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
-//            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-
-//            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
-//            findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
 
             findViewById(R.id.signInButton).setVisibility(View.GONE);
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.VISIBLE);
         } else {
-//            mStatusTextView.setText(R.string.signed_out);
-//            mDetailTextView.setText(null);
-
-//            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
-//            findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
 
             findViewById(R.id.signInButton).setVisibility(View.VISIBLE);
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.GONE);
@@ -426,6 +416,10 @@ public class LoginActivity extends BaseActivity implements
         int i = v.getId();
 
         //Google Actions
+        if (i == R.id.textView_id_register) {
+            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        }
         if (i == R.id.signInButton) {
             signIn();
         } else if (i == R.id.signOutButton) {

@@ -13,16 +13,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="50"
+        android:layout_weight="45"
         android:background="#F79862"
         android:gravity="center"
         android:orientation="vertical"
-        android:weightSum="50">
+        android:weightSum="45">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="30"
+            android:layout_weight="25"
             android:gravity="center"
             tools:ignore="InefficientWeight">
 
@@ -112,9 +112,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="50"
+        android:layout_weight="55"
         android:orientation="vertical"
-        android:weightSum="50">
+        android:weightSum="55">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -210,6 +210,7 @@
                 android:background="@drawable/textview_clickable_register"
                 android:clickable="true"
                 android:focusable="true"
+                android:onClick="onClick"
                 android:padding="5dp"
                 android:text="@string/hint_register"
                 android:textAlignment="center"
