@@ -19,11 +19,10 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class UserProfileUI extends AppCompatActivity implements View.OnClickListener {
 
-    private TextView ty_name;
-    private String userUID;
+    private TextView userName,textId;
+    private String userUID,userEmail;
     private FirebaseAuth mAuth;
     private ImageButton firstType, secondType, thirdType, forthType;
-    private FragmentManager fm;
     private UserProfileFragment fragment;
 
     @Override
@@ -37,13 +36,15 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
 
     private void initLayout() {
 
-        ty_name = findViewById(R.id.ty_name);
+        userName = findViewById(R.id.ty_name);
+        textId = findViewById(R.id.textId);
 
         mAuth = FirebaseAuth.getInstance();
 
         Intent getLoginIntent = getIntent();
 
         userUID = getLoginIntent.getStringExtra("userUid");
+        userEmail = getLoginIntent.getStringExtra("userEmail");
 
         firstType = findViewById(R.id.firstTypePost);
         secondType = findViewById(R.id.secondTypePost);
@@ -51,7 +52,7 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
         forthType = findViewById(R.id.forthTypePost);
 
 
-        fm = getSupportFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         fragment = (UserProfileFragment) fm.findFragmentById(R.id.fragment);
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.hide(fragment);
@@ -76,9 +77,11 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            ty_name.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
+            userName.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
+            textId.setText(getString(R.string.user_status_fmt, user.getEmail()));
         } else {
-            ty_name.setText(userUID);
+//            userName.setText(userUID);
+            textId.setText(userEmail);
 
         }
     }

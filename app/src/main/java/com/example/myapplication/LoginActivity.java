@@ -441,18 +441,22 @@ public class LoginActivity extends BaseActivity implements
         FirebaseUser user = mAuth.getCurrentUser();
 
         String userUid = null;
+        String userEmail = null;
 
         if (user != null) {
             userUid = user.getUid();
+            userEmail = user.getEmail();
         }
 
-        Intent sendFoodzIntent = new Intent(LoginActivity.this, MainActivity.class);
-        sendFoodzIntent.putExtra("userUid", userUid);
+        Intent sendUserUID = new Intent(LoginActivity.this, MainActivity.class);
+        sendUserUID.putExtra("userUid", userUid);
+        sendUserUID.putExtra("userEmail", userEmail);
 
-        Intent sendFoodzIntentToUserInfo = new Intent(LoginActivity.this, UserProfileUI.class);
-        sendFoodzIntentToUserInfo.putExtra("userUid", userUid);
+        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileUI.class);
+        sendUserEmail.putExtra("userUid", userUid);
+        sendUserEmail.putExtra("userEmail", userEmail);
 
-        startActivity(sendFoodzIntent);
-        startActivity(sendFoodzIntentToUserInfo);
+        startActivity(sendUserUID);
+        startActivity(sendUserEmail);
     }
 }
