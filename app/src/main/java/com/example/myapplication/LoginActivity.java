@@ -11,8 +11,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.myapplication.dimosLogin.RegisterActivity;
-import com.example.myapplication.dimosLogin.SignInActivity;
 import com.example.myapplication.utility_classes.BaseActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -417,8 +415,7 @@ public class LoginActivity extends BaseActivity implements
 
         //Google Actions
         if (i == R.id.textView_id_register) {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
+            Toast.makeText(this, "Register me", Toast.LENGTH_SHORT).show();
         }
         if (i == R.id.signInButton) {
             signIn();
