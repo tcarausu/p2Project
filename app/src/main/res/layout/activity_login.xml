@@ -207,7 +207,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:background="@drawable/textview_clickable_register"
                 android:clickable="true"
                 android:focusable="true"
                 android:onClick="onClick"
