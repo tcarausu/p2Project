@@ -13,7 +13,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.myapplication.fragments.UserProfileFragment;
+import com.example.myapplication.fragments.UserProfileOnePostFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -23,7 +23,7 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
     private String userUID,userEmail;
     private FirebaseAuth mAuth;
     private ImageButton firstType, secondType, thirdType, forthType;
-    private UserProfileFragment fragment;
+    private UserProfileOnePostFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
 
 
         FragmentManager fm = getSupportFragmentManager();
-        fragment = (UserProfileFragment) fm.findFragmentById(R.id.fragment);
+        fragment = (UserProfileOnePostFragment) fm.findFragmentById(R.id.fragment);
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.hide(fragment);
         fragmentTransaction.commit();
@@ -80,7 +80,7 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
             userName.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
             textId.setText(getString(R.string.user_status_fmt, user.getEmail()));
         } else {
-//            userName.setText(userUID);
+            userName.setText(userUID);
             textId.setText(userEmail);
 
         }
@@ -128,7 +128,7 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
 
 
                 showHideFragment(fragment);
-//                Fragment fragment = new UserProfileFragment();
+//                Fragment fragment = new UserProfileOnePostFragment();
 //
 //                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 //                transaction.replace(R.id.userProfileFragmentId, fragment ); // give your fragment container id in first parameter
@@ -140,7 +140,7 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
 
 
 //                fm = getSupportFragmentManager();
-//                UserProfileFragment fragment = new UserProfileFragment();
+//                UserProfileOnePostFragment fragment = new UserProfileOnePostFragment();
 //                fm.beginTransaction().add(R.id.userProfileFragmentId, fragment).commit();
 
                 break;

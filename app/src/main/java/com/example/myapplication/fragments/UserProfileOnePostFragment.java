@@ -12,10 +12,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.myapplication.R;
-import com.example.myapplication.utility_classes.Utils;
 
 import java.util.Objects;
 
@@ -23,7 +21,7 @@ import java.util.Objects;
 /**
  * File created by tcarau18
  **/
-public class UserProfileFragment extends Fragment implements View.OnClickListener {
+public class UserProfileOnePostFragment extends Fragment implements View.OnClickListener {
 
     private static View view;
 
@@ -34,14 +32,14 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private static FragmentManager fragmentManager;
     private static Animation shakeAnimation;
 
-    public UserProfileFragment() {
+    public UserProfileOnePostFragment() {
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_userprofile, container, false);
+        view = inflater.inflate(R.layout.fragment_user_profile_one_post, container, false);
         initViews();
         setListeners();
         return view;
@@ -106,7 +104,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 //                fragmentManager
 //                        .beginTransaction()
 //                        .setCustomAnimations(R.anim.right_enter, R.anim.left_out)
-//                        .replace(R.id.frameContainer, new UserProfileFragment(),
+//                        .replace(R.id.frameContainer, new UserProfileOnePostFragment(),
 //                                Utils.UserProfile_Fragment).commit();
 //
 //                break;
