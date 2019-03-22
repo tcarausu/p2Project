@@ -37,7 +37,7 @@
         <activity android:name=".utility_classes.GoogleSignInActivity" />
         <activity android:name=".utility_classes.EmailPasswordActivity" />
         <activity android:name=".utility_classes.FacebookLoginActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".HomeActivity" />
         <activity android:name=".UserProfileUI" />
         <activity android:name=".LoginActivity">
             <intent-filter>
