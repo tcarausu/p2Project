@@ -1,4 +1,4 @@
-package com.example.myapplication.fragments;
+package com.example.myapplication.user_profile;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
