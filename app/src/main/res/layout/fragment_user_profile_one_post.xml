@@ -153,7 +153,7 @@
                     android:adjustViewBounds="true"
                     android:background="@drawable/circle"
                     android:scaleType="fitStart"
-                    android:src="@drawable/person" />
+                    android:src="@drawable/comment" />
 
                 <ImageView
                     android:id="@+id/share"
@@ -164,7 +164,7 @@
                     android:adjustViewBounds="true"
                     android:background="@drawable/circle"
                     android:scaleType="fitStart"
-                    android:src="@drawable/person" />
+                    android:src="@drawable/share" />
 
                 <ImageView
                     android:id="@+id/favourite"
