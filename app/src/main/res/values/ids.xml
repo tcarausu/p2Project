@@ -12,5 +12,4 @@
     <!-- TODO(developer): REPLACE -->
     <string name="twitter_consumer_key">REPLACE_ME</string>
     <string name="twitter_consumer_secret">REPLACE_ME</string>
-    <item name="ic_home" type="id">ic_home</item>
 </resources>
