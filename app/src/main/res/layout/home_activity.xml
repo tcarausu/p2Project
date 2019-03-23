@@ -1,52 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".HomeActivity">
 
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <android.support.v7.widget.SearchView
+        <!--top Toolbar-->
+        <RelativeLayout
+            android:id="@+id/topToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-        </android.support.v7.widget.SearchView>
+            <include layout="@layout/layout_top_tabs" />
 
-    </RelativeLayout>
+        </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="2">
-
-        <TextView
+        <!--Mid Section-->
+        <RelativeLayout
+            android:id="@+id/midSectionMainActivity"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="boiiii" />
+            android:layout_height="match_parent"
+            android:layout_below="@+id/topToolbar">
+
+            <include layout="@layout/layout_container_view_pager" />
 
 
-    </RelativeLayout>
+        </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="2">
+        <!--bottom navigation-->
 
-        <TextView
-            android:id="@+id/firebase_user_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Bullshit" />
+        <include layout="@layout/layout_bottom_navigation" />
 
     </RelativeLayout>
 
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

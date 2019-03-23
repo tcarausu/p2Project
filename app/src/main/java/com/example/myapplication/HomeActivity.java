@@ -19,7 +19,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
-        firebase_user_info = findViewById(R.id.firebase_user_info);
+//        firebase_user_info = findViewById(R.id.firebase_user_info);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -38,9 +38,9 @@ public class HomeActivity extends AppCompatActivity {
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            firebase_user_info.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
+//            firebase_user_info.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
         } else {
-            firebase_user_info.setText(userUID);
+//            firebase_user_info.setText(userUID);
 
         }
     }

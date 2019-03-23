@@ -142,7 +142,7 @@
                     android:adjustViewBounds="true"
                     android:background="@drawable/circle"
                     android:scaleType="fitStart"
-                    android:src="@drawable/person" />
+                    android:src="@drawable/like" />
 
                 <ImageView
                     android:id="@+id/comment"
