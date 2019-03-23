@@ -7,9 +7,10 @@ import android.support.design.widget.BottomNavigationView;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.example.myapplication.post.AddPostActivity;
-import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.home.HomeActivity;
+import com.example.myapplication.likes.LikePostActivity;
+import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.search.SearchActivity;
 import com.example.myapplication.user_profile.UserProfileUI;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -52,8 +53,12 @@ public class BottomNavigationViewHelper {
                         Intent addPostIntent = new Intent(context, AddPostActivity.class);//ACTIVITY_NUM = 2
                         context.startActivity(addPostIntent);
                         break;
+                    case R.id.ic_like_posts:
+                        Intent likePost = new Intent(context, LikePostActivity.class);//ACTIVITY_NUM = 3
+                        context.startActivity(likePost);
+                        break;
                     case R.id.ic_user_profile:
-                        Intent userProfileIntent = new Intent(context, UserProfileUI.class);//ACTIVITY_NUM = 3
+                        Intent userProfileIntent = new Intent(context, UserProfileUI.class);//ACTIVITY_NUM = 4
                         context.startActivity(userProfileIntent);
                         break;
                 }

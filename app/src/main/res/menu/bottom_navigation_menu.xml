@@ -21,6 +21,14 @@
         android:title="">
 
     </item>
+
+    <item
+        android:id="@+id/ic_like_posts"
+        android:icon="@drawable/like"
+        android:title="">
+
+    </item>
+
     <item
         android:id="@+id/ic_user_profile"
         android:icon="@drawable/profile"
