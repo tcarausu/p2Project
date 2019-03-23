@@ -1,5 +1,6 @@
-package com.example.myapplication;
+package com.example.myapplication.user_profile;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,12 +8,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.R;
 import com.example.myapplication.fragments.UserProfileOnePostFragment;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,6 +23,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 public class UserProfileUI extends AppCompatActivity implements View.OnClickListener {
+
+    private static final int ACTIVITY_NUM = 3;
+
+    private Context mContext = UserProfileUI.this;
 
     private TextView userName, textId;
     private String userUID, userEmail;
@@ -154,5 +161,10 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
     public void setupBottomNavigationView() {
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
+
     }
 }

@@ -1,5 +1,6 @@
-package com.example.myapplication;
+package com.example.myapplication.login;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,8 +12,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.home.HomeActivity;
+import com.example.myapplication.R;
 import com.example.myapplication.utility_classes.BaseActivity;
-import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -33,7 +35,6 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 public class LoginActivity extends BaseActivity implements
         View.OnClickListener {
@@ -53,6 +54,8 @@ public class LoginActivity extends BaseActivity implements
 
     private TextView signUp, orView;
     private EditText mEmailField, mPasswordField;
+
+    private Context mContext = LoginActivity.this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

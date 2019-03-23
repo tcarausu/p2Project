@@ -1,19 +1,24 @@
-package com.example.myapplication;
+package com.example.myapplication.post;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import com.example.myapplication.R;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 /**
  * File created by tcarau18
  **/
-public class SearchActivity extends AppCompatActivity {
-    private static final String TAG = "SearchActivity";
+public class AddPostActivity extends AppCompatActivity {
+    private static final String TAG = "AddPostActivity";
+    private static final int ACTIVITY_NUM = 2;
+
+    private Context mContext = AddPostActivity.this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +26,7 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.home_activity);
 
         initLayout();
-        buttonListners();
+        buttonListeners();
         setupBottomNavigationView();
     }
 
@@ -31,7 +36,7 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
-    public void buttonListners() {
+    public void buttonListeners() {
 
     }
 
@@ -40,9 +45,7 @@ public class SearchActivity extends AppCompatActivity {
      */
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-//            firebase_user_info.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
         } else {
-//            firebase_user_info.setText(userUID);
 
         }
     }
@@ -53,5 +56,10 @@ public class SearchActivity extends AppCompatActivity {
     public void setupBottomNavigationView() {
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
+
     }
 }
