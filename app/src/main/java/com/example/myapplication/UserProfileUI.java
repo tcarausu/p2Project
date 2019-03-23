@@ -14,13 +14,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.fragments.UserProfileOnePostFragment;
+import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 public class UserProfileUI extends AppCompatActivity implements View.OnClickListener {
 
-    private TextView userName,textId;
-    private String userUID,userEmail;
+    private TextView userName, textId;
+    private String userUID, userEmail;
     private FirebaseAuth mAuth;
     private ImageButton firstType, secondType, thirdType, forthType;
     private UserProfileOnePostFragment fragment;
@@ -32,6 +34,7 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
 
         initLayout();
         setListeners();
+        setupBottomNavigationView();
     }
 
     private void initLayout() {
@@ -75,18 +78,6 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
         updateUI(currentUser);
     }
 
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-            userName.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
-            textId.setText(getString(R.string.user_status_fmt, user.getEmail()));
-        } else {
-            userName.setText(userUID);
-            textId.setText(userEmail);
-
-        }
-    }
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -128,20 +119,6 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
 
 
                 showHideFragment(fragment);
-//                Fragment fragment = new UserProfileOnePostFragment();
-//
-//                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//                transaction.replace(R.id.userProfileFragmentId, fragment ); // give your fragment container id in first parameter
-//                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
-//                transaction.commit();
-
-
-//                transaction.replace(R.id.userProfileFragmentId, fragment).commit();
-
-
-//                fm = getSupportFragmentManager();
-//                UserProfileOnePostFragment fragment = new UserProfileOnePostFragment();
-//                fm.beginTransaction().add(R.id.userProfileFragmentId, fragment).commit();
 
                 break;
             case R.id.secondTypePost:
@@ -158,5 +135,24 @@ public class UserProfileUI extends AppCompatActivity implements View.OnClickList
                 break;
         }
 
+    }
+
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
+            userName.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
+            textId.setText(getString(R.string.user_status_fmt, user.getEmail()));
+        } else {
+            userName.setText(userUID);
+            textId.setText(userEmail);
+
+        }
+    }
+
+    /**
+     * Bottom Navigation View setup
+     */
+    public void setupBottomNavigationView() {
+        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
     }
 }

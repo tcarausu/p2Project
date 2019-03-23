@@ -3,21 +3,18 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
 
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-public class HomeActivity extends AppCompatActivity {
+/**
+ * File created by tcarau18
+ **/
+public class SearchActivity extends AppCompatActivity {
+    private static final String TAG = "SearchActivity";
 
-    private String userUID;
-    private FirebaseAuth mAuth;
-
-    /**
-     * @param savedInstanceState creates the app using the Bundle
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,20 +25,9 @@ public class HomeActivity extends AppCompatActivity {
         setupBottomNavigationView();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
-    }
 
     public void initLayout() {
-        mAuth = FirebaseAuth.getInstance();
 
-        Intent getLoginIntent = getIntent();
-
-        userUID = getLoginIntent.getStringExtra("userUid");
 
     }
 

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.utility_classes.BaseActivity;
+import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -32,6 +33,7 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 public class LoginActivity extends BaseActivity implements
         View.OnClickListener {
@@ -150,6 +152,7 @@ public class LoginActivity extends BaseActivity implements
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
+                assert account != null;
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
@@ -452,11 +455,11 @@ public class LoginActivity extends BaseActivity implements
         sendUserUID.putExtra("userUid", userUid);
         sendUserUID.putExtra("userEmail", userEmail);
 
-        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileUI.class);
-        sendUserEmail.putExtra("userUid", userUid);
-        sendUserEmail.putExtra("userEmail", userEmail);
+//        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileUI.class);
+//        sendUserEmail.putExtra("userUid", userUid);
+//        sendUserEmail.putExtra("userEmail", userEmail);
 
         startActivity(sendUserUID);
-        startActivity(sendUserEmail);
+//        startActivity(sendUserEmail);
     }
 }
