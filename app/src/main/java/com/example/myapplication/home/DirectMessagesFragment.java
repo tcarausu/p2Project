@@ -16,7 +16,7 @@ public class DirectMessagesFragment extends Fragment {
     private static final String TAG = "DirectMessagesFragment";
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
-        View view = inflater.inflate(R.layout.fragment_dirrect_messages,container,false);
+        View view = inflater.inflate(R.layout.fragment_direct_messages,container,false);
         return view;
     }
 }

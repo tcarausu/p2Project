@@ -3,6 +3,8 @@ package com.example.myapplication.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +14,8 @@ import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+
+import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -35,6 +39,7 @@ public class HomeActivity extends AppCompatActivity {
         initLayout();
         buttonListeners();
         setupBottomNavigationView();
+        setupViewPager();
     }
 
     @Override
@@ -78,6 +83,26 @@ public class HomeActivity extends AppCompatActivity {
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
+
+    }
+
+    /**
+     * Used for adding the tabs: Camera, Home and Direct Messages
+     */
+    private void setupViewPager() {
+        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new CameraFragment()); //index 0
+        adapter.addFragment(new HomeFragment()); //index 1
+        adapter.addFragment(new DirectMessagesFragment()); //index 2
+        ViewPager viewPager = findViewById(R.id.container);
+        viewPager.setAdapter(adapter);
+
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.photo_camera);
+        Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.home);
+        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.direct_message_pressed);
 
     }
 }
