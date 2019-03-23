@@ -12,7 +12,7 @@ import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.likes.LikePostActivity;
 import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.search.SearchActivity;
-import com.example.myapplication.user_profile.UserProfileUI;
+import com.example.myapplication.user_profile.UserProfileActivity;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 /**
@@ -58,7 +58,7 @@ public class BottomNavigationViewHelper {
                         context.startActivity(likePost);
                         break;
                     case R.id.ic_user_profile:
-                        Intent userProfileIntent = new Intent(context, UserProfileUI.class);//ACTIVITY_NUM = 4
+                        Intent userProfileIntent = new Intent(context, UserProfileActivity.class);//ACTIVITY_NUM = 4
                         context.startActivity(userProfileIntent);
                         break;
                 }

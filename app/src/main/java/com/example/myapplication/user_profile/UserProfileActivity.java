@@ -1,0 +1,195 @@
+package com.example.myapplication.user_profile;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toolbar;
+
+import com.example.myapplication.R;
+import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+
+public class UserProfileActivity extends AppCompatActivity
+//        implements View.OnClickListener
+{
+
+    private static final String TAG = "UserProfileActivity";
+
+    private static final int ACTIVITY_NUM = 4;
+
+    private Context mContext = UserProfileActivity.this;
+
+    private TextView userName, textId;
+    private String userUID, userEmail;
+    private FirebaseAuth mAuth;
+    private ImageButton firstType, secondType, thirdType, forthType;
+    private UserProfileOnePostFragment fragment;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_profile);
+
+        initLayout();
+        setListeners();
+//        setupBottomNavigationView();
+        setupToolbar();
+    }
+
+    private void initLayout() {
+//
+//        userName = findViewById(R.id.ty_name);
+//        textId = findViewById(R.id.textId);
+//
+//        mAuth = FirebaseAuth.getInstance();
+//
+//        Intent getLoginIntent = getIntent();
+//
+//        userUID = getLoginIntent.getStringExtra("userUid");
+//        userEmail = getLoginIntent.getStringExtra("userEmail");
+//
+//        firstType = findViewById(R.id.firstTypePost);
+//        secondType = findViewById(R.id.secondTypePost);
+//        thirdType = findViewById(R.id.thirdTypePost);
+//        forthType = findViewById(R.id.forthTypePost);
+//
+//
+//        FragmentManager fm = getSupportFragmentManager();
+//        fragment = (UserProfileOnePostFragment) fm.findFragmentById(R.id.fragment);
+//        final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//        fragmentTransaction.hide(fragment);
+//        fragmentTransaction.commit();
+//
+    }
+
+    private void setListeners() {
+//        firstType.setOnClickListener(this);
+//        secondType.setOnClickListener(this);
+//        thirdType.setOnClickListener(this);
+//        forthType.setOnClickListener(this);
+    }
+
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        // Check if user is signed in (non-null) and update UI accordingly.
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        updateUI(currentUser);
+//    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case android.R.id.home:
+//                finish();
+//                return true;
+//            case R.id.firstTypePost:
+//                Log.i("click", "menu");
+//
+//                showHideFragment(fragment);
+//                break;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
+
+//    public void showHideFragment(final Fragment fragment) {
+//
+//        final FragmentTransaction fragTransaction = getSupportFragmentManager().beginTransaction();
+//        fragTransaction.setCustomAnimations(R.anim.left_enter, R.anim.left_out);
+//
+//        if (fragment.isHidden()) {
+//            fragTransaction.show(fragment);
+//            Log.d("hidden", "Show");
+//        } else {
+//            fragTransaction.hide(fragment);
+//            Log.d("Shown", "Hide");
+//        }
+//
+//        fragTransaction.commit();
+//    }
+
+//    @Override
+//    public void onClick(View v) {
+//        switch (v.getId()) {
+//
+//            case R.id.firstTypePost:
+//                Toast.makeText(this,
+//                        "ImageButton 1 is clicked!", Toast.LENGTH_SHORT).show();
+//
+//
+//                showHideFragment(fragment);
+//
+//                break;
+//            case R.id.secondTypePost:
+//                Toast.makeText(this,
+//                        "ImageButton 2 is clicked!", Toast.LENGTH_SHORT).show();
+//                break;
+//            case R.id.thirdTypePost:
+//                Toast.makeText(this,
+//                        "ImageButton 3 is clicked!", Toast.LENGTH_SHORT).show();
+//                break;
+//            case R.id.forthTypePost:
+//                Toast.makeText(this,
+//                        "ImageButton 4 is clicked!", Toast.LENGTH_SHORT).show();
+//                break;
+//        }
+//
+//    }
+
+//    private void updateUI(FirebaseUser user) {
+//        if (user != null) {
+//            userName.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
+//            textId.setText(getString(R.string.user_status_fmt, user.getEmail()));
+//        } else {
+//            userName.setText(userUID);
+//            textId.setText(userEmail);
+//
+//        }
+//    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.profileToolBar);
+        setActionBar(toolbar);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Log.d(TAG, "onMenuItemClick: clicked menu item" +item);
+
+                switch (item.getItemId()){
+                    case R.id.profileMenu:
+                        Log.d(TAG, "onMenuItemClick: Navigating to ProfilePreferences.");
+
+                }
+
+                return false;
+            }
+        });
+
+
+    }
+
+    /**
+     * Bottom Navigation View setup
+     */
+    public void setupBottomNavigationView() {
+        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.profile_menu,menu);
+        return true;
+    }
+}

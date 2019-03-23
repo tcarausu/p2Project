@@ -40,7 +40,8 @@
         <activity android:name=".search.SearchActivity" />
         <activity android:name=".post.AddPostActivity" />
         <activity android:name=".home.HomeActivity" />
-        <activity android:name=".user_profile.UserProfileUI" />
+        <activity android:name=".user_profile.UserProfileActivity" />
+        <activity android:name=".likes.LikePostActivity" />
         <activity android:name=".login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

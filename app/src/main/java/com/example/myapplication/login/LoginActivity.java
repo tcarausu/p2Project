@@ -458,7 +458,7 @@ public class LoginActivity extends BaseActivity implements
         sendUserUID.putExtra("userUid", userUid);
         sendUserUID.putExtra("userEmail", userEmail);
 
-//        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileUI.class);
+//        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileActivity.class);
 //        sendUserEmail.putExtra("userUid", userUid);
 //        sendUserEmail.putExtra("userEmail", userEmail);
 
