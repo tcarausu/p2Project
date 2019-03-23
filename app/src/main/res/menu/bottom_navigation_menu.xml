@@ -5,24 +5,28 @@
         android:id="@+id/ic_home"
         android:icon="@drawable/home"
         android:title="">
+
     </item>
 
     <item
         android:id="@+id/ic_search"
         android:icon="@drawable/search"
         android:title="">
-    </item>
 
-    <item
-        android:id="@+id/ic_user_profile"
-        android:icon="@drawable/profile"
-        android:title="">
     </item>
 
     <item
         android:id="@+id/ic_add_post"
-        android:icon="@drawable/plus_button"
+        android:icon="@drawable/add_button_inside_black_circle"
         android:title="">
+
     </item>
+    <item
+        android:id="@+id/ic_user_profile"
+        android:icon="@drawable/profile"
+        android:title="">
+
+    </item>
+
 
 </menu>
