@@ -108,5 +108,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="user_name">tcarausu</string>
+    <string name="following">Following</string>
+    <string name="numberOfFollowing">400</string>
+    <string name="numberOfPosts">250</string>
+    <string name="posts">Posts</string>
+    <string name="followers">Followers</string>
+    <string name="numberOfFollowers">300</string>
+    <string name="edit_your_profile">Edit Your Profile</string>
 
 </resources>
