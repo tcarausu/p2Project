@@ -1,6 +1,7 @@
 package com.example.myapplication.user_profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.Toolbar;
 import com.example.myapplication.R;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 public class UserProfileActivity extends AppCompatActivity
@@ -25,7 +27,7 @@ public class UserProfileActivity extends AppCompatActivity
 
     private Context mContext = UserProfileActivity.this;
 
-    private TextView userName, textId;
+    private TextView userName, textId,displayUserName;
     private String userUID, userEmail;
     private FirebaseAuth mAuth;
     private ImageButton firstType, secondType, thirdType, forthType;
@@ -43,16 +45,17 @@ public class UserProfileActivity extends AppCompatActivity
     }
 
     private void initLayout() {
-//
+
+        displayUserName = findViewById(R.id.displayUserName);
 //        userName = findViewById(R.id.ty_name);
 //        textId = findViewById(R.id.textId);
 //
-//        mAuth = FirebaseAuth.getInstance();
-//
-//        Intent getLoginIntent = getIntent();
-//
-//        userUID = getLoginIntent.getStringExtra("userUid");
-//        userEmail = getLoginIntent.getStringExtra("userEmail");
+        mAuth = FirebaseAuth.getInstance();
+
+        Intent getLoginIntent = getIntent();
+
+        userUID = getLoginIntent.getStringExtra("userUid");
+        userEmail = getLoginIntent.getStringExtra("userEmail");
 //
 //        firstType = findViewById(R.id.firstTypePost);
 //        secondType = findViewById(R.id.secondTypePost);
@@ -75,13 +78,13 @@ public class UserProfileActivity extends AppCompatActivity
 //        forthType.setOnClickListener(this);
     }
 
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        // Check if user is signed in (non-null) and update UI accordingly.
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        updateUI(currentUser);
-//    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
+    }
 
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
@@ -142,16 +145,16 @@ public class UserProfileActivity extends AppCompatActivity
 //
 //    }
 
-//    private void updateUI(FirebaseUser user) {
-//        if (user != null) {
-//            userName.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
+            displayUserName.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
 //            textId.setText(getString(R.string.user_status_fmt, user.getEmail()));
-//        } else {
-//            userName.setText(userUID);
+        } else {
+            displayUserName.setText(userUID);
 //            textId.setText(userEmail);
-//
-//        }
-//    }
+
+        }
+    }
 
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.profileToolBar);

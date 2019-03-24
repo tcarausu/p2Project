@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.user_profile.UserProfileActivity;
 import com.example.myapplication.utility_classes.BaseActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -458,9 +459,9 @@ public class LoginActivity extends BaseActivity implements
         sendUserUID.putExtra("userUid", userUid);
         sendUserUID.putExtra("userEmail", userEmail);
 
-//        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileActivity.class);
-//        sendUserEmail.putExtra("userUid", userUid);
-//        sendUserEmail.putExtra("userEmail", userEmail);
+        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileActivity.class);
+        sendUserEmail.putExtra("userUid", userUid);
+        sendUserEmail.putExtra("userEmail", userEmail);
 
         startActivity(sendUserUID);
 //        startActivity(sendUserEmail);
