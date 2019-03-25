@@ -1,5 +1,6 @@
 package com.example.myapplication.login;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -87,6 +88,7 @@ public class LoginActivity extends BaseActivity implements
         findViewById(R.id.disconnectButton).setOnClickListener(this);
 
         findViewById(R.id.button_id_logIn).setOnClickListener(this);
+        findViewById(R.id.textView_id_forgotPass_logIn).setOnClickListener(this);
 
         // [START config_signin]
         // Configure Google Sign In
@@ -425,11 +427,14 @@ public class LoginActivity extends BaseActivity implements
         //Google Actions
         if (i == R.id.button_id_logIn) {
             Toast.makeText(this, "Register me", Toast.LENGTH_SHORT).show();
-            sendUIDData();
+            sendUIDData(HomeActivity.class);
+        }
+        if (i == R.id.textView_id_forgotPass_logIn) {
+            Toast.makeText(this, "User me", Toast.LENGTH_SHORT).show();
+            sendUIDData(UserProfileFirstActivity.class);
         }
         if (i == R.id.textView_id_register) {
-            Toast.makeText(this, "User me", Toast.LENGTH_SHORT).show();
-            sendUID1Data();
+            Toast.makeText(this, "Register using fragment me", Toast.LENGTH_SHORT).show();
         }
 
         if (i == R.id.signInButton) {
@@ -449,45 +454,18 @@ public class LoginActivity extends BaseActivity implements
 
     }
 
-    private void sendUIDData() {
+    private void sendUIDData( final Class<? extends Activity> activityToOpen) {
         FirebaseUser user = mAuth.getCurrentUser();
 
         String userUid = null;
-        String userEmail = null;
 
         if (user != null) {
             userUid = user.getUid();
-            userEmail = user.getEmail();
         }
 
-        Intent sendUserUID = new Intent(LoginActivity.this, HomeActivity.class);
+        Intent sendUserUID = new Intent(LoginActivity.this, activityToOpen);
         sendUserUID.putExtra("userUid", userUid);
-        sendUserUID.putExtra("userEmail", userEmail);
-
-//        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileActivity.class);
-//        sendUserEmail.putExtra("userUid", userUid);
-//        sendUserEmail.putExtra("userEmail", userEmail);
 
         startActivity(sendUserUID);
-//        startActivity(sendUserEmail);
-    }
-
-    private void sendUID1Data() {
-        FirebaseUser user = mAuth.getCurrentUser();
-
-        String userUid = null;
-        String userEmail = null;
-
-        if (user != null) {
-            userUid = user.getUid();
-            userEmail = user.getEmail();
-        }
-
-
-        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileFirstActivity.class);
-        sendUserEmail.putExtra("userUid", userUid);
-        sendUserEmail.putExtra("userEmail", userEmail);
-
-        startActivity(sendUserEmail);
     }
 }
