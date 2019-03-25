@@ -12,9 +12,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.user_profile.UserProfileActivity;
+import com.example.myapplication.home.HomeActivity;
+import com.example.myapplication.user_profile.UserProfileFirstActivity;
 import com.example.myapplication.utility_classes.BaseActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -64,7 +64,7 @@ public class LoginActivity extends BaseActivity implements
         setContentView(R.layout.activity_login);
 
         initViews();
-        buttonListners();
+        buttonListeners();
     }
 
 
@@ -79,12 +79,14 @@ public class LoginActivity extends BaseActivity implements
     }
 
 
-    public void buttonListners() {
+    public void buttonListeners() {
 
         //Google+General firebase button
         findViewById(R.id.signInButton).setOnClickListener(this);
         findViewById(R.id.signOutButton).setOnClickListener(this);
         findViewById(R.id.disconnectButton).setOnClickListener(this);
+
+        findViewById(R.id.button_id_logIn).setOnClickListener(this);
 
         // [START config_signin]
         // Configure Google Sign In
@@ -421,12 +423,15 @@ public class LoginActivity extends BaseActivity implements
         int i = v.getId();
 
         //Google Actions
-        if (i == R.id.textView_id_register) {
+        if (i == R.id.button_id_logIn) {
             Toast.makeText(this, "Register me", Toast.LENGTH_SHORT).show();
-//            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-//            startActivity(intent);
             sendUIDData();
         }
+        if (i == R.id.textView_id_register) {
+            Toast.makeText(this, "User me", Toast.LENGTH_SHORT).show();
+            sendUID1Data();
+        }
+
         if (i == R.id.signInButton) {
             signIn();
         } else if (i == R.id.signOutButton) {
@@ -459,11 +464,30 @@ public class LoginActivity extends BaseActivity implements
         sendUserUID.putExtra("userUid", userUid);
         sendUserUID.putExtra("userEmail", userEmail);
 
-        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileActivity.class);
-        sendUserEmail.putExtra("userUid", userUid);
-        sendUserEmail.putExtra("userEmail", userEmail);
+//        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileActivity.class);
+//        sendUserEmail.putExtra("userUid", userUid);
+//        sendUserEmail.putExtra("userEmail", userEmail);
 
         startActivity(sendUserUID);
 //        startActivity(sendUserEmail);
+    }
+
+    private void sendUID1Data() {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        String userUid = null;
+        String userEmail = null;
+
+        if (user != null) {
+            userUid = user.getUid();
+            userEmail = user.getEmail();
+        }
+
+
+        Intent sendUserEmail = new Intent(LoginActivity.this, UserProfileFirstActivity.class);
+        sendUserEmail.putExtra("userUid", userUid);
+        sendUserEmail.putExtra("userEmail", userEmail);
+
+        startActivity(sendUserEmail);
     }
 }
