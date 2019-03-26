@@ -27,7 +27,7 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/topToolbar">
 
-            <include layout="@layout/layout_container_view_pager" />
+            <include layout="@layout/layout_center_view_pager" />
 
 
         </RelativeLayout>

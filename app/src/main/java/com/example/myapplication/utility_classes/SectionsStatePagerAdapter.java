@@ -70,7 +70,7 @@ public class SectionsStatePagerAdapter extends FragmentStatePagerAdapter {
     /**
      * returns the fragment with the name @param
      *
-     * @param fragment represents the Fragment
+     * @param fragmentNumber represents the Fragment
      * @return returns the fragment with the name @param
      */
     public String getFragmentName(Integer fragmentNumber) {
