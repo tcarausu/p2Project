@@ -118,5 +118,6 @@
     <string name="description">I love to live here</string>
     <string name="personal_website">this_is_my_website.com</string>
     <string name="options_account_toolbar">Options</string>
+    <string name="account_settings">Account Settings</string>
 
 </resources>
