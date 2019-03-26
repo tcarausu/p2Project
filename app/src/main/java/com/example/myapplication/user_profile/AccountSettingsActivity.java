@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -15,7 +16,8 @@ import java.util.ArrayList;
 /**
  * File created by tcarau18
  **/
-class AccountSettingsActivity extends AppCompatActivity {
+class AccountSettingsActivity extends AppCompatActivity
+        implements View.OnClickListener {
     private static final String TAG = "AccountSettingsActivity";
 
     private Context mContext;
@@ -24,13 +26,21 @@ class AccountSettingsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
-        mContext = AccountSettingsActivity.this;
 
-        Log.d(TAG, "onCreate: started account");
+        initLayout();
 
         setupSettingsList();
     }
 
+    private void initLayout() {
+
+        mContext = AccountSettingsActivity.this;
+
+        findViewById(R.id.backArrow);
+
+        Log.d(TAG, "onCreate: started account");
+
+    }
 
     private void setupSettingsList() {
         Log.d(TAG, "setupSettingsList: initializing 'Account Settings' list");
@@ -41,7 +51,21 @@ class AccountSettingsActivity extends AppCompatActivity {
         options.add(getString(R.string.edit_your_profile));
         options.add(getString(R.string.sign_out));
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext,android.R.layout.simple_list_item_1,options);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, options);
         listView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+
+            case R.id.backArrow:
+                Log.d(TAG, "onClick: navigating to account settings");
+
+                finish();
+
+                break;
+        }
+
     }
 }

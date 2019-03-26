@@ -1,4 +1,4 @@
-package com.example.myapplication.home;
+package com.example.myapplication.utility_classes;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
