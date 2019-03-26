@@ -6,6 +6,6 @@
 
         android:angle="45"
         android:endColor="@color/gradStart"
-        android:startColor="@color/orangeShit" />
+        android:startColor="@color/orangeMainTheme" />
 
 </shape>
