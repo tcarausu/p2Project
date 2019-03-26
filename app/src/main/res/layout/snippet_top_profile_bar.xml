@@ -32,6 +32,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
+                    android:onClick="onClick"
                     android:src="@drawable/ic_show_more_button_with_three_dots" />
             </RelativeLayout>
 
