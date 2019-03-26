@@ -117,5 +117,6 @@
     <string name="edit_your_profile">Edit Your Profile</string>
     <string name="description">I love to live here</string>
     <string name="personal_website">this_is_my_website.com</string>
+    <string name="options_account_toolbar">Options</string>
 
 </resources>

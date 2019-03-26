@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp">
 
-            <include layout="@layout/snippet_top_profilebar" />
+            <include layout="@layout/snippet_top_profile_bar" />
 
         </RelativeLayout>
 
@@ -31,16 +31,15 @@
                 android:id="@+id/linLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:weightSum="100">
 
-
                 <RelativeLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="25sp"
-                    android:layout_weight="25"
-                    android:background="@drawable/border_color_bottom">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="40">
+
+                    <!--<include layout="@layout/image_view_layout" />-->
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/profileImage"
@@ -53,11 +52,11 @@
                 </RelativeLayout>
 
                 <RelativeLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="25sp"
                     android:layout_marginEnd="25sp"
-                    android:layout_weight="75">
+                    android:layout_weight="60">
 
                     <include layout="@layout/snippet_top_profile" />
 
