@@ -34,9 +34,6 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".utility_classes.GoogleSignInActivity" />
-        <activity android:name=".utility_classes.EmailPasswordActivity" />
-        <activity android:name=".utility_classes.FacebookLoginActivity" />
         <activity android:name=".search.SearchActivity" />
         <activity android:name=".post.AddPostActivity" />
         <activity android:name=".home.HomeActivity" />

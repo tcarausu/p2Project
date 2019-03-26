@@ -311,7 +311,9 @@ public class LoginActivity extends BaseActivity implements
 
     private void sendEmailVerification() {
         // Disable button
-        findViewById(R.id.verifyEmailButton).setEnabled(false);
+
+//        disables the verify button
+//        findViewById(R.id.verifyEmailButton).setEnabled(false);
 
         // Send verification email
         // [START send_email_verification]
@@ -322,7 +324,8 @@ public class LoginActivity extends BaseActivity implements
                     public void onComplete(@NonNull Task<Void> task) {
                         // [START_EXCLUDE]
                         // Re-enable button
-                        findViewById(R.id.verifyEmailButton).setEnabled(true);
+                        //        enables the verify button
+//                        findViewById(R.id.verifyEmailButton).setEnabled(true);
 
                         if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this,
@@ -445,11 +448,6 @@ public class LoginActivity extends BaseActivity implements
 
         } else if (i == R.id.disconnectButton) {
             revokeAccess();
-        }
-
-        //Facebook actions
-        if (i == R.id.buttonFacebookSignout) {
-            signOutWithFacebook();
         }
 
     }
