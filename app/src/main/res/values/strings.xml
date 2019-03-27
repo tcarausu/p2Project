@@ -39,7 +39,7 @@
     <string name="sign_in">Sign In</string>
     <string name="create_account">Create Account</string>
     <string name="send_link">Send Link</string>
-    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_frament">Sign Out</string>
     <string name="verify_email">Verify Email</string>
     <string name="disconnect">Disconnect</string>
     <string name="loading">Loading…</string>
@@ -114,8 +114,13 @@
     <string name="posts">Posts</string>
     <string name="followers">Followers</string>
     <string name="numberOfFollowers">300</string>
-    <string name="edit_your_profile">Edit Your Profile</string>
+    <string name="edit_your_profile_fragment">Edit Your Profile</string>
     <string name="description">I love to live here</string>
     <string name="personal_website">this_is_my_website.com</string>
+    <string name="options_account_toolbar">Options</string>
+    <string name="account_settings">Account Settings</string>
+    <string name="change_photo">Change Photo</string>
+    <string name="display_name">display name</string>
+    <string name="private_information">Private Information</string>
 
 </resources>

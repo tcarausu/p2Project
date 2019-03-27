@@ -11,9 +11,12 @@ import android.view.MenuItem;
 
 import com.example.myapplication.R;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.example.myapplication.utility_classes.SectionsPagerAdapter;
+import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.Objects;
 
@@ -36,6 +39,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
+        initImageLoader();
         initLayout();
         buttonListeners();
         setupBottomNavigationView();
@@ -105,4 +109,12 @@ public class HomeActivity extends AppCompatActivity {
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.direct_message_pressed);
 
     }
+
+
+    private void initImageLoader() {
+        UniversalImageLoader imageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(imageLoader.getConfig());
+    }
+
+
 }

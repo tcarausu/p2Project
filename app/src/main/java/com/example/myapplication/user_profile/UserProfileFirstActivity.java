@@ -28,9 +28,9 @@ public class UserProfileFirstActivity extends AppCompatActivity
 
     private static final String TAG = "UserProfileActivity";
 
-    private static final int ACTIVITY_NUM = 4;
+    private static final int ACTIVITY_NUM = 5;
 
-    private Context mContext = UserProfileFirstActivity.this;
+//    private Context mContext = UserProfileFirstActivity.this;
 
     private TextView userName, textId,displayUserName;
     private String userUID, userEmail;
@@ -185,19 +185,14 @@ public class UserProfileFirstActivity extends AppCompatActivity
     /**
      * Bottom Navigation View setup
      */
-    public void setupBottomNavigationView() {
-        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
-        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
-        Menu menu = bottomNavigationViewEx.getMenu();
-        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        menuItem.setChecked(true);
+//    public void setupBottomNavigationView() {
+//        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
+//        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+//        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+//        Menu menu = bottomNavigationViewEx.getMenu();
+//        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+//        menuItem.setChecked(true);
+//
+//    }
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.profile_menu,menu);
-        return true;
-    }
 }

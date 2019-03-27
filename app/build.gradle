@@ -31,6 +31,10 @@ dependencies {
     //Circle ImageView
     implementation 'de.hdodenhof:circleimageview:3.0.0'
 
+    //Universal image Loader
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+
+
     //Navigation Bottom Ex
     implementation 'com.github.ittianyu:BottomNavigationViewEx:2.0.2'
 
