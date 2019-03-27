@@ -15,6 +15,7 @@ import android.widget.Toolbar;
 
 import com.example.myapplication.R;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -34,6 +35,8 @@ public class UserProfileActivity extends AppCompatActivity
 
     private ProgressBar mProgressBar;
 
+    private ImageView mProfilePhoto;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +51,10 @@ public class UserProfileActivity extends AppCompatActivity
     private void initLayout() {
 
         displayUserName = findViewById(R.id.displayUserName);
+
+        mProfilePhoto = findViewById(R.id.profileImage);
+
+        setProfileImage(mProfilePhoto);
 
         mProgressBar = findViewById(R.id.profile_progress_bar);
         mProgressBar.setVisibility(View.GONE);
@@ -115,6 +122,13 @@ public class UserProfileActivity extends AppCompatActivity
 //            }
 //        });
 
+
+    }
+
+    private void setProfileImage(ImageView mProfilePhoto) {
+        Log.d(TAG, "setProfileImage: setting image");
+        String imgURL = "http://stacktips.com/wp-content/uploads/2014/05/UniversalImageLoader-620x405.png";
+        UniversalImageLoader.setImage(imgURL, mProfilePhoto, null, "");
 
     }
 

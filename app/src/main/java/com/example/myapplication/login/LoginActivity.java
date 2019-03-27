@@ -425,34 +425,42 @@ public class LoginActivity extends BaseActivity implements
 
     @Override
     public void onClick(View v) {
-        int i = v.getId();
 
-        //Google Actions
-        if (i == R.id.button_id_logIn) {
-            Toast.makeText(this, "Register me", Toast.LENGTH_SHORT).show();
-            sendUIDData(HomeActivity.class);
-        }
-        if (i == R.id.textView_id_forgotPass_logIn) {
-            Toast.makeText(this, "User me", Toast.LENGTH_SHORT).show();
-            sendUIDData(UserProfileFirstActivity.class);
-        }
-        if (i == R.id.textView_id_register) {
-            Toast.makeText(this, "Register using fragment me", Toast.LENGTH_SHORT).show();
-        }
+        switch (v.getId()) {
 
-        if (i == R.id.signInButton) {
-            signIn();
-        } else if (i == R.id.signOutButton) {
-            signOutWithGoogle();
-            signOutWithFacebook();
+            case R.id.button_id_logIn:
+                Toast.makeText(this, "Register me", Toast.LENGTH_SHORT).show();
+                sendUIDData(HomeActivity.class);
 
-        } else if (i == R.id.disconnectButton) {
-            revokeAccess();
+                break;
+            case R.id.textView_id_forgotPass_logIn:
+
+                Toast.makeText(this, "User me", Toast.LENGTH_SHORT).show();
+                sendUIDData(UserProfileFirstActivity.class);
+
+                break;
+            case R.id.textView_id_register:
+                Toast.makeText(this, "Register using fragment me", Toast.LENGTH_SHORT).show();
+
+                break;
+            case R.id.signInButton:
+                signIn();
+
+                break;
+            case R.id.signOutButton:
+                signOutWithGoogle();
+                signOutWithFacebook();
+
+                break;
+            case R.id.disconnectButton:
+                revokeAccess();
+
+                break;
         }
 
     }
 
-    private void sendUIDData( final Class<? extends Activity> activityToOpen) {
+    private void sendUIDData(final Class<? extends Activity> activityToOpen) {
         FirebaseUser user = mAuth.getCurrentUser();
 
         String userUid = null;
