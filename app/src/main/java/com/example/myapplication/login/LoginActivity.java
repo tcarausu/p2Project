@@ -3,20 +3,28 @@ package com.example.myapplication.login;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
+import com.example.myapplication.home.HomeFragment;
 import com.example.myapplication.user_profile.UserProfileFirstActivity;
 import com.example.myapplication.utility_classes.BaseActivity;
+import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -38,8 +46,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.Objects;
+
 public class LoginActivity extends BaseActivity implements
-        View.OnClickListener {
+        View.OnClickListener, SignUpFragment.OnFragmentInteractionListener, ForgotPassFragment.OnFragmentInteractionListener {
 
     private static final String Google_Tag = "GoogleActivity";
     private static final String FacebookTag = "FacebookLogin";
@@ -55,7 +65,10 @@ public class LoginActivity extends BaseActivity implements
     private CallbackManager mCallbackManager;
 
     private TextView signUp, orView;
+    private RelativeLayout loginLayout;
     private EditText mEmailField, mPasswordField;
+    private FragmentManager fragmentManager;
+
 
     private Context mContext = LoginActivity.this;
 
@@ -63,6 +76,8 @@ public class LoginActivity extends BaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        fragmentManager = getSupportFragmentManager();
 
         initViews();
         buttonListeners();
@@ -73,7 +88,7 @@ public class LoginActivity extends BaseActivity implements
 //         Views
         mEmailField = findViewById(R.id.email_id_logIn);
         mPasswordField = findViewById(R.id.password_id_logIn);
-
+        loginLayout = findViewById(R.id.login_activity);
         signUp = findViewById(R.id.textView_id_register);
         orView = findViewById(R.id.orView);
 
@@ -193,7 +208,7 @@ public class LoginActivity extends BaseActivity implements
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(Google_Tag, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(R.id.login_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                             updateUI(null);
                         }
 
@@ -290,6 +305,8 @@ public class LoginActivity extends BaseActivity implements
                             Log.d(Email_Tag, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
+                            sendUIDData(HomeActivity.class);
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(Email_Tag, "signInWithEmail:failure", task.getException());
@@ -300,7 +317,7 @@ public class LoginActivity extends BaseActivity implements
 
                         // [START_EXCLUDE]
                         if (!task.isSuccessful()) {
-//                            mStatusTextView.setText(R.string.auth_failed);
+                            Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                         }
                         hideProgressDialog();
                         // [END_EXCLUDE]
@@ -429,19 +446,32 @@ public class LoginActivity extends BaseActivity implements
         switch (v.getId()) {
 
             case R.id.button_id_logIn:
-                Toast.makeText(this, "Register me", Toast.LENGTH_SHORT).show();
-                sendUIDData(HomeActivity.class);
+                signInWithEmail(mEmailField.getText().toString(), mPasswordField.getText().toString());
 
                 break;
             case R.id.textView_id_forgotPass_logIn:
 
-                Toast.makeText(this, "User me", Toast.LENGTH_SHORT).show();
-                sendUIDData(UserProfileFirstActivity.class);
+                Fragment fragmentForgotPass = fragmentManager.findFragmentById(R.id.useThisFragmentID);
 
+                if (fragmentForgotPass == null) {
+                    fragmentForgotPass = new ForgotPassFragment();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.add(R.id.useThisFragmentID, fragmentForgotPass).commit();
+                }
                 break;
             case R.id.textView_id_register:
                 Toast.makeText(this, "Register using fragment me", Toast.LENGTH_SHORT).show();
+                Fragment fragmentRegister = fragmentManager.findFragmentById(R.id.useThisFragmentID);
 
+                if (fragmentRegister == null) {
+                    fragmentRegister = new SignUpFragment();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.add(R.id.useThisFragmentID, fragmentRegister).commit();
+                }
                 break;
             case R.id.signInButton:
                 signIn();
@@ -456,6 +486,11 @@ public class LoginActivity extends BaseActivity implements
                 revokeAccess();
 
                 break;
+
+            case R.id.buttonFacebookLogin:
+                signOutWithFacebook();
+
+                break;
         }
 
     }
@@ -464,14 +499,37 @@ public class LoginActivity extends BaseActivity implements
         FirebaseUser user = mAuth.getCurrentUser();
 
         String userUid = null;
+        String userEmail = null;
 
         if (user != null) {
             userUid = user.getUid();
+            userEmail = user.getEmail();
         }
 
         Intent sendUserUID = new Intent(LoginActivity.this, activityToOpen);
         sendUserUID.putExtra("userUid", userUid);
+        sendUserUID.putExtra("userEmail", userEmail);
 
         startActivity(sendUserUID);
+    }
+
+    /**
+     * Used for adding the tabs: Camera, Home and Direct Messages
+     */
+    private void setupViewPager() {
+
+        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new HomeFragment()); //index 0
+//        adapter.addFragment(new HomeFragment()); //index 1
+//        adapter.addFragment(new DirectMessagesFragment()); //index 2
+        ViewPager viewPager = findViewById(R.id.container);
+        viewPager.setAdapter(adapter);
+
+    }
+
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
