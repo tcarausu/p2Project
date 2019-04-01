@@ -77,24 +77,8 @@ public class LoginActivity extends BaseActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
         fragmentManager = getSupportFragmentManager();
 
-//signUp.setOnClickListener(new View.OnClickListener() {
-//    @Override
-//    public void onClick(View v) {
-//
-//        Fragment fragment = fragmentManager.findFragmentById(R.id.useThisFragmentID);
-//
-//        if(fragment == null){
-//            fragment = new SignUpFragment();
-//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//
-//            fragmentTransaction.addToBackStack(null);
-//            fragmentTransaction.add(R.id.useThisFragmentID,fragment).commit();
-//        }
-//    }
-//});
         initViews();
         buttonListeners();
     }
