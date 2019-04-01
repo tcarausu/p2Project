@@ -123,4 +123,28 @@
     <string name="display_name">display name</string>
     <string name="private_information">Private Information</string>
 
+    <!--Sign up Fragment string-->
+    <!--   BUTTONS   -->
+    <string name="change_to_fragment_button">Change to Fragment</string>
+    <string name="ms_chef_button">Ms. Chef</string>
+    <string name="mrs_chef_button">Mrs. Chef</string>
+    <string name="profile_picture_button">Select profile picture</string>
+
+    <!--   HINTS    -->
+    <string name="full_name_hint">Full Name</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="email_hint">Email(Optional)</string>
+
+    <!--DESCRIPTION-->
+
+    <string name="profile_picture">Profile picture added by user</string>
+
+    <!--Forgot password fragment strings -->
+
+    <string name="hint_forgot_password_email">Enter your email here</string>
+    <string name="forgot_password_text">Forgot Password</string>
+    <string name="password_receive_text">Your password will be sent to your email</string>
+    <string name="button_send_password">Send Mail</string>
 </resources>
