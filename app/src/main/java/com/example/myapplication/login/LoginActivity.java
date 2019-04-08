@@ -1,6 +1,7 @@
 package com.example.myapplication.login;
 
-
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -20,10 +22,12 @@ import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.home.HomeFragment;
 import com.example.myapplication.utility_classes.BaseActivity;
+import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -51,7 +55,6 @@ public class LoginActivity extends BaseActivity implements
     private static final String Email_Tag = "EmailPassword";
     private static final int RC_SIGN_IN = 9001;
 
-    // [START declare_auth]
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -85,8 +88,6 @@ public class LoginActivity extends BaseActivity implements
 
         fragmentManager = getSupportFragmentManager();
 
-    public void initViews() {
-//         Views
         mEmailField = findViewById(R.id.email_id_logIn);
         mPasswordField = findViewById(R.id.password_id_logIn);
         loginLayout = findViewById(R.id.login_activity);
@@ -375,6 +376,22 @@ public class LoginActivity extends BaseActivity implements
 
         }
 
+    private void sendUIDData(Context mContext, final Class<? extends Activity> activityToOpen) {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        String userUid = null;
+        String userEmail = null;
+
+        if (user != null) {
+            userUid = user.getUid();
+            userEmail = user.getEmail();
+        }
+
+        Intent sendUserUID = new Intent(mContext, activityToOpen);
+        sendUserUID.putExtra("userUid", userUid);
+        sendUserUID.putExtra("userEmail", userEmail);
+
+        startActivity(sendUserUID);
     }
 
     /**

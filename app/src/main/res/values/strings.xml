@@ -150,6 +150,7 @@
     <string name="button_send_password">Send Mail</string>
     <string name="confirm_sing_out">Are you sure you want to SignOut?</string>
     <string name="signing_out">Signing Out…</string>
+    <string name="photo">Photo</string>
 
                     <!--Login layout-->
 
