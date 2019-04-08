@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
+import com.example.myapplication.home.HomeFragment;
 import com.example.myapplication.utility_classes.BaseActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -40,9 +41,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 
-public class LoginActivity extends BaseActivity implements View.OnClickListener, SignUpFragment.OnFragmentInteractionListener, ForgotPassFragment.OnFragmentInteractionListener {
+public class LoginActivity extends BaseActivity implements
+        View.OnClickListener, SignUpFragment.OnFragmentInteractionListener, ForgotPassFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "LoginActivity";
+
     private static final String Google_Tag = "GoogleActivity";
     private static final String FacebookTag = "FacebookLogin";
     private static final String Email_Tag = "EmailPassword";
@@ -50,7 +53,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
-    // [END declare_auth]
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
@@ -61,6 +64,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     private FragmentManager fragmentManager;
     private boolean isVerified ;
 
+    private Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,8 +73,18 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         mAuth = FirebaseAuth.getInstance() ;
         fragmentManager = getSupportFragmentManager();
         initViews();
+
+        initLayout();
+//        setupFirebaseAuth();
         buttonListeners();
     }
+
+
+    public void initLayout() {
+        mContext = LoginActivity.this;
+
+        fragmentManager = getSupportFragmentManager();
+
     public void initViews() {
 //         Views
         mEmailField = findViewById(R.id.email_id_logIn);
@@ -99,7 +114,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
 
         // [START initialize_auth]
         // Initialize Firebase Auth
-
+        mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
 
         // [START initialize_fblogin]
@@ -118,7 +133,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             public void onCancel() {
                 Log.d(FacebookTag, "facebook:onCancel");
                 // [START_EXCLUDE]
-
                 // [END_EXCLUDE]
             }
 
@@ -126,7 +140,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             public void onError(FacebookException error) {
                 Log.d(FacebookTag, "facebook:onError", error);
                 // [START_EXCLUDE]
-
                 // [END_EXCLUDE]
             }
         });
@@ -146,6 +159,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         }
         else return;
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
    // sign in with email method
@@ -229,7 +250,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                 // Google Sign In failed, update UI appropriately
                 Log.w(Google_Tag, "Google sign in failed", e);
                 // [START_EXCLUDE]
-
                 // [END_EXCLUDE]
             }
         }
@@ -258,7 +278,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                             // If sign in fails, display a message to the user.
                             Log.w(Google_Tag, "signInWithCredential:failure", task.getException());
                             Snackbar.make(findViewById(R.id.login_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-
                         }
 
                         // [START_EXCLUDE]
@@ -296,7 +315,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                         }
 
                         // [START_EXCLUDE]
-                        hideProgressDialog();
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                         // [END_EXCLUDE]
                     }
                 });
@@ -355,6 +376,36 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         }
 
     }
+
+    /**
+     * Used for adding the tabs: Camera, Home and Direct Messages
+     */
+    private void setupViewPager() {
+
+        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new HomeFragment()); //index 0
+//        adapter.addFragment(new HomeFragment()); //index 1
+//        adapter.addFragment(new DirectMessagesFragment()); //index 2
+        ViewPager viewPager = findViewById(R.id.container);
+        viewPager.setAdapter(adapter);
+
+    }
+
+//    private void setupFirebaseAuth() {
+//        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+//
+//        mAuth = FirebaseAuth.getInstance();
+//
+//        mAuthListener = new FirebaseAuth.AuthStateListener() {
+//            @Override
+//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//                FirebaseUser user = firebaseAuth.getCurrentUser();
+//                if (user != null) {
+//                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
+//                } else Log.d(TAG, "onAuthStateChanged: signed out");
+//            }
+//        };
+//    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {

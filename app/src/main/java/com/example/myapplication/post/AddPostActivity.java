@@ -18,7 +18,7 @@ public class AddPostActivity extends AppCompatActivity {
     private static final String TAG = "AddPostActivity";
     private static final int ACTIVITY_NUM = 2;
 
-    private Context mContext = AddPostActivity.this;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,7 @@ public class AddPostActivity extends AppCompatActivity {
 
 
     public void initLayout() {
-
+        mContext = AddPostActivity.this;
 
     }
 

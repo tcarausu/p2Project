@@ -39,7 +39,7 @@
     <string name="sign_in">Sign In</string>
     <string name="create_account">Create Account</string>
     <string name="send_link">Send Link</string>
-    <string name="sign_out_frament">Sign Out</string>
+    <string name="sign_out_fragment">Sign Out</string>
     <string name="verify_email">Verify Email</string>
     <string name="disconnect">Disconnect</string>
     <string name="loading">Loading…</string>
@@ -148,6 +148,8 @@
     <string name="forgot_password_text">Forgot Password</string>
     <string name="password_receive_text">Your password will be sent to your email</string>
     <string name="button_send_password">Send Mail</string>
+    <string name="confirm_sing_out">Are you sure you want to SignOut?</string>
+    <string name="signing_out">Signing Out…</string>
 
                     <!--Login layout-->
 

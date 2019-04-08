@@ -10,8 +10,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -20,10 +21,14 @@ import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.utility_classes.BaseActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.example.myapplication.utility_classes.GridImageAdapter;
+import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+
+import java.util.ArrayList;
 
 public class UserProfileActivity extends AppCompatActivity
         implements View.OnClickListener {
@@ -31,51 +36,45 @@ public class UserProfileActivity extends AppCompatActivity
     private static final String TAG = "UserProfileActivity";
 
     private static final int ACTIVITY_NUM = 4;
+    private static final int NUM_GRID_COLUMNS = 3;
 
-    private Context mContext = UserProfileActivity.this;
+    private Context mContext;
 
-    private TextView userEmail;
+    private TextView displayUserName;
+    private String userUID;
     private FirebaseAuth mAuth;
-    private ProgressDialog loadingBar;
+
+    private ProgressBar mProgressBar;
+
     private ImageView mProfilePhoto;
-    private android.widget.Toolbar toolbar ;
-    private Button logoutButton ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_profile);
-        logoutButton = findViewById(R.id.logoutButton_id);
-        mAuth = FirebaseAuth.getInstance();
-        loadingBar = new ProgressDialog(this);
 
-
-
+        setupActivityWidgets();
         initLayout();
         setListeners();
         setupBottomNavigationView();
         setupToolbar();
-
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LoginManager.getInstance().logOut();
-                mAuth.signOut();//sign out user
-                goToLoging();// go back to login
-                Log.d(TAG, "onClick: "+ mAuth.getCurrentUser()); // check and see if user is null
-
-            }
-        });
-
-
+        tempGridSetup();
     }
 
     private void initLayout() {
+        mContext = UserProfileActivity.this;
 
-        userEmail = findViewById(R.id.displayUserName);
-        mProfilePhoto = findViewById(R.id.profileImage);
+        displayUserName = findViewById(R.id.displayUserName);
+
+        setProfileImage(mProfilePhoto);
+
         findViewById(R.id.profileMenu);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        Intent getLoginIntent = getIntent();
+
+        userUID = getLoginIntent.getStringExtra("userUid");
     }
 
     private void setListeners() {
@@ -115,6 +114,8 @@ public class UserProfileActivity extends AppCompatActivity
     }
 
     private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.profileToolBar);
+        setActionBar(toolbar);
          toolbar =  findViewById(R.id.profileToolBar);
         setActionBar(toolbar); //better use supportActionBar
 
@@ -132,7 +133,48 @@ public class UserProfileActivity extends AppCompatActivity
 
     }
 
+    private void setProfileImage(ImageView mProfilePhoto) {
+        Log.d(TAG, "setProfileImage: setting image");
+        String imgURL = "http://stacktips.com/wp-content/uploads/2014/05/UniversalImageLoader-620x405.png";
+        UniversalImageLoader.setImage(imgURL, mProfilePhoto, null, "");
 
+    }
+
+    private void tempGridSetup() {
+        ArrayList<String> imgURLs = new ArrayList<>();
+
+        imgURLs.add("http://bit.ly/2Uk02ak");
+        imgURLs.add("http://bit.ly/2Uk02ak");
+        imgURLs.add("http://bit.ly/2FM5VVJ");
+
+        imgURLs.add("http://bit.ly/2FM5VVJ");
+        imgURLs.add("http://bit.ly/2V8NRdm");
+        imgURLs.add("http://bit.ly/2Uk02ak");
+
+        imgURLs.add("http://bit.ly/2V8NRdm");
+        imgURLs.add("http://bit.ly/2V8NRdm");
+        imgURLs.add("http://bit.ly/2FM5VVJ");
+
+        setupImageGridView(imgURLs);
+
+    }
+
+    private void setupImageGridView(ArrayList<String> imgURLs) {
+        GridView gridView = findViewById(R.id.grid_view_user_profile);
+
+        int gridWidth = getResources().getDisplayMetrics().widthPixels;
+        int imageWidth = gridWidth / NUM_GRID_COLUMNS;
+        gridView.setColumnWidth(imageWidth);
+
+        GridImageAdapter adapter = new GridImageAdapter(mContext, R.layout.layout_grid_imageview, "", imgURLs);
+        gridView.setAdapter(adapter);
+    }
+
+    private void setupActivityWidgets() {
+        mProgressBar = findViewById(R.id.profile_progress_bar);
+        mProgressBar.setVisibility(View.GONE);
+        mProfilePhoto = findViewById(R.id.profileImage);
+    }
 
     /**
      * Bottom Navigation View setup

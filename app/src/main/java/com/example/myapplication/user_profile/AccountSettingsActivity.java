@@ -54,6 +54,17 @@ class AccountSettingsActivity extends AppCompatActivity implements View.OnClickL
         setupFragments();
     }
 
+    private void initLayout() {
+        mContext = AccountSettingsActivity.this;
+
+        findViewById(R.id.backArrow);
+        Log.d(TAG, "onCreate: started account");
+
+        mViewPager = findViewById(R.id.container);
+        mRelativeLayout = findViewById(R.id.relativeLayout1);
+
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -115,15 +126,17 @@ class AccountSettingsActivity extends AppCompatActivity implements View.OnClickL
 
         pagerAdapter = new SectionsStatePagerAdapter(getSupportFragmentManager());
         pagerAdapter.addFragment(new EditProfileFragment(), getString(R.string.edit_your_profile_fragment)); //fragment 0
-//        pagerAdapter.addFragment(new SignOutFramgnet(), getString(R.string.sign_out_fragment)); //fragment 1
+        pagerAdapter.addFragment(new SignOutFragment(), getString(R.string.sign_out_fragment)); //fragment 1
     }
 
     private void setupSettingsList() {
         Log.d(TAG, "setupSettingsList: initializing 'Account Settings' list");
 
+        ListView listView = findViewById(R.id.listViewAccountSettings);
+
         ArrayList<String> options = new ArrayList<>();
         options.add(getString(R.string.edit_your_profile_fragment));
-//        options.add(getString(R.string.sign_out_fragment));
+        options.add(getString(R.string.sign_out_fragment));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, options);
         listView.setAdapter(adapter);

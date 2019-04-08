@@ -28,7 +28,8 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
     private static final int ACTIVITY_NUM = 0;
 
-    private Context mContext = HomeActivity.this;
+    private Context mContext;
+
     private String userUID;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient ;
@@ -42,9 +43,9 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.home_activity);
         mAuth = FirebaseAuth.getInstance() ;
 
-        initImageLoader();
         initLayout();
         buttonListeners();
+        initImageLoader();
         setupBottomNavigationView();
         setupViewPager();
     }
@@ -73,6 +74,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void initLayout() {
+        mContext = HomeActivity.this;
+
         mAuth = FirebaseAuth.getInstance();
         Intent getLoginIntent = getIntent();
         userUID = getLoginIntent.getStringExtra("userUid");
@@ -121,6 +124,7 @@ public class HomeActivity extends AppCompatActivity {
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.photo_camera);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.home);
+        Objects.requireNonNull(tabLayout.getTabAt(1)).select();
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.direct_message_pressed);
 
     }
