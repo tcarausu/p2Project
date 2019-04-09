@@ -40,12 +40,12 @@ public class UserProfileActivity extends AppCompatActivity
 
     private Context mContext;
 
-    private TextView displayUserName;
-    private String userUID;
     private FirebaseAuth mAuth;
 
-    private ProgressBar mProgressBar;
+    private TextView displayUserName, editProfile;
+    private String userUID;
 
+    private ProgressBar mProgressBar;
     private ImageView mProfilePhoto;
 
     @Override
@@ -65,6 +65,9 @@ public class UserProfileActivity extends AppCompatActivity
         mContext = UserProfileActivity.this;
 
         displayUserName = findViewById(R.id.displayUserName);
+
+        editProfile = findViewById(R.id.editProfile);
+        editProfile.setOnClickListener(this);
 
         setProfileImage(mProfilePhoto);
 
@@ -93,18 +96,6 @@ public class UserProfileActivity extends AppCompatActivity
         else return;
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-
-            case R.id.profileMenu:
-                Log.d(TAG, "onClick: navigating to account settings");
-                Intent intent = new Intent(mContext, AccountSettingsActivity.class);
-                startActivity(intent);
-                break;
-
-        }
-    }
 
     private void goToLoging() {
         Intent i = new Intent(this , LoginActivity.class);
@@ -174,6 +165,26 @@ public class UserProfileActivity extends AppCompatActivity
         mProgressBar = findViewById(R.id.profile_progress_bar);
         mProgressBar.setVisibility(View.GONE);
         mProfilePhoto = findViewById(R.id.profileImage);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+
+            case R.id.editProfile:
+                Intent intent = new Intent(mContext, AccountSettingsActivity.class);
+                intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
+                startActivity(intent);
+
+                break;
+            case R.id.profileMenu:
+                Log.d(TAG, "onClick: navigating to account settings");
+
+                startActivity(new Intent(mContext, AccountSettingsActivity.class));
+
+                break;
+        }
+
     }
 
     /**

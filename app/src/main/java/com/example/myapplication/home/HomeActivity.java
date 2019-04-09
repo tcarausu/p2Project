@@ -3,11 +3,14 @@ package com.example.myapplication.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
@@ -32,6 +35,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private String userUID;
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private GoogleSignInClient mGoogleSignInClient ;
 
     /**
@@ -47,6 +51,7 @@ public class HomeActivity extends AppCompatActivity {
         buttonListeners();
         initImageLoader();
         setupBottomNavigationView();
+        setupFirebaseAuth();
         setupViewPager();
     }
 
@@ -71,6 +76,17 @@ public class HomeActivity extends AppCompatActivity {
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         finish();
+        mAuth.addAuthStateListener(mAuthListener);
+
+        checkCurrentUser(mAuth.getCurrentUser());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     public void initLayout() {
@@ -129,6 +145,43 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * checks to see if @param 'user'  is logged in
+     *
+     * @param user of type FirebaseUser
+     */
+    private void checkCurrentUser(FirebaseUser user) {
+        Log.d(TAG, "checkCurrentUser: checking if user is logged in");
+
+        if (user == null) {
+            Toast.makeText(mContext, "Your have to Authenticate first before proceeding", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(mContext, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            startActivity(intent);
+        }
+
+    }
+
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                checkCurrentUser(user);
+
+                if (user != null) {
+                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
+                } else Log.d(TAG, "onAuthStateChanged: signed out");
+            }
+        };
+    }
 
     private void initImageLoader() {
         UniversalImageLoader imageLoader = new UniversalImageLoader(mContext);

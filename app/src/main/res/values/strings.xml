@@ -155,4 +155,8 @@
                     <!--Login layout-->
 
     <string name="hint_registerHere">No account? Register here for FREE</string>
+
+    <string name="calling_activity">calling_activity</string>
+    <string name="profile_activity">Profile Activity</string>
+
 </resources>

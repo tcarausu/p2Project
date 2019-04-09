@@ -24,6 +24,7 @@
             android:layout_below="@+id/tvConfirmSignOut"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
+            android:onClick="onClick"
             android:background="@drawable/white_rounded_button"
             android:text="@string/sign_out_fragment"
             android:textSize="20sp" />

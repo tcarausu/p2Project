@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 /**
  * File created by tcarau18
  **/
-public class SignOutFragment extends Fragment {
+public class SignOutFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "SignOutFragment";
 
     private FirebaseAuth mAuth;
@@ -43,17 +43,8 @@ public class SignOutFragment extends Fragment {
         mProgressBar.setVisibility(View.GONE);
         tvSigningOut.setVisibility(View.GONE);
 
-        btnConfirmingSignOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: attempting to Sing Out");
-                mProgressBar.setVisibility(View.VISIBLE);
-                tvSigningOut.setVisibility(View.VISIBLE);
+        btnConfirmingSignOut.setOnClickListener(this);
 
-                mAuth.signOut();
-                getActivity().finish();
-            }
-        });
         setupFirebaseAuth();
 
         return view;
@@ -99,6 +90,22 @@ public class SignOutFragment extends Fragment {
         super.onStop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+
+            case R.id.btnConfirmSignOut:
+                Log.d(TAG, "onClick: attempting to Sing Out");
+                mProgressBar.setVisibility(View.VISIBLE);
+                tvSigningOut.setVisibility(View.VISIBLE);
+
+                mAuth.signOut();
+                getActivity().finish();
+
+                break;
         }
     }
 }

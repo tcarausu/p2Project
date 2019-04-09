@@ -28,8 +28,8 @@ import java.util.ArrayList;
 /**
  * File created by tcarau18
  **/
-class AccountSettingsActivity extends AppCompatActivity implements View.OnClickListener {
-
+class AccountSettingsActivity extends AppCompatActivity
+        implements View.OnClickListener {
     private static final String TAG = "AccountSettingsActivity";
     private static final int ACTIVITY_NUM = 4;
 
@@ -52,6 +52,7 @@ class AccountSettingsActivity extends AppCompatActivity implements View.OnClickL
         setupBottomNavigationView();
         setupSettingsList();
         setupFragments();
+        getIncomingIntent();
     }
 
     private void initLayout() {
@@ -151,6 +152,29 @@ class AccountSettingsActivity extends AppCompatActivity implements View.OnClickL
 
             }
         });
+    }
+
+    private void getIncomingIntent() {
+        Intent intent = getIntent();
+
+        if (intent.hasExtra(getString(R.string.calling_activity))) {
+            Log.d(TAG, "getIncomingIntent: received incoming intent from" + getString(R.string.profile_activity));
+            setupViewPager(pagerAdapter.getFragmentNumber(getString(R.string.edit_your_profile_fragment)));
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+
+            case R.id.backArrow:
+                Log.d(TAG, "onClick: navigating to account settings");
+
+                finish();
+
+                break;
+        }
+
     }
 
     /**
