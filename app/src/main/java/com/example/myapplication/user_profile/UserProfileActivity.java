@@ -66,14 +66,11 @@ public class UserProfileActivity extends AppCompatActivity
 
         displayUserName = findViewById(R.id.displayUserName);
 
-        editProfile = findViewById(R.id.editProfile);
-        editProfile.setOnClickListener(this);
-
-        setProfileImage(mProfilePhoto);
-
         findViewById(R.id.profileMenu);
 
         mAuth = FirebaseAuth.getInstance();
+
+        setProfileImage(mProfilePhoto);
 
         Intent getLoginIntent = getIntent();
 
@@ -81,6 +78,9 @@ public class UserProfileActivity extends AppCompatActivity
     }
 
     private void setListeners() {
+        editProfile = findViewById(R.id.editProfile);
+        editProfile.setOnClickListener(this);
+
     }
 
     @Override
