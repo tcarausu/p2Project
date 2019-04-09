@@ -183,6 +183,22 @@ public class HomeActivity extends AppCompatActivity {
         };
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+
+        checkCurrentUser(mAuth.getCurrentUser());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
     private void initImageLoader() {
         UniversalImageLoader imageLoader = new UniversalImageLoader(mContext);
         ImageLoader.getInstance().init(imageLoader.getConfig());
