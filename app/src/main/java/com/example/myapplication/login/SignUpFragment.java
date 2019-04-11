@@ -1,110 +1,183 @@
 package com.example.myapplication.login;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.RadioGroup;
+import android.widget.Toast;
+
 
 import com.example.myapplication.R;
-import com.example.myapplication.home.HomeActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthSettings;
+import com.google.firebase.auth.FirebaseUser;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SignUpFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link SignUpFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SignUpFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String TEXT = "text";
-//    private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "SignUpFragment";
 
-    // TODO: Rename and change types of parameters
-    private String mText;
-//    private String mParam2;
+//--------------- widgets---------------------
 
-    private ImageButton mProfilePictureButton;
-    private EditText mFullName;
-    private EditText mUsername;
+    private EditText mEmail;
     private EditText mPassword;
     private EditText mConfirmPassword;
-    private EditText mEmail;
-    private RadioGroup mGender;
+    private Button signupButton , goBack;
+    //===============================================
+    private ProgressDialog loadingBar ;
+    private FirebaseAuth mAuth;
+    private FirebaseAuthSettings mAuthSettings ;
 
     private OnFragmentInteractionListener mListener;
 
     public SignUpFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param text Parameter 1.
-     * @return A new instance of fragment SignUpFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SignUpFragment newInstance(String text) {
-        SignUpFragment fragment = new SignUpFragment();
-        Bundle args = new Bundle();
-        args.putString(TEXT, text);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadingBar = new ProgressDialog(this.getContext());
+        mAuth = FirebaseAuth.getInstance() ;
 
-
-        if (getArguments() != null) {
-            mText = getArguments().getString(TEXT);
-        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        HomeActivity mainActivity = (HomeActivity) getActivity()   ;
+        View view = inflater.inflate(R.layout.signup_fragment, container, false);// Inflate the layout for this fragment
+        mEmail = view.findViewById(R.id.SignUpWithEmail_emailField_id);
+        mPassword = view.findViewById(R.id.SignUpWithEmail_passField_id);
+        mConfirmPassword = view.findViewById(R.id.SignUpWithEmail_confPassField_id);
+        signupButton = view.findViewById(R.id.SignupWithPhoneFragment_sendCodeButton);
+        goBack = view.findViewById(R.id.SignUpWithEmail_goBackButton_id);
 
-//        Intent intent = ((HomeActivity)getActivity()).getIntent();
+        goBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToLogin();
+            }
+        });
 
-//        String theusername = intent.getStringExtra(mUsername.getText().toString());
-
-        mProfilePictureButton = view.findViewById(R.id.addProfilePictureID);
-        mFullName = view.findViewById(R.id.fullNameID);
-        mUsername = view.findViewById(R.id.usernameID);
-        mPassword = view.findViewById(R.id.passwordID);
-        mConfirmPassword = view.findViewById(R.id.confirmPasswordID);
-        mEmail = view.findViewById(R.id.emailID);
-        mGender = view.findViewById(R.id.genderID);
-
-//        mUsername.setText(theusername);
-
+        // the only button
+        signupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+             createUserWithEmail();
+            }
+        });
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    private void createUserWithEmail(){
+        // getting input from device
+          final String email = mEmail.getText().toString();
+          String password = mPassword.getText().toString() ;
+          String confPass = mConfirmPassword.getText().toString();
+
+          //checking if any is empty or pass doesn't match, the rest mAuth takes care of
+                        if (TextUtils.isEmpty(email)  ) {
+                            mEmail.setError("");
+                            Toast.makeText(getContext(), "Please type in email or phone", Toast.LENGTH_SHORT).show();
+
+                        }
+                        else if (TextUtils.isEmpty(password)){
+                            mPassword.setError("");
+                            Toast.makeText(getContext(),"Please chose password",Toast.LENGTH_SHORT).show();
+
+                        } else if (TextUtils.isEmpty(confPass)) {
+                            mConfirmPassword.setError("");
+                            Toast.makeText(getContext(),"Please confirm password",Toast.LENGTH_SHORT).show();
+                        }
+                        else if ( !password.equals(confPass)){
+
+                            mPassword.setError("");
+                            mConfirmPassword.setError("");
+                            Toast.makeText(getContext(),"Error: MUST match Password",Toast.LENGTH_SHORT).show();
+
+                        }
+                        else {
+                            loadingBar.setTitle("Creating account...");
+                            loadingBar.setMessage("Please wait while your account is being created.");
+                            loadingBar.show();
+                            loadingBar.setCanceledOnTouchOutside(false);
+            //if all are fine, then try to create a user
+                            mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    // if success
+
+                                    if (task.isSuccessful()){
+                                        loadingBar.dismiss();
+                                        Toast.makeText(getContext(), R.string.registration_success, Toast.LENGTH_SHORT).show();
+                                        sendVerifEmail();
+                                        mAuth.signOut();
+                                        // could use a thread instead if needed
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                goToLogin();
+                                            }
+                                        }, Toast.LENGTH_SHORT);//
+
+
+                                    }else {
+
+                                        loadingBar.dismiss();
+                                        Toast.makeText(getContext(),"Error: " + task.getException().getMessage() ,Toast.LENGTH_LONG).show();
+                                        mAuth.signOut(); // always sign out the user if something goes wrong
+                                    }
+                                }
+                            });
+                        }
+    }
+// verification email
+    private void sendVerifEmail(){
+
+        FirebaseUser user = mAuth.getCurrentUser();// check user
+        if (user != null){
+
+            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                    if (task.isSuccessful()) {
+                            mAuth.signOut();// need to sign out the user every time until he confirms email
+                        }
+                        else {
+                            String error = task.getException().getMessage();// get error from fireBase
+                            Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
+                            mAuth.signOut();// need to sign out the user every time until he confirms email
+                    }
+
+                }
+            });
         }
     }
+// send user to login and erase fragment history
+    private void goToLogin(){
+        startActivity(new Intent(getActivity(),LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        getActivity().finish();
+ }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
 
     @Override
     public void onAttach(Context context) {
@@ -123,18 +196,10 @@ public class SignUpFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-}
+    }
+
+

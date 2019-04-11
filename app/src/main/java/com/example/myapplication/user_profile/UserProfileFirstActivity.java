@@ -29,9 +29,6 @@ public class UserProfileFirstActivity extends AppCompatActivity
     private static final String TAG = "UserProfileActivity";
 
     private static final int ACTIVITY_NUM = 5;
-
-//    private Context mContext = UserProfileFirstActivity.this;
-
     private TextView userName, textId,displayUserName;
     private String userUID, userEmail;
     private FirebaseAuth mAuth;
@@ -42,6 +39,12 @@ public class UserProfileFirstActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+        mAuth = FirebaseAuth.getInstance();
+        userUID = mAuth.getCurrentUser().getUid() ;
+        userEmail = mAuth.getCurrentUser().getEmail();
+
+        textId.setText(userEmail);
+        displayUserName.setText(userEmail);
 
         initLayout();
         setListeners();
@@ -51,17 +54,9 @@ public class UserProfileFirstActivity extends AppCompatActivity
 
     private void initLayout() {
 
-//        displayUserName = findViewById(R.id.displayUserName);
+        displayUserName = findViewById(R.id.displayUserName);
         userName = findViewById(R.id.ty_name);
         textId = findViewById(R.id.textId);
-
-        mAuth = FirebaseAuth.getInstance();
-
-        Intent getLoginIntent = getIntent();
-
-        userUID = getLoginIntent.getStringExtra("userUid");
-        userEmail = getLoginIntent.getStringExtra("userEmail");
-
         firstType = findViewById(R.id.firstTypePost);
         secondType = findViewById(R.id.secondTypePost);
         thirdType = findViewById(R.id.thirdTypePost);

@@ -40,7 +40,6 @@
                     android:id="@+id/save_changes"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:onClick="onClick"
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
                     android:layout_marginStart="10dp"

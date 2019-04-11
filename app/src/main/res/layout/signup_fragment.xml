@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/orangeMainTheme"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true">
+
+    <Button
+        android:id="@+id/SignUpWithEmail_goBackButton_id"
+        style="@android:style/Widget.Holo.Button.Borderless"
+        android:drawableStart="@drawable/arrow_left"
+        android:layout_gravity="start"
+        android:text="Go back"
+        android:fontFamily="@font/almendra"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <EditText
+
+android:id="@+id/SignUpWithEmail_emailField_id"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_centerHorizontal="true"
+android:layout_marginTop="200dp"
+android:layout_marginBottom="5dp"
+android:background="@drawable/input_fields"
+android:cursorVisible="true"
+android:drawableStart="@drawable/email_icone"
+android:ems="10"
+android:hint="@string/email_hint"
+android:inputType="textEmailAddress"
+android:padding="10dp"
+android:textColorHint="@color/black_transparent"
+tools:ignore="autofill" />
+
+    <EditText
+
+android:id="@+id/SignUpWithEmail_passField_id"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_below="@id/SignUpWithEmail_emailField_id"
+android:layout_centerHorizontal="true"
+android:layout_marginBottom="5dp"
+android:clickable="true"
+android:focusable="true"
+android:background="@drawable/input_fields"
+android:drawableStart="@drawable/lock_icone"
+android:ems="10"
+tools:counterEnabled="true"
+tools:counterColor="@color"
+tools:counterMinLenght="6"
+android:hint="@string/password_hint"
+android:inputType="textPassword"
+android:padding="10dp"
+android:textColorHint="@color/black_transparent"
+tools:ignore="autofill" />
+
+<EditText
+
+android:id="@+id/SignUpWithEmail_confPassField_id"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginEnd="5dp"
+android:layout_marginBottom="5dp"
+android:background="@drawable/input_fields"
+android:layout_below="@id/SignUpWithEmail_passField_id"
+android:layout_centerHorizontal="true"
+android:ems="10"
+android:hint="@string/confirm_password_hint"
+android:inputType="textPassword"
+android:padding="10dp"
+android:textColorHint="@color/black_transparent"
+tools:ignore="autofill" />
+
+<Button
+android:id="@+id/SignupWithPhoneFragment_sendCodeButton"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:background="@drawable/input_fields"
+android:layout_below="@id/SignUpWithEmail_confPassField_id"
+android:layout_centerHorizontal="true"
+android:layout_marginTop="20dp"
+android:padding="10dp"
+android:shadowDx="5"
+android:text="@string/signUp"
+android:textColor="@color/black_transparent" />
+
+
+</RelativeLayout>
+
+
+
+
+
+
+
+
+
+
