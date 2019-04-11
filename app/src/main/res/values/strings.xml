@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Chefood</string>
 
-    <string name="fb_login_protocol_scheme">fb2102918419798140</string>
+
 
     <string name="password">Password</string>
     <string name="login">Login</string>
@@ -128,6 +128,7 @@
     <string name="change_to_fragment_button">Change to Fragment</string>
     <string name="ms_chef_button">Ms. Chef</string>
     <string name="mrs_chef_button">Mrs. Chef</string>
+
     <string name="profile_picture_button">Select profile picture</string>
 
     <!--   HINTS    -->
@@ -135,8 +136,8 @@
     <string name="username_hint">Username</string>
     <string name="password_hint">Password</string>
     <string name="confirm_password_hint">Confirm Password</string>
-    <string name="email_hint">Email(Optional)</string>
-
+    <string name="email_hint">Email</string>
+    <string name="registration_success">Registration successful, please check your email inbox for confirmation</string>
     <!--DESCRIPTION-->
 
     <string name="profile_picture">Profile picture added by user</string>
@@ -147,4 +148,8 @@
     <string name="forgot_password_text">Forgot Password</string>
     <string name="password_receive_text">Your password will be sent to your email</string>
     <string name="button_send_password">Send Mail</string>
+
+                    <!--Login layout-->
+
+    <string name="hint_registerHere">No account? Register here for FREE</string>
 </resources>

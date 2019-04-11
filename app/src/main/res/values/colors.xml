@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--General Colors-->
-    <!--<color name="colorPrimary">#039BE5</color>-->
-    <!--<color name="colorPrimaryDark">#0288D1</color>-->
-    <!--<color name="colorAccent">#FFA000</color>-->
 
-    <color name="colorPrimary">#FF9800</color>
+
+    <color name="orange">#FF9800</color>
     <color name="colorPrimaryDark">#F79862</color>
     <color name="colorAccent">#ffffff</color>
     <color name="colorAccentOnSignOut">#FFA000</color>
@@ -34,8 +31,8 @@
 
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
-
-
+    <color name="black_transparent">#C3000000</color>
+    <color name="white_transparent">#9CFFFFFF</color>
 
     <color name="orangeMainTheme">#FF9047</color>
     <color name="website_color">#3d5e98</color>

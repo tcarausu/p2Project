@@ -22,8 +22,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     private ImageView mProfilePhoto;
 
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
-            container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
 
         initLayouts(view);
@@ -54,6 +53,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             case R.id.backArrow:
                 Log.d(TAG, "onClick:  go to profile activity");
                 Objects.requireNonNull(getActivity()).finish();
+//                getActivity().finish();
                 break;
         }
     }

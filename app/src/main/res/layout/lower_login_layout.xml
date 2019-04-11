@@ -35,12 +35,12 @@
             android:layout_marginBottom="25dp">
 
             <com.google.android.gms.common.SignInButton
-                android:id="@+id/signInButton"
+                android:id="@+id/googleSignInButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:visibility="visible"
-                tools:visibility="gone" />
+                />
 
             <LinearLayout
                 android:id="@+id/signOutAndDisconnect"
@@ -51,40 +51,23 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:visibility="gone"
-                tools:visibility="visible">
-
-                <Button
-                    android:id="@+id/signOutButton"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/sign_out_frament"
-                    android:theme="@style/ThemeOverlay.MyDarkButton" />
-
-                <Button
-                    android:id="@+id/disconnectButton"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/disconnect"
-                    android:theme="@style/ThemeOverlay.MyDarkButton" />
-            </LinearLayout>
+                tools:visibility="visible"/>
 
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
             android:layout_marginBottom="25dp">
 
+
             <com.facebook.login.widget.LoginButton
-                android:id="@+id/buttonFacebookLogin"
+                android:id="@+id/facebookLoginButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                android:layout_centerInParent="true"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp" />
 
 
         </RelativeLayout>
@@ -92,21 +75,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginTop="25dp"
+
             android:layout_marginBottom="25dp"
             android:gravity="center"
             android:textAlignment="center">
 
+
+
             <TextView
-                android:id="@+id/textView_id_register"
+                android:id="@+id/textView_id_login_layout_registerHereText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
+                android:layout_marginStart="10dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:onClick="onClick"
-                android:padding="5dp"
-                android:text="@string/hint_register"
+                android:text="@string/hint_registerHere"
                 android:textAlignment="center"
                 android:textColor="@android:color/holo_orange_dark"
                 android:textStyle="normal"

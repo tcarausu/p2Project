@@ -44,7 +44,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/person" />
+                    android:src="@drawable/my_avatar" />
 
                 <EditText
                     android:id="@+id/username"

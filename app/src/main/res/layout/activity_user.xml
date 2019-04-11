@@ -29,7 +29,7 @@
                 android:background="@drawable/circle"
                 android:padding="3dp"
                 android:scaleType="centerInside"
-                android:src="@drawable/person" />
+                android:src="@drawable/my_avatar" />
 
         </RelativeLayout>
 
@@ -41,7 +41,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15sp"
             android:fontFamily="sans-serif-light"
-            android:text="CALL ME JIMMY"
+            android:text=""
             android:textColor="@color/white"
             android:textSize="20sp" />
 

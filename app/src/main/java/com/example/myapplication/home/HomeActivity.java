@@ -10,9 +10,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.myapplication.R;
+import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -26,10 +29,9 @@ public class HomeActivity extends AppCompatActivity {
     private static final int ACTIVITY_NUM = 0;
 
     private Context mContext = HomeActivity.this;
-
-
     private String userUID;
     private FirebaseAuth mAuth;
+    private GoogleSignInClient mGoogleSignInClient ;
 
     /**
      * @param savedInstanceState creates the app using the Bundle
@@ -38,6 +40,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
+        mAuth = FirebaseAuth.getInstance() ;
 
         initImageLoader();
         initLayout();
@@ -51,16 +54,28 @@ public class HomeActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+
+        if (currentUser == null) {
+            mAuth.signOut();
+            LoginManager.getInstance().logOut();
+            sendUserToLogin();
+        }
+        else return;
+
+    }
+
+    private void sendUserToLogin() {
+
+        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        finish();
     }
 
     public void initLayout() {
         mAuth = FirebaseAuth.getInstance();
-
         Intent getLoginIntent = getIntent();
-
         userUID = getLoginIntent.getStringExtra("userUid");
-
     }
 
     public void buttonListeners() {
