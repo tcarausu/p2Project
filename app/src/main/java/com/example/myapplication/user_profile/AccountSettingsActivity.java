@@ -28,7 +28,7 @@ import java.util.ArrayList;
 /**
  * File created by tcarau18
  **/
-class AccountSettingsActivity extends AppCompatActivity
+public class AccountSettingsActivity extends AppCompatActivity
         implements View.OnClickListener {
     private static final String TAG = "AccountSettingsActivity";
     private static final int ACTIVITY_NUM = 4;
