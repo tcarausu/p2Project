@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -18,10 +19,11 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.home.HomeFragment;
-import com.example.myapplication.utility_classes.BaseActivity;
+import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -45,13 +47,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
 
-public class LoginActivity extends BaseActivity implements
+public class LoginActivity extends AppCompatActivity implements
         View.OnClickListener, SignUpFragment.OnFragmentInteractionListener, ForgotPassFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "LoginActivity";
@@ -63,6 +67,8 @@ public class LoginActivity extends BaseActivity implements
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference user_ref;
 
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
@@ -71,7 +77,7 @@ public class LoginActivity extends BaseActivity implements
     private RelativeLayout loginLayout;
     private EditText mEmailField, mPasswordField;
     private FragmentManager fragmentManager;
-    private boolean isVerified ;
+    private boolean isVerified;
 
     private Context mContext;
 
@@ -79,7 +85,10 @@ public class LoginActivity extends BaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mAuth = FirebaseAuth.getInstance() ;
+        mAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        user_ref = firebaseDatabase.getReference("users");
+
         fragmentManager = getSupportFragmentManager();
 
         initLayout();
@@ -101,29 +110,23 @@ public class LoginActivity extends BaseActivity implements
 
     }
 
-
     public void buttonListeners() {
 
         findViewById(R.id.button_id_logIn).setOnClickListener(this);
         findViewById(R.id.googleSignInButton).setOnClickListener(this);
         findViewById(R.id.textView_id_forgotPass_logIn).setOnClickListener(this);
 
-        // [START config_signin]
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
-        // [END config_signin]
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // [START initialize_auth]
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
 
-        // [START initialize_fblogin]
         // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = findViewById(R.id.facebookLoginButton);
@@ -138,32 +141,26 @@ public class LoginActivity extends BaseActivity implements
             @Override
             public void onCancel() {
                 Log.d(FacebookTag, "facebook:onCancel");
-                // [START_EXCLUDE]
-                // [END_EXCLUDE]
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.d(FacebookTag, "facebook:onError", error);
-                // [START_EXCLUDE]
-                // [END_EXCLUDE]
             }
         });
-        // [END initialize_fblogin]
 
     }
 
-   // we check in on start method if the user is existing otherwise sign out for preventing server issues
+    // we check in on start method if the user is existing otherwise sign out for preventing server issues
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (currentUser != null){
+        if (currentUser != null) {
             goToMainActivity();
-        }
-        else return;
+        } else return;
 
     }
 
@@ -175,11 +172,11 @@ public class LoginActivity extends BaseActivity implements
         }
     }
 
-   // sign in with email method
+    // sign in with email method
     private void signInWithEmail() {
 
         String email = mEmailField.getText().toString();
-        String password = mPasswordField.getText().toString() ;
+        String password = mPasswordField.getText().toString();
         // first check if our textFields aren't empty
         if (TextUtils.isEmpty(email)) {
             mEmailField.setError("");
@@ -188,15 +185,9 @@ public class LoginActivity extends BaseActivity implements
         } else if (TextUtils.isEmpty(password)) {
             mPasswordField.setError("");
             Toast.makeText(getApplicationContext(), "Please chose password", Toast.LENGTH_SHORT).show();
-        }
-
-        else {
-//            loadingBar.setTitle("logging in...");
-//            loadingBar.setIcon(R.drawable.chefood);
-//            loadingBar.setCanceledOnTouchOutside(false);
-//            loadingBar.show();
+        } else {
             // after checking, we try to login
-            mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     // we check First if the user, so we dont print please confirm email situation
@@ -205,15 +196,12 @@ public class LoginActivity extends BaseActivity implements
                         Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                     // if task is successful
-                    else if (task.isSuccessful()){
-
+                    else if (task.isSuccessful()) {
                         verifyAccount(); // check if user is verified by email
 
-                    }
-
-                    else {
+                    } else {
                         // otherwise we display the task error message from database
-                        Toast.makeText(getApplicationContext(),"Please confirm your email address.",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Please confirm your email address.", Toast.LENGTH_SHORT).show();
                         mAuth.signOut();// need to keep user signed out until he confirms
                     }
                 }
@@ -223,18 +211,16 @@ public class LoginActivity extends BaseActivity implements
     }
 
     // verification of the user if validated or not
-    private void verifyAccount(){
+    private void verifyAccount() {
         FirebaseUser user = mAuth.getCurrentUser();
-        isVerified = user.isEmailVerified() ; // getting boolean true or false from database
+        isVerified = user.isEmailVerified(); // getting boolean true or false from database
 
-        if (isVerified){
+        if (isVerified) {
             goToMainActivity(); // if yes goto mainActivity
-        }
-
-        else {
+        } else {
             // else we first sign out the user, until he checks his email then he can connect
             mAuth.signOut();
-            Toast.makeText(getApplicationContext(),"Please verify your account.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Please verify your account.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -255,8 +241,6 @@ public class LoginActivity extends BaseActivity implements
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(Google_Tag, "Google sign in failed", e);
-                // [START_EXCLUDE]
-                // [END_EXCLUDE]
             }
         }
     }
@@ -265,9 +249,6 @@ public class LoginActivity extends BaseActivity implements
     // [START auth_with_google]
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(Google_Tag, "firebaseAuthWithGoogle:" + acct.getId());
-        // [START_EXCLUDE silent]
-        showProgressDialog();
-        // [END_EXCLUDE]
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -278,6 +259,7 @@ public class LoginActivity extends BaseActivity implements
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(Google_Tag, "signInWithCredential:success");
                             Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
+                            addUserToDataBase();
                             goToMainActivity();
 
                         } else {
@@ -286,9 +268,9 @@ public class LoginActivity extends BaseActivity implements
                             Snackbar.make(findViewById(R.id.login_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                         }
 
-                        // [START_EXCLUDE]
-                        hideProgressDialog();
-                        // [END_EXCLUDE]
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
     }
@@ -297,9 +279,6 @@ public class LoginActivity extends BaseActivity implements
     // Handle the access token from facebook
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(FacebookTag, "handleFacebookAccessToken:" + token);
-        // [START_EXCLUDE silent]
-        showProgressDialog();
-        // [END_EXCLUDE]
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
@@ -309,6 +288,8 @@ public class LoginActivity extends BaseActivity implements
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(FacebookTag, "signInWithCredential:success");
+                            Toast.makeText(LoginActivity.this, "Authentication successful.",
+                                    Toast.LENGTH_SHORT).show();
                             goToMainActivity();
 
                         } else {
@@ -316,14 +297,13 @@ public class LoginActivity extends BaseActivity implements
                             Log.w(FacebookTag, "signInWithCredential:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                            LoginManager.getInstance().logOut();
 
                         }
 
-                        // [START_EXCLUDE]
                         if (!task.isSuccessful()) {
                             Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                         }
-                        // [END_EXCLUDE]
                     }
                 });
     }
@@ -333,10 +313,11 @@ public class LoginActivity extends BaseActivity implements
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
+
     // send user to main activity without allowing to go back to login again
     private void goToMainActivity() {
-        startActivity(new Intent(getApplicationContext(),HomeActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        startActivity(new Intent(getApplicationContext(), HomeActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
     }
 
@@ -380,23 +361,24 @@ public class LoginActivity extends BaseActivity implements
 
         }
     }
-        private void sendUIDData (Context mContext,final Class<? extends Activity> activityToOpen){
-            FirebaseUser user = mAuth.getCurrentUser();
 
-            String userUid = null;
-            String userEmail = null;
+    private void sendUIDData(Context mContext, final Class<? extends Activity> activityToOpen) {
+        FirebaseUser user = mAuth.getCurrentUser();
 
-            if (user != null) {
-                userUid = user.getUid();
-                userEmail = user.getEmail();
-            }
+        String userUid = null;
+        String userEmail = null;
 
-            Intent sendUserUID = new Intent(mContext, activityToOpen);
-            sendUserUID.putExtra("userUid", userUid);
-            sendUserUID.putExtra("userEmail", userEmail);
-
-            startActivity(sendUserUID);
+        if (user != null) {
+            userUid = user.getUid();
+            userEmail = user.getEmail();
         }
+
+        Intent sendUserUID = new Intent(mContext, activityToOpen);
+        sendUserUID.putExtra("userUid", userUid);
+        sendUserUID.putExtra("userEmail", userEmail);
+
+        startActivity(sendUserUID);
+    }
 
     /**
      * Used for adding the tabs: Camera, Home and Direct Messages
@@ -412,7 +394,7 @@ public class LoginActivity extends BaseActivity implements
 
     }
 
-//    private void setupFirebaseAuth() {
+    //    private void setupFirebaseAuth() {
 //        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
 //
 //        mAuth = FirebaseAuth.getInstance();
@@ -449,6 +431,36 @@ public class LoginActivity extends BaseActivity implements
 //        };
 //
 //    }
+    private void addUserToDataBase() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            final String nodeID = user_ref.push().getKey();
+            // do something with the individual "users"
+            final String userID = user.getUid();
+            final String userMAIL = user.getEmail();
+
+            Query query = user_ref.child("user_id").equalTo(userID);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot addedInfo : dataSnapshot.getChildren()) {
+                        User chef_food_user = new User(userID, userMAIL);
+                        user_ref.child(nodeID).setValue(chef_food_user);
+                        Log.d(TAG, "addUserToDataBase:  user successfully added" + chef_food_user.getEmail());
+                    }
+                    if (!dataSnapshot.exists()) {
+                        // dataSnapshot is the "users" node
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(mContext, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
+    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {

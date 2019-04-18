@@ -95,33 +95,10 @@ public class HomeActivity extends AppCompatActivity {
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         finish();
+
         mAuth.addAuthStateListener(mAuthListener);
 
         checkCurrentUser(mAuth.getCurrentUser());
-    }
-
-
-    /**
-     * @param user is the Firebase User used to adjust/perform info exchange
-     */
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-        } else {
-
-        }
-    }
-
-    /**
-     * Bottom Navigation View setup
-     */
-    public void setupBottomNavigationView() {
-        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
-        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
-        Menu menu = bottomNavigationViewEx.getMenu();
-        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        menuItem.setChecked(true);
-
     }
 
     /**
@@ -188,5 +165,16 @@ public class HomeActivity extends AppCompatActivity {
         ImageLoader.getInstance().init(imageLoader.getConfig());
     }
 
+    /**
+     * Bottom Navigation View setup
+     */
+    public void setupBottomNavigationView() {
+        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
 
+    }
 }
