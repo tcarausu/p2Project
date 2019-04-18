@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
@@ -58,13 +59,13 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
 
         context = getActivity();
         firebaseMethods = new FirebaseMethods(context);
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
-                .requestEmail()
-                .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
+//
+//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
+//                .requestEmail()
+//                .build();
+//
+//        mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
 
         tvSignOut = view.findViewById(R.id.tvConfirmSignOut);
         tvSigningOut = view.findViewById(R.id.tvSigningOut);
@@ -178,8 +179,9 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
                 mGoogleSignInClient.signOut();
                 LoginManager.getInstance().logOut();
 
-
                 getActivity().finish();
+
+                Toast.makeText(getActivity(),"Successful Sign Out",Toast.LENGTH_SHORT).show();
 
                 break;
         }

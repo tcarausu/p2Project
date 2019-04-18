@@ -103,29 +103,20 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     }
 
-
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-
-            case R.id.editProfile:
-                Intent intent = new Intent(mContext, AccountSettingsActivity.class);
-                intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
-                startActivity(intent);
-
-                break;
-            case R.id.profileMenu:
-
-                ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
-                Log.d(TAG, "onClick: navigating to account settings");
-
-                startActivity(new Intent(mContext, AccountSettingsActivity.class));
-
-                break;
-        }
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
 
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
 
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
@@ -160,18 +151,25 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+    public void onClick(View v) {
+        switch (v.getId()) {
 
-    }
+            case R.id.editProfile:
+                Intent intent = new Intent(mContext, AccountSettingsActivity.class);
+                intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
+                startActivity(intent);
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
+                break;
+            case R.id.profileMenu:
+
+                ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
+                Log.d(TAG, "onClick: navigating to account settings");
+
+                startActivity(new Intent(mContext, AccountSettingsActivity.class));
+
+                break;
         }
+
     }
 
     /**
