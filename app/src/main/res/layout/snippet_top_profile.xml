@@ -106,14 +106,14 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="50dp"
         android:layout_marginStart="25dp"
         android:layout_marginTop="80dp"
         android:layout_marginEnd="25dp">
 
         <TextView
             android:id="@+id/editProfile"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/black_border_color_bottom"
             android:clickable="true"
@@ -123,11 +123,6 @@
             android:textAlignment="center"
             android:textColor="@color/black" />
 
-        <Button
-            android:id="@+id/logoutButton_id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Log out" />
     </LinearLayout>
 
 </merge>
