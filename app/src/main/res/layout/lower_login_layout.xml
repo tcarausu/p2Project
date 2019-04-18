@@ -2,63 +2,60 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/orView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/orView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:drawableStart="@drawable/dash_icon"
-                android:drawableEnd="@drawable/dash_icon"
-                android:drawablePadding="20dp"
-                android:text="@string/or"
-                android:textAlignment="center"
-                android:textColor="#F79862" />
-
-        </LinearLayout>
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:drawableStart="@drawable/dash_icon"
+            android:drawableEnd="@drawable/dash_icon"
+            android:drawablePadding="20dp"
+            android:text="@string/or"
+            android:textAlignment="center"
+            android:textColor="#F79862" />
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/googleSignInButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/orView"
-            android:layout_gravity="center"
+            android:layout_centerInParent="true"
             android:layout_marginTop="25dp"
             android:layout_marginBottom="25dp"
             android:visibility="visible" />
 
-            <com.facebook.login.widget.LoginButton
-                android:id="@+id/facebookLoginButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp" />
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/facebookLoginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/googleSignInButton"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp" />
 
-            <TextView
-                android:id="@+id/textView_id_login_layout_registerHereText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:onClick="onClick"
-                android:text="@string/hint_registerHere"
-                android:textAlignment="center"
-                android:textColor="@android:color/holo_orange_dark"
-                android:textStyle="normal"
-                app:autoSizeMaxTextSize="0dp" />
+        <TextView
+            android:id="@+id/textView_id_login_layout_registerHereText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/facebookLoginButton"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="25dp"
 
-    </LinearLayout>
+            android:layout_marginBottom="25dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="onClick"
+            android:text="@string/hint_registerHere"
+            android:textAlignment="center"
+            android:textColor="@android:color/holo_orange_dark"
+            android:textStyle="normal"
+            app:autoSizeMaxTextSize="0dp" />
+
+    </RelativeLayout>
 
 </merge>
