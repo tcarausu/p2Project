@@ -309,7 +309,6 @@ public class LoginActivity extends BaseActivity implements
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(FacebookTag, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
                             goToMainActivity();
 
                         } else {

@@ -34,8 +34,8 @@ public class AccountSettingsActivity extends AppCompatActivity
     private static final int ACTIVITY_NUM = 4;
 
     private Context mContext;
-    private FirebaseAuth mAuth ;
-    private ListView listView ;
+    private FirebaseAuth mAuth;
+    private ListView listView;
 
     private SectionsStatePagerAdapter pagerAdapter;
     private ViewPager mViewPager;
@@ -82,19 +82,22 @@ public class AccountSettingsActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser user = mAuth.getCurrentUser() ;
-        if (user !=  null && user.isEmailVerified()) {
-           return;
-        }
-        else {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null
+            //it brakes because incorrect implementation
+//                && user.isEmailVerified()
+        ) {
+            return;
+        } else {
             mAuth.signOut();
             goToLogin();
         }
 
     }
+
     public void goToLogin() {
         startActivity(new Intent(AccountSettingsActivity.this, LoginActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
     }
 
@@ -136,7 +139,7 @@ public class AccountSettingsActivity extends AppCompatActivity
                 Log.d(TAG, "onItemClick: navigating to fragment nr " + position);
                 setupViewPager(position);
 
-            //Todo find position and assign listener to it
+                //Todo find position and assign listener to it
 
             }
         });
