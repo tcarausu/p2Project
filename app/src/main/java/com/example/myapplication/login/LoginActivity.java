@@ -48,6 +48,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
+
 
 public class LoginActivity extends BaseActivity implements
         View.OnClickListener, SignUpFragment.OnFragmentInteractionListener, ForgotPassFragment.OnFragmentInteractionListener {
@@ -79,7 +81,6 @@ public class LoginActivity extends BaseActivity implements
         setContentView(R.layout.activity_login);
         mAuth = FirebaseAuth.getInstance() ;
         fragmentManager = getSupportFragmentManager();
-        initViews();
 
         initLayout();
 //        setupFirebaseAuth();
@@ -376,27 +377,27 @@ public class LoginActivity extends BaseActivity implements
 
             case R.id.googleSignInButton:
                 signIn();
-            break;
+                break;
 
         }
-
-    private void sendUIDData(Context mContext, final Class<? extends Activity> activityToOpen) {
-        FirebaseUser user = mAuth.getCurrentUser();
-
-        String userUid = null;
-        String userEmail = null;
-
-        if (user != null) {
-            userUid = user.getUid();
-            userEmail = user.getEmail();
-        }
-
-        Intent sendUserUID = new Intent(mContext, activityToOpen);
-        sendUserUID.putExtra("userUid", userUid);
-        sendUserUID.putExtra("userEmail", userEmail);
-
-        startActivity(sendUserUID);
     }
+        private void sendUIDData (Context mContext,final Class<? extends Activity> activityToOpen){
+            FirebaseUser user = mAuth.getCurrentUser();
+
+            String userUid = null;
+            String userEmail = null;
+
+            if (user != null) {
+                userUid = user.getUid();
+                userEmail = user.getEmail();
+            }
+
+            Intent sendUserUID = new Intent(mContext, activityToOpen);
+            sendUserUID.putExtra("userUid", userUid);
+            sendUserUID.putExtra("userEmail", userEmail);
+
+            startActivity(sendUserUID);
+        }
 
     /**
      * Used for adding the tabs: Camera, Home and Direct Messages

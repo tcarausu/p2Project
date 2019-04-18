@@ -97,15 +97,6 @@ public class AccountSettingsActivity extends AppCompatActivity
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
     }
-    private void initLayout() {
-        mContext = getApplicationContext();
-        findViewById(R.id.backArrow);
-        Log.d(TAG, "onCreate: started account");
-        mViewPager = findViewById(R.id.container);
-        mRelativeLayout = findViewById(R.id.relativeLayout1);
-    }
-
-
 
     private void setupViewPager(int fragmentNr) {
 
@@ -118,9 +109,6 @@ public class AccountSettingsActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//       int count =  pagerAdapter.getCount();
-//        if (count <= 1)
-//            finish();
     }
 
     private void setupFragments() {
@@ -161,20 +149,6 @@ public class AccountSettingsActivity extends AppCompatActivity
             Log.d(TAG, "getIncomingIntent: received incoming intent from" + getString(R.string.profile_activity));
             setupViewPager(pagerAdapter.getFragmentNumber(getString(R.string.edit_your_profile_fragment)));
         }
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-
-            case R.id.backArrow:
-                Log.d(TAG, "onClick: navigating to account settings");
-
-                finish();
-
-                break;
-        }
-
     }
 
     /**

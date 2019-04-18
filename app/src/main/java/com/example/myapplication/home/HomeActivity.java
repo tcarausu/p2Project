@@ -60,7 +60,9 @@ public class HomeActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        mAuth.addAuthStateListener(mAuthListener);
 
+        checkCurrentUser(currentUser);
         if (currentUser == null) {
             mAuth.signOut();
             LoginManager.getInstance().logOut();
@@ -69,18 +71,6 @@ public class HomeActivity extends AppCompatActivity {
         else return;
 
     }
-
-    private void sendUserToLogin() {
-
-        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(i);
-        finish();
-        mAuth.addAuthStateListener(mAuthListener);
-
-        checkCurrentUser(mAuth.getCurrentUser());
-    }
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -88,7 +78,6 @@ public class HomeActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
     public void initLayout() {
         mContext = HomeActivity.this;
 
@@ -100,6 +89,17 @@ public class HomeActivity extends AppCompatActivity {
     public void buttonListeners() {
 
     }
+    private void sendUserToLogin() {
+
+        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        finish();
+        mAuth.addAuthStateListener(mAuthListener);
+
+        checkCurrentUser(mAuth.getCurrentUser());
+    }
+
 
     /**
      * @param user is the Firebase User used to adjust/perform info exchange
@@ -181,22 +181,6 @@ public class HomeActivity extends AppCompatActivity {
                 } else Log.d(TAG, "onAuthStateChanged: signed out");
             }
         };
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-
-        checkCurrentUser(mAuth.getCurrentUser());
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
     }
 
     private void initImageLoader() {

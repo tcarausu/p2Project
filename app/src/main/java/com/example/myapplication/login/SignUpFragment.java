@@ -36,7 +36,7 @@ public class SignUpFragment extends Fragment {
     private EditText mEmail;
     private EditText mPassword;
     private EditText mConfirmPassword;
-    private Button signupButton , goBack;
+    private Button signUpButton, goBack;
     //===============================================
     private ProgressDialog loadingBar ;
     private FirebaseAuth mAuth;
@@ -62,7 +62,7 @@ public class SignUpFragment extends Fragment {
         mEmail = view.findViewById(R.id.SignUpWithEmail_emailField_id);
         mPassword = view.findViewById(R.id.SignUpWithEmail_passField_id);
         mConfirmPassword = view.findViewById(R.id.SignUpWithEmail_confPassField_id);
-        signupButton = view.findViewById(R.id.SignupWithPhoneFragment_sendCodeButton);
+        signUpButton = view.findViewById(R.id.SignupWithPhoneFragment_sendCodeButton);
         goBack = view.findViewById(R.id.SignUpWithEmail_goBackButton_id);
 
         goBack.setOnClickListener(new View.OnClickListener() {
@@ -73,7 +73,7 @@ public class SignUpFragment extends Fragment {
         });
 
         // the only button
-        signupButton.setOnClickListener(new View.OnClickListener() {
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
              createUserWithEmail();
