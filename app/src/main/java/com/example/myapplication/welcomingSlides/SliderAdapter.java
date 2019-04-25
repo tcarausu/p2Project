@@ -53,7 +53,7 @@ public class SliderAdapter extends PagerAdapter {
 
         // call for an inflater
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
-        View v = mLayoutInflater.inflate(R.layout.slide1_layout,container,false);// create a view
+        View v = mLayoutInflater.inflate(R.layout.first_welcoming_slide_layout,container,false);// create a view
 
         ImageView slideImage = v.findViewById(R.id.slideImage1_id); // find widgets by id
         TextView slideTitle = v.findViewById(R.id.slide1_title_id); // find widgets by id

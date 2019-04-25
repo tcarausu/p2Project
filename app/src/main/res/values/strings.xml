@@ -162,5 +162,8 @@
 
     <string name="dbname_users">users</string>
     <string name="dbname_user_account_settings">user_account_settings</string>
+    <string name="previous_slide">previous</string>
+    <string name="next_slide">Next</string>
+    <string name="skip_slide">Skip</string>
 
 </resources>
