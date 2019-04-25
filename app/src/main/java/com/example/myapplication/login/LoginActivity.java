@@ -274,7 +274,7 @@ public class LoginActivity extends AppCompatActivity implements
 //                            addUserToDataBase();
                             // do something with the individual "users"
                             String userMAIL = user.getEmail();
-                            addNewUser(userMAIL, "username", "description", "website", "photo");
+                            addNewUser(userMAIL, "toader carausu", "description", "website", "photo");
 //------------------------------------added for testing purposes------------------------------------
 
                             goToMainActivity();
@@ -447,9 +447,20 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Add information to the users and user account settings node
+     * Database:user_account_settings
+     * Database:users
+     *
+     * @param email         represents the email of the Firebase User
+     * @param username      represents the username of the Firebase User
+     * @param description   represents the description from the User Profile
+     * @param website       represents the website from the User Profile
+     * @param profile_photo represents the profile_photo from the User Profile
+     */
     private void addNewUser(String email, String username, String description, String website, String profile_photo) {
-
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
+
         User user = new User(email, 1, email, StringManipulation.condenseUserName(username));
 
         myRef.child(mContext.getString(R.string.dbname_users))
@@ -458,8 +469,8 @@ public class LoginActivity extends AppCompatActivity implements
 
         UserAccountSettings settings = new UserAccountSettings(
                 description,
-                username,
-                username,
+                firebaseUser.getDisplayName(),
+                StringManipulation.condenseUserName(username),
                 0,
                 0,
                 0,
