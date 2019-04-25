@@ -123,7 +123,7 @@ public class SignUpFragment extends Fragment {
                                     if (task.isSuccessful()){
                                         loadingBar.dismiss();
                                         Toast.makeText(getContext(), R.string.registration_success, Toast.LENGTH_SHORT).show();
-                                        sendVerifEmail();
+                                        sendVerifyEmail();
                                         mAuth.signOut();
                                         // could use a thread instead if needed
                                         new Handler().postDelayed(new Runnable() {
@@ -145,7 +145,7 @@ public class SignUpFragment extends Fragment {
                         }
     }
 // verification email
-    private void sendVerifEmail(){
+    private void sendVerifyEmail(){
 
         FirebaseUser user = mAuth.getCurrentUser();// check user
         if (user != null){

@@ -178,12 +178,17 @@ public class LoginActivity extends AppCompatActivity implements
         String email = mEmailField.getText().toString();
         String password = mPasswordField.getText().toString();
         // first check if our textFields aren't empty
-        if (TextUtils.isEmpty(email)) {
-            mEmailField.setError("");
+        if (TextUtils.isEmpty(password) && TextUtils.isEmpty(email)) {
+            mEmailField.setError("Required.");
+            mPasswordField.setError("Required.");
+            Toast.makeText(getApplicationContext(), "Please type in email or phone", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Please chose password", Toast.LENGTH_SHORT).show();
+        } else if (TextUtils.isEmpty(email)) {
+            mEmailField.setError("Required.");
             Toast.makeText(getApplicationContext(), "Please type in email or phone", Toast.LENGTH_SHORT).show();
 
         } else if (TextUtils.isEmpty(password)) {
-            mPasswordField.setError("");
+            mPasswordField.setError("Required.");
             Toast.makeText(getApplicationContext(), "Please chose password", Toast.LENGTH_SHORT).show();
         } else {
             // after checking, we try to login
