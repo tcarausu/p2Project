@@ -3,6 +3,7 @@ package com.example.myapplication.user_profile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,11 @@ import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.SectionsStatePagerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
@@ -34,7 +40,10 @@ public class AccountSettingsActivity extends AppCompatActivity
     private static final int ACTIVITY_NUM = 4;
 
     private Context mContext;
+
+    //firebase
     private FirebaseAuth mAuth;
+
     private ListView listView;
 
     private SectionsStatePagerAdapter pagerAdapter;
@@ -80,8 +89,9 @@ public class AccountSettingsActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
+
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null
             //it brakes because incorrect implementation

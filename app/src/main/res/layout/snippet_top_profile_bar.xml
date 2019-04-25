@@ -16,12 +16,12 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/profileName"
+                    android:id="@+id/userName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="15dp"
-                    android:text=""
+                    android:text="@string/user_name"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 

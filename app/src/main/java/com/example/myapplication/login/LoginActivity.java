@@ -270,11 +270,11 @@ public class LoginActivity extends AppCompatActivity implements
                             Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
 
 //------------------------------------added for testing purposes------------------------------------
-                            FirebaseUser user = mAuth.getCurrentUser();
-//                            addUserToDataBase();
-                            // do something with the individual "users"
-                            String userMAIL = user.getEmail();
-                            addNewUser(userMAIL, "toader carausu", "description", "website", "photo");
+//                            FirebaseUser user = mAuth.getCurrentUser();
+////                            addUserToDataBase();
+//                            // do something with the individual "users"
+//                            String userMAIL = user.getEmail();
+//                            addNewUser(userMAIL, "toader carausu", "description", "website", "photo");
 //------------------------------------added for testing purposes------------------------------------
 
                             goToMainActivity();

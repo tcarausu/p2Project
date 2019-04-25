@@ -60,10 +60,10 @@
                 android:padding="20dp">
 
                 <TextView
-                    android:id="@+id/userName"
+                    android:id="@+id/displayName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/user_name"
+                    android:text="@string/user_name_and_last_name"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />

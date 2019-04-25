@@ -165,5 +165,6 @@
     <string name="previous_slide">previous</string>
     <string name="next_slide">Next</string>
     <string name="skip_slide">Skip</string>
+    <string name="user_name_and_last_name">User Name and Last Name</string>
 
 </resources>
