@@ -18,11 +18,6 @@ public class User {
 
     }
 
-    public User(String user_id,  String email) {
-        this.user_id = user_id;
-        this.email = email;
-    }
-
     public String getUser_id() {
         return user_id;
     }

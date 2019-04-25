@@ -82,5 +82,41 @@ public class FirebaseMethods {
                 .setValue(settings);
     }
 
-
+    //    private void setupFirebaseAuth() {
+//        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+//
+//        mAuth = FirebaseAuth.getInstance();
+//        mFirebaseDatabase = FirebaseDatabase.getInstance();
+//        myRef = mFirebaseDatabase.getReference();
+//
+//        mAuthListener = new FirebaseAuth.AuthStateListener() {
+//            @Override
+//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//                FirebaseUser user = firebaseAuth.getCurrentUser();
+//
+//                if (user != null) {
+//                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
+//
+//                    myRef.addListenerForSingleEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                            if (firebaseMethods.checkIfUserExists(username, dataSnapshot)) {
+//                                append = myRef.push().getKey.substring(3, 10); //generates a unique key (method from Firebase Database length of it is 7 chars
+//                                Log.d(TAG, "onDataChange: username already exists. Appending random string to name");
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                        }
+//                    });
+//
+//                } else {
+//                    Log.d(TAG, "onAuthStateChanged: signed out");
+//                }
+//            }
+//        };
+//
+//    }
 }

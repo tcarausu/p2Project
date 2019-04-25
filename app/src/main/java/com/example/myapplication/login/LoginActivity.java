@@ -24,7 +24,9 @@ import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.home.HomeFragment;
 import com.example.myapplication.models.User;
+import com.example.myapplication.models.UserAccountSettings;
 import com.example.myapplication.utility_classes.SectionsPagerAdapter;
+import com.example.myapplication.utility_classes.StringManipulation;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -69,6 +71,7 @@ public class LoginActivity extends AppCompatActivity implements
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference user_ref;
+    private DatabaseReference myRef;
 
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
@@ -88,6 +91,7 @@ public class LoginActivity extends AppCompatActivity implements
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         user_ref = firebaseDatabase.getReference("users");
+        myRef = firebaseDatabase.getReference();
 
         fragmentManager = getSupportFragmentManager();
 
@@ -264,7 +268,15 @@ public class LoginActivity extends AppCompatActivity implements
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(Google_Tag, "signInWithCredential:success");
                             Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
-                            addUserToDataBase();
+
+//------------------------------------added for testing purposes------------------------------------
+                            FirebaseUser user = mAuth.getCurrentUser();
+//                            addUserToDataBase();
+                            // do something with the individual "users"
+                            String userMAIL = user.getEmail();
+                            addNewUser(userMAIL, "username", "description", "website", "photo");
+//------------------------------------added for testing purposes------------------------------------
+
                             goToMainActivity();
 
                         } else {
@@ -399,43 +411,6 @@ public class LoginActivity extends AppCompatActivity implements
 
     }
 
-    //    private void setupFirebaseAuth() {
-//        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
-//
-//        mAuth = FirebaseAuth.getInstance();
-//        mFirebaseDatabase = FirebaseDatabase.getInstance();
-//        myRef = mFirebaseDatabase.getReference();
-//
-//        mAuthListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                FirebaseUser user = firebaseAuth.getCurrentUser();
-//
-//                if (user != null) {
-//                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
-//
-//                    myRef.addListenerForSingleEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                            if (firebaseMethods.checkIfUserExists(username, dataSnapshot)) {
-//                                append = myRef.push().getKey.substring(3, 10); //generates a unique key (method from Firebase Database length of it is 7 chars
-//                                Log.d(TAG, "onDataChange: username already exists. Appending random string to name");
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                        }
-//                    });
-//
-//                } else {
-//                    Log.d(TAG, "onAuthStateChanged: signed out");
-//                }
-//            }
-//        };
-//
-//    }
     private void addUserToDataBase() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -449,12 +424,17 @@ public class LoginActivity extends AppCompatActivity implements
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot addedInfo : dataSnapshot.getChildren()) {
-                        User chef_food_user = new User(userID, userMAIL);
-                        user_ref.child(nodeID).setValue(chef_food_user);
-                        Log.d(TAG, "addUserToDataBase:  user successfully added" + chef_food_user.getEmail());
+
                     }
                     if (!dataSnapshot.exists()) {
+                        User chef_food_user = new User(userID, 0, userMAIL, "username");
+                        user_ref.child(nodeID).setValue(chef_food_user);
+                        Log.d(TAG, "addUserToDataBase:  user successfully added" + chef_food_user.getEmail());
+                        Toast.makeText(mContext, "added", Toast.LENGTH_SHORT).show();
+
+                    } else {
                         // dataSnapshot is the "users" node
+                        Toast.makeText(mContext, "exists", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -465,6 +445,30 @@ public class LoginActivity extends AppCompatActivity implements
             });
 
         }
+    }
+
+    private void addNewUser(String email, String username, String description, String website, String profile_photo) {
+
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        User user = new User(email, 1, email, StringManipulation.condenseUserName(username));
+
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(firebaseUser.getUid())
+                .setValue(user);
+
+        UserAccountSettings settings = new UserAccountSettings(
+                description,
+                username,
+                username,
+                0,
+                0,
+                0,
+                profile_photo,
+                website);
+
+        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
+                .child(firebaseUser.getUid())
+                .setValue(settings);
     }
 
     @Override
