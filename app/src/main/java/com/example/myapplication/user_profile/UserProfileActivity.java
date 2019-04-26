@@ -1,10 +1,8 @@
 package com.example.myapplication.user_profile;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,13 +11,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.login.LoginActivity;
-import com.example.myapplication.utility_classes.BaseActivity;
-import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
-import com.example.myapplication.utility_classes.GridImageAdapter;
-import com.example.myapplication.utility_classes.UniversalImageLoader;
-import com.facebook.login.LoginManager;
+import com.example.myapplication.models.User;
+import com.example.myapplication.models.UserAccountSettings;
+import com.example.myapplication.models.UserSettings;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
 
 public class UserProfileActivity extends AppCompatActivity
         implements View.OnClickListener {
@@ -43,7 +39,8 @@ public class UserProfileActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
+        mAuth = FirebaseAuth.getInstance();
+        mContext=getApplicationContext();
 //        setupActivityWidgets();
 //        initLayout();
 //        setListeners();

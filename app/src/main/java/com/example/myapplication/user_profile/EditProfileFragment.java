@@ -10,7 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
@@ -24,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
@@ -47,9 +50,11 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private TextView mChangeProfilePhoto;
     private EditText mDisplayName, mUserName, mWebsite, mDescription, mEmail, mPhoneNumber;
     private CircleImageView mProfilePhoto;
+    private ImageView backArrow, saveChanges;
 
     private FirebaseMethods firebaseMethods;
     private Context mContext;
+    private UserSettings mUserSettings;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
@@ -75,9 +80,11 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mPhoneNumber = view.findViewById(R.id.phoneNumber);
 
         mProfilePhoto = view.findViewById(R.id.profile_photo);
-        view.findViewById(R.id.backArrow);
+        backArrow = view.findViewById(R.id.backArrow);
+        saveChanges = view.findViewById(R.id.save_changes);
 
-
+        backArrow.setOnClickListener(this);
+        saveChanges.setOnClickListener(this);
     }
 
     /**
@@ -92,22 +99,21 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         final String description = mDescription.getText().toString();
         final String website = mWebsite.getText().toString();
 
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = new User();
-                for (DataSnapshot ds : dataSnapshot.child(getString(R.string.dbname_users)).getChildren()) {
-                    if (ds.getKey().equals(userID)) {
-                        user.setUsername(ds.getValue(User.class).getUsername());
+//                User user = new User();
+//                for (DataSnapshot ds : dataSnapshot.child(getString(R.string.dbname_users)).getChildren()) {
+//                    if (ds.getKey().equals(userID)) {
+//                        user.setUsername(ds.getValue(User.class).getUsername());
+//
+//                    }
+//                }
+//
+//                Log.d(TAG, "onDataChange: Current Username: " + user.getUsername());
 
-                    }
-                    Log.d(TAG, "onDataChange: Current Username: " + user.getUsername());
-
-                    if (user.getUsername().equals(userName)) {
-
-                    } else {
-
-                    }
+                if (!mUserSettings.getUser().getUsername().equals(userName)) {
+                    checkIfUsernameExists(userName);
                 }
             }
 
@@ -118,12 +124,57 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         });
     }
 
+    /**
+     * Check if @param username already exists
+     *
+     * @param userName of the User from Firebase database
+     */
+    private void checkIfUsernameExists(final String userName) {
+        Log.d(TAG, "checkIfUsernameExists: checking if " + userName + " already exists");
+
+        DatabaseReference reference = mFirebaseDatabase.getReference();
+
+        Query query = reference
+                .child(getString(R.string.dbname_users))
+                .orderByChild(getString(R.string.field_username))
+                .equalTo(userName);
+
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    //add username
+                    firebaseMethods.updateUsername(userName);
+                    Toast.makeText(getActivity(), "saved username", Toast.LENGTH_SHORT).show();
+
+                }
+
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (ds.exists()) {
+                        Log.d(TAG, "onDataChange: Found a Match: " + ds.getValue(User.class).getUsername());
+                        Toast.makeText(getActivity(), "That username already exists", Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
 
     private void setProfileWidgets(UserSettings userSettings) {
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " +
                 userSettings.toString());
         User user = userSettings.getUser();
         UserAccountSettings settings = userSettings.getSettings();
+        mUserSettings = userSettings;
 
         UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
 
@@ -150,7 +201,13 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             case R.id.backArrow:
                 Log.d(TAG, "onClick:  go to profile activity");
                 Objects.requireNonNull(getActivity()).finish();
-//                getActivity().finish();
+                break;
+
+            case R.id.save_changes:
+                Log.d(TAG, "onClick:  attempting to save changes");
+//                Objects.requireNonNull(getActivity()).finish();
+                saveProfileSettings();
+
                 break;
         }
     }
@@ -192,7 +249,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 // retrive user information from the database
-                setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
+//                (firebaseMethods.getUserSettings(dataSnapshot));
+                setProfileWidgets(getUserSettings(dataSnapshot));
 
                 //retrive images for the user in question
 
@@ -204,6 +262,117 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             }
         });
 
+    }
+
+    /**
+     * Retrieves the account settings for the User currently logged in
+     * Database:user_account_settings node
+     *
+     * @param dataSnapshot represent the data from database
+     * @return the User Account Settings
+     */
+    private UserSettings getUserSettings(DataSnapshot dataSnapshot) {
+        Log.d(TAG, "getUserAccountSettings: retrieving user account settings from database");
+
+        UserAccountSettings settings = new UserAccountSettings();
+        User user = new User();
+        String userID = mAuth.getCurrentUser().getUid();
+
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+
+            //User Account Settings Node
+            if (ds.getKey().equals(mContext.getString(R.string.dbname_user_account_settings))) {
+                Log.d(TAG, "getUserAccountSettings: dataSnapshot" + ds);
+                try {
+                    settings.setUsername(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getUsername()
+                    );
+
+                    settings.setDisplay_name(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getDisplay_name()
+                    );
+
+                    settings.setDescription(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getDescription()
+                    );
+
+                    settings.setWebsite(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getWebsite()
+                    );
+
+                    settings.setFollowers(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getFollowers()
+                    );
+
+                    settings.setFollowing(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getFollowing()
+                    );
+
+                    settings.setPosts(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getPosts()
+                    );
+
+                    settings.setProfile_photo(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getProfile_photo()
+                    );
+
+                    Log.d(TAG, "getUserAccountSettings: retrieve user account settings information: " + settings.toString());
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "getUserAccountSettings: NullPointerException: " + e.getMessage());
+                }
+            }
+
+            //Users Node
+            if (ds.getKey().equals(mContext.getString(R.string.dbname_users))) {
+                Log.d(TAG, "getUserAccountSettings: dataSnapshot" + ds);
+
+                user.setUser_id(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getUser_id()
+                );
+
+                user.setUsername(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getUsername()
+                );
+
+                user.setEmail(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getEmail()
+                );
+
+                user.setPhone_number(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getPhone_number()
+                );
+
+                Log.d(TAG, "getUserInformation: retrieve user  information: " + user.toString());
+
+            }
+
+        }
+
+        return new UserSettings(user, settings);
     }
 
 }

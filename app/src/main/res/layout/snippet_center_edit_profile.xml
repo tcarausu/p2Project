@@ -166,7 +166,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="40dp"
                     android:background="@null"
-                    android:hint="@string/email_fmt"
+                    android:hint="@string/email_hint"
                     android:inputType="textNoSuggestions" />
             </RelativeLayout>
 
@@ -192,7 +192,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="40dp"
                     android:background="@null"
-                    android:hint="@string/phone_title_text"
+                    android:hint="@string/hint_phone_number"
                     android:inputType="textNoSuggestions" />
             </RelativeLayout>
         </RelativeLayout>

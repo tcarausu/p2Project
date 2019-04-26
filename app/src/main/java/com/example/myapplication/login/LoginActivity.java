@@ -201,6 +201,14 @@ public class LoginActivity extends AppCompatActivity implements
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     // we check First if the user, so we dont print please confirm email situation
 
+//------------------------------------added for testing purposes------------------------------------
+                            FirebaseUser user = mAuth.getCurrentUser();
+//                            addUserToDataBase();
+                            // do something with the individual "users"
+                            String userMAIL = user.getEmail();
+                            addNewUser(userMAIL, "user name", "description", "website", "photo");
+//------------------------------------added for testing purposes------------------------------------
+
                     if (mAuth.getCurrentUser() == null) {
                         Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
@@ -271,10 +279,10 @@ public class LoginActivity extends AppCompatActivity implements
 
 //------------------------------------added for testing purposes------------------------------------
 //                            FirebaseUser user = mAuth.getCurrentUser();
-////                            addUserToDataBase();
-//                            // do something with the individual "users"
+//                            addUserToDataBase();
+//                             do something with the individual "users"
 //                            String userMAIL = user.getEmail();
-//                            addNewUser(userMAIL, "toader carausu", "description", "website", "photo");
+//                            addNewUser(userMAIL, user.getDisplayName(), "description", "website", "photo");
 //------------------------------------added for testing purposes------------------------------------
 
                             goToMainActivity();
@@ -379,24 +387,6 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    private void sendUIDData(Context mContext, final Class<? extends Activity> activityToOpen) {
-        FirebaseUser user = mAuth.getCurrentUser();
-
-        String userUid = null;
-        String userEmail = null;
-
-        if (user != null) {
-            userUid = user.getUid();
-            userEmail = user.getEmail();
-        }
-
-        Intent sendUserUID = new Intent(mContext, activityToOpen);
-        sendUserUID.putExtra("userUid", userUid);
-        sendUserUID.putExtra("userEmail", userEmail);
-
-        startActivity(sendUserUID);
-    }
-
     /**
      * Used for adding the tabs: Camera, Home and Direct Messages
      */
@@ -461,6 +451,8 @@ public class LoginActivity extends AppCompatActivity implements
     private void addNewUser(String email, String username, String description, String website, String profile_photo) {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
+        //shouldn't be able to make another one with same uid
+
         User user = new User(email, 1, email, StringManipulation.condenseUserName(username));
 
         myRef.child(mContext.getString(R.string.dbname_users))
@@ -469,7 +461,7 @@ public class LoginActivity extends AppCompatActivity implements
 
         UserAccountSettings settings = new UserAccountSettings(
                 description,
-                firebaseUser.getDisplayName(),
+                "user name",
                 StringManipulation.condenseUserName(username),
                 0,
                 0,
