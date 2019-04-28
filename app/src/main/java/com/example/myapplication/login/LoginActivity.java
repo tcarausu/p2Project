@@ -1,6 +1,5 @@
 package com.example.myapplication.login;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -202,11 +201,11 @@ public class LoginActivity extends AppCompatActivity implements
                     // we check First if the user, so we dont print please confirm email situation
 
 //------------------------------------added for testing purposes------------------------------------
-                            FirebaseUser user = mAuth.getCurrentUser();
+                    FirebaseUser user = mAuth.getCurrentUser();
 //                            addUserToDataBase();
-                            // do something with the individual "users"
-                            String userMAIL = user.getEmail();
-                            addNewUser(userMAIL, "user name", "description", "website", "photo");
+                    // do something with the individual "users"
+                    String userMAIL = user.getEmail();
+                    addNewUser(userMAIL, "user name", "description", "website", "photo");
 //------------------------------------added for testing purposes------------------------------------
 
                     if (mAuth.getCurrentUser() == null) {
@@ -278,11 +277,11 @@ public class LoginActivity extends AppCompatActivity implements
                             Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
 
 //------------------------------------added for testing purposes------------------------------------
-//                            FirebaseUser user = mAuth.getCurrentUser();
-//                            addUserToDataBase();
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            addUserToDataBase(user.getDisplayName());
 //                             do something with the individual "users"
-//                            String userMAIL = user.getEmail();
-//                            addNewUser(userMAIL, user.getDisplayName(), "description", "website", "photo");
+                            String userMAIL = user.getEmail();
+                            addNewUser(userMAIL, user.getDisplayName(), "description", "website", "photo");
 //------------------------------------added for testing purposes------------------------------------
 
                             goToMainActivity();
@@ -401,30 +400,61 @@ public class LoginActivity extends AppCompatActivity implements
 
     }
 
-    private void addUserToDataBase() {
-        FirebaseUser user = mAuth.getCurrentUser();
+    private void addUserToDataBase(final String username) {
+        final FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
+
             final String nodeID = user_ref.push().getKey();
+
             // do something with the individual "users"
             final String userID = user.getUid();
             final String userMAIL = user.getEmail();
+
+//            Query query = myRef
+//                    .child(String.valueOf(R.string.dbname_users))
+//                    .orderByChild(String.valueOf(R.string.field_username))
+//                    .equalTo(username);
+
+//            Query query =
+//                    reference
+//                    .child(String.valueOf(R.string.dbname_users))
+//                    user_ref
+//                            .orderByChild(userID)
+//                            .orderByChild(String.valueOf(R.string.field_username))
+//                            .equalTo(username)
+//                    ;
+
 
             Query query = user_ref.child("user_id").equalTo(userID);
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot addedInfo : dataSnapshot.getChildren()) {
 
-                    }
                     if (!dataSnapshot.exists()) {
-                        User chef_food_user = new User(userID, 0, userMAIL, "username");
+                        User chef_food_user = new User(0, userMAIL, username);
                         user_ref.child(nodeID).setValue(chef_food_user);
-                        Log.d(TAG, "addUserToDataBase:  user successfully added" + chef_food_user.getEmail());
+
+//                        myRef.child(mContext.getString(R.string.dbname_users))
+//                                .child(userID)
+//                                .child(mContext.getString(R.string.field_username))
+//                                .setValue(username);
+//
+//                        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
+//                                .child(userID)
+//                                .child(mContext.getString(R.string.field_username))
+//                                .setValue(username);
+
+                        Log.d(TAG, "addUserToDataBase:  user successfully added" + user.getEmail());
                         Toast.makeText(mContext, "added", Toast.LENGTH_SHORT).show();
 
-                    } else {
-                        // dataSnapshot is the "users" node
-                        Toast.makeText(mContext, "exists", Toast.LENGTH_SHORT).show();
+                    }
+
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        if (ds.exists()) {
+                            Log.d(TAG, "onDataChange: Found a Match: " + ds.getValue(User.class).getUsername());
+                            Toast.makeText(mContext, "That username already exists", Toast.LENGTH_SHORT).show();
+
+                        }
                     }
                 }
 
@@ -453,7 +483,7 @@ public class LoginActivity extends AppCompatActivity implements
 
         //shouldn't be able to make another one with same uid
 
-        User user = new User(email, 1, email, StringManipulation.condenseUserName(username));
+        User user = new User(1, email, StringManipulation.condenseUserName(username));
 
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(firebaseUser.getUid())
