@@ -19,21 +19,24 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.User;
 import com.example.myapplication.models.UserAccountSettings;
 import com.example.myapplication.models.UserSettings;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
-import com.example.myapplication.utility_classes.UniversalImageLoader;
+import com.example.myapplication.utility_classes.GridImageAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -75,6 +78,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         initLayout(view);
         setListeners(view);
         setupFirebaseAuth();
+
+//        setupGridView();
+
         setupBottomNavigationView();
 
         return view;
@@ -201,6 +207,49 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 break;
         }
 
+    }
+
+    private void setupGridView() {
+        Log.d(TAG, "setupGridView: Setting up GridView");
+
+        final ArrayList<Photo> photos = new ArrayList<>();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+        Query query = reference
+                .child(getString(R.string.dbname_user_photos))
+                .child(mAuth.getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                    photos.add(singleSnapshot.getValue(Photo.class));
+                }
+
+                //setup  our grid image
+                int gridWidth = getResources().getDisplayMetrics().widthPixels;
+                int imageWidth = gridWidth / NUM_GRID_COLUMNS;
+
+                gridView.setColumnWidth(imageWidth);
+
+                ArrayList<String> imgURLs = new ArrayList<>();
+
+                for (int i = 0; i < photos.size(); i++) {
+                    imgURLs.add(photos.get(i).getImage_path());
+                }
+
+                GridImageAdapter adapter = new GridImageAdapter(getActivity(), R.layout.layout_grid_imageview,
+                        "", imgURLs);
+
+                gridView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                Log.d(TAG, "onCancelled: Query Cancelled");
+
+            }
+        });
     }
 
     /**

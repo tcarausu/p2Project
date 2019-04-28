@@ -45,27 +45,27 @@ public class FirebaseMethods {
             userUID = mAuth.getCurrentUser().getUid();
         }
     }
-
-    public boolean checkIfUserExists(String username, DataSnapshot dataSnapshot) {
-        Log.d(TAG, "checkIfUserExists: checking if " + username + " already exists");
-
-        User user = new User();
-        for (DataSnapshot ds : dataSnapshot.child(userUID).getChildren()) {
-            Log.d(TAG, "checkIfUserNameExists: dataSnapshot: " + ds);
-
-            user.setUsername(ds.getValue(User.class).getUsername());
-            Log.d(TAG, "checkIfUserExists: username: " + user.getUsername());
-
-            if (StringManipulation.expandUserName(user.getUsername()).equals(username)) {
-                Log.d(TAG, "checkIfUserExists: Found Match" + user.getUsername());
-
-                return true;
-            }
-
-        }
-
-        return false;
-    }
+//
+//    public boolean checkIfUserExists(String username, DataSnapshot dataSnapshot) {
+//        Log.d(TAG, "checkIfUserExists: checking if " + username + " already exists");
+//
+//        User user = new User();
+//        for (DataSnapshot ds : dataSnapshot.child(userUID).getChildren()) {
+//            Log.d(TAG, "checkIfUserNameExists: dataSnapshot: " + ds);
+//
+//            user.setUsername(ds.getValue(User.class).getUsername());
+//            Log.d(TAG, "checkIfUserExists: username: " + user.getUsername());
+//
+//            if (StringManipulation.expandUserName(user.getUsername()).equals(username)) {
+//                Log.d(TAG, "checkIfUserExists: Found Match" + user.getUsername());
+//
+//                return true;
+//            }
+//
+//        }
+//
+//        return false;
+//    }
 
     public void addNewUser(String email, String username, String description, String website, String profile_photo) {
 

@@ -386,20 +386,6 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Used for adding the tabs: Camera, Home and Direct Messages
-     */
-    private void setupViewPager() {
-
-        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new HomeFragment()); //index 0
-//        adapter.addFragment(new HomeFragment()); //index 1
-//        adapter.addFragment(new DirectMessagesFragment()); //index 2
-        ViewPager viewPager = findViewById(R.id.container);
-        viewPager.setAdapter(adapter);
-
-    }
-
     private void addUserToDataBase(final String username) {
         final FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
