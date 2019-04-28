@@ -5,20 +5,16 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.models.User;
-import com.example.myapplication.models.UserAccountSettings;
-import com.example.myapplication.models.UserSettings;
+import com.example.myapplication.ViewPostFragment;
+import com.example.myapplication.models.Photo;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
 
-public class UserProfileActivity extends AppCompatActivity
-        implements View.OnClickListener {
+public class UserProfileActivity extends AppCompatActivity implements UserProfileFragment.OnGridImageSelectedListener {
 
     private static final String TAG = "UserProfileActivity";
 
@@ -40,13 +36,7 @@ public class UserProfileActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         mAuth = FirebaseAuth.getInstance();
-        mContext=getApplicationContext();
-//        setupActivityWidgets();
-//        initLayout();
-//        setListeners();
-//        setupBottomNavigationView();
-//        setupToolbar();
-//        tempGridSetup();
+        mContext = getApplicationContext();
 
         init();
     }
@@ -63,124 +53,23 @@ public class UserProfileActivity extends AppCompatActivity
 
     }
 
-    //    private void initLayout() {
-//        mContext = UserProfileActivity.this;
-//
-//        displayUserName = findViewById(R.id.displayUserName);
-//
-//        findViewById(R.id.profileMenu);
-//
-//        mAuth = FirebaseAuth.getInstance();
-//
-//        setProfileImage(mProfilePhoto);
-//
-//        Intent getLoginIntent = getIntent();
-//
-//        userUID = getLoginIntent.getStringExtra("userUid");
-//    }
-//
-//    private void setListeners() {
-//        editProfile = findViewById(R.id.editProfile);
-//        editProfile.setOnClickListener(this);
-//
-//    }
-//
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        // Check if user is signed in (non-null) and update UI accordingly.
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        updateUI(currentUser);
-//    }
-//
-//
-//    private void updateUI(FirebaseUser user) {
-//        if (user != null) {
-//            displayUserName.setText(getString(R.string.user_status_fmt, user.getDisplayName()));
-//        } else {
-//            displayUserName.setText(userUID);
-//        }
-//    }
-//
-//    private void setupToolbar() {
-//        Toolbar toolbar = findViewById(R.id.profileToolBar);
-//        setActionBar(toolbar);
-//    }
-//
-//    private void setProfileImage(ImageView mProfilePhoto) {
-//        Log.d(TAG, "setProfileImage: setting image");
-//        String imgURL = "http://stacktips.com/wp-content/uploads/2014/05/UniversalImageLoader-620x405.png";
-//        UniversalImageLoader.setImage(imgURL, mProfilePhoto, null, "");
-//
-//    }
-//
-//    private void tempGridSetup() {
-//        ArrayList<String> imgURLs = new ArrayList<>();
-//
-//        imgURLs.add("http://bit.ly/2Uk02ak");
-//        imgURLs.add("http://bit.ly/2Uk02ak");
-//        imgURLs.add("http://bit.ly/2FM5VVJ");
-//
-//        imgURLs.add("http://bit.ly/2FM5VVJ");
-//        imgURLs.add("http://bit.ly/2V8NRdm");
-//        imgURLs.add("http://bit.ly/2Uk02ak");
-//
-//        imgURLs.add("http://bit.ly/2V8NRdm");
-//        imgURLs.add("http://bit.ly/2V8NRdm");
-//        imgURLs.add("http://bit.ly/2FM5VVJ");
-//
-//        setupImageGridView(imgURLs);
-//
-//    }
-//
-//    private void setupImageGridView(ArrayList<String> imgURLs) {
-//        GridView gridView = findViewById(R.id.grid_view_user_profile);
-//
-//        int gridWidth = getResources().getDisplayMetrics().widthPixels;
-//        int imageWidth = gridWidth / NUM_GRID_COLUMNS;
-//        gridView.setColumnWidth(imageWidth);
-//
-//        GridImageAdapter adapter = new GridImageAdapter(mContext, R.layout.layout_grid_imageview, "", imgURLs);
-//        gridView.setAdapter(adapter);
-//    }
-//
-//    private void setupActivityWidgets() {
-//        mProgressBar = findViewById(R.id.profile_progress_bar);
-//        mProgressBar.setVisibility(View.GONE);
-//        mProfilePhoto = findViewById(R.id.profileImage);
-//    }
-//
     @Override
-    public void onClick(View v) {
-//        switch (v.getId()) {
-//
-//            case R.id.editProfile:
-//                Intent intent = new Intent(mContext, AccountSettingsActivity.class);
-//                intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
-//                startActivity(intent);
-//
-//                break;
-//            case R.id.profileMenu:
-//                Log.d(TAG, "onClick: navigating to account settings");
-//
-//                startActivity(new Intent(mContext, AccountSettingsActivity.class));
-//
-//                break;
-//        }
-//
-    }
-//
-//    /**
-//     * Bottom Navigation View setup
-//     */
-//    public void setupBottomNavigationView() {
-//        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
-//        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-//        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
-//        Menu menu = bottomNavigationViewEx.getMenu();
-//        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-//        menuItem.setChecked(true);
-//
-//    }
+    public void onGridImageSelected(Photo photo, int activityNr) {
+        Log.d(TAG, "onGridImageSelected: selected an image gridView:" + photo.toString());
 
+        ViewPostFragment fragment = new ViewPostFragment();
+        Bundle args = new Bundle();
+
+        args.putParcelable(getString(R.string.photo), photo);
+        args.putInt(getString(R.string.activity_number), activityNr);
+        fragment.setArguments(args);
+
+        FragmentTransaction transaction = UserProfileActivity.this.getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragment);
+
+        transaction.addToBackStack(getString(R.string.view_post_fragment));
+        transaction.commit();
+
+
+    }
 }

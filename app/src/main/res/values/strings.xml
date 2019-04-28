@@ -99,9 +99,19 @@
 
     <string name="hint_registerHere">No account? Register here for FREE</string>
 
+    <!--Intent extras-->
     <string name="calling_activity">calling_activity</string>
+    <string name="selected_image">selected_image</string>
+    <string name="selected_bitmap">selected_bitmap</string>
+    <string name="return_to_fragment">return_to_fragment</string>
+
+    <!-- Bundle args names -->
+    <string name="activity_number">activity_number</string>
+
+    <!--Activity Names-->
     <string name="profile_activity">Profile Activity</string>
     <string name="profile_fragment">Profile Fragment</string>
+    <string name="view_post_fragment">View Post Fragment</string>
 
     <!--Firebase Database fields -->
 

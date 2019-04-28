@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -48,6 +49,12 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private static final String TAG = "UserProfileFragment";
 
+
+    public interface OnGridImageSelectedListener {
+        void onGridImageSelected(Photo photo, int activityNr);
+    }
+
+    OnGridImageSelectedListener onGridImageSelectedListener;
     private static final int ACTIVITY_NUM = 4;
     private static final int NUM_GRID_COLUMNS = 3;
 
@@ -131,6 +138,17 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        try {
+            onGridImageSelectedListener = (OnGridImageSelectedListener) getActivity();
+        } catch (ClassCastException e) {
+            Log.e(TAG, "onAttach: ClassCastException" + e.getMessage());
+
+        }
+        super.onAttach(context);
     }
 
     private void setupFirebaseAuth() {
@@ -241,6 +259,13 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                         "", imgURLs);
 
                 gridView.setAdapter(adapter);
+
+                gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        onGridImageSelectedListener.onGridImageSelected(photos.get(position), ACTIVITY_NUM);
+                    }
+                });
             }
 
             @Override
