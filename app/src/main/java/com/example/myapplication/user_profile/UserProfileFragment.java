@@ -49,31 +49,27 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private static final String TAG = "UserProfileFragment";
 
-
-    public interface OnGridImageSelectedListener {
-        void onGridImageSelected(Photo photo, int activityNr);
-    }
-
     OnGridImageSelectedListener onGridImageSelectedListener;
-    private static final int ACTIVITY_NUM = 4;
-    private static final int NUM_GRID_COLUMNS = 3;
 
+    private static final int ACTIVITY_NUM = 4;
+
+    private static final int NUM_GRID_COLUMNS = 3;
     private Context mContext;
 
     //firebase
+
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
-
     private TextView mEditProfile, mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mDescription;
+
     private BottomNavigationViewEx bottomNavigationViewEx;
     private ProgressBar mProgressBar;
     private CircleImageView mProfilePhoto;
     private ImageView profileMenu;
     private GridView gridView;
     private Toolbar toolbar;
-
     private FirebaseMethods firebaseMethods;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
@@ -86,7 +82,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         setListeners(view);
         setupFirebaseAuth();
 
-//        setupGridView();
+        setupGridView();
 
         setupBottomNavigationView();
 
@@ -105,7 +101,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mFollowers = view.findViewById(R.id.tvFollowers);
         mFollowing = view.findViewById(R.id.tvFollowing);
 
-        gridView = view.findViewById(R.id.gridImageView);
+//        gridView = view.findViewById(R.id.gridImageView);
+        gridView = view.findViewById(R.id.grid_view_user_profile);
 
         mProgressBar = view.findViewById(R.id.profile_progress_bar);
         mProgressBar.setVisibility(View.GONE);
@@ -287,6 +284,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
 
+    }
+
+    public interface OnGridImageSelectedListener {
+        void onGridImageSelected(Photo photo, int activityNr);
     }
 
 }

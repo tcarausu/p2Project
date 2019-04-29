@@ -98,7 +98,7 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
+                    Log.d(TAG, "onAuthStateChanged: signed in with " + user.getUid());
 
                 } else {
                     Log.d(TAG, "onAuthStateChanged: signed out");

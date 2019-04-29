@@ -63,7 +63,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         initLayouts(view);
         setupFirebaseAuth();
 
-//        setProfileImage();
+        setProfileImage();
 
         return view;
     }
@@ -141,13 +141,13 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mPhoneNumber.setText(String.valueOf(user.getPhone_number()));
 
     }
-//
-//    private void setProfileImage() {
-//        Log.d(TAG, "setProfileImage: setting image");
-//        String imgURL = "http://stacktips.com/wp-content/uploads/2014/05/UniversalImageLoader-620x405.png";
-//        UniversalImageLoader.setImage(imgURL, mProfilePhoto, null, "");
-//
-//    }
+
+    private void setProfileImage() {
+        Log.d(TAG, "setProfileImage: setting image");
+        String imgURL = "http://stacktips.com/wp-content/uploads/2014/05/UniversalImageLoader-620x405.png";
+        UniversalImageLoader.setImage(imgURL, mProfilePhoto, null, "");
+
+    }
 
     @Override
     public void onClick(View v) {

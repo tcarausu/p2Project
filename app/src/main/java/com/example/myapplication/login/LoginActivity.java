@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,10 +20,8 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
-import com.example.myapplication.home.HomeFragment;
 import com.example.myapplication.models.User;
 import com.example.myapplication.models.UserAccountSettings;
-import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.example.myapplication.utility_classes.StringManipulation;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -202,10 +199,8 @@ public class LoginActivity extends AppCompatActivity implements
 
 //------------------------------------added for testing purposes------------------------------------
                     FirebaseUser user = mAuth.getCurrentUser();
-//                            addUserToDataBase();
+                    addUserToDataBase(user.getDisplayName());
                     // do something with the individual "users"
-                    String userMAIL = user.getEmail();
-                    addNewUser(userMAIL, "user name", "description", "website", "photo");
 //------------------------------------added for testing purposes------------------------------------
 
                     if (mAuth.getCurrentUser() == null) {
@@ -280,8 +275,8 @@ public class LoginActivity extends AppCompatActivity implements
                             FirebaseUser user = mAuth.getCurrentUser();
                             addUserToDataBase(user.getDisplayName());
 //                             do something with the individual "users"
-                            String userMAIL = user.getEmail();
-                            addNewUser(userMAIL, user.getDisplayName(), "description", "website", "photo");
+//                            String userMAIL = user.getEmail();
+//                            addNewUser(userMAIL, user.getDisplayName(), "description", "website", "photo");
 //------------------------------------added for testing purposes------------------------------------
 
                             goToMainActivity();
@@ -390,54 +385,22 @@ public class LoginActivity extends AppCompatActivity implements
         final FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
 
-            final String nodeID = user_ref.push().getKey();
+            final String nodeID = user_ref.child(user.getUid()).getKey();
 
-            // do something with the individual "users"
-            final String userID = user.getUid();
             final String userMAIL = user.getEmail();
 
-//            Query query = myRef
-//                    .child(String.valueOf(R.string.dbname_users))
-//                    .orderByChild(String.valueOf(R.string.field_username))
-//                    .equalTo(username);
-
-//            Query query =
-//                    reference
-//                    .child(String.valueOf(R.string.dbname_users))
-//                    user_ref
-//                            .orderByChild(userID)
-//                            .orderByChild(String.valueOf(R.string.field_username))
-//                            .equalTo(username)
-//                    ;
-
-
-            Query query = user_ref.child("user_id").equalTo(userID);
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
+            user_ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    if (!dataSnapshot.exists()) {
-                        User chef_food_user = new User(0, userMAIL, username);
-                        user_ref.child(nodeID).setValue(chef_food_user);
-
-//                        myRef.child(mContext.getString(R.string.dbname_users))
-//                                .child(userID)
-//                                .child(mContext.getString(R.string.field_username))
-//                                .setValue(username);
-//
-//                        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
-//                                .child(userID)
-//                                .child(mContext.getString(R.string.field_username))
-//                                .setValue(username);
-
-                        Log.d(TAG, "addUserToDataBase:  user successfully added" + user.getEmail());
-                        Toast.makeText(mContext, "added", Toast.LENGTH_SHORT).show();
-
-                    }
-
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        if (ds.exists()) {
-                            Log.d(TAG, "onDataChange: Found a Match: " + ds.getValue(User.class).getUsername());
+                        if (!ds.getKey().equals(nodeID)) {
+                            addNewUser(userMAIL, "random username", "description", "website", "photo");
+
+                            Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
+                            Toast.makeText(mContext, "added", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Log.d(TAG, "onDataChange: Found a Match: " + user.getEmail());
                             Toast.makeText(mContext, "That username already exists", Toast.LENGTH_SHORT).show();
 
                         }

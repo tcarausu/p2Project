@@ -6,10 +6,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.User;
 import com.example.myapplication.models.UserAccountSettings;
 import com.example.myapplication.models.UserSettings;
-import com.example.myapplication.user_profile.UserProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -18,6 +18,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * File created by tcarau18
@@ -69,7 +74,7 @@ public class FirebaseMethods {
 
     public void addNewUser(String email, String username, String description, String website, String profile_photo) {
 
-        User user = new User( 1, email, StringManipulation.condenseUserName(username));
+        User user = new User(1, email, StringManipulation.condenseUserName(username));
 
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userUID)
@@ -110,8 +115,8 @@ public class FirebaseMethods {
         };
     }
 
-    public void updateUsername(String username) {
-        Log.d(TAG, "updateUsername: updating username to:"+username);
+    private void updateUsername(String username) {
+        Log.d(TAG, "updateUsername: updating username to:" + username);
 
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userUID)
@@ -275,4 +280,33 @@ public class FirebaseMethods {
 
         return new UserSettings(user, settings);
     }
+
+    private String getTimestamp() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
+        sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
+
+        return sdf.format(new Date());
+    }
+
+    public void addPhotoToDatabase(String caption, String url) {
+        Log.d(TAG, "addPhotoToDatabase: adding photo to database");
+
+        String userUID = mAuth.getCurrentUser().getUid();
+
+        String tags = StringManipulation.getTags(caption);
+        String newPhotoKey = myRef.child(mContext.getString(R.string.dbname_photos)).push().getKey();
+        Photo photo = new Photo();
+        photo.setCaption(caption);
+        photo.setDate_created(getTimestamp());
+        photo.setImage_path(url);
+        photo.setTags(tags);
+        photo.setUser_id(userUID);
+        photo.setPhoto_id(newPhotoKey);
+
+        //insert into database
+        myRef.child(mContext.getString(R.string.dbname_user_photos)).child(userUID).child(newPhotoKey).setValue(photo);
+        myRef.child(mContext.getString(R.string.dbname_photos)).child(newPhotoKey).setValue(photo);
+
+    }
+
 }
