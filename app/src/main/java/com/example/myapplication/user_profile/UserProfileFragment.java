@@ -196,6 +196,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mUserName.setText(settings.getUsername());
         mWebsite.setText(settings.getWebsite());
         mDescription.setText(settings.getDescription());
+
         mFollowers.setText(String.valueOf(settings.getFollowers()));
         mFollowing.setText(String.valueOf(settings.getFollowing()));
         mPosts.setText(String.valueOf(settings.getPosts()));

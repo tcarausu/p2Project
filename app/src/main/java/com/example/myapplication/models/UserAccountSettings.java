@@ -2,7 +2,6 @@ package com.example.myapplication.models;
 
 public class UserAccountSettings {
 
-
     private String description;
     private String display_name;
     private String username;
@@ -12,9 +11,14 @@ public class UserAccountSettings {
     private String profile_photo;
     private String website;
 
+    private long phone_number;
+    private String email;
+
     public UserAccountSettings(String description, String display_name, String username,
                                long followers, long following, long posts,
-                               String profile_photo, String website) {
+                               String profile_photo, String website,
+                               String email, long phone_number
+    ) {
         this.description = description;
         this.display_name = display_name;
         this.username = username;
@@ -23,6 +27,8 @@ public class UserAccountSettings {
         this.posts = posts;
         this.profile_photo = profile_photo;
         this.website = website;
+        this.phone_number = phone_number;
+        this.email = email;
     }
 
     public UserAccountSettings() {
@@ -84,6 +90,22 @@ public class UserAccountSettings {
         this.profile_photo = profile_photo;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public long getPhone_number() {
+        return phone_number;
+    }
+
+    public void setPhone_number(long phone_number) {
+        this.phone_number = phone_number;
+    }
+
     public String getWebsite() {
         return website;
     }
@@ -95,9 +117,11 @@ public class UserAccountSettings {
     @Override
     public String toString() {
         return "UserAccountSettings{" +
-                "description='" + description + '\'' +
+                "username='" + username + '\'' +
+                ", phone_number=" + phone_number +
+                ", email=" + email +
                 ", display_name='" + display_name + '\'' +
-                ", username='" + username + '\'' +
+                ", description='" + description + '\'' +
                 ", followers=" + followers +
                 ", following=" + following +
                 ", posts=" + posts +

@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
-import com.example.myapplication.models.User;
 import com.example.myapplication.models.UserAccountSettings;
 import com.example.myapplication.utility_classes.StringManipulation;
 import com.facebook.AccessToken;
@@ -199,7 +198,7 @@ public class LoginActivity extends AppCompatActivity implements
 
 //------------------------------------added for testing purposes------------------------------------
                     FirebaseUser user = mAuth.getCurrentUser();
-                    addUserToDataBase(user.getDisplayName());
+                    addUserToDataBase();
                     // do something with the individual "users"
 //------------------------------------added for testing purposes------------------------------------
 
@@ -273,7 +272,7 @@ public class LoginActivity extends AppCompatActivity implements
 
 //------------------------------------added for testing purposes------------------------------------
                             FirebaseUser user = mAuth.getCurrentUser();
-                            addUserToDataBase(user.getDisplayName());
+                            addUserToDataBase();
 //                             do something with the individual "users"
 //                            String userMAIL = user.getEmail();
 //                            addNewUser(userMAIL, user.getDisplayName(), "description", "website", "photo");
@@ -381,7 +380,7 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    private void addUserToDataBase(final String username) {
+    private void addUserToDataBase() {
         final FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
 
@@ -389,29 +388,38 @@ public class LoginActivity extends AppCompatActivity implements
 
             final String userMAIL = user.getEmail();
 
-            user_ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        if (!ds.getKey().equals(nodeID)) {
-                            addNewUser(userMAIL, "random username", "description", "website", "photo");
+            Query query = user_ref.
+                    orderByKey()
+                    .equalTo(nodeID);
 
-                            Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
-                            Toast.makeText(mContext, "added", Toast.LENGTH_SHORT).show();
+            query
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (!dataSnapshot.exists()) {
+                                if (user.getDisplayName() != null) {
+                                    addNewUser(userMAIL, user.getDisplayName(), "description", "website", "photo");
+                                    Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
+                                    Toast.makeText(mContext, "added for proper provider", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    addNewUser(userMAIL, "random username", "description", "website", "photo");
+                                    Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
+                                    Toast.makeText(mContext, "added", Toast.LENGTH_SHORT).show();
+                                }
 
-                        } else {
-                            Log.d(TAG, "onDataChange: Found a Match: " + user.getEmail());
-                            Toast.makeText(mContext, "That username already exists", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Log.d(TAG, "onDataChange: Found a Match: " + userMAIL);
+                                Toast.makeText(mContext, "That username already exists", Toast.LENGTH_SHORT).show();
 
+                            }
                         }
-                    }
-                }
+//                }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(mContext, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Toast.makeText(mContext, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
         }
     }
@@ -431,12 +439,12 @@ public class LoginActivity extends AppCompatActivity implements
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
         //shouldn't be able to make another one with same uid
-
-        User user = new User(1, email, StringManipulation.condenseUserName(username));
-
-        myRef.child(mContext.getString(R.string.dbname_users))
-                .child(firebaseUser.getUid())
-                .setValue(user);
+//
+//        User user = new User(1, email, StringManipulation.condenseUserName(username));
+//
+//        myRef.child(mContext.getString(R.string.dbname_users))
+//                .child(firebaseUser.getUid())
+//                .setValue(user);
 
         UserAccountSettings settings = new UserAccountSettings(
                 description,
@@ -446,9 +454,12 @@ public class LoginActivity extends AppCompatActivity implements
                 0,
                 0,
                 profile_photo,
-                website);
+                website,
+                email,
+                0);
 
-        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
+//        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
+        myRef.child(mContext.getString(R.string.dbname_users))
                 .child(firebaseUser.getUid())
                 .setValue(settings);
     }

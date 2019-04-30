@@ -88,7 +88,9 @@ public class FirebaseMethods {
                 0,
                 0,
                 profile_photo,
-                website);
+                website,
+                email,
+                0);
 
         myRef.child(mContext.getString(R.string.dbname_user_account_settings))
                 .child(userUID)
@@ -123,10 +125,10 @@ public class FirebaseMethods {
                 .child(mContext.getString(R.string.field_username))
                 .setValue(username);
 
-        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
-                .child(userUID)
-                .child(mContext.getString(R.string.field_username))
-                .setValue(username);
+//        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
+//                .child(userUID)
+//                .child(mContext.getString(R.string.field_username))
+//                .setValue(username);
     }
 
     /**
@@ -137,13 +139,13 @@ public class FirebaseMethods {
     public void checkIfUsernameExists(final String userName) {
         Log.d(TAG, "checkIfUsernameExists: checking if " + userName + " already exists");
 
-        DatabaseReference reference = mFirebaseDatabase.getReference();
+        DatabaseReference reference = mFirebaseDatabase.getReference("users");
+
+        final String nodeID = reference.child(userUID).getKey();
 
         Query query = reference
-                .child(String.valueOf(R.string.dbname_users))
-                .orderByChild(String.valueOf(R.string.field_username))
-                .equalTo(userName);
-
+                .orderByKey()
+                .equalTo(nodeID);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -153,16 +155,11 @@ public class FirebaseMethods {
                     updateUsername(userName);
                     Toast.makeText(mContext, "saved username", Toast.LENGTH_SHORT).show();
 
+                }else {
+                    Log.d(TAG, "onDataChange: Found a Match: " + dataSnapshot.getValue(UserAccountSettings.class).getUsername());
+                    Toast.makeText(mContext, "That username already exists", Toast.LENGTH_SHORT).show();
                 }
 
-
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    if (ds.exists()) {
-                        Log.d(TAG, "onDataChange: Found a Match: " + ds.getValue(User.class).getUsername());
-                        Toast.makeText(mContext, "That username already exists", Toast.LENGTH_SHORT).show();
-
-                    }
-                }
             }
 
             @Override
@@ -172,8 +169,6 @@ public class FirebaseMethods {
         });
 
     }
-
-//    static/lambda/((UserProfileActivity.class).getctvoty)
 
     /**
      * Retrieves the account settings for the User currently logged in
@@ -186,13 +181,12 @@ public class FirebaseMethods {
         Log.d(TAG, "getUserAccountSettings: retrieving user account settings from database");
 
         UserAccountSettings settings = new UserAccountSettings();
-        User user = new User();
         String userID = mAuth.getCurrentUser().getUid();
 
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
             //User Account Settings Node
-            if (ds.getKey().equals(mContext.getString(R.string.dbname_user_account_settings))) {
+            if (ds.getKey().equals(mContext.getString(R.string.dbname_users))) {
                 Log.d(TAG, "getUserAccountSettings: dataSnapshot" + ds);
                 try {
                     settings.setUsername(
@@ -243,6 +237,18 @@ public class FirebaseMethods {
                                     .getProfile_photo()
                     );
 
+                    settings.setEmail(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getEmail()
+                    );
+
+                    settings.setPhone_number(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getPhone_number()
+                    );
+
                     Log.d(TAG, "getUserAccountSettings: retrieve user account settings information: " + settings.toString());
                 } catch (NullPointerException e) {
                     Log.d(TAG, "getUserAccountSettings: NullPointerException: " + e.getMessage());
@@ -254,31 +260,33 @@ public class FirebaseMethods {
                 Log.d(TAG, "getUserAccountSettings: dataSnapshot" + ds);
 
 
-                user.setUsername(
-                        ds.child(userID)
-                                .getValue(User.class)
-                                .getUsername()
-                );
+//                user.setUsername(
+//                        ds.child(userID)
+//                                .getValue(User.class)
+//                                .getUsername()
+//                );
+//
+//                user.setEmail(
+//                        ds.child(userID)
+//                                .getValue(User.class)
+//                                .getEmail()
+//                );
+//
+//                user.setPhone_number(
+//                        ds.child(userID)
+//                                .getValue(User.class)
+//                                .getPhone_number()
+//                );
 
-                user.setEmail(
-                        ds.child(userID)
-                                .getValue(User.class)
-                                .getEmail()
-                );
-
-                user.setPhone_number(
-                        ds.child(userID)
-                                .getValue(User.class)
-                                .getPhone_number()
-                );
-
-                Log.d(TAG, "getUserInformation: retrieve user  information: " + user.toString());
+//                Log.d(TAG, "getUserInformation: retrieve user  information: " + user.toString());
 
             }
 
         }
 
-        return new UserSettings(user, settings);
+        return new UserSettings(
+                null
+                , settings);
     }
 
     private String getTimestamp() {

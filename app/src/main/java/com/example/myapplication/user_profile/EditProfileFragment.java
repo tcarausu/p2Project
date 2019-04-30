@@ -63,7 +63,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         initLayouts(view);
         setupFirebaseAuth();
 
-        setProfileImage();
+//        setProfileImage();
 
         return view;
     }
@@ -112,7 +112,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 //
 //                Log.d(TAG, "onDataChange: Current Username: " + user.getUsername());
 
-                if (!mUserSettings.getUser().getUsername().equals(userName)) {
+                if (!mUserSettings.getSettings().getUsername().equals(userName)) {
                     firebaseMethods.checkIfUsernameExists(userName);
                 }
             }
@@ -131,14 +131,14 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         UserAccountSettings settings = userSettings.getSettings();
         mUserSettings = userSettings;
 
-        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
+//        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
 
         mDisplayName.setText(settings.getDisplay_name());
         mUserName.setText(settings.getUsername());
         mWebsite.setText(settings.getWebsite());
         mDescription.setText(settings.getDescription());
-        mEmail.setText(String.valueOf(user.getEmail()));
-        mPhoneNumber.setText(String.valueOf(user.getPhone_number()));
+        mEmail.setText(String.valueOf(settings.getEmail()));
+        mPhoneNumber.setText(String.valueOf(settings.getPhone_number()));
 
     }
 

@@ -49,17 +49,20 @@
 
     <string name="twitterUserName">\@twitterUserName</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="user_name">toader.carausu</string>
+
+    <!--User Profile Strings-->
+    <string name="user_name">user.name</string>
     <string name="following">Following</string>
-    <string name="numberOfFollowing">400</string>
-    <string name="numberOfPosts">250</string>
+    <string name="numberOfFollowing">0</string>
     <string name="posts">Posts</string>
+    <string name="numberOfPosts">0</string>
     <string name="followers">Followers</string>
-    <string name="numberOfFollowers">300</string>
+    <string name="numberOfFollowers">0</string>
     <string name="edit_your_profile_fragment">Edit Your Profile</string>
-    <string name="description">I love to live here</string>
+    <string name="description">This is my Personalised Description</string>
     <string name="personal_website">this_is_my_website.com</string>
+
+    <!--User Profile Settings Strings-->
     <string name="options_account_toolbar">Options</string>
     <string name="account_settings">Account Settings</string>
     <string name="change_photo">Change Photo</string>
