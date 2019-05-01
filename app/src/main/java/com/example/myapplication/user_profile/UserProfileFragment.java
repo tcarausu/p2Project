@@ -21,7 +21,7 @@ import android.widget.TextView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.Photo;
-import com.example.myapplication.models.UserAccountSettings;
+import com.example.myapplication.models.User;
 import com.example.myapplication.models.UserSettings;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
@@ -187,7 +187,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " +
                 userSettings.toString());
 
-        UserAccountSettings settings = userSettings.getSettings();
+        User settings = userSettings.getSettings();
 
 //        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
 

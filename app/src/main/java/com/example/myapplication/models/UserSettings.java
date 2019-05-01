@@ -6,9 +6,9 @@ package com.example.myapplication.models;
 public class UserSettings {
 
 //    private User user;
-    private UserAccountSettings settings;
+    private User settings;
 
-    public UserSettings( UserAccountSettings settings) {
+    public UserSettings( User settings) {
 //        this.user = user;
         this.settings = settings;
     }
@@ -25,11 +25,11 @@ public class UserSettings {
 //        this.user = user;
 //    }
 
-    public UserAccountSettings getSettings() {
+    public User getSettings() {
         return settings;
     }
 
-    public void setSettings(UserAccountSettings settings) {
+    public void setSettings(User settings) {
         this.settings = settings;
     }
 

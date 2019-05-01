@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
-import com.example.myapplication.models.UserAccountSettings;
+import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.StringManipulation;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -438,7 +438,7 @@ public class LoginActivity extends AppCompatActivity implements
     private void addNewUser(String email, String username, String description, String website, String profile_photo) {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
-        UserAccountSettings settings = new UserAccountSettings(
+        User settings = new User(
                 description,
                 "user name",
                 StringManipulation.condenseUserName(username),

@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.Photo;
-import com.example.myapplication.models.UserAccountSettings;
+import com.example.myapplication.models.User;
 import com.example.myapplication.models.UserSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -124,7 +124,7 @@ public class FirebaseMethods {
                     Toast.makeText(mContext, "saved username", Toast.LENGTH_SHORT).show();
 
                 } else {
-                    Log.d(TAG, "onDataChange: Found a Match: " + dataSnapshot.getValue(UserAccountSettings.class).getUsername());
+                    Log.d(TAG, "onDataChange: Found a Match: " + dataSnapshot.getValue(User.class).getUsername());
                     Toast.makeText(mContext, "That username already exists", Toast.LENGTH_SHORT).show();
                 }
 
@@ -148,7 +148,7 @@ public class FirebaseMethods {
     public UserSettings getUserSettings(DataSnapshot dataSnapshot) {
         Log.d(TAG, "getUserAccountSettings: retrieving user account settings from database");
 
-        UserAccountSettings settings = new UserAccountSettings();
+        User settings = new User();
         String userID = mAuth.getCurrentUser().getUid();
 
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -159,61 +159,61 @@ public class FirebaseMethods {
                 try {
                     settings.setUsername(
                             ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
+                                    .getValue(User.class)
                                     .getUsername()
                     );
 
                     settings.setDisplay_name(
                             ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
+                                    .getValue(User.class)
                                     .getDisplay_name()
                     );
 
                     settings.setAbout(
                             ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
+                                    .getValue(User.class)
                                     .getAbout()
                     );
 
                     settings.setWebsite(
                             ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
+                                    .getValue(User.class)
                                     .getWebsite()
                     );
 
                     settings.setFollowers(
                             ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
+                                    .getValue(User.class)
                                     .getFollowers()
                     );
 
                     settings.setFollowing(
                             ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
+                                    .getValue(User.class)
                                     .getFollowing()
                     );
 
                     settings.setPosts(
                             ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
+                                    .getValue(User.class)
                                     .getPosts()
                     );
 
                     settings.setProfile_photo(
                             ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
+                                    .getValue(User.class)
                                     .getProfile_photo()
                     );
 
                     settings.setEmail(
                             ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
+                                    .getValue(User.class)
                                     .getEmail()
                     );
 
                     settings.setPhone_number(
                             ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
+                                    .getValue(User.class)
                                     .getPhone_number()
                     );
 

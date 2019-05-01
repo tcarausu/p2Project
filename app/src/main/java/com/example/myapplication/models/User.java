@@ -1,6 +1,6 @@
 package com.example.myapplication.models;
 
-public class UserAccountSettings {
+public class User {
 
     private String about;
     private String display_name;
@@ -14,10 +14,10 @@ public class UserAccountSettings {
     private long phone_number;
     private String email;
 
-    public UserAccountSettings(String about, String display_name, String username,
-                               long followers, long following, long posts,
-                               String profile_photo, String website,
-                               String email, long phone_number
+    public User(String about, String display_name, String username,
+                long followers, long following, long posts,
+                String profile_photo, String website,
+                String email, long phone_number
     ) {
         this.about = about;
         this.display_name = display_name;
@@ -31,7 +31,7 @@ public class UserAccountSettings {
         this.email = email;
     }
 
-    public UserAccountSettings() {
+    public User() {
     }
 
     public String getAbout() {
@@ -116,7 +116,7 @@ public class UserAccountSettings {
 
     @Override
     public String toString() {
-        return "UserAccountSettings{" +
+        return "User{" +
                 "username='" + username + '\'' +
                 ", phone_number=" + phone_number +
                 ", email=" + email +
