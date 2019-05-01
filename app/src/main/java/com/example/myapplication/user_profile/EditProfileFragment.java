@@ -100,7 +100,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if (!mUserSettings.getSettings().getUsername().equals(userName)) {
+                if (!mUserSettings.getUser().getUsername().equals(userName)) {
                     firebaseMethods.checkIfUsernameExists(userName);
                 }
             }
@@ -116,7 +116,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " +
                 userSettings.toString());
 
-        User settings = userSettings.getSettings();
+        User settings = userSettings.getUser();
         mUserSettings = userSettings;
 
 //        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");

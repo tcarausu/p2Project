@@ -442,13 +442,13 @@ public class LoginActivity extends AppCompatActivity implements
                 description,
                 "user name",
                 StringManipulation.condenseUserName(username),
+                email,
+                0,
                 0,
                 0,
                 0,
                 profile_photo,
-                website,
-                email,
-                0);
+                website);
 
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(firebaseUser.getUid())

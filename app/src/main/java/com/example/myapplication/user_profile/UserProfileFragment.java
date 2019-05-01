@@ -187,7 +187,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " +
                 userSettings.toString());
 
-        User settings = userSettings.getSettings();
+        User settings = userSettings.getUser();
 
 //        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
 

@@ -14,10 +14,10 @@ public class User {
     private long phone_number;
     private String email;
 
-    public User(String about, String display_name, String username,
+    public User(String about, String display_name,
+                String username, String email, long phone_number,
                 long followers, long following, long posts,
-                String profile_photo, String website,
-                String email, long phone_number
+                String profile_photo, String website
     ) {
         this.about = about;
         this.display_name = display_name;
