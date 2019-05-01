@@ -30,7 +30,6 @@ public class SearchActivity extends AppCompatActivity {
         setupBottomNavigationView();
     }
 
-
     public void initLayout() {
         mContext = SearchActivity.this;
 
@@ -38,16 +37,6 @@ public class SearchActivity extends AppCompatActivity {
 
     public void buttonListeners() {
 
-    }
-
-    /**
-     * @param user is the Firebase User used to adjust/perform info exchange
-     */
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-        } else {
-
-        }
     }
 
     /**

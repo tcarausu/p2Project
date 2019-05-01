@@ -5,11 +5,11 @@ package com.example.myapplication.models;
  **/
 public class UserSettings {
 
-    private User user;
+//    private User user;
     private UserAccountSettings settings;
 
-    public UserSettings(User user, UserAccountSettings settings) {
-        this.user = user;
+    public UserSettings( UserAccountSettings settings) {
+//        this.user = user;
         this.settings = settings;
     }
 
@@ -17,13 +17,13 @@ public class UserSettings {
 
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+//    public User getUser() {
+//        return user;
+//    }
+//
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 
     public UserAccountSettings getSettings() {
         return settings;
@@ -36,7 +36,7 @@ public class UserSettings {
     @Override
     public String toString() {
         return "UserSettings{" +
-                "user=" + user +
+//                "user=" + user +
                 ", settings=" + settings +
                 '}';
     }

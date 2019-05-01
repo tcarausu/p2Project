@@ -438,14 +438,6 @@ public class LoginActivity extends AppCompatActivity implements
     private void addNewUser(String email, String username, String description, String website, String profile_photo) {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
-        //shouldn't be able to make another one with same uid
-//
-//        User user = new User(1, email, StringManipulation.condenseUserName(username));
-//
-//        myRef.child(mContext.getString(R.string.dbname_users))
-//                .child(firebaseUser.getUid())
-//                .setValue(user);
-
         UserAccountSettings settings = new UserAccountSettings(
                 description,
                 "user name",
@@ -458,7 +450,6 @@ public class LoginActivity extends AppCompatActivity implements
                 email,
                 0);
 
-//        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(firebaseUser.getUid())
                 .setValue(settings);

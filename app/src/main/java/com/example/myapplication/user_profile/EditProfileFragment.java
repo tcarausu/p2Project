@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.models.User;
 import com.example.myapplication.models.UserAccountSettings;
 import com.example.myapplication.models.UserSettings;
 import com.example.myapplication.utility_classes.FirebaseMethods;
@@ -100,15 +99,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                User user = new User();
-//                for (DataSnapshot ds : dataSnapshot.child(getString(R.string.dbname_users)).getChildren()) {
-//                    if (ds.getKey().equals(userID)) {
-//                        user.setUsername(ds.getValue(User.class).getUsername());
-//
-//                    }
-//                }
-//
-//                Log.d(TAG, "onDataChange: Current Username: " + user.getUsername());
 
                 if (!mUserSettings.getSettings().getUsername().equals(userName)) {
                     firebaseMethods.checkIfUsernameExists(userName);
@@ -125,7 +115,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private void setProfileWidgets(UserSettings userSettings) {
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " +
                 userSettings.toString());
-        User user = userSettings.getUser();
+
         UserAccountSettings settings = userSettings.getSettings();
         mUserSettings = userSettings;
 

@@ -41,16 +41,6 @@ public class AddPostActivity extends AppCompatActivity {
     }
 
     /**
-     * @param user is the Firebase User used to adjust/perform info exchange
-     */
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-        } else {
-
-        }
-    }
-
-    /**
      * Bottom Navigation View setup
      */
     public void setupBottomNavigationView() {

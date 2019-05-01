@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.Photo;
-import com.example.myapplication.models.User;
 import com.example.myapplication.models.UserAccountSettings;
 import com.example.myapplication.models.UserSettings;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,31 +71,6 @@ public class FirebaseMethods {
 //        return false;
 //    }
 
-    public void addNewUser(String email, String username, String description, String website, String profile_photo) {
-
-        User user = new User(1, email, StringManipulation.condenseUserName(username));
-
-        myRef.child(mContext.getString(R.string.dbname_users))
-                .child(userUID)
-                .setValue(user);
-
-        UserAccountSettings settings = new UserAccountSettings(
-                description,
-                username,
-                username,
-                0,
-                0,
-                0,
-                profile_photo,
-                website,
-                email,
-                0);
-
-        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
-                .child(userUID)
-                .setValue(settings);
-    }
-
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
 
@@ -125,10 +99,6 @@ public class FirebaseMethods {
                 .child(mContext.getString(R.string.field_username))
                 .setValue(username);
 
-//        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
-//                .child(userUID)
-//                .child(mContext.getString(R.string.field_username))
-//                .setValue(username);
     }
 
     /**
@@ -141,11 +111,9 @@ public class FirebaseMethods {
 
         DatabaseReference reference = mFirebaseDatabase.getReference("users");
 
-        final String nodeID = reference.child(userUID).getKey();
-
         Query query = reference
-                .orderByKey()
-                .equalTo(nodeID);
+                .orderByChild(reference.child(userUID).child(mContext.getString(R.string.field_username)).getKey())
+                .equalTo(userName);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -155,7 +123,7 @@ public class FirebaseMethods {
                     updateUsername(userName);
                     Toast.makeText(mContext, "saved username", Toast.LENGTH_SHORT).show();
 
-                }else {
+                } else {
                     Log.d(TAG, "onDataChange: Found a Match: " + dataSnapshot.getValue(UserAccountSettings.class).getUsername());
                     Toast.makeText(mContext, "That username already exists", Toast.LENGTH_SHORT).show();
                 }
@@ -258,9 +226,7 @@ public class FirebaseMethods {
 
         }
 
-        return new UserSettings(
-                null
-                , settings);
+        return new UserSettings(settings);
     }
 
     private String getTimestamp() {
