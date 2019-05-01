@@ -2,7 +2,7 @@ package com.example.myapplication.models;
 
 public class UserAccountSettings {
 
-    private String description;
+    private String about;
     private String display_name;
     private String username;
     private long followers;
@@ -14,12 +14,12 @@ public class UserAccountSettings {
     private long phone_number;
     private String email;
 
-    public UserAccountSettings(String description, String display_name, String username,
+    public UserAccountSettings(String about, String display_name, String username,
                                long followers, long following, long posts,
                                String profile_photo, String website,
                                String email, long phone_number
     ) {
-        this.description = description;
+        this.about = about;
         this.display_name = display_name;
         this.username = username;
         this.followers = followers;
@@ -34,12 +34,12 @@ public class UserAccountSettings {
     public UserAccountSettings() {
     }
 
-    public String getDescription() {
-        return description;
+    public String getAbout() {
+        return about;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setAbout(String about) {
+        this.about = about;
     }
 
     public String getDisplay_name() {
@@ -121,7 +121,7 @@ public class UserAccountSettings {
                 ", phone_number=" + phone_number +
                 ", email=" + email +
                 ", display_name='" + display_name + '\'' +
-                ", description='" + description + '\'' +
+                ", about='" + about + '\'' +
                 ", followers=" + followers +
                 ", following=" + following +
                 ", posts=" + posts +

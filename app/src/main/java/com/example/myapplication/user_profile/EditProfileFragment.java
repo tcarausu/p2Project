@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
@@ -26,7 +25,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
@@ -48,7 +46,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     //Edit Profile widgets
     private TextView mChangeProfilePhoto;
-    private EditText mDisplayName, mUserName, mWebsite, mDescription, mEmail, mPhoneNumber;
+    private EditText mDisplayName, mUserName, mWebsite, mAbout, mEmail, mPhoneNumber;
     private CircleImageView mProfilePhoto;
     private ImageView backArrow, saveChanges;
 
@@ -75,7 +73,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mDisplayName = view.findViewById(R.id.displayName);
         mUserName = view.findViewById(R.id.username);
         mWebsite = view.findViewById(R.id.website);
-        mDescription = view.findViewById(R.id.description);
+        mAbout = view.findViewById(R.id.description);
         mEmail = view.findViewById(R.id.email);
         mPhoneNumber = view.findViewById(R.id.phoneNumber);
 
@@ -96,7 +94,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         final String email = mEmail.getText().toString();
         final String displayName = mDisplayName.getText().toString();
         final String phoneNumber = mPhoneNumber.getText().toString();
-        final String description = mDescription.getText().toString();
+        final String description = mAbout.getText().toString();
         final String website = mWebsite.getText().toString();
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -136,7 +134,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mDisplayName.setText(settings.getDisplay_name());
         mUserName.setText(settings.getUsername());
         mWebsite.setText(settings.getWebsite());
-        mDescription.setText(settings.getDescription());
+        mAbout.setText(settings.getAbout());
         mEmail.setText(String.valueOf(settings.getEmail()));
         mPhoneNumber.setText(String.valueOf(settings.getPhone_number()));
 

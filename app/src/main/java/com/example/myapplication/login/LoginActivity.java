@@ -275,7 +275,7 @@ public class LoginActivity extends AppCompatActivity implements
                             addUserToDataBase();
 //                             do something with the individual "users"
 //                            String userMAIL = user.getEmail();
-//                            addNewUser(userMAIL, user.getDisplayName(), "description", "website", "photo");
+//                            addNewUser(userMAIL, user.getDisplayName(), "about", "website", "photo");
 //------------------------------------added for testing purposes------------------------------------
 
                             goToMainActivity();
@@ -398,11 +398,11 @@ public class LoginActivity extends AppCompatActivity implements
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (!dataSnapshot.exists()) {
                                 if (user.getDisplayName() != null) {
-                                    addNewUser(userMAIL, user.getDisplayName(), "description", "website", "photo");
+                                    addNewUser(userMAIL, user.getDisplayName(), "about", "website", "photo");
                                     Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
                                     Toast.makeText(mContext, "added for proper provider", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    addNewUser(userMAIL, "random username", "description", "website", "photo");
+                                    addNewUser(userMAIL, "random username", "about", "website", "photo");
                                     Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
                                     Toast.makeText(mContext, "added", Toast.LENGTH_SHORT).show();
                                 }
@@ -431,7 +431,7 @@ public class LoginActivity extends AppCompatActivity implements
      *
      * @param email         represents the email of the Firebase User
      * @param username      represents the username of the Firebase User
-     * @param description   represents the description from the User Profile
+     * @param description   represents the about from the User Profile
      * @param website       represents the website from the User Profile
      * @param profile_photo represents the profile_photo from the User Profile
      */

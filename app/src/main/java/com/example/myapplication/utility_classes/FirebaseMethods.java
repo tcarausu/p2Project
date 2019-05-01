@@ -201,10 +201,10 @@ public class FirebaseMethods {
                                     .getDisplay_name()
                     );
 
-                    settings.setDescription(
+                    settings.setAbout(
                             ds.child(userID)
                                     .getValue(UserAccountSettings.class)
-                                    .getDescription()
+                                    .getAbout()
                     );
 
                     settings.setWebsite(
@@ -255,32 +255,6 @@ public class FirebaseMethods {
                 }
             }
 
-            //Users Node
-            if (ds.getKey().equals(mContext.getString(R.string.dbname_users))) {
-                Log.d(TAG, "getUserAccountSettings: dataSnapshot" + ds);
-
-
-//                user.setUsername(
-//                        ds.child(userID)
-//                                .getValue(User.class)
-//                                .getUsername()
-//                );
-//
-//                user.setEmail(
-//                        ds.child(userID)
-//                                .getValue(User.class)
-//                                .getEmail()
-//                );
-//
-//                user.setPhone_number(
-//                        ds.child(userID)
-//                                .getValue(User.class)
-//                                .getPhone_number()
-//                );
-
-//                Log.d(TAG, "getUserInformation: retrieve user  information: " + user.toString());
-
-            }
 
         }
 

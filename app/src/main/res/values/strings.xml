@@ -59,7 +59,7 @@
     <string name="followers">Followers</string>
     <string name="numberOfFollowers">0</string>
     <string name="edit_your_profile_fragment">Edit Your Profile</string>
-    <string name="description">This is my Personalised Description</string>
+    <string name="about">This is my Personalised Description</string>
     <string name="personal_website">this_is_my_website.com</string>
 
     <!--User Profile Settings Strings-->

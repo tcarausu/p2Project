@@ -108,7 +108,7 @@
                     android:inputType="textNoSuggestions" />
             </RelativeLayout>
 
-            <!--description section-->
+            <!--about section-->
             <RelativeLayout
                 android:id="@+id/relLayout4"
                 android:layout_width="match_parent"
@@ -120,16 +120,16 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/description" />
+                    android:src="@drawable/about" />
 
                 <EditText
-                    android:id="@+id/description"
+                    android:id="@+id/about"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="40dp"
                     android:background="@null"
-                    android:hint="@string/description"
+                    android:hint="@string/about"
                     android:inputType="textNoSuggestions" />
             </RelativeLayout>
 

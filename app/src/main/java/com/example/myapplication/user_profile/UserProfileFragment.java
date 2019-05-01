@@ -62,7 +62,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
-    private TextView mEditProfile, mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mDescription;
+    private TextView mEditProfile, mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mAbout;
 
     private BottomNavigationViewEx bottomNavigationViewEx;
     private ProgressBar mProgressBar;
@@ -96,7 +96,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mDisplayName = view.findViewById(R.id.displayName);
         mUserName = view.findViewById(R.id.userName);
         mWebsite = view.findViewById(R.id.website);
-        mDescription = view.findViewById(R.id.description);
+        mAbout = view.findViewById(R.id.about);
         mPosts = view.findViewById(R.id.tvPosts);
         mFollowers = view.findViewById(R.id.tvFollowers);
         mFollowing = view.findViewById(R.id.tvFollowing);
@@ -195,7 +195,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mDisplayName.setText(settings.getDisplay_name());
         mUserName.setText(settings.getUsername());
         mWebsite.setText(settings.getWebsite());
-        mDescription.setText(settings.getDescription());
+        mAbout.setText(settings.getAbout());
 
         mFollowers.setText(String.valueOf(settings.getFollowers()));
         mFollowing.setText(String.valueOf(settings.getFollowing()));
