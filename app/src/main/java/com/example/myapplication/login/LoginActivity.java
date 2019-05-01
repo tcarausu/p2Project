@@ -438,7 +438,7 @@ public class LoginActivity extends AppCompatActivity implements
     private void addNewUser(String email, String username, String description, String website, String profile_photo) {
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
-        User settings = new User(
+        User user = new User(
                 description,
                 "user name",
                 StringManipulation.condenseUserName(username),
@@ -452,7 +452,7 @@ public class LoginActivity extends AppCompatActivity implements
 
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(firebaseUser.getUid())
-                .setValue(settings);
+                .setValue(user);
     }
 
     @Override
