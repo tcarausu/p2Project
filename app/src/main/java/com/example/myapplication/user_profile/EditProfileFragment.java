@@ -73,7 +73,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mDisplayName = view.findViewById(R.id.displayName);
         mUserName = view.findViewById(R.id.username);
         mWebsite = view.findViewById(R.id.website);
-        mAbout = view.findViewById(R.id.description);
+        mAbout = view.findViewById(R.id.about);
         mEmail = view.findViewById(R.id.email);
         mPhoneNumber = view.findViewById(R.id.phoneNumber);
 
