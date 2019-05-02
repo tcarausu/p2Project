@@ -3,11 +3,14 @@ package com.example.myapplication.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
@@ -28,9 +31,11 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
     private static final int ACTIVITY_NUM = 0;
 
-    private Context mContext = HomeActivity.this;
+    private Context mContext;
+
     private String userUID;
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private GoogleSignInClient mGoogleSignInClient ;
 
     /**
@@ -42,10 +47,11 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.home_activity);
         mAuth = FirebaseAuth.getInstance() ;
 
-        initImageLoader();
         initLayout();
         buttonListeners();
+        initImageLoader();
         setupBottomNavigationView();
+        setupFirebaseAuth();
         setupViewPager();
     }
 
@@ -54,7 +60,9 @@ public class HomeActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        mAuth.addAuthStateListener(mAuthListener);
 
+        checkCurrentUser(currentUser);
         if (currentUser == null) {
             mAuth.signOut();
             LoginManager.getInstance().logOut();
@@ -63,16 +71,16 @@ public class HomeActivity extends AppCompatActivity {
         else return;
 
     }
-
-    private void sendUserToLogin() {
-
-        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(i);
-        finish();
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
-
     public void initLayout() {
+        mContext = HomeActivity.this;
+
         mAuth = FirebaseAuth.getInstance();
         Intent getLoginIntent = getIntent();
         userUID = getLoginIntent.getStringExtra("userUid");
@@ -81,28 +89,16 @@ public class HomeActivity extends AppCompatActivity {
     public void buttonListeners() {
 
     }
+    private void sendUserToLogin() {
 
-    /**
-     * @param user is the Firebase User used to adjust/perform info exchange
-     */
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-        } else {
+        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        finish();
 
-        }
-    }
+        mAuth.addAuthStateListener(mAuthListener);
 
-    /**
-     * Bottom Navigation View setup
-     */
-    public void setupBottomNavigationView() {
-        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
-        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
-        Menu menu = bottomNavigationViewEx.getMenu();
-        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        menuItem.setChecked(true);
-
+        checkCurrentUser(mAuth.getCurrentUser());
     }
 
     /**
@@ -121,15 +117,64 @@ public class HomeActivity extends AppCompatActivity {
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.photo_camera);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.home);
+        Objects.requireNonNull(tabLayout.getTabAt(1)).select();
         Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.direct_message_pressed);
 
     }
 
+    /**
+     * checks to see if @param 'user'  is logged in
+     *
+     * @param user of type FirebaseUser
+     */
+    private void checkCurrentUser(FirebaseUser user) {
+        Log.d(TAG, "checkCurrentUser: checking if user is logged in");
+
+        if (user == null) {
+            Toast.makeText(mContext, "Your have to Authenticate first before proceeding", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(mContext, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            startActivity(intent);
+        }
+
+    }
+
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                checkCurrentUser(user);
+
+                if (user != null) {
+                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
+                } else Log.d(TAG, "onAuthStateChanged: signed out");
+            }
+        };
+    }
 
     private void initImageLoader() {
         UniversalImageLoader imageLoader = new UniversalImageLoader(mContext);
         ImageLoader.getInstance().init(imageLoader.getConfig());
     }
 
+    /**
+     * Bottom Navigation View setup
+     */
+    public void setupBottomNavigationView() {
+        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
 
+    }
 }

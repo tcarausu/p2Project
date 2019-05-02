@@ -3,6 +3,7 @@ package com.example.myapplication.user_profile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,11 @@ import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.SectionsStatePagerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
@@ -28,14 +34,17 @@ import java.util.ArrayList;
 /**
  * File created by tcarau18
  **/
-class AccountSettingsActivity extends AppCompatActivity implements View.OnClickListener {
-
+public class AccountSettingsActivity extends AppCompatActivity
+        implements View.OnClickListener {
     private static final String TAG = "AccountSettingsActivity";
     private static final int ACTIVITY_NUM = 4;
 
     private Context mContext;
-    private FirebaseAuth mAuth ;
-    private ListView listView ;
+
+    //firebase
+    private FirebaseAuth mAuth;
+
+    private ListView listView;
 
     private SectionsStatePagerAdapter pagerAdapter;
     private ViewPager mViewPager;
@@ -52,6 +61,18 @@ class AccountSettingsActivity extends AppCompatActivity implements View.OnClickL
         setupBottomNavigationView();
         setupSettingsList();
         setupFragments();
+        getIncomingIntent();
+    }
+
+    private void initLayout() {
+        mContext = AccountSettingsActivity.this;
+
+        findViewById(R.id.backArrow);
+        Log.d(TAG, "onCreate: started account");
+
+        mViewPager = findViewById(R.id.container);
+        mRelativeLayout = findViewById(R.id.relativeLayout1);
+
     }
 
     @Override
@@ -68,32 +89,27 @@ class AccountSettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
-        FirebaseUser user = mAuth.getCurrentUser() ;
-        if (user !=  null && user.isEmailVerified()) {
-           return;
-        }
-        else {
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null
+            //it brakes because incorrect implementation
+//                && user.isEmailVerified()
+        ) {
+            return;
+        } else {
             mAuth.signOut();
             goToLogin();
         }
 
     }
+
     public void goToLogin() {
         startActivity(new Intent(AccountSettingsActivity.this, LoginActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
     }
-    private void initLayout() {
-        mContext = getApplicationContext();
-        findViewById(R.id.backArrow);
-        Log.d(TAG, "onCreate: started account");
-        mViewPager = findViewById(R.id.container);
-        mRelativeLayout = findViewById(R.id.relativeLayout1);
-    }
-
-
 
     private void setupViewPager(int fragmentNr) {
 
@@ -106,24 +122,23 @@ class AccountSettingsActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//       int count =  pagerAdapter.getCount();
-//        if (count <= 1)
-//            finish();
     }
 
     private void setupFragments() {
 
         pagerAdapter = new SectionsStatePagerAdapter(getSupportFragmentManager());
         pagerAdapter.addFragment(new EditProfileFragment(), getString(R.string.edit_your_profile_fragment)); //fragment 0
-//        pagerAdapter.addFragment(new SignOutFramgnet(), getString(R.string.sign_out_fragment)); //fragment 1
+        pagerAdapter.addFragment(new SignOutFragment(), getString(R.string.sign_out_fragment)); //fragment 1
     }
 
     private void setupSettingsList() {
         Log.d(TAG, "setupSettingsList: initializing 'Account Settings' list");
 
+        ListView listView = findViewById(R.id.listViewAccountSettings);
+
         ArrayList<String> options = new ArrayList<>();
         options.add(getString(R.string.edit_your_profile_fragment));
-//        options.add(getString(R.string.sign_out_fragment));
+        options.add(getString(R.string.sign_out_fragment));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, options);
         listView.setAdapter(adapter);
@@ -134,10 +149,19 @@ class AccountSettingsActivity extends AppCompatActivity implements View.OnClickL
                 Log.d(TAG, "onItemClick: navigating to fragment nr " + position);
                 setupViewPager(position);
 
-            //Todo find position and assign listener to it
+                //Todo find position and assign listener to it
 
             }
         });
+    }
+
+    private void getIncomingIntent() {
+        Intent intent = getIntent();
+
+        if (intent.hasExtra(getString(R.string.calling_activity))) {
+            Log.d(TAG, "getIncomingIntent: received incoming intent from" + getString(R.string.profile_activity));
+            setupViewPager(pagerAdapter.getFragmentNumber(getString(R.string.edit_your_profile_fragment)));
+        }
     }
 
     /**

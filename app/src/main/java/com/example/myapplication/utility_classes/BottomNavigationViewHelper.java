@@ -42,24 +42,29 @@ public class BottomNavigationViewHelper {
                 switch (menuItem.getItemId()) {
                     case R.id.ic_home:
                         Intent homeIntent = new Intent(context, HomeActivity.class); //ACTIVITY_NUM = 0
-                        context.startActivity(homeIntent);
+                        context.startActivity(homeIntent
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         break;
                     case R.id.ic_search:
                         Intent searchIntent = new Intent(context, SearchActivity.class);//ACTIVITY_NUM = 1
-                        context.startActivity(searchIntent);
+                        context.startActivity(searchIntent
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         break;
 
                     case R.id.ic_add_post:
                         Intent addPostIntent = new Intent(context, AddPostActivity.class);//ACTIVITY_NUM = 2
-                        context.startActivity(addPostIntent);
+                        context.startActivity(addPostIntent
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         break;
                     case R.id.ic_like_posts:
                         Intent likePost = new Intent(context, LikePostActivity.class);//ACTIVITY_NUM = 3
-                        context.startActivity(likePost);
+                        context.startActivity(likePost
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         break;
                     case R.id.ic_user_profile:
                         Intent userProfileIntent = new Intent(context, UserProfileActivity.class);//ACTIVITY_NUM = 4
-                        context.startActivity(userProfileIntent);
+                        context.startActivity(userProfileIntent
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         break;
                 }
                 return false;

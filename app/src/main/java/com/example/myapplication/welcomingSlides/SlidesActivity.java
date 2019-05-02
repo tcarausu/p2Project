@@ -15,8 +15,9 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
+
 /**
- *   by M.MSAAD
+ * by M.MSAAD
  **/
 public class SlidesActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -24,10 +25,9 @@ public class SlidesActivity extends AppCompatActivity {
     private LinearLayout dotsLayout;
     private TextView[] dots;
     private SliderAdapter sliderAdapter;
-    private Button mpreviouis,mNexxt ,mSkip ;
-    private int mCurrentSlide  ;
-    private Intent mIntent ;
-
+    private Button mPrevious, mNext, mSkip;
+    private int mCurrentSlide;
+    private Intent mIntent;
 
 
     @Override
@@ -35,25 +35,23 @@ public class SlidesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.slide_activity);
 
-        SharedPreferences prefs = getSharedPreferences("prefs",MODE_PRIVATE);
-        Boolean firstRun = prefs.getBoolean("prefs",true);
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        Boolean firstRun = prefs.getBoolean("prefs", true);
 
-        if (firstRun ) {//if its the first run we change the boolean to false
-            SharedPreferences.Editor editor = prefs.edit() ;
-            editor.putBoolean("prefs",false);
+        if (firstRun) {//if its the first run we change the boolean to false
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("prefs", false);
             editor.apply();
-        }
-
-        else {// then if boolean is false we skip the slides
+        } else {// then if boolean is false we skip the slides
             startActivity(new Intent(SlidesActivity.this, LoginActivity.class));
             Toast.makeText(getApplicationContext(), "Welcome", Toast.LENGTH_LONG)
                     .show();
         }
 
-        slideViewPager = findViewById(R.id.slide1_viewPager);
+        slideViewPager = findViewById(R.id.slides_viewPager);
         dotsLayout = findViewById(R.id.dots_layout);
-        mpreviouis = findViewById(R.id.previousButton_id);
-        mNexxt = findViewById(R.id.nextButton_id);
+        mPrevious = findViewById(R.id.previousButton_id);
+        mNext = findViewById(R.id.nextButton_id);
         mSkip = findViewById(R.id.skipButton);
 
         sliderAdapter = new SliderAdapter(this);
@@ -61,21 +59,22 @@ public class SlidesActivity extends AppCompatActivity {
         addDots(0);
         slideViewPager.addOnPageChangeListener(vl);
 
-        mIntent  = new Intent(SlidesActivity.this,LoginActivity.class);
+        mIntent = new Intent(SlidesActivity.this, LoginActivity.class);
 
-        mpreviouis.setOnClickListener(new View.OnClickListener() {
+        mPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                slideViewPager.setCurrentItem(mCurrentSlide+1);
+                slideViewPager.setCurrentItem(mCurrentSlide + 1);
             }
         });
 
-        mNexxt.setOnClickListener(new View.OnClickListener() {
+        mNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                slideViewPager.setCurrentItem(mCurrentSlide+1);
+                slideViewPager.setCurrentItem(mCurrentSlide + 1);
 
-                if (mNexxt.getText().equals("FINISH")){
+                if (mNext.getText().equals("FINISH")) {
+
                     startActivity(mIntent);
                 }
 
@@ -91,26 +90,22 @@ public class SlidesActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
     @SuppressLint("ResourceAsColor")
-    public void addDots(int position){
+    public void addDots(int position) {
 
-        dots = new TextView[3] ;
+        dots = new TextView[3];
         dotsLayout.removeAllViews();
 
-        for (int i = 0; i < dots.length ; i ++){
+        for (int i = 0; i < dots.length; i++) {
 
-            dots[i] = new TextView(this) ;
+            dots[i] = new TextView(this);
             dots[i].setText(Html.fromHtml("&#8226;"));
             dots[i].setTextSize(35);
             dots[i].setTextColor(R.color.colorPrimaryDark);
             dotsLayout.addView(dots[i]);
         }
 
-        if (dots.length > 0){
+        if (dots.length > 0) {
             dots[position].setTextColor(getResources().getColor(R.color.white));
         }
     }
@@ -128,28 +123,28 @@ public class SlidesActivity extends AppCompatActivity {
 
             if (mCurrentSlide == 0) {
 
-                mpreviouis.setEnabled(false);
-                mNexxt.setEnabled(true);
+                mPrevious.setEnabled(false);
+                mNext.setEnabled(true);
                 mSkip.setEnabled(true);
-                mpreviouis.setVisibility(View.INVISIBLE);
+                mPrevious.setVisibility(View.INVISIBLE);
                 mSkip.setVisibility(View.VISIBLE);
 
             } else if (mCurrentSlide == dots.length - 1) {
-                mNexxt.setEnabled(true);
-                mpreviouis.setEnabled(true);
+                mNext.setEnabled(true);
+                mPrevious.setEnabled(true);
                 mSkip.setEnabled(true);
-                mpreviouis.setVisibility(View.VISIBLE);
-                mNexxt.setText("FINISH");
+                mPrevious.setVisibility(View.VISIBLE);
+                mNext.setText("FINISH");
                 mSkip.setVisibility(View.INVISIBLE);
 
             } else {
-                mNexxt.setEnabled(true);
-                mpreviouis.setEnabled(true);
+                mNext.setEnabled(true);
+                mPrevious.setEnabled(true);
                 mSkip.setEnabled(true);
-                mpreviouis.setVisibility(View.VISIBLE);
+                mPrevious.setVisibility(View.VISIBLE);
                 mSkip.setVisibility(View.VISIBLE);
-                mNexxt.setText("Next");
-                mpreviouis.setText("Back");
+                mNext.setText("Next");
+                mPrevious.setText("Back");
             }
 
 
@@ -160,8 +155,6 @@ public class SlidesActivity extends AppCompatActivity {
 
         }
     };
-
-
 
 
 }

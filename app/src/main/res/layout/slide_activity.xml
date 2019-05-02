@@ -9,7 +9,7 @@
 
 
     <android.support.v4.view.ViewPager
-        android:id="@+id/slide1_viewPager"
+        android:id="@+id/slides_viewPager"
         android:layout_width="match_parent"
         android:layout_height="583dp"
         android:layout_alignParentStart="true"
@@ -19,12 +19,10 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp">
 
-
     </android.support.v4.view.ViewPager>
 
     <LinearLayout
         android:id="@+id/dots_layout"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -45,12 +43,12 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="30dp"
-        android:text="previous"
+        android:text="@string/previous_slide"
         android:shadowColor="@color/colorAccent"
         android:shadowDx="1"
         android:shadowDy="2"
         android:shadowRadius="1"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         />
 
     <Button
@@ -66,8 +64,8 @@
         android:shadowDx="1"
         android:shadowDy="2"
         android:shadowRadius="1"
-        android:text="Skip"
-        android:textColor="@color/white" />
+        android:text="@string/skip_slide"
+        android:textColor="@color/black" />
 
     <Button
         android:id="@+id/nextButton_id"
@@ -78,12 +76,12 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="30dp"
-        android:text="Next"
+        android:text="@string/next_slide"
         android:shadowColor="@color/colorAccent"
         android:shadowDx="1"
         android:shadowDy="2"
         android:shadowRadius="1"
-        android:textColor="@color/white" />
+        android:textColor="@color/black" />
 
 
 </RelativeLayout>

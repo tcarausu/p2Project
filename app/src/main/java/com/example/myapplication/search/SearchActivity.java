@@ -18,7 +18,7 @@ public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
     private static final int ACTIVITY_NUM = 1;
 
-    private Context mContext = SearchActivity.this;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,24 +30,13 @@ public class SearchActivity extends AppCompatActivity {
         setupBottomNavigationView();
     }
 
-
     public void initLayout() {
-
+        mContext = SearchActivity.this;
 
     }
 
     public void buttonListeners() {
 
-    }
-
-    /**
-     * @param user is the Firebase User used to adjust/perform info exchange
-     */
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-        } else {
-
-        }
     }
 
     /**
