@@ -274,8 +274,8 @@ public class LoginActivity extends AppCompatActivity implements
                             FirebaseUser user = mAuth.getCurrentUser();
                             addUserToDataBase();
 //                             do something with the individual "users"
-//                            String userMAIL = user.getEmail();
-//                            addNewUser(userMAIL, user.getDisplayName(), "about", "website", "photo");
+
+
 //------------------------------------added for testing purposes------------------------------------
 
                             goToMainActivity();

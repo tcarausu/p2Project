@@ -74,6 +74,7 @@ public class SlidesActivity extends AppCompatActivity {
                 slideViewPager.setCurrentItem(mCurrentSlide + 1);
 
                 if (mNext.getText().equals("FINISH")) {
+
                     startActivity(mIntent);
                 }
 
