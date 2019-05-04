@@ -72,6 +72,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseUser currentUser;
     private Context mContext;
     private User user;
+    private User user;
     private UserSettings mUserSettings;
     private Uri uri, avatarUri;
     private StorageReference profilePicStorage;
@@ -185,6 +186,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private void setProfileWidgets(UserSettings userSettings) {
     private void setProfileWidgets(User userSettings) {
         user = userSettings;
+    private void setProfileWidgets(User userSettings) {
+        user = userSettings;
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " +
                 userSettings.toString());
 
@@ -205,6 +208,15 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 mProfilePhoto.setImageURI(avatarUri);
             } else
                 Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
+
+//        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
+
+        mDisplayName.setText(user.getDisplay_name());
+        mUserName.setText(user.getUsername());
+        mWebsite.setText(user.getWebsite());
+        mAbout.setText(user.getAbout());
+        mEmail.setText(String.valueOf(user.getEmail()));
+        mPhoneNumber.setText(String.valueOf(user.getPhone_number()));
 
         } catch (IllegalArgumentException e) {
             mProfilePhoto.setImageURI(avatarUri);

@@ -75,6 +75,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private User user;
 
+    private User user;
+
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
             container, @Nullable Bundle savedInstanceState) {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -232,6 +234,14 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         }
 
+        mDisplayName.setText(user.getDisplay_name());
+        mUserName.setText(user.getUsername());
+        mWebsite.setText(user.getWebsite());
+        mAbout.setText(user.getAbout());
+
+        mFollowers.setText(String.valueOf(user.getFollowers()));
+        mFollowing.setText(String.valueOf(user.getFollowing()));
+        mPosts.setText(String.valueOf(user.getPosts()));
 
     }
 
