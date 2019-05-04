@@ -25,7 +25,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
-import com.example.myapplication.models.UserSettings;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -72,6 +71,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseMethods firebaseMethods;
     private FirebaseUser currentUser;
     private Context mContext;
+    private User user;
     private UserSettings mUserSettings;
     private Uri uri, avatarUri;
     private StorageReference profilePicStorage;
@@ -165,6 +165,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                if (!user.getUsername().equals(userName)) {
+                    firebaseMethods.checkIfUsernameExists(userName);
+                }
                 if (!mUserSettings.getUser().getUsername().equals(userName)
                         && !mUserSettings.getUser().getDisplay_name().equals(displayName)) {
                     firebaseMethods.checkIfUsernameExists(userName, displayName, website, about, phoneNumber, profile_url);
@@ -180,6 +183,10 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     }
 
     private void setProfileWidgets(UserSettings userSettings) {
+    private void setProfileWidgets(User userSettings) {
+        user = userSettings;
+        Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " +
+                userSettings.toString());
 
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " + userSettings.toString());
         User settings = userSettings.getUser();
@@ -202,6 +209,15 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         } catch (IllegalArgumentException e) {
             mProfilePhoto.setImageURI(avatarUri);
         }
+
+//        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
+
+        mDisplayName.setText(user.getDisplay_name());
+        mUserName.setText(user.getUsername());
+        mWebsite.setText(user.getWebsite());
+        mAbout.setText(user.getAbout());
+        mEmail.setText(String.valueOf(user.getEmail()));
+        mPhoneNumber.setText(String.valueOf(user.getPhone_number()));
 
     }
 
