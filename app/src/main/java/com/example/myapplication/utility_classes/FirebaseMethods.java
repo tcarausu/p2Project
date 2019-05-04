@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
-import com.example.myapplication.models.UserSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -157,10 +156,10 @@ public class FirebaseMethods {
      * @param dataSnapshot represent the data from database
      * @return the User Account Settings
      */
-    public UserSettings getUserSettings(DataSnapshot dataSnapshot) {
+    public User getUserSettings(DataSnapshot dataSnapshot) {
         Log.d(TAG, "getUserAccountSettings: retrieving user account settings from database");
 
-        User settings = new User();
+        User user = new User();
         String userID = mAuth.getCurrentUser().getUid();
 
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -169,74 +168,74 @@ public class FirebaseMethods {
             if (ds.getKey().equals(mContext.getString(R.string.dbname_users))) {
                 Log.d(TAG, "getUserAccountSettings: dataSnapshot" + ds);
                 try {
-                    settings.setUsername(
+                    user.setUsername(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getUsername()
                     );
 
-                    settings.setDisplay_name(
+                    user.setDisplay_name(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getDisplay_name()
                     );
 
-                    settings.setAbout(
+                    user.setAbout(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getAbout()
                     );
 
-                    settings.setWebsite(
+                    user.setWebsite(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getWebsite()
                     );
 
-                    settings.setFollowers(
+                    user.setFollowers(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getFollowers()
                     );
 
-                    settings.setFollowing(
+                    user.setFollowing(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getFollowing()
                     );
 
-                    settings.setPosts(
+                    user.setPosts(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getPosts()
                     );
 
-                    settings.setProfile_photo(
+                    user.setProfile_photo(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getProfile_photo()
                     );
 
-                    settings.setEmail(
+                    user.setEmail(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getEmail()
                     );
 
-                    settings.setPhone_number(
+                    user.setPhone_number(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getPhone_number()
                     );
 
-                    Log.d(TAG, "getUserAccountSettings: retrieve user account settings information: " + settings.toString());
+                    Log.d(TAG, "getUserAccountSettings: retrieve user account settings information: " + user.toString());
                 } catch (NullPointerException e) {
                     Log.d(TAG, "getUserAccountSettings: NullPointerException: " + e.getMessage());
                 }
             }
         }
 
-        return new UserSettings(settings);
+        return user;
     }
 
 //    private String getTimestamp() {

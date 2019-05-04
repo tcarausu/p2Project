@@ -24,7 +24,6 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.User;
-import com.example.myapplication.models.UserSettings;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.GridImageAdapter;
@@ -58,7 +57,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private Context mContext;
 
     //firebase
-
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
@@ -74,6 +72,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseMethods firebaseMethods;
     private Uri avatarUri;
 
+    private User user;
+
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
+            container, @Nullable Bundle savedInstanceState) {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         mAuth = FirebaseAuth.getInstance();
@@ -188,12 +190,24 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     }
 
-    private void setProfileWidgets(UserSettings userSettings) {
-        Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " +
-                userSettings.toString());
+    private void setProfileWidgets(
+            User userSettings
+    ) {
+        user = userSettings;
 
-        User settings = userSettings.getUser();
+        Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: "
+                + user.toString());
 
+//        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
+
+        mDisplayName.setText(user.getDisplay_name());
+        mUserName.setText(user.getUsername());
+        mWebsite.setText(user.getWebsite());
+        mAbout.setText(user.getAbout());
+
+        mFollowers.setText(String.valueOf(user.getFollowers()));
+        mFollowing.setText(String.valueOf(user.getFollowing()));
+        mPosts.setText(String.valueOf(user.getPosts()));
         mDisplayName.setText(settings.getDisplay_name());
         mUserName.setText(settings.getUsername());
         mWebsite.setText(settings.getWebsite());
