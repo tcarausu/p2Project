@@ -27,6 +27,7 @@ import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.GridImageAdapter;
+import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -164,7 +165,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
+                    Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
                 } else Log.d(TAG, "onAuthStateChanged: signed out");
 
 //                mAuth.signOut();
@@ -198,7 +199,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: "
                 + user.toString());
 
-//        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
+//        UniversalImageLoader.setImage(user.getProfile_photo(), mProfilePhoto, null, "");
 
         mDisplayName.setText(user.getDisplay_name());
         mUserName.setText(user.getUsername());
@@ -263,8 +264,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
         Query query = reference
-                .child(getString(R.string.dbname_user_photos))
+                .child(getString(R.string.dbname_posts))
                 .child(mAuth.getCurrentUser().getUid());
+
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
