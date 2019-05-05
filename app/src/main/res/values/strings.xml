@@ -130,4 +130,14 @@
     <string name="skip_slide">Skip</string>
     <string name="user_name_and_last_name">User Name and Last Name</string>
 
+    <string name="image_description_share">Write something about this food....</string>
+    <string name="upload">Upload</string>
+    <string name="open_gallery">Open Gallery</string>
+    <string name="image_ingredients_share">Write down the ingredients...</string>
+    <string name="gallery">GALLERY</string>
+    <string name="photo_add">PHOTO</string>
+    <string name="open_camera">Open camera</string>
+    <string name="next">Next</string>
+    <string name="string_recipe">Write down the recipe..</string>
+
 </resources>
