@@ -122,8 +122,9 @@
     <string name="dbname_user_account_settings">user_account_settings</string>
     <string name="dbname_user_photos">user_photos</string>
     <string name="dbname_photos">photos</string>
-
+    <string name="dbname_posts">posts</string>
     <string name="field_username">username</string>
+    <string name="field_profile_photo">profile_photo</string>
     <string name="field_display_name">display_name</string>
 
     <string name="previous_slide">previous</string>

@@ -64,7 +64,8 @@
                 android:id="@+id/relLayout2"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_below="@id/post_image">
+                android:layout_below="@id/post_image"
+                android:background="@color/white">
 
                 <RelativeLayout
                     android:id="@+id/heart_layout"
@@ -105,8 +106,8 @@
                 <RelativeLayout
                     android:id="@+id/share_layout"
                     android:layout_width="60dp"
-                    android:layout_toEndOf="@+id/speech_bubble"
                     android:layout_height="match_parent"
+                    android:layout_toEndOf="@+id/speech_bubble"
                     android:background="@color/white">
 
                     <ImageView
@@ -137,10 +138,11 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/relLayout2"
                 android:layout_marginBottom="50dp"
+                android:background="@color/white"
                 android:padding="20dp">
 
                 <TextView
-                    android:id="@+id/image_likes"
+                    android:id="@+id/post_likes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Liked by whoever, eve, and 30 others"
@@ -148,30 +150,30 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/image_caption"
+                    android:id="@+id/post_caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/image_likes"
+                    android:layout_below="@+id/post_likes"
                     android:layout_marginTop="15dp"
                     android:text="username + caption #caption"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/image_comment_link"
+                    android:id="@+id/post_comment_link"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/image_caption"
+                    android:layout_below="@+id/post_caption"
                     android:layout_marginTop="15dp"
                     android:text="View all 3 comments"
                     android:textColor="@color/grey_500"
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/image_time_posted"
+                    android:id="@+id/post_TimeStamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/image_comment_link"
+                    android:layout_below="@+id/post_comment_link"
                     android:layout_marginTop="15dp"
                     android:text="3 days ago"
                     android:textColor="@color/grey_500"

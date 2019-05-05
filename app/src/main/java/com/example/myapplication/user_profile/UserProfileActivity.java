@@ -70,6 +70,5 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         transaction.addToBackStack(getString(R.string.view_post_fragment));
         transaction.commit();
 
-
     }
 }
