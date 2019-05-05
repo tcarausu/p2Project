@@ -233,6 +233,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
 
         }
+//        UniversalImageLoader.setImage(user.getProfile_photo(), mProfilePhoto, null, "");
 
         mDisplayName.setText(user.getDisplay_name());
         mUserName.setText(user.getUsername());
