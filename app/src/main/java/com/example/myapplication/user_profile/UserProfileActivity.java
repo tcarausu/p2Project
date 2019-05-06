@@ -10,7 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.ViewPostFragment;
+import com.example.myapplication.utility_classes.ViewPostFragment;
 import com.example.myapplication.models.Photo;
 import com.google.firebase.auth.FirebaseAuth;
 
