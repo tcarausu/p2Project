@@ -1,5 +1,6 @@
 package com.example.myapplication.utility_classes;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
-import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.User;
 import com.example.myapplication.user_profile.AccountSettingsActivity;
@@ -77,9 +77,6 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
     private User user;
     private Heart heart;
     private GestureDetector mGestureDetector;
-    private boolean mLikedByCurrentUser;
-    private StringBuilder mUsers;
-    private String mLikesString = "";
 
     public ViewPostFragment() {
         super();
@@ -98,6 +95,11 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         setupFirebaseAuth();
 
         setupBottomNavigationView();
+        getPhotoDetails();
+
+//         setupWidgets();
+
+        testToggle();
 
         return view;
     }
@@ -118,19 +120,18 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         heartRed = view.findViewById(R.id.image_heart_red);
         heartWhite = view.findViewById(R.id.image_heart_white);
 
+        heartRed.setVisibility(View.VISIBLE);
+        heartWhite.setVisibility(View.GONE);
+
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
 
         heart = new Heart(heartWhite, heartRed);
-        setupWidgets();
 
         mGestureDetector = new GestureDetector(getActivity(), new GestureListener());
         try {
             mPhoto = getPhotoFromBundle();
             UniversalImageLoader.setImage(mPhoto.getImage_path(), mPostImage, null, "");
             mActivityNumber = getActivityNumberBundle();
-
-            getPhotoDetails();
-//            getLikesString();
 
         } catch (NullPointerException e) {
             Log.e(TAG, "initLayout: NullPointerException " + e.getMessage());
@@ -221,6 +222,8 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
                     Toast.makeText(mContext, "trololo", Toast.LENGTH_SHORT).show();
 
                 }
+                setupWidgets();
+
 
             }
 
@@ -243,36 +246,6 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
         UniversalImageLoader.setImage(user.getProfile_photo(), mProfilePhoto, null, "");
         mUserName.setText(user.getUsername());
-//        mPostLikes.setText(mLikesString);
-//
-//        if (mLikedByCurrentUser) {
-//            heartRed.setVisibility(View.VISIBLE);
-//            heartWhite.setVisibility(View.GONE);
-//
-//            heartRed.setOnTouchListener(new View.OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    Log.d(TAG, "onTouch: make white");
-//
-//                    return mGestureDetector.onTouchEvent(event);
-//                }
-//            });
-//        } else {
-//            heartRed.setVisibility(View.GONE);
-//            heartWhite.setVisibility(View.VISIBLE);
-//
-//            heartWhite.setOnTouchListener(new View.OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    Log.d(TAG, "onTouch: make red");
-//
-//                    return mGestureDetector.onTouchEvent(event);
-//
-//                }
-//            });
-//        }
-
-
     }
 
     private String getTimeStampDifference() {
@@ -333,6 +306,28 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private void testToggle() {
+        heartRed.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: make white");
+
+                return mGestureDetector.onTouchEvent(event);
+            }
+        });
+
+        heartWhite.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: make red");
+
+                return mGestureDetector.onTouchEvent(event);
+
+            }
+        });
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -380,127 +375,19 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public void getLikesString() {
-        final DatabaseReference referencePosts = FirebaseDatabase.getInstance().getReference("posts");
-        final DatabaseReference referenceUsers = FirebaseDatabase.getInstance().getReference("users");
-        Query query = referencePosts
-                .orderByChild(mPhoto.getPhoto_id())
-                .equalTo(R.string.field_likes);
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers = new StringBuilder();
-
-                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    Query query = referenceUsers
-                            .orderByChild(getString(R.string.field_user_id))
-                            .equalTo(singleSnapshot.getValue(Like.class).getUser_id());
-
-                    query.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                            for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                                Log.d(TAG, "onDataChange: found like" + singleSnapshot.getValue(User.class));
-                                mUsers.append(singleSnapshot.getValue(User.class).getUsername());
-                                mUsers.append(",");
-
-                            }
-
-                            String[] splitUsers = mUsers.toString().split(",");
-
-                            if (mUsers.toString().contains(user.getUsername())) {
-                                mLikedByCurrentUser = true;
-                            } else mLikedByCurrentUser = false;
-
-                            int length = splitUsers.length;
-                            if (length == 1) {
-                                mLikesString = "Liked by " + splitUsers[0];
-                            } else if (length == 2) {
-                                mLikesString = "Liked by " + splitUsers[0]
-                                        + " and " + splitUsers[1];
-
-                            } else if (length == 3) {
-                                mLikesString = "Liked by " + splitUsers[0]
-                                        + " , " + splitUsers[1]
-                                        + " and " + splitUsers[2];
-
-                            } else if (length == 4) {
-                                mLikesString = "Liked by " + splitUsers[0]
-                                        + " , " + splitUsers[1]
-                                        + " , " + splitUsers[2]
-                                        + " and " + splitUsers[3];
-                            } else if (length > 4) {
-                                mLikesString = "Liked by " + splitUsers[0]
-                                        + " , " + splitUsers[1]
-                                        + " , " + splitUsers[2]
-                                        + " and " + (splitUsers.length - 3) + "others";
-                            }
-                            setupWidgets();
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.d(TAG, "onCancelled: Query Cancelled");
-
-                        }
-                    });
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "onCancelled: Query Cancelled");
-
-            }
-        });
-    }
-
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onDown(MotionEvent e) {
             return super.onDown(e);
         }
 
-//        @Override
-//        public boolean onDoubleTap(MotionEvent e) {
-//            Log.d(TAG, "onTouch: double tap");
-//
-//            heart.toggleLike();
-//
-//            return true;
-//        }
-
         @Override
-        public void onLongPress(MotionEvent e) {
-            Log.d(TAG, "onTouch:long press");
+        public boolean onDoubleTap(MotionEvent e) {
+            Log.d(TAG, "onTouch: double tap");
 
-            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("posts");
-            Query query = reference
-                    .orderByChild(mPhoto.getPhoto_id())
-                    .equalTo(R.string.field_likes);
+            heart.toggleLike();
 
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    Log.d(TAG, "onCancelled: Query Cancelled");
-
-                }
-            });
-//            heart.toggleLike();
-
-            super.onLongPress(e);
+            return true;
         }
     }
 }
