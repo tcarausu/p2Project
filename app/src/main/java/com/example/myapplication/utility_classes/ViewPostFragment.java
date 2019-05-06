@@ -1,5 +1,6 @@
-package com.example.myapplication;
+package com.example.myapplication.utility_classes;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,23 +9,22 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.R;
 import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.User;
 import com.example.myapplication.user_profile.AccountSettingsActivity;
 import com.example.myapplication.user_profile.UserProfileActivity;
-import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
-import com.example.myapplication.utility_classes.FirebaseMethods;
-import com.example.myapplication.utility_classes.SquareImageView;
-import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -75,6 +75,8 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
     //vars for Query
     private String photoUsername = "", photoURL = "";
     private User user;
+    private Heart heart;
+    private GestureDetector mGestureDetector;
 
     public ViewPostFragment() {
         super();
@@ -93,7 +95,11 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         setupFirebaseAuth();
 
         setupBottomNavigationView();
-        setupWidgets();
+        getPhotoDetails();
+
+//         setupWidgets();
+
+        testToggle();
 
         return view;
     }
@@ -111,9 +117,17 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         mPostCommentLink = view.findViewById(R.id.post_comment_link);
         mPostTimeStamp = view.findViewById(R.id.post_TimeStamp);
 
-//        toolbar = view.findViewById(R.id.profileToolBar);
+        heartRed = view.findViewById(R.id.image_heart_red);
+        heartWhite = view.findViewById(R.id.image_heart_white);
+
+        heartRed.setVisibility(View.VISIBLE);
+        heartWhite.setVisibility(View.GONE);
+
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
 
+        heart = new Heart(heartWhite, heartRed);
+
+        mGestureDetector = new GestureDetector(getActivity(), new GestureListener());
         try {
             mPhoto = getPhotoFromBundle();
             UniversalImageLoader.setImage(mPhoto.getImage_path(), mPostImage, null, "");
@@ -128,8 +142,6 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         profileMenu = view.findViewById(R.id.show_more);
         backArrow = view.findViewById(R.id.backArrow);
 
-        heartRed = view.findViewById(R.id.image_heart_red);
-        heartWhite = view.findViewById(R.id.image_heart_white);
         comments = view.findViewById(R.id.speech_bubble);
         share = view.findViewById(R.id.share);
 
@@ -193,20 +205,24 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
     }
 
     private void getPhotoDetails() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
 
-        Query query = reference
-                .child(getString(R.string.dbname_users))
-                .child(mAuth.getCurrentUser().getUid())
-                .orderByChild(getString(R.string.field_profile_photo))
-                .equalTo(mPhoto.getImage_path());
+        Query query = reference.child(mAuth.getCurrentUser().getUid());
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                if (dataSnapshot.exists()
+                        && dataSnapshot.getKey()
+                        .equals(mPhoto.getUser_id())) {
+                    user = dataSnapshot.getValue(User.class);
+
+                } else {
+                    Log.d(TAG, "onDataChange: NOPE: " + dataSnapshot.getValue(User.class).getProfile_photo());
+                    Toast.makeText(mContext, "trololo", Toast.LENGTH_SHORT).show();
 
                 }
+                setupWidgets();
 
 
             }
@@ -227,6 +243,9 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         } else {
             mPostTimeStamp.setText("Today");
         }
+
+        UniversalImageLoader.setImage(user.getProfile_photo(), mProfilePhoto, null, "");
+        mUserName.setText(user.getUsername());
     }
 
     private String getTimeStampDifference() {
@@ -287,20 +306,32 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private void testToggle() {
+        heartRed.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: make white");
+
+                return mGestureDetector.onTouchEvent(event);
+            }
+        });
+
+        heartWhite.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "onTouch: make red");
+
+                return mGestureDetector.onTouchEvent(event);
+
+            }
+        });
+    }
+
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-
-            case R.id.image_heart_white:
-                Toast.makeText(mContext, "MOSHI MOSHI", Toast.LENGTH_SHORT).show();
-                heartRed = v.findViewById(R.id.image_heart_red);
-
-//                Intent intent = new Intent(mContext, AccountSettingsActivity.class);
-//                intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
-//                startActivity(intent);
-
-                break;
 
             case R.id.show_more:
 
@@ -344,4 +375,19 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return super.onDown(e);
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            Log.d(TAG, "onTouch: double tap");
+
+            heart.toggleLike();
+
+            return true;
+        }
+    }
 }
