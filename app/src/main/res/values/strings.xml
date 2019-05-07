@@ -132,12 +132,13 @@
 
     <string name="image_description_share">Write something about this food....</string>
     <string name="upload">Upload</string>
-    <string name="open_gallery">Open Gallery</string>
+    <string name="choose_picture">Select Picture</string>
     <string name="image_ingredients_share">Write down the ingredients...</string>
-    <string name="gallery">GALLERY</string>
+    <string name="post">POST</string>
     <string name="photo_add">PHOTO</string>
     <string name="open_camera">Open camera</string>
     <string name="next">Next</string>
     <string name="string_recipe">Write down the recipe..</string>
+    <string name="please_select_picture">Please select a picture</string>
 
 </resources>
