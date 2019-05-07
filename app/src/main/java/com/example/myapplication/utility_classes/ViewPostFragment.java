@@ -120,8 +120,8 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         heartRed = view.findViewById(R.id.image_heart_red);
         heartWhite = view.findViewById(R.id.image_heart_white);
 
-        heartRed.setVisibility(View.VISIBLE);
-        heartWhite.setVisibility(View.GONE);
+        heartRed.setVisibility(View.GONE);
+        heartWhite.setVisibility(View.VISIBLE);
 
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
 
@@ -223,7 +223,6 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
                 }
                 setupWidgets();
-
 
             }
 
@@ -381,13 +380,22 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
             return super.onDown(e);
         }
 
+//        @Override
+//        public boolean onDoubleTap(MotionEvent e) {
+//            Log.d(TAG, "onTouch: double tap");
+//
+//            heart.toggleLike();
+//
+//            return true;
+//        }
+
         @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            Log.d(TAG, "onTouch: double tap");
+        public void onLongPress(MotionEvent e) {
+            Log.d(TAG, "onTouch:long press");
 
             heart.toggleLike();
 
-            return true;
+            super.onLongPress(e);
         }
     }
 }
