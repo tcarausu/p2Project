@@ -51,8 +51,8 @@ public class Heart {
         } else if (heartRed.getVisibility() == View.GONE) {
             Log.d(TAG, "toggleLike: Toggling heart on");
 
-            heartRed.setScaleX(0.1f);
-            heartRed.setScaleY(0.1f);
+            heartRed.setScaleX(1f);
+            heartRed.setScaleY(1f);
 
             ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(heartRed, "scaleY", 0.1f, 1f);
             scaleDownY.setDuration(300);
