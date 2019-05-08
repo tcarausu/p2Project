@@ -113,7 +113,7 @@ public class NextActivity extends AppCompatActivity {
     private void uploadImage() {
         Toast.makeText(NextActivity.this, "Uploading...",
                 Toast.LENGTH_SHORT).show();
-        StorageReference storageReference = mStorageRef.child("images/users/" + mAuth.getUid() + "/" + System.currentTimeMillis() + ".jpg");
+        StorageReference storageReference = mStorageRef.child("post_pic/users/" + mAuth.getUid() + "/" + System.currentTimeMillis() + ".jpg");
         storageReference.putFile(Uri.parse(imageUri)).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
