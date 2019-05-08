@@ -9,6 +9,15 @@ public class Post {
     private long mLikes;
     private String mRecipe;
     private String mIngredients;
+    private String userId;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getmProfileImgUrl() {
         return mProfileImgUrl;
@@ -70,7 +79,7 @@ public class Post {
     //empty constructor for firebase
     public Post(){ }
 
-    public Post(String mProfileImgUrl,String mUsername,String mDescription, String mFoodImgUrl, long mLikes, String mRecipe, String mIngredients) {
+    public Post(String mProfileImgUrl,String mUsername,String mDescription, String mFoodImgUrl, long mLikes, String mRecipe, String mIngredients, String userId) {
         if(mDescription.trim().equals("")){
             mDescription = "No description available";
         }
@@ -81,5 +90,8 @@ public class Post {
         this.mLikes = mLikes;
         this.mRecipe = mRecipe;
         this.mIngredients = mIngredients;
+        this.userId = userId;
     }
+
+
 }
