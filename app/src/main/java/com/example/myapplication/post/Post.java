@@ -2,13 +2,38 @@ package com.example.myapplication.post;
 
 public class Post {
 
+    private String mProfileImgUrl;
+    private String mUsername;
     private String mDescription;
     private String mFoodImgUrl;
     private long mLikes;
     private String mRecipe;
     private String mIngredients;
-    private String mUserId;
+    private String userId;
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getmProfileImgUrl() {
+        return mProfileImgUrl;
+    }
+
+    public void setmProfileImgUrl(String mProfileImgUrl) {
+        this.mProfileImgUrl = mProfileImgUrl;
+    }
+
+    public String getmUsername() {
+        return mUsername;
+    }
+
+    public void setmUsername(String mUsername) {
+        this.mUsername = mUsername;
+    }
 
     public String getmDescription() {
         return mDescription;
@@ -50,29 +75,22 @@ public class Post {
         this.mIngredients = mIngredients;
     }
 
-    public String getUserId() {
-        return mUserId;
-    }
-
-    public void setUserId(String userId) {
-        this.mUserId = userId;
-    }
-
 
     //empty constructor for firebase
     public Post(){ }
 
-    public Post(String mDescription, String mFoodImgUrl, long mLikes, String mRecipe, String mIngredients, String mUserId) {
+    public Post(String mProfileImgUrl,String mUsername,String mDescription, String mFoodImgUrl, long mLikes, String mRecipe, String mIngredients, String userId) {
         if(mDescription.trim().equals("")){
             mDescription = "No description available";
         }
-
+        this.mProfileImgUrl = mProfileImgUrl;
+        this.mUsername = mUsername;
         this.mDescription = mDescription;
         this.mFoodImgUrl = mFoodImgUrl;
         this.mLikes = mLikes;
         this.mRecipe = mRecipe;
         this.mIngredients = mIngredients;
-        this.mUserId = mUserId;
+        this.userId = userId;
     }
 
 
