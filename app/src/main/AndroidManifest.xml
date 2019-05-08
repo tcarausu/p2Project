@@ -9,6 +9,12 @@
     <!-- Include following permission if you want to cache images on SD card -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!-- Include following permission if you want to get images from SD card -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- Include following permission if you want to read anything from storage -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/chefood"
@@ -51,6 +57,7 @@
         <activity android:name=".likes.LikePostActivity" />
         <activity android:name=".user_profile.AccountSettingsActivity" />
         <activity android:name=".login.LoginActivity"/>
+        <activity android:name=".post.NextActivity"/>
         <activity android:name=".welcomingSlides.SlidesActivity">
 
             <intent-filter>

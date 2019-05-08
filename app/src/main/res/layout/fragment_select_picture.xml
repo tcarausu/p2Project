@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/relLayout1">
+        <include layout="@layout/snippet_top_gallery_toolbar"/>
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textSize="20dp"
+        android:text="@string/choose_picture"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@color/com_facebook_button_background_color_focused"
+        android:id="@+id/choose_pic_button"/>
+
+    <ImageView
+        android:id="@+id/imageView_gallery"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="25dp"
+        android:layout_below="@id/choose_pic_button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:srcCompat="@tools:sample/avatars[0]"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>
