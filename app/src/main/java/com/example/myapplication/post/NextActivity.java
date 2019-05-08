@@ -85,7 +85,7 @@ public class NextActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        String databasePath = "posts/";
+        String databasePath = "posts/" + mAuth.getUid() + "/";
         String databasePathPic = "users/" + mAuth.getUid();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
         mDatabaseReferenceUserInfo = FirebaseDatabase.getInstance().getReference(databasePathPic);
@@ -125,7 +125,7 @@ public class NextActivity extends AppCompatActivity {
                             String description = mImageDesc.getText().toString();
                             String ingredients = mImageIngredients.getText().toString();
                             String recipe = mImageRecipe.getText().toString();
-                            Post postInfo = new Post(profilePicUrl, username, description, URL, 0, recipe, ingredients);
+                            Post postInfo = new Post(profilePicUrl, username, description, URL, 0, recipe, ingredients, mAuth.getUid());
                             Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);
 
 
