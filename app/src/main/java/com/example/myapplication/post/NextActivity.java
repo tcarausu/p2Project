@@ -1,8 +1,6 @@
 package com.example.myapplication.post;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -15,22 +13,28 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
-import com.example.myapplication.login.LoginActivity;
+import com.example.myapplication.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 public class NextActivity extends AppCompatActivity {
+
+
+    private static final String TAG = "NextActivity";
 
     private EditText mImageDesc;
     private EditText mImageIngredients;
@@ -40,9 +44,12 @@ public class NextActivity extends AppCompatActivity {
     private ImageView mBackImageView;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
+    private DatabaseReference mDatabaseReferenceUserInfo;
     private FirebaseAuth mAuth;
     private String imageUri;
     private String URL;
+    private String username;
+    private String profilePicUrl;
 
 
     @Override
@@ -60,7 +67,7 @@ public class NextActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         imageUri = getIntent().getStringExtra("imageUri");
-        Picasso.get().load(imageUri).fit().centerInside().into(mImageViewfood);
+        Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewfood);
         mUploadTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,19 +78,38 @@ public class NextActivity extends AppCompatActivity {
         mBackImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(NextActivity.this, "Back button working",
-                        Toast.LENGTH_LONG).show();
+                Log.d(TAG, "onClick: back button working");
                 finish();
             }
         });
 
         mAuth = FirebaseAuth.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        String databasePath = "posts/" + mAuth.getUid() + "/";
+        String databasePath = "posts/";
+        String databasePathPic = "users/" + mAuth.getUid();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
+        mDatabaseReferenceUserInfo = FirebaseDatabase.getInstance().getReference(databasePathPic);
+
+        // getting the username and profile picture link for current user
+        mDatabaseReferenceUserInfo.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                User user = dataSnapshot.getValue(User.class);
+
+                profilePicUrl = user.getProfile_photo();
+                username = user.getUsername();
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
-
+    // method for uploading image and image content to firebase storage and database
     private void uploadImage() {
         Toast.makeText(NextActivity.this, "Uploading...",
                 Toast.LENGTH_SHORT).show();
@@ -99,7 +125,10 @@ public class NextActivity extends AppCompatActivity {
                             String description = mImageDesc.getText().toString();
                             String ingredients = mImageIngredients.getText().toString();
                             String recipe = mImageRecipe.getText().toString();
-                            PostInfo postInfo = new PostInfo(description, ingredients, recipe, URL);
+                            Post postInfo = new Post(profilePicUrl, username, description, URL, 0, recipe, ingredients);
+                            Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);
+
+
                             String uploadId = mDatabaseRef.push().getKey();
                             mDatabaseRef.child(uploadId).setValue(postInfo);
 
@@ -136,4 +165,6 @@ public class NextActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

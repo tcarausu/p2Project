@@ -17,9 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 
@@ -50,7 +50,6 @@ public class SelectPictureFragment extends Fragment {
         nextText = view.findViewById(R.id.textview_next);
         intent = new Intent(getActivity(), NextActivity.class);
         byteArrayOutputStream = new ByteArrayOutputStream();
-
         closePost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,19 +80,18 @@ public class SelectPictureFragment extends Fragment {
         return view;
     }
 
+    // showing picture taken from camera in ImageView
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == GALLERY_REQUEST && resultCode == RESULT_OK) {
             mUri = data.getData();
-            if (Build.VERSION.SDK_INT < 26)
-                galleryImageView.setRotation(90);
-            Picasso.get().load(mUri).fit().centerInside().into(galleryImageView);
+            Glide.with(getContext()).load(mUri).fitCenter().centerCrop().into(galleryImageView);
             intent.putExtra("imageUri", mUri.toString());
 
         }
     }
-
+    // Alert dialog
     private void dialogChoice() {
         final CharSequence[] options = {"CAMERA", "GALLERY", "CANCEL"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -110,13 +108,14 @@ public class SelectPictureFragment extends Fragment {
         });
         builder.show();
     }
-
+    // open camera method
     private void takePicture() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, GALLERY_REQUEST);
 
     }
 
+    // open gallery method
     private void selectPicture() {
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         photoPickerIntent.setType("image/*");
