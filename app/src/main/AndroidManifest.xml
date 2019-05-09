@@ -56,7 +56,6 @@
         <activity android:name=".history_log.HistoryLogActivity" />
         <activity android:name=".user_profile.AccountSettingsActivity" />
         <activity android:name=".login.LoginActivity" />
-        <activity android:name=".login.LoginActivity"/>
         <activity android:name=".post.NextActivity"/>
         <activity android:name=".welcomingSlides.SlidesActivity">
             <intent-filter>
