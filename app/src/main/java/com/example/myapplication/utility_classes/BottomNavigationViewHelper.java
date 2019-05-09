@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
-import com.example.myapplication.likes.LikePostActivity;
+import com.example.myapplication.history_log.HistoryLogActivity;
 import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.search.SearchActivity;
 import com.example.myapplication.user_profile.UserProfileActivity;
