@@ -21,11 +21,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.GridImageAdapter;
+import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,6 +39,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -60,9 +65,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
-    private TextView mEditProfile, mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mAbout;
 
     private BottomNavigationViewEx bottomNavigationViewEx;
+
+    private TextView mEditProfile, mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mAbout;
     private ProgressBar mProgressBar;
     private CircleImageView mProfilePhoto;
     private ImageView profileMenu;
@@ -159,17 +165,12 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
-                } else Log.d(TAG, "onAuthStateChanged: signed out");
-
-//                mAuth.signOut();
-            }
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
+            } else Log.d(TAG, "onAuthStateChanged: signed out");
         };
 
         myRef.addValueEventListener(new ValueEventListener() {
@@ -232,6 +233,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         }
 //        UniversalImageLoader.setImage(user.getProfile_photo(), mProfilePhoto, null, "");
+        UniversalImageLoader.setImage(user.getProfile_photo(), mProfilePhoto, null, "");
 
         mDisplayName.setText(user.getDisplay_name());
         mUserName.setText(user.getUsername());
@@ -280,7 +282,26 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    photos.add(singleSnapshot.getValue(Photo.class));
+                    //       photos.add(singleSnapshot.getValue(Photo.class));
+                    Photo photo = new Photo();
+                    Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
+
+                    photo.setCaption(objectMap.get(getString(R.string.field_caption)).toString());
+                    photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
+                    photo.setPhoto_id(objectMap.get(getString(R.string.field_photo_id)).toString());
+                    photo.setTags(objectMap.get(getString(R.string.field_tags)).toString());
+                    photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
+                    photo.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
+
+                    List<Like> likeList = new ArrayList<>();
+                    for (DataSnapshot ds : singleSnapshot
+                            .child(getString(R.string.field_likes)).getChildren()) {
+                        Like like = new Like();
+                        like.setUser_id(ds.getValue(Like.class).getUser_id());
+                        likeList.add(like);
+                    }
+                    photo.setLikes(likeList);
+                    photos.add(photo);
                 }
 
                 //setup  our grid image
