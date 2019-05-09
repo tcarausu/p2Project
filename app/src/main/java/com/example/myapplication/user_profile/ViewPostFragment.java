@@ -1,4 +1,4 @@
-package com.example.myapplication.utility_classes;
+package com.example.myapplication.user_profile;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,8 +23,11 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.User;
-import com.example.myapplication.user_profile.AccountSettingsActivity;
-import com.example.myapplication.user_profile.UserProfileActivity;
+import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.example.myapplication.utility_classes.FirebaseMethods;
+import com.example.myapplication.utility_classes.Heart;
+import com.example.myapplication.utility_classes.SquareImageView;
+import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -57,6 +60,9 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
+    private DatabaseReference mUserRef;
+    private DatabaseReference mPostsRef;
+    private String userId;
 
     //widgets
     private SquareImageView mPostImage;
@@ -92,10 +98,11 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_view_post, container, false);
 
         mAuth = FirebaseAuth.getInstance();
+        userId = mAuth.getCurrentUser().getUid();
 
+        setupFirebaseAuth();
         initLayout(view);
         setListeners(view);
-        setupFirebaseAuth();
 
         setupBottomNavigationView();
 
@@ -130,7 +137,7 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
             mActivityNumber = getActivityNumberBundle();
 
             getPhotoDetails();
-//            getLikesString();
+            getLikesString();
 
         } catch (NullPointerException e) {
             Log.e(TAG, "initLayout: NullPointerException " + e.getMessage());
@@ -172,16 +179,15 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
+        mUserRef = FirebaseDatabase.getInstance().getReference("users");
+        mPostsRef = FirebaseDatabase.getInstance().getReference("posts");
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
-                } else Log.d(TAG, "onAuthStateChanged: signed out");
-            }
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
+            } else Log.d(TAG, "onAuthStateChanged: signed out");
         };
 
         myRef.addValueEventListener(new ValueEventListener() {
@@ -204,9 +210,9 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
     }
 
     private void getPhotoDetails() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
+        Query query = mUserRef.child(mAuth.getCurrentUser().getUid());
 
-        Query query = reference.child(mAuth.getCurrentUser().getUid());
+//        Query query = mUserRef.child(mAuth.getCurrentUser().getUid());
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -215,6 +221,8 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
                         && dataSnapshot.getKey()
                         .equals(mPhoto.getUser_id())) {
                     user = dataSnapshot.getValue(User.class);
+
+                    //setupWidgets();
 
                 } else {
                     Log.d(TAG, "onDataChange: NOPE: " + dataSnapshot.getValue(User.class).getProfile_photo());
@@ -243,34 +251,29 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
         UniversalImageLoader.setImage(user.getProfile_photo(), mProfilePhoto, null, "");
         mUserName.setText(user.getUsername());
-//        mPostLikes.setText(mLikesString);
-//
-//        if (mLikedByCurrentUser) {
-//            heartRed.setVisibility(View.VISIBLE);
-//            heartWhite.setVisibility(View.GONE);
-//
-//            heartRed.setOnTouchListener(new View.OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    Log.d(TAG, "onTouch: make white");
-//
-//                    return mGestureDetector.onTouchEvent(event);
-//                }
-//            });
-//        } else {
-//            heartRed.setVisibility(View.GONE);
-//            heartWhite.setVisibility(View.VISIBLE);
-//
-//            heartWhite.setOnTouchListener(new View.OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    Log.d(TAG, "onTouch: make red");
-//
-//                    return mGestureDetector.onTouchEvent(event);
-//
-//                }
-//            });
-//        }
+
+        mPostLikes.setText(mLikesString);
+
+        if (mLikedByCurrentUser) {
+            heartRed.setVisibility(View.VISIBLE);
+            heartWhite.setVisibility(View.GONE);
+
+            heartRed.setOnTouchListener((v, event) -> {
+                Log.d(TAG, "onTouch: make white");
+
+                return mGestureDetector.onTouchEvent(event);
+            });
+        } else {
+            heartRed.setVisibility(View.GONE);
+            heartWhite.setVisibility(View.VISIBLE);
+
+            heartWhite.setOnTouchListener((v, event) -> {
+                Log.d(TAG, "onTouch: make red");
+
+                return mGestureDetector.onTouchEvent(event);
+
+            });
+        }
 
 
     }
@@ -381,11 +384,12 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
     }
 
     public void getLikesString() {
-        final DatabaseReference referencePosts = FirebaseDatabase.getInstance().getReference("posts");
-        final DatabaseReference referenceUsers = FirebaseDatabase.getInstance().getReference("users");
-        Query query = referencePosts
-                .orderByChild(mPhoto.getPhoto_id())
-                .equalTo(R.string.field_likes);
+
+        Query query = mPostsRef
+                .child(userId)
+                .child(mPhoto.getPhoto_id())
+                .child(getString(R.string.field_likes))
+                .getRef();
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -393,26 +397,27 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
                 mUsers = new StringBuilder();
 
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    Query query = referenceUsers
-                            .orderByChild(getString(R.string.field_user_id))
-                            .equalTo(singleSnapshot.getValue(Like.class).getUser_id());
+                    Query query = mUserRef
+                            .child(userId)
+//                            .orderByChild(getString(R.string.field_user_id))
+//                            .equalTo(singleSnapshot.getValue(Like.class).getUser_id())
+                            ;
 
                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String s = dataSnapshot.getValue(User.class).getUsername();
 
-                            for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                                Log.d(TAG, "onDataChange: found like" + singleSnapshot.getValue(User.class));
-                                mUsers.append(singleSnapshot.getValue(User.class).getUsername());
-                                mUsers.append(",");
-
-                            }
+//                            for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+//                                Log.d(TAG, "onDataChange: found like" + singleSnapshot.getValue(User.class));
+//                                mUsers.append(singleSnapshot.getValue(User.class).getUsername());
+//                                mUsers.append(",");
+//
+//                            }
 
                             String[] splitUsers = mUsers.toString().split(",");
 
-                            if (mUsers.toString().contains(user.getUsername())) {
-                                mLikedByCurrentUser = true;
-                            } else mLikedByCurrentUser = false;
+                            mLikedByCurrentUser = mUsers.toString().contains(user.getUsername());
 
                             int length = splitUsers.length;
                             if (length == 1) {
@@ -447,7 +452,11 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
                         }
                     });
                 }
-
+                if (!dataSnapshot.exists()) {
+                    mLikesString = "";
+                    mLikedByCurrentUser = false;
+                    setupWidgets();
+                }
             }
 
             @Override
@@ -478,15 +487,40 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
             Log.d(TAG, "onTouch:long press");
 
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("posts");
-            Query query = reference
+//            Query query = reference
+////                    .orderByChild(mPhoto.getPhoto_id())
+////                    .equalTo(R.string.field_likes);
+            Query query = mPostsRef
+                    .child(mPhoto.getPhoto_id())
+                    .child(getString(R.string.field_likes))
                     .orderByChild(mPhoto.getPhoto_id())
-                    .equalTo(R.string.field_likes);
+//                .equalTo(R.string.field_likes)
+                    ;
 
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
 
+                        String keyId = singleSnapshot.getKey();
+                        if (mLikedByCurrentUser &&
+                                singleSnapshot.getValue(Like.class).getUser_id()
+                                        .equals(userId)) {
+                            myRef.child(mPhoto.getPhoto_id())
+                                    .child(getString(R.string.field_likes))
+                                    .child(keyId)
+                                    .removeValue();
+
+                            heart.toggleLike();
+                            getLikesString();
+                        } else if (!mLikedByCurrentUser) {
+                            addNewLike();
+                            break;
+                        }
+
+                    }
+                    if (!dataSnapshot.exists()) {
+                        addNewLike();
                     }
 
                 }
@@ -502,5 +536,23 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
             super.onLongPress(e);
         }
+    }
+
+    private void addNewLike() {
+        Log.d(TAG, "addNewLike: add new like");
+
+        String newLikeId = mPostsRef.child(mPhoto.getPhoto_id()).push().getKey();
+        Like like = new Like();
+        like.setUser_id(userId);
+
+        mPostsRef
+                .child(userId)
+                .child(mPhoto.getPhoto_id())
+                .child(getString(R.string.field_likes))
+                .child(newLikeId)
+                .setValue(like);
+
+        heart.toggleLike();
+        getLikesString();
     }
 }
