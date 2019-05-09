@@ -36,39 +36,36 @@ public class BottomNavigationViewHelper {
     }
 
     public static void enableNavigation(final Context context, BottomNavigationViewEx viewEx) {
-        viewEx.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.ic_home:
-                        Intent homeIntent = new Intent(context, HomeActivity.class); //ACTIVITY_NUM = 0
-                        context.startActivity(homeIntent
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                        break;
-                    case R.id.ic_search:
-                        Intent searchIntent = new Intent(context, SearchActivity.class);//ACTIVITY_NUM = 1
-                        context.startActivity(searchIntent
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                        break;
+        viewEx.setOnNavigationItemSelectedListener(menuItem -> {
+            switch (menuItem.getItemId()) {
+                case R.id.ic_home:
+                    Intent homeIntent = new Intent(context, HomeActivity.class); //ACTIVITY_NUM = 0
+                    context.startActivity(homeIntent
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    break;
+                case R.id.ic_search:
+                    Intent searchIntent = new Intent(context, SearchActivity.class);//ACTIVITY_NUM = 1
+                    context.startActivity(searchIntent
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    break;
 
-                    case R.id.ic_add_post:
-                        Intent addPostIntent = new Intent(context, AddPostActivity.class);//ACTIVITY_NUM = 2
-                        context.startActivity(addPostIntent
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                        break;
-                    case R.id.ic_like_posts:
-                        Intent likePost = new Intent(context, LikePostActivity.class);//ACTIVITY_NUM = 3
-                        context.startActivity(likePost
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                        break;
-                    case R.id.ic_user_profile:
-                        Intent userProfileIntent = new Intent(context, UserProfileActivity.class);//ACTIVITY_NUM = 4
-                        context.startActivity(userProfileIntent
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                        break;
-                }
-                return false;
+                case R.id.ic_add_post:
+                    Intent addPostIntent = new Intent(context, AddPostActivity.class);//ACTIVITY_NUM = 2
+                    context.startActivity(addPostIntent
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    break;
+                case R.id.ic_like_posts:
+                    Intent likePost = new Intent(context, LikePostActivity.class);//ACTIVITY_NUM = 3
+                    context.startActivity(likePost
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    break;
+                case R.id.ic_user_profile:
+                    Intent userProfileIntent = new Intent(context, UserProfileActivity.class);//ACTIVITY_NUM = 4
+                    context.startActivity(userProfileIntent
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    break;
             }
+            return false;
         });
     }
 }
