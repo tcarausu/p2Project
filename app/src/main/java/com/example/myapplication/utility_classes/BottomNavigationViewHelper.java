@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
-import com.example.myapplication.likes.LikePostActivity;
+import com.example.myapplication.history_log.HistoryLogActivity;
 import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.search.SearchActivity;
 import com.example.myapplication.user_profile.UserProfileActivity;
@@ -57,7 +57,7 @@ public class BottomNavigationViewHelper {
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         break;
                     case R.id.ic_like_posts:
-                        Intent likePost = new Intent(context, LikePostActivity.class);//ACTIVITY_NUM = 3
+                        Intent likePost = new Intent(context, HistoryLogActivity.class);//ACTIVITY_NUM = 3
                         context.startActivity(likePost
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         break;

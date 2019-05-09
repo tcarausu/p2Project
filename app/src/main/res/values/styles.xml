@@ -48,4 +48,10 @@
         <item name="android:textSize">36sp</item>
     </style>
 
+    <!--Alert Dialog Animation-->
+    <style name="AlertDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/alert_dialog_slide_enter</item>
+        <item name="android:windowExitAnimation">@anim/alert_dialog_slide_exit</item>
+    </style>
+
 </resources>
