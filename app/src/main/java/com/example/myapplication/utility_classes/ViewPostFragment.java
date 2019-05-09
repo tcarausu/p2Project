@@ -121,7 +121,7 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
 
         heart = new Heart(heartWhite, heartRed);
-        setupWidgets();
+//        setupWidgets();
 
         mGestureDetector = new GestureDetector(getActivity(), new GestureListener());
         try {
