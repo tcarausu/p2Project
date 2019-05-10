@@ -91,6 +91,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         this.batteryLevel = batteryLevel;
     }
 
+    // this method is used to return the battery percentage
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
