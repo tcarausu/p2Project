@@ -124,6 +124,7 @@
     <string name="dbname_photos">photos</string>
 
     <string name="field_username">username</string>
+    <string name="field_display_name">display_name</string>
 
     <string name="previous_slide">previous</string>
     <string name="next_slide">Next</string>
