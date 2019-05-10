@@ -41,41 +41,6 @@ public class FirebaseMethods {
             userUID = mAuth.getCurrentUser().getUid();
         }
     }
-//
-//    private boolean checkIfUserExists(String username, DataSnapshot dataSnapshot) {
-//        Log.d(TAG, "checkIfUserExists: checking if " + username + " already exists");
-//
-//        User user = new User();
-//        for (DataSnapshot ds : dataSnapshot.child(userUID).getChildren()) {
-//            Log.d(TAG, "checkIfUserNameExists: dataSnapshot: " + ds);
-//
-//            user.setUsername(ds.getValue(User.class).getUsername());
-//            Log.d(TAG, "checkIfUserExists: username: " + user.getUsername());
-//
-//            if (StringManipulation.expandUserName(user.getUsername()).equals(username)) {
-//                Log.d(TAG, "checkIfUserExists: Found Match" + user.getUsername());
-//
-//                return true;
-//            }
-//
-//        }
-//
-//        return false;
-//    }
-
-    private void setupFirebaseAuth() {
-
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = mFirebaseDatabase.getReference();
-
-        mAuthListener = firebaseAuth -> {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-
-            if (user != null) {
-                Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
-            } else Log.d(TAG, "onAuthStateChanged: signed out");
-        };
-    }
 
 
     public void updateUsername(String username, String dispalyName, String website, String about, long phone, String profile_url) {
@@ -238,32 +203,32 @@ public class FirebaseMethods {
         return user;
     }
 
-//    private String getTimestamp() {
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
-//        sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
-//
-//        return sdf.format(new Date());
-//    }
+    private String getTimestamp() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
+        sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
 
-//    public void addPhotoToDatabase(String caption, String url) {
-//        Log.d(TAG, "addPhotoToDatabase: adding photo to database");
-//
-//        String userUID = mAuth.getCurrentUser().getUid();
-//
-//        String tags = StringManipulation.getTags(caption);
-//        String newPhotoKey = myRef.child(mContext.getString(R.string.dbname_photos)).push().getKey();
-//        Photo photo = new Photo();
-//        photo.setCaption(caption);
-//        photo.setDate_created(getTimestamp());
-//        photo.setImage_path(url);
-//        photo.setTags(tags);
-//        photo.setUser_id(userUID);
-//        photo.setPhoto_id(newPhotoKey);
-//
-//        //insert into database
-//        myRef.child(mContext.getString(R.string.dbname_user_photos)).child(userUID).child(newPhotoKey).setValue(photo);
-//        myRef.child(mContext.getString(R.string.dbname_photos)).child(newPhotoKey).setValue(photo);
-//
-//    }
+        return sdf.format(new Date());
+    }
+
+    public void addPhotoToDatabase(String caption, String url) {
+        Log.d(TAG, "addPhotoToDatabase: adding photo to database");
+
+        String userUID = mAuth.getCurrentUser().getUid();
+
+        String tags = StringManipulation.getTags(caption);
+        String newPhotoKey = myRef.child(mContext.getString(R.string.dbname_photos)).push().getKey();
+        Photo photo = new Photo();
+        photo.setCaption(caption);
+        photo.setDate_created(getTimestamp());
+        photo.setImage_path(url);
+        photo.setTags(tags);
+        photo.setUser_id(userUID);
+        photo.setPhoto_id(newPhotoKey);
+
+        //insert into database
+        myRef.child(mContext.getString(R.string.dbname_user_photos)).child(userUID).child(newPhotoKey).setValue(photo);
+        myRef.child(mContext.getString(R.string.dbname_photos)).child(newPhotoKey).setValue(photo);
+
+    }
 
 }

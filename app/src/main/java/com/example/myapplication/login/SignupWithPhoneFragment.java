@@ -1,6 +1,5 @@
 package com.example.myapplication.login;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -67,7 +66,7 @@ public class SignupWithPhoneFragment extends android.support.v4.app.Fragment {
         View v = inflater.inflate(R.layout.signup_withphone_fragment, container, false);
 
         phoneNumber = v.findViewById(R.id.SignupWithPhoneFragment_phoneField);
-        sendCodeButton = v.findViewById(R.id.SignupWithPhoneFragment_sendCodeButton);
+        sendCodeButton = v.findViewById(R.id.sign_up);
         codeField = v.findViewById(R.id.SignupWithPhoneFragment_receivedCodeField);
         confirmButton = v.findViewById(R.id.SignupWithPhoneFragment_enterCodeButton);
 

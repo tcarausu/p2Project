@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -34,10 +33,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -191,29 +188,26 @@ public class LoginActivity extends AppCompatActivity implements
             Toast.makeText(getApplicationContext(), "Please chose password", Toast.LENGTH_SHORT).show();
         } else {
             // after checking, we try to login
-            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    // we check First if the user, so we dont print please confirm email situation
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                // we check First if the user, so we dont print please confirm email situation
 
 //------------------------------------added for testing purposes------------------------------------
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    addUserToDataBase();
-                    // do something with the individual "users"
+                FirebaseUser user = mAuth.getCurrentUser();
+                addUserToDataBase();
+                // do something with the individual "users"
 //------------------------------------added for testing purposes------------------------------------
 
-                    if (mAuth.getCurrentUser() == null) {
-                        Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                    // if task is successful
-                    else if (task.isSuccessful()) {
-                        verifyAccount(); // check if user is verified by email
+                if (mAuth.getCurrentUser() == null) {
+                    Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                // if task is successful
+                else if (task.isSuccessful()) {
+                    verifyAccount(); // check if user is verified by email
 
-                    } else {
-                        // otherwise we display the task error message from database
-                        Toast.makeText(getApplicationContext(), "Please confirm your email address.", Toast.LENGTH_SHORT).show();
-                        mAuth.signOut();// need to keep user signed out until he confirms
-                    }
+                } else {
+                    // otherwise we display the task error message from database
+                    Toast.makeText(getApplicationContext(), "Please confirm your email address.", Toast.LENGTH_SHORT).show();
+                    mAuth.signOut();// need to keep user signed out until he confirms
                 }
             });
 
@@ -262,33 +256,30 @@ public class LoginActivity extends AppCompatActivity implements
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(Google_Tag, "signInWithCredential:success");
-                            Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(Google_Tag, "signInWithCredential:success");
+                        Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
 
 //------------------------------------added for testing purposes------------------------------------
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            addUserToDataBase();
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        addUserToDataBase();
 //                             do something with the individual "users"
 
 
 //------------------------------------added for testing purposes------------------------------------
 
-                            goToMainActivity();
+                        goToMainActivity();
 
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(Google_Tag, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.login_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                        }
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(Google_Tag, "signInWithCredential:failure", task.getException());
+                        Snackbar.make(findViewById(R.id.login_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                    }
 
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -300,28 +291,25 @@ public class LoginActivity extends AppCompatActivity implements
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(FacebookTag, "signInWithCredential:success");
-                            Toast.makeText(LoginActivity.this, "Authentication successful.",
-                                    Toast.LENGTH_SHORT).show();
-                            goToMainActivity();
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(FacebookTag, "signInWithCredential:success");
+                        Toast.makeText(LoginActivity.this, "Authentication successful.",
+                                Toast.LENGTH_SHORT).show();
+                        goToMainActivity();
 
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(FacebookTag, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            LoginManager.getInstance().logOut();
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(FacebookTag, "signInWithCredential:failure", task.getException());
+                        Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show();
+                        LoginManager.getInstance().logOut();
 
-                        }
+                    }
 
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
