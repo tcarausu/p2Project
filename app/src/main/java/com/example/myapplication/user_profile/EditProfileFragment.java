@@ -324,6 +324,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 //                (firebaseMethods.getUserSettings(dataSnapshot));
                 if (isAdded())
                     setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
+                setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
 
 
             }

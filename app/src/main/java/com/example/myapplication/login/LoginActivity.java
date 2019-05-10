@@ -439,7 +439,6 @@ public class LoginActivity extends AppCompatActivity implements
                 .setValue(user);
     }
 
-    @Override
     public void onFragmentInteraction(Uri uri) {
     }
 }
