@@ -2,6 +2,7 @@ package com.example.myapplication.user_profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.User;
@@ -70,12 +72,12 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private GridView gridView;
     private Toolbar toolbar;
     private FirebaseMethods firebaseMethods;
+    private Uri avatarUri;
 
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
-            container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-
         mAuth = FirebaseAuth.getInstance();
+        avatarUri = Uri.parse("android.resource://com.example.myapplication/drawable/my_avatar");
 
         initLayout(view);
         setListeners(view);
@@ -99,10 +101,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mPosts = view.findViewById(R.id.tvPosts);
         mFollowers = view.findViewById(R.id.tvFollowers);
         mFollowing = view.findViewById(R.id.tvFollowing);
-
-//        gridView = view.findViewById(R.id.gridImageView);
         gridView = view.findViewById(R.id.grid_view_user_profile);
-
         mProgressBar = view.findViewById(R.id.profile_progress_bar);
         mProgressBar.setVisibility(View.GONE);
         mProfilePhoto = view.findViewById(R.id.profileImage);
@@ -126,6 +125,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
 
+
+    }
+
+    private void updateWidgets(UserSettings settings) {
     }
 
     @Override
@@ -161,6 +164,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
                 } else Log.d(TAG, "onAuthStateChanged: signed out");
+
+//                mAuth.signOut();
             }
         };
 
@@ -189,16 +194,29 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         User settings = userSettings.getUser();
 
-//        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
-
         mDisplayName.setText(settings.getDisplay_name());
         mUserName.setText(settings.getUsername());
         mWebsite.setText(settings.getWebsite());
         mAbout.setText(settings.getAbout());
-
         mFollowers.setText(String.valueOf(settings.getFollowers()));
         mFollowing.setText(String.valueOf(settings.getFollowing()));
         mPosts.setText(String.valueOf(settings.getPosts()));
+        String  profilePicURL = settings.getProfile_photo() ;
+
+        //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
+        try {
+            if (profilePicURL == null) {
+                mProfilePhoto.setImageResource(R.drawable.my_avatar);
+
+            } else
+             Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
+
+            }catch (Exception e){
+            Log.d(TAG, "setProfileWidgets: Error: "+e.getMessage());
+            mProfilePhoto.setImageResource(R.drawable.my_avatar);
+
+        }
+
 
     }
 
