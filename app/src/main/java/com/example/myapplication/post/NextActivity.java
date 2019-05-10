@@ -149,5 +149,4 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
 }

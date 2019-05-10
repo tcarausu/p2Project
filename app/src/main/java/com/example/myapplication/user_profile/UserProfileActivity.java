@@ -1,13 +1,9 @@
 package com.example.myapplication.user_profile;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.Photo;
@@ -17,25 +13,11 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
     private static final String TAG = "UserProfileActivity";
 
-    private static final int ACTIVITY_NUM = 4;
-    private static final int NUM_GRID_COLUMNS = 3;
-
-    private Context mContext;
-
-    private FirebaseAuth mAuth;
-
-    private TextView displayUserName, editProfile;
-    private String userUID;
-
-    private ProgressBar mProgressBar;
-    private ImageView mProfilePhoto;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        mAuth = FirebaseAuth.getInstance();
-        mContext = getApplicationContext();
+        FirebaseAuth.getInstance();
 
         init();
     }

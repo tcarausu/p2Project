@@ -3,12 +3,12 @@ package com.example.myapplication.post;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +28,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * File created by tcarau18
  **/
-public class SelectPictureFragment extends Fragment {
+public class SelectPictureFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "SelectPictureFragment";
 
     private ImageView galleryImageView;
@@ -44,41 +44,25 @@ public class SelectPictureFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select_picture, container, false);
 
+        intent = new Intent(getActivity(), NextActivity.class);
+
+        setLayout(view);
+
+        return view;
+    }
+
+    private void setLayout(View view) {
+
         galleryImageView = view.findViewById(R.id.imageView_gallery);
         mSelectPicButton = view.findViewById(R.id.choose_pic_button);
         closePost = view.findViewById(R.id.close_share);
         nextText = view.findViewById(R.id.textview_next);
-        intent = new Intent(getActivity(), NextActivity.class);
         byteArrayOutputStream = new ByteArrayOutputStream();
 
-        closePost.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent toHomeActivity = new Intent(getActivity(), HomeActivity.class);
-                startActivity(toHomeActivity);
-            }
-        });
+        closePost.setOnClickListener(this);
+        nextText.setOnClickListener(this);
+        mSelectPicButton.setOnClickListener(this);
 
-        nextText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (galleryImageView.getDrawable() == null) {
-                    Toast.makeText(getActivity(), R.string.please_select_picture,
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    startActivity(intent);
-                }
-            }
-        });
-
-        mSelectPicButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialogChoice();
-            }
-        });
-
-        return view;
     }
 
     // showing picture taken from camera in ImageView
@@ -92,6 +76,7 @@ public class SelectPictureFragment extends Fragment {
 
         }
     }
+
     // Alert dialog
     private void dialogChoice() {
         final CharSequence[] options = {"CAMERA", "GALLERY", "CANCEL"};
@@ -109,6 +94,7 @@ public class SelectPictureFragment extends Fragment {
         });
         builder.show();
     }
+
     // open camera method
     private void takePicture() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -121,6 +107,34 @@ public class SelectPictureFragment extends Fragment {
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+
+            case R.id.close_share:
+                Intent toHomeActivity = new Intent(getActivity(), HomeActivity.class);
+                startActivity(toHomeActivity);
+
+                break;
+
+            case R.id.textview_next:
+                if (galleryImageView.getDrawable() == null) {
+                    Toast.makeText(getActivity(), R.string.please_select_picture,
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    startActivity(intent);
+                }
+
+                break;
+
+            case R.id.choose_pic_button:
+                Log.d(TAG, "onClick: back button working");
+                dialogChoice();
+
+                break;
+        }
     }
 
 

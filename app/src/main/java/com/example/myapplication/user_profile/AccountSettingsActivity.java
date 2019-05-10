@@ -86,13 +86,9 @@ public class AccountSettingsActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-
-            case R.id.backArrow:
-                Log.d(TAG, "onClick: navigating to account settings");
-                finish();
-
-                break;
+        if (v.getId() == R.id.backArrow) {
+            Log.d(TAG, "onClick: navigating to account settings");
+            finish();
         }
 
     }

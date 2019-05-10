@@ -15,17 +15,14 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 
 public class ForgotPassFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "ForgotPassFragment";
 
-    private FirebaseUser user;
     private FirebaseAuth mAuth;
     private EditText emailField;
-    private Button sendPassRequest;
-    private Button goBack;
+    private Button sendPassRequest, goBack;
 
     private OnFragmentInteractionListener mListener;
 
@@ -45,8 +42,8 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
         View v = inflater.inflate(R.layout.fragment_forgot_pass, container, false);
 
         emailField = v.findViewById(R.id.email_field);
-        sendPassRequest = v.findViewById(R.id.sendPassRequest);
         goBack = v.findViewById(R.id.back_button);
+        sendPassRequest = v.findViewById(R.id.sendPassRequest);
 
         goBack.setOnClickListener(this);
         sendPassRequest.setOnClickListener(this);
@@ -114,7 +111,6 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
     }
 
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
 
     }
 }
