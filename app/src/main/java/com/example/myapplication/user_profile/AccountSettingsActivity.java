@@ -98,13 +98,10 @@ public class AccountSettingsActivity extends AppCompatActivity
         super.onStart();
 
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            return;
-        } else {
+        if (user == null) {
             mAuth.signOut();
             goToLogin();
         }
-
     }
 
     public void goToLogin() {
@@ -127,10 +124,9 @@ public class AccountSettingsActivity extends AppCompatActivity
     }
 
     private void setupFragments() {
-
         pagerAdapter = new SectionsStatePagerAdapter(getSupportFragmentManager());
-        pagerAdapter.addFragment(new EditProfileFragment(), getString(R.string.edit_your_profile_fragment)); //fragment 0
-//        pagerAdapter.addFragment(new SignOutFragment(), getString(R.string.sign_out_fragment)); //fragment 1
+        pagerAdapter.addFragment(new EditProfileFragment(), getString(R.string.edit_your_profile_fragment));
+        
     }
 
     private void setupSettingsList() {
@@ -149,12 +145,10 @@ public class AccountSettingsActivity extends AppCompatActivity
             Log.d(TAG, "onItemClick: navigating to fragment nr " + position);
             switch (position) {
                 case 0:
-//              for edit profile
                     setupViewPager(position);
                     break;
 
                 case 1:
-//              signout dialog
                     Log.d(TAG, "onItemClick: position nr " + position);
 
                     dialogChoice();
