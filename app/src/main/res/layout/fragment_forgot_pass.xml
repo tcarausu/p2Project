@@ -18,7 +18,7 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/ForgotPassFragment_goBackButton_id"
+            android:id="@+id/back_button"
             style="@android:style/Widget.Holo.Button.Borderless"
             android:drawableStart="@drawable/arrow_left"
             android:layout_gravity="start"
@@ -50,7 +50,7 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/Forgot_Pass_Frag_emailField_id"
+                android:id="@+id/email_field"
                 android:paddingEnd="15dp"
                 android:paddingStart="15dp"
                 android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
 
 
                 <Button
-                    android:id="@+id/Forgot_Pass_Frag_sendMailButton_id"
+                    android:id="@+id/sendPassRequest"
                     android:drawableStart="@drawable/email_icone"
                     android:layout_marginTop="10dp"
                     android:padding="10dp"

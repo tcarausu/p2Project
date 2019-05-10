@@ -110,6 +110,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mPosts = view.findViewById(R.id.tvPosts);
         mFollowers = view.findViewById(R.id.tvFollowers);
         mFollowing = view.findViewById(R.id.tvFollowing);
+
         gridView = view.findViewById(R.id.grid_view_user_profile);
         mProgressBar = view.findViewById(R.id.profile_progress_bar);
         mProgressBar.setVisibility(View.GONE);

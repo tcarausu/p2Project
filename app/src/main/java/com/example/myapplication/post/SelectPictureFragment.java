@@ -50,6 +50,7 @@ public class SelectPictureFragment extends Fragment {
         nextText = view.findViewById(R.id.textview_next);
         intent = new Intent(getActivity(), NextActivity.class);
         byteArrayOutputStream = new ByteArrayOutputStream();
+
         closePost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

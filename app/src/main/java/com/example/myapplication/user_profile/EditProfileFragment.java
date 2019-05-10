@@ -222,8 +222,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             mProfilePhoto.setImageURI(avatarUri);
         }
 
-//        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
-
         mDisplayName.setText(user.getDisplay_name());
         mUserName.setText(user.getUsername());
         mWebsite.setText(user.getWebsite());
