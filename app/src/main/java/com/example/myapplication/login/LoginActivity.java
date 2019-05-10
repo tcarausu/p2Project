@@ -91,7 +91,7 @@ public class LoginActivity extends AppCompatActivity implements
         fragmentManager = getSupportFragmentManager();
 
         initLayout();
-//        setupFirebaseAuth();
+//      setupFirebaseAuth();
         buttonListeners();
     }
 
@@ -389,34 +389,30 @@ public class LoginActivity extends AppCompatActivity implements
             final String userMAIL = user.getEmail();
 
             Query query = user_ref.
-                    orderByKey()
-                    .equalTo(nodeID);
+                    orderByKey().equalTo(nodeID);
 
-            query
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (!dataSnapshot.exists()) {
                                 if (user.getDisplayName() != null) {
                                     addNewUser(userMAIL, user.getDisplayName(), "about", "website", "photo");
                                     Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
-                                    Toast.makeText(mContext, "added for proper provider", Toast.LENGTH_SHORT).show();
+
                                 } else {
                                     addNewUser(userMAIL, "random username", "about", "website", "photo");
                                     Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
-                                    Toast.makeText(mContext, "added", Toast.LENGTH_SHORT).show();
+
                                 }
 
                             } else {
                                 Log.d(TAG, "onDataChange: Found a Match: " + userMAIL);
-                                Toast.makeText(mContext, "That username already exists", Toast.LENGTH_SHORT).show();
 
                             }
                         }
-//                }
 
                         @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                        public void onCancelled(DatabaseError  databaseError) {
                             Toast.makeText(mContext, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -440,7 +436,7 @@ public class LoginActivity extends AppCompatActivity implements
 
         User user = new User(
                 description,
-                "user name",
+                "Chose a user name",
                 StringManipulation.condenseUserName(username),
                 email,
                 0,
