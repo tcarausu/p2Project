@@ -18,17 +18,17 @@ public class SliderAdapter extends PagerAdapter {
     Context mContext ; //context
     LayoutInflater mLayoutInflater ; // to inflate our widgets
 
-    public SliderAdapter(Context context) { // constructor of slidePager
+    SliderAdapter(Context context) { // constructor of slidePager
         mContext = context;
     }
     //array of the images that we will display on the pages
-    public int[] slideImages = {  R.drawable.profile, R.drawable.like_pressed, R.drawable.smartphone};
+    private int[] slideImages = {  R.drawable.profile, R.drawable.like_pressed, R.drawable.smartphone};
 
     //array of the titles that we will display on the pages
-    public String[] slidesTitles = {"join us","share your experience\n" ,"like and follow"};
+    private String[] slidesTitles = {"join us","share your experience\n" ,"like and follow"};
 
     //array of the texts that we will display on the pages
-    public String[] slidesTexts = {"Sign up for FREE now",
+    private String[] slidesTexts = {"Sign up for FREE now",
             "Like, Share and Follow to grow your network and improve your cooking skills" ,
             "Stay updated with your friends kitchen life"};
 
@@ -52,7 +52,7 @@ public class SliderAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
 
         // call for an inflater
-        mLayoutInflater = (LayoutInflater) mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
+        mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = mLayoutInflater.inflate(R.layout.first_welcoming_slide_layout,container,false);// create a view
 
         ImageView slideImage = v.findViewById(R.id.slideImage1_id); // find widgets by id

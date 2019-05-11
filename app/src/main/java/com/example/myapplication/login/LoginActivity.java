@@ -56,7 +56,6 @@ public class LoginActivity extends AppCompatActivity implements
 
     private static final String Google_Tag = "GoogleActivity";
     private static final String FacebookTag = "FacebookLogin";
-    private static final String Email_Tag = "EmailPassword";
     private static final int RC_SIGN_IN = 9001;
 
     private FirebaseAuth mAuth;
@@ -101,7 +100,7 @@ public class LoginActivity extends AppCompatActivity implements
         mEmailField = findViewById(R.id.email_id_logIn);
         mPasswordField = findViewById(R.id.password_id_logIn);
         loginLayout = findViewById(R.id.login_activity);
-        signUp = findViewById(R.id.textView_id_login_layout_registerHereText);
+        signUp = findViewById(R.id.sign_up);
         orView = findViewById(R.id.orView);
 
     }
@@ -156,7 +155,7 @@ public class LoginActivity extends AppCompatActivity implements
 
         if (currentUser != null) {
             goToMainActivity();
-        } else return;
+        }
 
     }
 
@@ -189,12 +188,8 @@ public class LoginActivity extends AppCompatActivity implements
         } else {
             // after checking, we try to login
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                // we check First if the user, so we dont print please confirm email situation
-
 //------------------------------------added for testing purposes------------------------------------
-                FirebaseUser user = mAuth.getCurrentUser();
                 addUserToDataBase();
-                // do something with the individual "users"
 //------------------------------------added for testing purposes------------------------------------
 
                 if (mAuth.getCurrentUser() == null) {
@@ -263,11 +258,7 @@ public class LoginActivity extends AppCompatActivity implements
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
 
 //------------------------------------added for testing purposes------------------------------------
-                        FirebaseUser user = mAuth.getCurrentUser();
                         addUserToDataBase();
-//                             do something with the individual "users"
-
-
 //------------------------------------added for testing purposes------------------------------------
 
                         goToMainActivity();
@@ -348,7 +339,7 @@ public class LoginActivity extends AppCompatActivity implements
                     fragmentTransaction.add(R.id.useThisFragmentID, fragmentForgotPass).commit();
                 }
                 break;
-            case R.id.textView_id_login_layout_registerHereText:
+            case R.id.sign_up:
                 Toast.makeText(this, "Register using fragment me", Toast.LENGTH_SHORT).show();
                 Fragment fragmentRegister = fragmentManager.findFragmentById(R.id.useThisFragmentID);
 

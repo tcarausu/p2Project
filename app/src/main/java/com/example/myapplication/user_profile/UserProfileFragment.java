@@ -79,11 +79,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private User user;
 
-    private User user;
-
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
             container, @Nullable Bundle savedInstanceState) {
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         mAuth = FirebaseAuth.getInstance();
         avatarUri = Uri.parse("android.resource://com.example.myapplication/drawable/my_avatar");
@@ -138,9 +135,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     }
 
-    private void updateWidgets(UserSettings settings) {
-    }
-
     @Override
     public void onStop() {
         super.onStop();
@@ -177,11 +171,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                //retrive user information from the database
                 setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
-
-                //retrive images for the user in question
 
             }
 
@@ -211,14 +201,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mFollowers.setText(String.valueOf(user.getFollowers()));
         mFollowing.setText(String.valueOf(user.getFollowing()));
         mPosts.setText(String.valueOf(user.getPosts()));
-        mDisplayName.setText(settings.getDisplay_name());
-        mUserName.setText(settings.getUsername());
-        mWebsite.setText(settings.getWebsite());
-        mAbout.setText(settings.getAbout());
-        mFollowers.setText(String.valueOf(settings.getFollowers()));
-        mFollowing.setText(String.valueOf(settings.getFollowing()));
-        mPosts.setText(String.valueOf(settings.getPosts()));
-        String  profilePicURL = settings.getProfile_photo() ;
+
+        String  profilePicURL = user.getProfile_photo() ;
 
         //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
         try {
@@ -233,17 +217,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
 
         }
-//        UniversalImageLoader.setImage(user.getProfile_photo(), mProfilePhoto, null, "");
-        UniversalImageLoader.setImage(user.getProfile_photo(), mProfilePhoto, null, "");
-
-        mDisplayName.setText(user.getDisplay_name());
-        mUserName.setText(user.getUsername());
-        mWebsite.setText(user.getWebsite());
-        mAbout.setText(user.getAbout());
-
-        mFollowers.setText(String.valueOf(user.getFollowers()));
-        mFollowing.setText(String.valueOf(user.getFollowing()));
-        mPosts.setText(String.valueOf(user.getPosts()));
 
     }
 

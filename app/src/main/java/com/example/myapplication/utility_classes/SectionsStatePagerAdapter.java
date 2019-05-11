@@ -13,10 +13,10 @@ import java.util.List;
  **/
 public class SectionsStatePagerAdapter extends FragmentStatePagerAdapter {
 
-    public final List<Fragment> mFragmentList = new ArrayList<>();
-    public final HashMap<Fragment, Integer> mFragments = new HashMap<>();
-    public final HashMap<String, Integer> mFragmentNumbers = new HashMap<>();
-    public final HashMap<Integer, String> mFragmentNames = new HashMap<>();
+    private final List<Fragment> mFragmentList = new ArrayList<>();
+    private final HashMap<Fragment, Integer> mFragments = new HashMap<>();
+    private final HashMap<String, Integer> mFragmentNumbers = new HashMap<>();
+    private final HashMap<Integer, String> mFragmentNames = new HashMap<>();
 
     public SectionsStatePagerAdapter(FragmentManager fm) {
         super(fm);

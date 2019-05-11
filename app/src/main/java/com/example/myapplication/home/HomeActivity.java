@@ -36,7 +36,6 @@ public class HomeActivity extends AppCompatActivity {
     private String userUID;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private GoogleSignInClient mGoogleSignInClient ;
 
     /**
      * @param savedInstanceState creates the app using the Bundle
@@ -68,8 +67,6 @@ public class HomeActivity extends AppCompatActivity {
             LoginManager.getInstance().logOut();
             sendUserToLogin();
         }
-        else return;
-
     }
     @Override
     protected void onStop() {

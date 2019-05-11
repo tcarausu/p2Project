@@ -41,18 +41,12 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference myRef;
-
     private ProgressBar mProgressBar;
     private TextView tvSignOut, tvSigningOut;
     private Button btnConfirmingSignOut;
 
     private FirebaseMethods firebaseMethods;
     private Context context;
-
-    private String username = "toader carausu";
-    private String append = " ";
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
             container, @Nullable Bundle savedInstanceState) {
@@ -83,6 +77,37 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.btnConfirmSignOut) {
+            Log.d(TAG, "onClick: attempting to Sing Out");
+            mProgressBar.setVisibility(View.VISIBLE);
+            tvSigningOut.setVisibility(View.VISIBLE);
+
+            mAuth.signOut();
+            mGoogleSignInClient.signOut();
+            LoginManager.getInstance().logOut();
+
+            getActivity().finish();
+
+            Toast.makeText(getActivity(), "Successful Sign Out", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /*
     ------------------------------------------------- FIREBASE SETUP -------------------------------------------------
      */
@@ -110,38 +135,8 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
+   /*
+    ------------------------------------------------- FIREBASE SETUP -------------------------------------------------
+     */
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-
-            case R.id.btnConfirmSignOut:
-                Log.d(TAG, "onClick: attempting to Sing Out");
-                mProgressBar.setVisibility(View.VISIBLE);
-                tvSigningOut.setVisibility(View.VISIBLE);
-
-                mAuth.signOut();
-                mGoogleSignInClient.signOut();
-                LoginManager.getInstance().logOut();
-
-                getActivity().finish();
-
-                Toast.makeText(getActivity(),"Successful Sign Out",Toast.LENGTH_SHORT).show();
-
-                break;
-        }
-    }
 }
