@@ -392,7 +392,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private void takePicture() {
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (getBatteryLevel() > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
+        if (getBatteryLevel() < 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
             startActivityForResult(cameraIntent, REQUEST_CAMERA);
         } else Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
 

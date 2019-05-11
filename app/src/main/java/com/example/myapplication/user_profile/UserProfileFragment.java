@@ -132,7 +132,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
 
-
     }
 
     @Override
@@ -183,9 +182,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     }
 
-    private void setProfileWidgets(
-            User userSettings
-    ) {
+    private void setProfileWidgets(User userSettings) {
         user = userSettings;
 
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: "
@@ -213,7 +210,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
              Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
 
             }catch (Exception e){
-            Log.d(TAG, "setProfileWidgets: Error: "+e.getMessage());
+            Log.e(TAG, "setProfileWidgets: Error: "+e.getMessage());
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
 
         }
@@ -256,13 +253,15 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    //       photos.add(singleSnapshot.getValue(Photo.class));
+//                           photos.add(singleSnapshot.getValue(Photo.class));
                     Photo photo = new Photo();
                     Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
 
+                    Log.d(TAG, "onDataChange: bulshit excuse"+objectMap.get(getString(R.string.field_photo_id)));
+                    Log.d(TAG, "onDataChange: bulshit excuse"+objectMap.get(getString(R.string.field_photo_id)).toString());
+                    photo.setPhoto_id(objectMap.get(getString(R.string.field_photo_id)).toString());
                     photo.setCaption(objectMap.get(getString(R.string.field_caption)).toString());
                     photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
-                    photo.setPhoto_id(objectMap.get(getString(R.string.field_photo_id)).toString());
                     photo.setTags(objectMap.get(getString(R.string.field_tags)).toString());
                     photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
                     photo.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
@@ -274,8 +273,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                         like.setUser_id(ds.getValue(Like.class).getUser_id());
                         likeList.add(like);
                     }
-                    photo.setLikes(likeList);
-                    photos.add(photo);
+//                    photo.setLikes(likeList);
+//                    photos.add(photo);
                 }
 
                 //setup  our grid image

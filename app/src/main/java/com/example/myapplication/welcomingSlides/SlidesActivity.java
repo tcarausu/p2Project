@@ -149,8 +149,9 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
                 break;
 
             case R.id.previousButton_id:
-                slideViewPager.setCurrentItem(mCurrentSlide + 1);
+                slideViewPager.setCurrentItem(mCurrentSlide - 1);
                 break;
+
             case R.id.skipButton:
                 startActivity(mIntent);
                 break;
