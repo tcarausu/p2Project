@@ -19,11 +19,14 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:textSize="20dp"
+        android:fontFamily="@font/almendra"
+        android:textColor="@color/orange"
         android:text="@string/choose_picture"
         android:layout_marginTop="100dp"
         android:layout_marginLeft="30dp"
+        android:drawableStart="@mipmap/simo_design_camera"
         android:layout_marginRight="30dp"
-        android:background="@color/com_facebook_button_background_color_focused"
+        android:background="@drawable/input_fields"
         android:id="@+id/choose_pic_button"/>
 
     <ImageView
@@ -33,7 +36,7 @@
         android:layout_below="@id/choose_pic_button"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:srcCompat="@tools:sample/avatars[0]"
+        tools:srcCompat="@drawable/my_avatar"
         android:layout_centerInParent="true"/>
 
 </RelativeLayout>

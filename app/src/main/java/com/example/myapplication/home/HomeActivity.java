@@ -124,10 +124,9 @@ public class HomeActivity extends AppCompatActivity {
 
         if (user == null) {
             Toast.makeText(mContext, "Your have to Authenticate first before proceeding", Toast.LENGTH_SHORT).show();
-
+            mAuth.signOut();
             Intent intent = new Intent(mContext, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
             startActivity(intent);
         }
 

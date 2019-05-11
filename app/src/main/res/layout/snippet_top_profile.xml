@@ -120,6 +120,7 @@
             android:focusable="true"
             android:onClick="onClick"
             android:text="@string/edit_your_profile_fragment"
+            android:fontFamily="@font/almendra"
             android:textAlignment="center"
             android:textColor="@color/black" />
 

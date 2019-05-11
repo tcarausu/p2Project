@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/orangeMainTheme"
     tools:context=".post.NextActivity">
 
     <ScrollView
@@ -43,8 +44,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@+id/image_tobe_shared"
+                    android:layout_marginStart="20dp"
+
+                    android:layout_toEndOf="@+id/image_tobe_shared"
                     android:background="@null"
                     android:hint="@string/image_description_share" />
 
@@ -64,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginBottom="40dp"
                     android:background="@null"
                     android:hint="@string/image_ingredients_share" />

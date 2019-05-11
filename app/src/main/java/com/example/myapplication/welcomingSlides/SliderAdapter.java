@@ -22,6 +22,7 @@ public class SliderAdapter extends PagerAdapter {
         mContext = context;
     }
     //array of the images that we will display on the pages
+    public int[] slideImages = {  R.drawable.slide1, R.drawable.like_pressed, R.drawable.smartphone};
     private int[] slideImages = {  R.drawable.profile, R.drawable.like_pressed, R.drawable.smartphone};
 
     //array of the titles that we will display on the pages
@@ -48,7 +49,7 @@ public class SliderAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
 
         // call for an inflater
-        mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayoutInflater = (LayoutInflater) mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
         View v = mLayoutInflater.inflate(R.layout.first_welcoming_slide_layout,container,false);// create a view
 
         ImageView slideImage = v.findViewById(R.id.slideImage1_id); // find widgets by id

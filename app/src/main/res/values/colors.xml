@@ -7,6 +7,7 @@
     <color name="colorPrimaryDark">#F79862</color>
     <color name="colorAccent">#ffffff</color>
     <color name="colorAccentOnSignOut">#FFA000</color>
+    <color name="darkOrange">#683E01</color>
 
     <color name="colorEditTextUnderline">#FFFFFF</color>
     <color name="hints">#99FFFFFF</color>

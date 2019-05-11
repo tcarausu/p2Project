@@ -34,20 +34,46 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.slide_activity);
+        mIntent = new Intent(SlidesActivity.this, LoginActivity.class);
+        findWidgets();
+        verifyFirstRun();
 
+
+
+        sliderAdapter = new SliderAdapter(this);
+        slideViewPager.setAdapter(sliderAdapter);
+        addDots(0);
+        slideViewPager.addOnPageChangeListener(vl);
+
+
+
+        mPrevious.setOnClickListener(v -> slideViewPager.setCurrentItem(mCurrentSlide + 1));
+
+        mNext.setOnClickListener(v -> {
+            slideViewPager.setCurrentItem(mCurrentSlide + 1);
+            if (mNext.getText().equals("FINISH")) {
+                new Handler().postDelayed(() ->startActivity(mIntent), Toast.LENGTH_SHORT);
+            }
+        });
+
+        mSkip.setOnClickListener(v -> new Handler().postDelayed(() ->startActivity(mIntent), Toast.LENGTH_SHORT));
+    }
+
+    private void verifyFirstRun() {
         SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
-        Boolean firstRun = prefs.getBoolean("prefs", true);
+        boolean firstRun = prefs.getBoolean("prefs", true);
 
         if (firstRun) {//if its the first run we change the boolean to false
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("prefs", false);
             editor.apply();
         } else {// then if boolean is false we skip the slides
-            startActivity(new Intent(SlidesActivity.this, LoginActivity.class));
-            Toast.makeText(getApplicationContext(), "Welcome", Toast.LENGTH_LONG)
-                    .show();
+            startActivity(mIntent);
+            Toast.makeText(getApplicationContext(), "Welcome", Toast.LENGTH_LONG).show();
         }
+    }
 
+    private void findWidgets() {
         slideViewPager = findViewById(R.id.slides_viewPager);
         dotsLayout = findViewById(R.id.dots_layout);
         mPrevious = findViewById(R.id.previousButton_id);
@@ -100,6 +126,7 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
             addDots(i);
             mCurrentSlide = i;
 
+
             if (mCurrentSlide == 0) {
 
                 mPrevious.setEnabled(false);
@@ -131,7 +158,6 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
 
         @Override
         public void onPageScrollStateChanged(int i) {
-
         }
     };
 
