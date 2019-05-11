@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Photo;
@@ -235,8 +236,22 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         } else {
             mPostTimeStamp.setText("Today");
         }
+        String  profilePicURL = user.getProfile_photo() ;
 
-        UniversalImageLoader.setImage(user.getProfile_photo(), mProfilePhoto, null, "");
+        //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
+        try {
+            if (profilePicURL == null) {
+                mProfilePhoto.setImageResource(R.drawable.my_avatar);
+
+            } else
+                Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
+
+        }catch (Exception e){
+            Log.e(TAG, "setProfileWidgets: Error: "+e.getMessage());
+            mProfilePhoto.setImageResource(R.drawable.my_avatar);
+
+        }
+
         mUserName.setText(user.getUsername());
 
         mPostLikes.setText(mLikesString);
