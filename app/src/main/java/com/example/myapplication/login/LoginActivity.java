@@ -2,8 +2,10 @@ package com.example.myapplication.login;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -203,7 +205,9 @@ public class LoginActivity extends AppCompatActivity implements
 //------------------------------------added for testing purposes------------------------------------
 
                     if (mAuth.getCurrentUser() == null) {
+
                         Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        mAuth.signOut();
                     }
                     // if task is successful
                     else if (task.isSuccessful()) {
@@ -305,10 +309,26 @@ public class LoginActivity extends AppCompatActivity implements
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(FacebookTag, "signInWithCredential:success");
-                            Toast.makeText(LoginActivity.this, "Authentication successful.",
-                                    Toast.LENGTH_SHORT).show();
-                            goToMainActivity();
+                            Toast.makeText(LoginActivity.this, "Authentication successful.", Toast.LENGTH_SHORT).show();
+
+                            String uid =  task.getResult().getUser().getUid();
+                            String email =  task.getResult().getUser().getEmail();
+                            String username =  task.getResult().getUser().getDisplayName();
+                            String url =  task.getResult().getUser().getPhotoUrl().toString();
+                            Log.d(TAG, "onComplete: uid: "+uid+"\n"
+                                    +"email: "+email+"\n"+ "username: "+username+"\n"+"url: "+url+"\n");
+
+                            verifyFirstFBLogin(email,username,url);
+
+                            //TODO, remember that the profile photo will be changed after chosing from gallery
+                            //TODO but after user disconnects and connect again it should not overwrite
+
+
+
+
+
+
+                            new Handler().postDelayed(() -> goToMainActivity(), Toast.LENGTH_SHORT);
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -449,6 +469,17 @@ public class LoginActivity extends AppCompatActivity implements
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(firebaseUser.getUid())
                 .setValue(user);
+    }
+    private void verifyFirstFBLogin(String email, String username ,String url) {
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        boolean firstLogin = prefs.getBoolean("prefs", true);
+
+        if (firstLogin) {//if its the first run we change the boolean to false
+            addNewUser(email,username,"description","website",url);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("prefs", false);
+            editor.apply();
+        }
     }
 
     @Override

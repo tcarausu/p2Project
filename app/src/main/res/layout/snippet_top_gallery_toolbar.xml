@@ -22,12 +22,12 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
                     android:onClick="onClick"
-                    android:src="@drawable/ic_action_x_icon" />
+                    android:src="@drawable/orange_cancel" />
 
                 <Spinner
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/close_share"
+                    android:layout_toEndOf="@id/close_share"
                     android:id="@+id/spinner_direct"
                     android:layout_centerVertical="true"
                     android:gravity="center_vertical">
@@ -38,10 +38,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/next"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="15dp"
+                    android:fontFamily="@font/almendra"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="15dp"
                     android:textSize="20sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/orange"
                     android:layout_centerVertical="true"
                     android:id="@+id/textview_next"/>
 

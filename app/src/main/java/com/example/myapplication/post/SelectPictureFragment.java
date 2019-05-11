@@ -3,7 +3,6 @@ package com.example.myapplication.post;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -22,6 +21,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -39,7 +39,8 @@ public class SelectPictureFragment extends Fragment {
     private ImageView closePost;
     ByteArrayOutputStream byteArrayOutputStream;
     Bitmap mBitmap;
-    private static final int GALLERY_REQUEST = 1;
+    private static final int GALLERY_REQUEST = 11;
+    private static final int CAMERA_REQUEST = 22;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select_picture, container, false);
@@ -84,18 +85,24 @@ public class SelectPictureFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == GALLERY_REQUEST && resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK && requestCode == GALLERY_REQUEST ) {
             mUri = data.getData();
             Glide.with(getContext()).load(mUri).fitCenter().centerCrop().into(galleryImageView);
             intent.putExtra("imageUri", mUri.toString());
-
         }
+//        else if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST ){
+//            mUri = data.getData();
+//            Glide.with(getContext()).load(mUri).fitCenter().centerCrop().into(galleryImageView);
+//            intent.putExtra("imageUri", mUri.toString());
+//        }
     }
     // Alert dialog
     private void dialogChoice() {
         final CharSequence[] options = {"CAMERA", "GALLERY", "CANCEL"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
         builder.setTitle("Add Image");
+
+        builder.setIcon(R.drawable.chefood);
         builder.setItems(options, (dialog, which) -> {
             if (options[which].equals("CAMERA")) {
                 takePicture();
@@ -112,7 +119,6 @@ public class SelectPictureFragment extends Fragment {
     private void takePicture() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, GALLERY_REQUEST);
-
     }
 
     // open gallery method
@@ -121,6 +127,5 @@ public class SelectPictureFragment extends Fragment {
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
     }
-
 
 }

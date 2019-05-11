@@ -39,8 +39,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -77,6 +75,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private StorageReference profilePicStorage;
     private FirebaseStorage storage;
     private FirebaseDatabase database;
+    private BroadcastReceiver broadcastReceiver ;
 
 
     private Bitmap bitmap;
@@ -91,20 +90,16 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         this.batteryLevel = batteryLevel;
     }
 
-    // this method is used to return the battery percentage
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            setBatteryLevel(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -33));
-        }
-    };
 
 
-    public String getProf_pic_URL() {
+// this method is used to return the battery percentage
+
+        //Methods
+    private String getProf_pic_URL() {
         return prof_pic_URL;
     }
 
-    public void setProf_pic_URL(String prof_pic_URL) {
+    private void setProf_pic_URL(String prof_pic_URL) {
         this.prof_pic_URL = prof_pic_URL;
     }
 
@@ -118,10 +113,17 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         storage = FirebaseStorage.getInstance();
         profilePicStorage = storage.getReference();
         userID = mAuth.getCurrentUser().getUid();
-        avatarUri = Uri.parse("android.resource://com.example.myapplication/drawable/my_avatar");
+        avatarUri = Uri.parse(String.valueOf(R.drawable.my_avatar));//"android.resource://com.example.myapplication/drawable/my_avatar"
+
+
+          broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                setBatteryLevel(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -33));//here i set the int battery level
+            }
+        };
         initLayouts(view);
         setupFirebaseAuth();
-
 
         return view;
     }
@@ -277,6 +279,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         }
     }
 
+
+
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -299,12 +303,18 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 if (isAdded())
                     setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
 
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Proccess canceled, " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                if (mAuth!= null)
+                    try{
+                        Toast.makeText(getContext(), "Proccess canceled, " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                catch (Exception e){
+                    Log.d(TAG, "onCancelled: exception: "+e.getMessage());
+                }
+
             }
         });
 
@@ -314,10 +324,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private void uploadProfilePic() {
 
         if (uri != null) {
-
-            String dateStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(new Date());
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("uploading, please wait...");
+            progressDialog.setIcon(R.drawable.chefood);
             progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.show();
 
@@ -364,7 +373,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getActivity(), "Uploading error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                if (databaseError.getMessage()!= null) {
+                    Toast.makeText(getActivity(), "Uploading error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }else return;
             }
         });
     }
@@ -393,7 +404,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private void takePicture() {
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (getBatteryLevel() > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
+        if (getBatteryLevel() < 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
             startActivityForResult(cameraIntent, REQUEST_CAMERA);
         } else Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
 
@@ -425,46 +436,4 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         Toast.makeText(getContext(), "Something went wrong! " + new Exception().getMessage(), Toast.LENGTH_SHORT).show();
     }
 
-
-//    private void UpdateUserDataBaseInfo() {
-//        final String userName = mUserName.getText().toString();
-//        final String email = mEmail.getText().toString();
-//        final String displayName = mDisplayName.getText().toString();
-//
-//        final long phoneNumber = Long.valueOf(mPhoneNumber.getText().toString());
-//        final String about = mAbout.getText().toString();
-//        final String website = mWebsite.getText().toString();
-//        final String photo_url = "";
-//        final long followers = 0;
-//        final long following = 0;
-//        final long posts = 0;
-//
-//
-//        myRef.child(currentUser.getUid()).child("about").setValue(about);
-//        myRef.child(currentUser.getUid()).child("display_name").setValue(displayName);
-//        myRef.child(currentUser.getUid()).child("email").setValue(email);
-//        myRef.child(currentUser.getUid()).child("phone_number").setValue(phoneNumber);
-//        myRef.child(currentUser.getUid()).child("profile_photo").setValue(photo_url);
-//        myRef.child(currentUser.getUid()).child("user_name").setValue(userName);
-//        myRef.child(currentUser.getUid()).child("website").setValue(website);
-//
-//        myRef.push().addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Toast.makeText(getActivity(), "Data updated.", Toast.LENGTH_SHORT).show();
-//                firebaseMethods.getUserSettings(dataSnapshot);
-//                mAbout.setText(about);
-//                mDisplayName.setText(displayName);
-//                mEmail.setText(email);
-//                mPhoneNumber.setText(String.valueOf(phoneNumber));
-//                mUserName.setText(userName);
-//                mWebsite.setText(website);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                Toast.makeText(getActivity(), "Data update error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
 }

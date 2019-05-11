@@ -22,7 +22,7 @@ public class SliderAdapter extends PagerAdapter {
         mContext = context;
     }
     //array of the images that we will display on the pages
-    public int[] slideImages = {  R.drawable.profile, R.drawable.like_pressed, R.drawable.smartphone};
+    public int[] slideImages = {  R.drawable.slide1, R.drawable.like_pressed, R.drawable.smartphone};
 
     //array of the titles that we will display on the pages
     public String[] slidesTitles = {"join us","share your experience\n" ,"like and follow"};

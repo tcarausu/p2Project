@@ -8,6 +8,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
+        android:fontFamily="@font/almendra"
+        android:textColor="@color/orange"
         android:text="Camera Fragment"
         android:textSize="20sp" />
 </RelativeLayout>

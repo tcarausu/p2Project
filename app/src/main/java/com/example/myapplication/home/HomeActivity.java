@@ -115,10 +115,10 @@ public class HomeActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.photo_camera);
-        Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.home);
+        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.mipmap.simo_design_camera);
+        Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.mipmap.simo_design_house);
         Objects.requireNonNull(tabLayout.getTabAt(1)).select();
-        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.direct_message_pressed);
+        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.mipmap.simo_design_message);
 
     }
 
@@ -132,10 +132,9 @@ public class HomeActivity extends AppCompatActivity {
 
         if (user == null) {
             Toast.makeText(mContext, "Your have to Authenticate first before proceeding", Toast.LENGTH_SHORT).show();
-
+            mAuth.signOut();
             Intent intent = new Intent(mContext, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
             startActivity(intent);
         }
 

@@ -18,7 +18,7 @@
         android:layout_gravity="start"
         android:drawableStart="@drawable/arrow_left"
         android:fontFamily="@font/almendra"
-        android:text="Go back" />
+        android:text="@string/go_back_signUpFragment" />
 
     <EditText
 
@@ -58,7 +58,7 @@
         tools:counterColor="@color"
         tools:counterEnabled="true"
         tools:counterMinLenght="6"
-        tools:ignore="autofill" />
+        tools:ignore="TextFields,autofill" />
 
     <EditText
 
@@ -75,7 +75,7 @@
         android:inputType="textPassword"
         android:padding="10dp"
         android:textColorHint="@color/black_transparent"
-        tools:ignore="autofill" />
+        tools:ignore="TextFields,autofill" />
 
     <Button
         android:id="@+id/SignupWithPhoneFragment_sendCodeButton"

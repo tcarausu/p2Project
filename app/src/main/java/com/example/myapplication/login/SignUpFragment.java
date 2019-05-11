@@ -27,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthSettings;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Objects;
+
 
 public class SignUpFragment extends Fragment {
     private static final String TAG = "SignUpFragment";
@@ -44,9 +46,8 @@ public class SignUpFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public SignUpFragment() {
-        // Required empty public constructor
-    }
+    // Required empty public constructor
+    public SignUpFragment() { }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,29 +58,22 @@ public class SignUpFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.signup_fragment, container, false);// Inflate the layout for this fragment
+        findWidgets(view);
+
+        goBack.setOnClickListener(v -> goToLogin());
+        signUpButton.setOnClickListener(v -> createUserWithEmail());
+
+
+        return view;
+    }
+
+    private void findWidgets(View view) {
         mEmail = view.findViewById(R.id.SignUpWithEmail_emailField_id);
         mPassword = view.findViewById(R.id.SignUpWithEmail_passField_id);
         mConfirmPassword = view.findViewById(R.id.SignUpWithEmail_confPassField_id);
         signUpButton = view.findViewById(R.id.SignupWithPhoneFragment_sendCodeButton);
         goBack = view.findViewById(R.id.SignUpWithEmail_goBackButton_id);
-
-        goBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToLogin();
-            }
-        });
-
-        // the only button
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-             createUserWithEmail();
-            }
-        });
-        return view;
     }
 
     private void createUserWithEmail(){
@@ -103,15 +97,14 @@ public class SignUpFragment extends Fragment {
                             Toast.makeText(getContext(),"Please confirm password",Toast.LENGTH_SHORT).show();
                         }
                         else if ( !password.equals(confPass)){
-
                             mPassword.setError("");
                             mConfirmPassword.setError("");
                             Toast.makeText(getContext(),"Error: MUST match Password",Toast.LENGTH_SHORT).show();
-
                         }
                         else {
                             loadingBar.setTitle("Creating account...");
-                            loadingBar.setMessage("Please wait while your account is being created.");
+                            loadingBar.setMessage("Please wait while your account is being created...");
+                            loadingBar.setIcon(R.drawable.chefood);
                             loadingBar.show();
                             loadingBar.setCanceledOnTouchOutside(false);
             //if all are fine, then try to create a user
@@ -119,23 +112,15 @@ public class SignUpFragment extends Fragment {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     // if success
-
                                     if (task.isSuccessful()){
                                         loadingBar.dismiss();
                                         Toast.makeText(getContext(), R.string.registration_success, Toast.LENGTH_SHORT).show();
                                         sendVerifyEmail();
                                         mAuth.signOut();
-                                        // could use a thread instead if needed
-                                        new Handler().postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                goToLogin();
-                                            }
-                                        }, Toast.LENGTH_SHORT);//
 
+                                        new Handler().postDelayed(() -> goToLogin(), Toast.LENGTH_SHORT);//
 
                                     }else {
-
                                         loadingBar.dismiss();
                                         Toast.makeText(getContext(),"Error: " + task.getException().getMessage() ,Toast.LENGTH_LONG).show();
                                         mAuth.signOut(); // always sign out the user if something goes wrong
@@ -170,7 +155,7 @@ public class SignUpFragment extends Fragment {
 // send user to login and erase fragment history
     private void goToLogin(){
         startActivity(new Intent(getActivity(),LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        getActivity().finish();
+        Objects.requireNonNull(getActivity()).finish();
  }
 
     @Override
