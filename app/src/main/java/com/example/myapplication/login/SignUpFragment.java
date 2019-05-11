@@ -37,12 +37,9 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     //===============================================
     private ProgressDialog loadingBar;
     private FirebaseAuth mAuth;
-    private FirebaseAuthSettings mAuthSettings;
-
     private OnFragmentInteractionListener mListener;
 
     public SignUpFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -188,7 +185,6 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     }
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

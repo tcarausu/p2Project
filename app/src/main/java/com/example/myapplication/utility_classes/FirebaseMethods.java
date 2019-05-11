@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.myapplication.R;
+import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -15,6 +16,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
 /**
  * File created by tcarau18
  **/
@@ -23,7 +29,6 @@ public class FirebaseMethods {
     private static final String TAG = "FirebaseMethods";
 
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
 
@@ -98,12 +103,10 @@ public class FirebaseMethods {
                 if (!dataSnapshot.exists()) {
                     //add username
                     updateUsername(userName, displayName,website,about,phone,profile_url );
-//                    Toast.makeText(mContext, "saved username and displayname", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "onDataChange: saved username and displayname: "+userName+" "+displayName);
 
                 } else {
                     Log.d(TAG, "onDataChange: Found a Match: " + dataSnapshot.getValue(User.class).getUsername());
-//                    Toast.makeText(mContext, "That username already exists", Toast.LENGTH_SHORT).show();
                 }
 
             }

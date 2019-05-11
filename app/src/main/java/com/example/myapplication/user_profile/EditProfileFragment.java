@@ -72,15 +72,10 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseUser currentUser;
     private Context mContext;
     private User user;
-    private User user;
-    private UserSettings mUserSettings;
     private Uri uri, avatarUri;
     private StorageReference profilePicStorage;
     private FirebaseStorage storage;
-    private FirebaseDatabase database;
 
-
-    private Bitmap bitmap;
     private String prof_pic_URL;
     private int batteryLevel;
 
@@ -166,11 +161,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if (!user.getUsername().equals(userName)) {
-                    firebaseMethods.checkIfUsernameExists(userName);
-                }
-                if (!mUserSettings.getUser().getUsername().equals(userName)
-                        && !mUserSettings.getUser().getDisplay_name().equals(displayName)) {
+
+                if (!user.getUsername().equals(userName)
+                        && !user.getDisplay_name().equals(displayName)) {
                     firebaseMethods.checkIfUsernameExists(userName, displayName, website, about, phoneNumber, profile_url);
                 } else
                     firebaseMethods.checkIfUsernameExists(userName, displayName, website, about, phoneNumber, profile_url);
@@ -183,25 +176,17 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         });
     }
 
-    private void setProfileWidgets(UserSettings userSettings) {
     private void setProfileWidgets(User userSettings) {
-        user = userSettings;
-    private void setProfileWidgets(User userSettings) {
-        user = userSettings;
-        Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " +
-                userSettings.toString());
-
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " + userSettings.toString());
-        User settings = userSettings.getUser();
-        mUserSettings = userSettings;
-        mDisplayName.setText(settings.getDisplay_name());
+        user = userSettings;
+        mDisplayName.setText(user.getDisplay_name());
 
-        mUserName.setText(settings.getUsername());
-        mWebsite.setText(settings.getWebsite());
-        mAbout.setText(settings.getAbout());
-        mEmail.setText(String.valueOf(settings.getEmail()));
-        mPhoneNumber.setText(String.valueOf(settings.getPhone_number()));
-        String profilePicURL = settings.getProfile_photo();
+        mUserName.setText(user.getUsername());
+        mWebsite.setText(user.getWebsite());
+        mAbout.setText(user.getAbout());
+        mEmail.setText(String.valueOf(user.getEmail()));
+        mPhoneNumber.setText(String.valueOf(user.getPhone_number()));
+        String profilePicURL = user.getProfile_photo();
 
         try {
             if (profilePicURL == null) {
@@ -221,13 +206,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         } catch (IllegalArgumentException e) {
             mProfilePhoto.setImageURI(avatarUri);
         }
-
-        mDisplayName.setText(user.getDisplay_name());
-        mUserName.setText(user.getUsername());
-        mWebsite.setText(user.getWebsite());
-        mAbout.setText(user.getAbout());
-        mEmail.setText(String.valueOf(user.getEmail()));
-        mPhoneNumber.setText(String.valueOf(user.getPhone_number()));
 
     }
 
@@ -305,15 +283,12 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
-                } else Log.d(TAG, "onAuthStateChanged: signed out");
-            }
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
+            } else Log.d(TAG, "onAuthStateChanged: signed out");
         };
 
         myRef.addValueEventListener(new ValueEventListener() {
@@ -321,11 +296,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 // retrive user information from the database
-//                (firebaseMethods.getUserSettings(dataSnapshot));
                 if (isAdded())
                     setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
-                setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
-
 
             }
 

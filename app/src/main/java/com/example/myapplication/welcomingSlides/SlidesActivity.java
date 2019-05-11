@@ -19,7 +19,7 @@ import com.example.myapplication.login.LoginActivity;
 /**
  * by M.MSAAD
  **/
-public class SlidesActivity extends AppCompatActivity {
+public class SlidesActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private ViewPager slideViewPager;
     private LinearLayout dotsLayout;
@@ -61,32 +61,11 @@ public class SlidesActivity extends AppCompatActivity {
 
         mIntent = new Intent(SlidesActivity.this, LoginActivity.class);
 
-        mPrevious.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                slideViewPager.setCurrentItem(mCurrentSlide + 1);
-            }
-        });
+        mPrevious.setOnClickListener(this);
 
-        mNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                slideViewPager.setCurrentItem(mCurrentSlide + 1);
+        mNext.setOnClickListener(this);
 
-                if (mNext.getText().equals("FINISH")) {
-
-                    startActivity(mIntent);
-                }
-
-            }
-        });
-
-        mSkip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(mIntent);
-            }
-        });
+        mSkip.setOnClickListener(this);
     }
 
 
@@ -156,6 +135,26 @@ public class SlidesActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
 
+            case R.id.nextButton_id:
+                slideViewPager.setCurrentItem(mCurrentSlide + 1);
+
+                if (mNext.getText().equals("FINISH")) {
+
+                    startActivity(mIntent);
+                }
+                break;
+
+            case R.id.previousButton_id:
+                slideViewPager.setCurrentItem(mCurrentSlide + 1);
+                break;
+            case R.id.skipButton:
+                startActivity(mIntent);
+                break;
+        }
+    }
 }
 
