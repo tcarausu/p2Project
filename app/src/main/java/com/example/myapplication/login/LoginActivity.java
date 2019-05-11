@@ -189,7 +189,9 @@ public class LoginActivity extends AppCompatActivity implements
             // after checking, we try to login
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
 //------------------------------------added for testing purposes------------------------------------
-                addUserToDataBase();
+//                addUserToDataBase();
+                addNewUser(mAuth.getCurrentUser().getEmail(), mAuth.getCurrentUser().getDisplayName(), "about", "website", "photo");
+
 //------------------------------------added for testing purposes------------------------------------
 
                 if (mAuth.getCurrentUser() == null) {
@@ -258,7 +260,9 @@ public class LoginActivity extends AppCompatActivity implements
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
 
 //------------------------------------added for testing purposes------------------------------------
-                        addUserToDataBase();
+//                        addUserToDataBase();
+                        addNewUser(mAuth.getCurrentUser().getEmail(), mAuth.getCurrentUser().getDisplayName(), "about", "website", "photo");
+
 //------------------------------------added for testing purposes------------------------------------
 
                         goToMainActivity();
