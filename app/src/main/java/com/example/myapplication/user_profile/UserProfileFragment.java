@@ -188,8 +188,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: "
                 + user.toString());
 
-//        UniversalImageLoader.setImage(user.getProfile_photo(), mProfilePhoto, null, "");
-
         mDisplayName.setText(user.getDisplay_name());
         mUserName.setText(user.getUsername());
         mWebsite.setText(user.getWebsite());
@@ -257,8 +255,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     Photo photo = new Photo();
                     Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
 
-                    Log.d(TAG, "onDataChange: bulshit excuse"+objectMap.get(getString(R.string.field_photo_id)));
-                    Log.d(TAG, "onDataChange: bulshit excuse"+objectMap.get(getString(R.string.field_photo_id)).toString());
                     photo.setPhoto_id(objectMap.get(getString(R.string.field_photo_id)).toString());
                     photo.setCaption(objectMap.get(getString(R.string.field_caption)).toString());
                     photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
@@ -273,8 +269,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                         like.setUser_id(ds.getValue(Like.class).getUser_id());
                         likeList.add(like);
                     }
-//                    photo.setLikes(likeList);
-//                    photos.add(photo);
+                    photo.setLikes(likeList);
+                    photos.add(photo);
                 }
 
                 //setup  our grid image
