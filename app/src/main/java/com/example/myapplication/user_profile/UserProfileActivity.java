@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.Photo;
+import com.example.myapplication.models.Post;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class UserProfileActivity extends AppCompatActivity implements UserProfileFragment.OnGridImageSelectedListener {
@@ -35,13 +36,13 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     }
 
     @Override
-    public void onGridImageSelected(Photo photo, int activityNr) {
-        Log.d(TAG, "onGridImageSelected: selected an image gridView:" + photo.toString());
+    public void onGridImageSelected(Post post, int activityNr) {
+        Log.d(TAG, "onGridImageSelected: selected an image gridView:" + post.toString());
 
         ViewPostFragment fragment = new ViewPostFragment();
         Bundle args = new Bundle();
 
-        args.putParcelable(getString(R.string.photo), photo);
+        args.putParcelable(getString(R.string.post), post);
         args.putInt(getString(R.string.activity_number), activityNr);
         fragment.setArguments(args);
 
@@ -52,4 +53,5 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         transaction.commit();
 
     }
+
 }

@@ -23,7 +23,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
-import com.example.myapplication.models.Photo;
+import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.Heart;
@@ -72,7 +72,7 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
     //vars
     private BottomNavigationViewEx bottomNavigationViewEx;
-    private Photo mPhoto;
+    private Post mPost;
     private Context mContext;
     private int mActivityNumber = 0;
 
@@ -127,8 +127,8 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
         mGestureDetector = new GestureDetector(getActivity(), new GestureListener());
         try {
-            mPhoto = getPhotoFromBundle();
-            UniversalImageLoader.setImage(mPhoto.getImage_path(), mPostImage, null, "");
+            mPost = getPhotoFromBundle();
+            UniversalImageLoader.setImage(mPost.getmFoodImgUrl(), mPostImage, null, "");
             mActivityNumber = getActivityNumberBundle();
 
             getPhotoDetails();
@@ -208,7 +208,7 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()
                         && dataSnapshot.getKey()
-                        .equals(mPhoto.getUser_id())) {
+                        .equals(mPost.getUserId())) {
                     user = dataSnapshot.getValue(User.class);
 
                 } else {
@@ -255,7 +255,7 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         mUserName.setText(user.getUsername());
 
         mPostLikes.setText(mLikesString);
-        mPostCaption.setText(mPhoto.getCaption());
+        mPostCaption.setText(mPost.getmDescription());
 
         if (mLikedByCurrentUser) {
             heartRed.setVisibility(View.VISIBLE);
@@ -293,7 +293,7 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
         sdf.format(today);
         Date timeStamp;
 
-        final String photoTimeStamp = mPhoto.getDate_created();
+        final String photoTimeStamp = mPost.getDate_created();
         try {
             timeStamp = sdf.parse(photoTimeStamp);
             diff = String.valueOf(Math.round((today.getTime() - timeStamp.getTime()) / 1000 / 60 / 60 / 24));
@@ -310,12 +310,12 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
      *
      * @return photo
      */
-    private Photo getPhotoFromBundle() {
+    private Post getPhotoFromBundle() {
         Log.d(TAG, "getPhotoFromBundle: arguments: " + getArguments());
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            return bundle.getParcelable(getString(R.string.photo));
+            return bundle.getParcelable(getString(R.string.post));
         } else {
             return null;
         }
@@ -391,7 +391,7 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
         Query query = mPostsRef
                 .child(userId)
-                .child(mPhoto.getPhoto_id())
+                .child(mPost.getPostId())
                 .child(getString(R.string.field_likes))
                 .getRef();
 
@@ -481,10 +481,10 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
 
             Query query = mPostsRef
                     .child(userId)
-                    .child(mPhoto.getPhoto_id())
+                    .child(mPost.getPostId())
                     .child(getString(R.string.field_likes))
                     .orderByChild(Objects.requireNonNull(mPostsRef
-                            .child(mPhoto.getPhoto_id())
+                            .child(mPost.getPostId())
                             .child(getString(R.string.field_likes))
                             .child(userId).getKey()));
 
@@ -498,7 +498,7 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
                                         .equals(userId)) {
                             mPostsRef
                                     .child(userId)
-                                    .child(mPhoto.getPhoto_id())
+                                    .child(mPost.getPostId())
                                     .child(getString(R.string.field_likes))
                                     .child(Objects.requireNonNull(singleSnapshot.getKey()))
                                     .removeValue();
@@ -531,13 +531,13 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
     private void addNewLike() {
         Log.d(TAG, "addNewLike: add new like");
 
-        String newLikeId = mPostsRef.child(mPhoto.getPhoto_id()).push().getKey();
+        String newLikeId = mPostsRef.child(mPost.getPostId()).push().getKey();
         Like like = new Like();
         like.setUser_id(userId);
 
         mPostsRef
                 .child(userId)
-                .child(mPhoto.getPhoto_id())
+                .child(mPost.getPostId())
                 .child(getString(R.string.field_likes))
                 .child(newLikeId)
                 .setValue(like);

@@ -206,7 +206,7 @@ public class FirebaseMethods {
         return user;
     }
 
-    private String getTimestamp() {
+    public String getTimestamp() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
         sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
 

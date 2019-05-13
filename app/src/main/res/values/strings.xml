@@ -96,7 +96,7 @@
     <string name="button_send_password">Send Mail</string>
     <string name="confirm_sing_out">Are you sure you want to SignOut?</string>
     <string name="signing_out">Signing Out…</string>
-    <string name="photo">Photo</string>
+    <string name="post">Post</string>
 
     <!--Login layout-->
 
@@ -123,14 +123,20 @@
     <string name="dbname_user_photos">user_photos</string>
     <string name="dbname_photos">photos</string>
     <string name="dbname_posts">posts</string>
-    <string name="field_username">username</string>
-    <string name="field_display_name">display_name</string>
-    <string name="field_user_id">user_id</string>
-    <string name="field_likes">likes</string>
-    <string name="field_profile_photo">profile_photo</string>
-    <string name="field_caption">caption</string>
+
+    <string name="field_username">mUsername</string>
+    <string name="field_user_id">userId</string>
+    <string name="field_post_id">postId</string>
+    <string name="field_likes">mLikes</string>
+    <string name="field_profile_photo">mProfileImgUrl</string>
+    <string name="field_food_photo">mFoodImgUrl</string>
+    <string name="field_recipe">mRecipe</string>
+    <string name="field_ingredients">mIngredients</string>
+    <string name="field_description">mDescription</string>
     <string name="field_date_created">date_created</string>
+
     <string name="field_image_path">image_path</string>
+    <string name="field_display_name">display_name</string>
     <string name="field_photo_id">photo_id</string>
     <string name="field_tags">tags</string>
 
@@ -145,7 +151,6 @@
     <string name="upload">Upload</string>
     <string name="choose_picture">Select Picture</string>
     <string name="image_ingredients_share">Write down the ingredients...</string>
-    <string name="post">POST</string>
     <string name="photo_add">PHOTO</string>
     <string name="open_camera">Open camera</string>
     <string name="next">Next</string>
