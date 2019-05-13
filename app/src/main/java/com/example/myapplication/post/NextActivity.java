@@ -18,6 +18,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,13 +47,14 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private String URL;
     private String username;
     private String profilePicUrl;
-
+    private FirebaseMethods firebaseMethods;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
         mAuth = FirebaseAuth.getInstance();
+        firebaseMethods = new FirebaseMethods(getApplicationContext());
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
         String databasePath = "posts/" + mAuth.getUid() + "/";
@@ -109,11 +111,13 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                     String description = mImageDesc.getText().toString();
                     String ingredients = mImageIngredients.getText().toString();
                     String recipe = mImageRecipe.getText().toString();
-                    Post postInfo = new Post(profilePicUrl, username, description, URL, 0, recipe, ingredients, mAuth.getUid());
+                    String uploadId = mDatabaseRef.push().getKey();
+                    Post postInfo = new Post(profilePicUrl, username, description,
+                            URL, recipe, ingredients, mAuth.getUid(),
+                            uploadId,firebaseMethods.getTimestamp(), null);
                     Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);
 
 
-                    String uploadId = mDatabaseRef.push().getKey();
                     mDatabaseRef.child(uploadId).setValue(postInfo);
 
                     Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();

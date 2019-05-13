@@ -23,11 +23,11 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Photo;
+import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.GridImageAdapter;
-import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -197,7 +197,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mFollowing.setText(String.valueOf(user.getFollowing()));
         mPosts.setText(String.valueOf(user.getPosts()));
 
-        String  profilePicURL = user.getProfile_photo() ;
+        String profilePicURL = user.getProfile_photo();
 
         //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
         try {
@@ -205,10 +205,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 mProfilePhoto.setImageResource(R.drawable.my_avatar);
 
             } else
-             Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
+                Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
 
-            }catch (Exception e){
-            Log.e(TAG, "setProfileWidgets: Error: "+e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
 
         }
@@ -240,7 +240,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private void setupGridView() {
         Log.d(TAG, "setupGridView: Setting up GridView");
 
-        final ArrayList<Photo> photos = new ArrayList<>();
+        final ArrayList<Post> posts = new ArrayList<>();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
         Query query = reference
@@ -252,15 +252,19 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
 //                           photos.add(singleSnapshot.getValue(Photo.class));
-                    Photo photo = new Photo();
+//                    Photo photo = new Photo();
+                    Post post = new Post();
                     Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
 
-                    photo.setPhoto_id(objectMap.get(getString(R.string.field_photo_id)).toString());
-                    photo.setCaption(objectMap.get(getString(R.string.field_caption)).toString());
-                    photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
-                    photo.setTags(objectMap.get(getString(R.string.field_tags)).toString());
-                    photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
-                    photo.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
+                    post.setmProfileImgUrl(objectMap.get(getString(R.string.field_profile_photo)).toString());
+                    post.setmDescription(objectMap.get(getString(R.string.field_description)).toString());
+                    post.setmFoodImgUrl(objectMap.get(getString(R.string.field_food_photo)).toString());
+                    post.setUserId(objectMap.get(getString(R.string.field_user_id)).toString());
+                    post.setmRecipe(objectMap.get(getString(R.string.field_recipe)).toString());
+                    post.setmIngredients(objectMap.get(getString(R.string.field_ingredients)).toString());
+                    post.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
+                    post.setmUsername(objectMap.get(getString(R.string.field_username)).toString());
+                    post.setPostId(objectMap.get(getString(R.string.field_post_id)).toString());
 
                     List<Like> likeList = new ArrayList<>();
                     for (DataSnapshot ds : singleSnapshot
@@ -269,8 +273,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                         like.setUser_id(ds.getValue(Like.class).getUser_id());
                         likeList.add(like);
                     }
-                    photo.setLikes(likeList);
-                    photos.add(photo);
+                    post.setLikes(likeList);
+                    posts.add(post);
                 }
 
                 //setup  our grid image
@@ -281,8 +285,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 ArrayList<String> imgURLs = new ArrayList<>();
 
-                for (int i = 0; i < photos.size(); i++) {
-                    imgURLs.add(photos.get(i).getImage_path());
+                for (int i = 0; i < posts.size(); i++) {
+                    imgURLs.add(posts.get(i).getmFoodImgUrl());
                 }
 
                 GridImageAdapter adapter = new GridImageAdapter(getActivity(), R.layout.layout_grid_imageview,
@@ -291,7 +295,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 gridView.setAdapter(adapter);
 
                 gridView.setOnItemClickListener((parent, view, position, id) ->
-                        onGridImageSelectedListener.onGridImageSelected(photos.get(position), ACTIVITY_NUM));
+                        onGridImageSelectedListener.onGridImageSelected(posts.get(position), ACTIVITY_NUM));
             }
 
             @Override
@@ -316,7 +320,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
     public interface OnGridImageSelectedListener {
-        void onGridImageSelected(Photo photo, int activityNr);
+        void onGridImageSelected(Post post, int activityNr);
     }
 
 }
