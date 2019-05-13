@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment {
 
                         // NOW JUST CREATE A USER IN THE DATABASE AND TEST 
                         final Post post = postSnapshot.getValue(Post.class);
-                        Log.d(TAG, "onDataChange: uid for user from post : " + post.getmUserId());
+                        Log.d(TAG, "onDataChange: uid for user from post : " + post.getUserId());
 
 
                         Log.d(TAG, "onDataChange: username and profile pic : >>>> : " + mUsername + " " + mProfilePhoto);

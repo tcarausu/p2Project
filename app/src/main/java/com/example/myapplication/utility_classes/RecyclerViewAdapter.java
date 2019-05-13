@@ -61,34 +61,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 .into(viewHolder.mFoodImg);
 
 
-        viewHolder.mLikes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String nrOfLikes ="" + postCurrent.getmLikes();
-                viewHolder.mToolbarExpasionText.setText(nrOfLikes);
-            }
+        viewHolder.mLikes.setOnClickListener(v -> {
+            String nrOfLikes ="" + postCurrent.getLikes().size();
+            viewHolder.mToolbarExpasionText.setText(nrOfLikes);
         });
 
-        viewHolder.mComments.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // implementation for displaying the comments for each post
-            }
+        viewHolder.mComments.setOnClickListener(v -> {
+            // implementation for displaying the comments for each post
         });
 
-        viewHolder.mRecipe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewHolder.mToolbarExpasionText.setText(postCurrent.getmRecipe());
-            }
-        });
+        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.mToolbarExpasionText.setText(postCurrent.getmRecipe()));
 
-        viewHolder.mIngredients.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewHolder.mToolbarExpasionText.setText(postCurrent.getmIngredients());
-            }
-        });
+        viewHolder.mIngredients.setOnClickListener(v -> viewHolder.mToolbarExpasionText.setText(postCurrent.getmIngredients()));
     }
 
     @Override
