@@ -62,7 +62,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
         viewHolder.mLikes.setOnClickListener(v -> {
-            String nrOfLikes ="" + postCurrent.getLikes().size();
+            String nrOfLikes ="" + postCurrent.getLikes();
             viewHolder.mToolbarExpasionText.setText(nrOfLikes);
         });
 
