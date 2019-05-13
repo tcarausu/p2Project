@@ -62,13 +62,12 @@ public class HomeFragment extends Fragment {
                 for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                     mUserId = userSnapshot.getKey();
 
-                    mDatabaseUserRef = firebasedatabase.getReference("users");
-
+                    mDatabaseUserRef = firebasedatabase.getReference("users/" + mUserId);
 
                     mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                           User user = dataSnapshot.getValue(User.class);
+                            User user = dataSnapshot.getValue(User.class);
                             mUsername = user.getUsername();
                             mProfilePhoto = user.getProfile_photo();
                             Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
