@@ -35,7 +35,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.layout_list_item_post,viewGroup,false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.layout_list_item_post, viewGroup, false);
         return new ViewHolder(view);
     }
 
@@ -62,7 +62,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
         viewHolder.mLikes.setOnClickListener(v -> {
-            String nrOfLikes ="" + postCurrent.getLikes();
+            String nrOfLikes = "" + postCurrent.getLikes().size();
+
             viewHolder.mToolbarExpasionText.setText(nrOfLikes);
         });
 
