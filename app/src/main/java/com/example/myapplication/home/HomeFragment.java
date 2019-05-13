@@ -91,7 +91,7 @@ public class HomeFragment extends Fragment {
 
                         Log.d(TAG, "onDataChange: username and profile pic : >>>> : " + mUsername + " " + mProfilePhoto);
 
-                        post.setmProfileImgUrl(mProfilePhoto);
+//                        post.setmProfileImgUrl(mProfilePhoto);
                         mPosts.add(post);
                     }
                 }
