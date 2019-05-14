@@ -1,5 +1,6 @@
 package com.example.myapplication.post;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,9 +42,10 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mUploadTextView;
     private ImageView mBackImageView;
     private StorageReference mStorageRef;
-    private DatabaseReference mDatabaseRef;
+    private DatabaseReference mDatabaseRef, postRef;
     private DatabaseReference mDatabaseReferenceUserInfo;
     private FirebaseAuth mAuth;
+    private FirebaseUser current_user;
     private String imageUri;
     private String URL;
     private String username;
@@ -53,13 +56,27 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
+        findWidgets();
+
+
+        Intent intent = getIntent();
+        imageUri = intent.getStringExtra("imageUri");
+        Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewfood);
+        mUploadTextView.setOnClickListener(this);
+
+        mBackImageView.setOnClickListener(this);
+
         mAuth = FirebaseAuth.getInstance();
         firebaseMethods = new FirebaseMethods(getApplicationContext());
 
+        current_user = mAuth.getCurrentUser();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         String databasePath = "posts/" + mAuth.getUid() + "/";
         String databasePathPic = "users/" + mAuth.getUid();
+        postRef = FirebaseDatabase.getInstance().getReference("posts").child(current_user.getUid());
+
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
+
         mDatabaseReferenceUserInfo = FirebaseDatabase.getInstance().getReference(databasePathPic);
 
         // getting the username and profile picture link for current user
@@ -68,11 +85,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 User user = dataSnapshot.getValue(User.class);
-
                 profilePicUrl = user.getProfile_photo();
                 username = user.getUsername();
             }
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -80,10 +95,23 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        initLayout();
+        postRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    // TODO push the new parameters from the input
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
-    private void initLayout() {
+    private void findWidgets() {
 
         mImageDesc = findViewById(R.id.image_desc_edittext);
         mImageIngredients = findViewById(R.id.image_ingredients_edittext);
@@ -99,41 +127,58 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         mBackImageView.setOnClickListener(this);
     }
 
+
     // method for uploading image and image content to firebase storage and database
     private void uploadImage() {
-        Toast.makeText(NextActivity.this, "Uploading...",
-                Toast.LENGTH_SHORT).show();
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("uploading, please wait...");
+        progressDialog.setIcon(R.drawable.chefood);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+
         StorageReference storageReference = mStorageRef.child("post_pic/users/" + mAuth.getUid() + "/" + System.currentTimeMillis() + ".jpg");
         storageReference.putFile(Uri.parse(imageUri)).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                storageReference.getDownloadUrl().addOnCompleteListener(task1 -> {
-                    URL = task1.getResult().toString();
-                    String description = mImageDesc.getText().toString();
-                    String ingredients = mImageIngredients.getText().toString();
-                    String recipe = mImageRecipe.getText().toString();
-                    String uploadId = mDatabaseRef.push().getKey();
-                    Post postInfo = new Post(description,
-                            URL, recipe, ingredients, mAuth.getUid(),
-                            uploadId, firebaseMethods.getTimestamp(), null);
-                    Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);
+                    if (task.isSuccessful()) {
+                        progressDialog.dismiss();
+                        storageReference.getDownloadUrl().addOnCompleteListener(task1 -> {
+                            URL = task1.getResult().toString();
+                            Log.d(TAG, "onComplete: post URL: " + URL);
+                            String description = mImageDesc.getText().toString();
+                            String ingredients = mImageIngredients.getText().toString();
+                            String recipe = mImageRecipe.getText().toString();
+                            String uploadId = mDatabaseRef.push().getKey();
+                            Post postInfo = new Post(description,
+                                    URL, recipe, ingredients, mAuth.getUid(),
+                                    uploadId, firebaseMethods.getTimestamp(), null);
+                            Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);
 
+                            mDatabaseRef.child(uploadId).setValue(postInfo);
 
-                    mDatabaseRef.child(uploadId).setValue(postInfo);
+                            Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();
+                            Handler handler = new Handler();
+                            handler.postDelayed(() -> {
+                                Intent intent = new Intent(NextActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                            }, 500);
+                        }).addOnFailureListener(e ->
+                                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
+                    }
+                }
+        ).addOnSuccessListener(taskSnapshot -> {
 
-                    Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();
-                    Handler handler = new Handler();
-                    handler.postDelayed(() -> {
-                        Intent intent = new Intent(NextActivity.this, HomeActivity.class);
-                        startActivity(intent);
-                    }, 500);
-                }).addOnFailureListener(e -> Toast.makeText(NextActivity.this, "COULD NOT UPLOAD PICTURE! TRY AGAIN",
-                        Toast.LENGTH_SHORT).show());
-            }
-        }).addOnSuccessListener(taskSnapshot -> {
+            progressDialog.dismiss();
+            Toast.makeText(NextActivity.this, "Post added successfully.", Toast.LENGTH_SHORT).show();
+        }).addOnCanceledListener(() -> {
 
+                }
+        ).addOnProgressListener(taskSnapshot ->
+        {
+            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+            progressDialog.setMessage("uploaded " + (int) progress + "%");
 
-        }).addOnFailureListener(e -> Toast.makeText(NextActivity.this, "COULD NOT UPLOAD PICTURE! TRY AGAIN",
-                Toast.LENGTH_SHORT).show());
+        }).addOnFailureListener(e ->
+                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());;
     }
 
     @Override
@@ -151,6 +196,6 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
         }
-    }
 
+    }
 }

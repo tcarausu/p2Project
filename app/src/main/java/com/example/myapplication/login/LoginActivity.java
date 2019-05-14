@@ -2,8 +2,10 @@ package com.example.myapplication.login;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -188,12 +190,12 @@ public class LoginActivity extends AppCompatActivity implements
         } else {
             // after checking, we try to login
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-//------------------------------------added for testing purposes------------------------------------
                 addUserToDataBase();
-//------------------------------------added for testing purposes------------------------------------
 
                 if (mAuth.getCurrentUser() == null) {
+
                     Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    mAuth.signOut();
                 }
                 // if task is successful
                 else if (task.isSuccessful()) {
@@ -257,11 +259,9 @@ public class LoginActivity extends AppCompatActivity implements
                         Log.d(Google_Tag, "signInWithCredential:success");
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
 
-//------------------------------------added for testing purposes------------------------------------
                         addUserToDataBase();
-//------------------------------------added for testing purposes------------------------------------
 
-                        goToMainActivity();
+                        new Handler().postDelayed(() -> goToMainActivity(), Toast.LENGTH_SHORT);
 
                     } else {
                         // If sign in fails, display a message to the user.
@@ -285,22 +285,23 @@ public class LoginActivity extends AppCompatActivity implements
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.d(FacebookTag, "signInWithCredential:success");
-                        Toast.makeText(LoginActivity.this, "Authentication successful.",
-                                Toast.LENGTH_SHORT).show();
-                        goToMainActivity();
+                        Toast.makeText(LoginActivity.this, "Authentication successful.", Toast.LENGTH_SHORT).show();
+
+                        String uid = task.getResult().getUser().getUid();
+                        String email = task.getResult().getUser().getEmail();
+                        String username = task.getResult().getUser().getDisplayName();
+                        String url = task.getResult().getUser().getPhotoUrl().toString();
+                        Log.d(TAG, "onComplete: uid: " + uid + "\n"
+                                + "email: " + email + "\n" + "username: " + username + "\n" + "url: " + url + "\n");
+
+                        verifyFirstFBLogin(email, username, url);
+                        new Handler().postDelayed(() -> goToMainActivity(), 500);
 
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(FacebookTag, "signInWithCredential:failure", task.getException());
-                        Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Authentication failed, " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         LoginManager.getInstance().logOut();
-
-                    }
-
-                    if (!task.isSuccessful()) {
-                        Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -359,6 +360,7 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
+    //
     private void addUserToDataBase() {
         final FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -411,7 +413,7 @@ public class LoginActivity extends AppCompatActivity implements
      * @param profile_photo represents the profile_photo from the User Profile
      */
     private void addNewUser(String email, String username, String description, String website, String profile_photo) {
-        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
         User user = new User(
                 description,
@@ -426,8 +428,22 @@ public class LoginActivity extends AppCompatActivity implements
                 website);
 
         myRef.child(mContext.getString(R.string.dbname_users))
-                .child(firebaseUser.getUid())
+                .child(currentUser.getUid())
                 .setValue(user);
+    }
+
+    private void verifyFirstFBLogin(String email, String username, String url) {
+
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        boolean firstLogin = prefs.getBoolean("prefs", false);
+
+        //if its the first run we change the boolean to false
+        if (firstLogin) {
+            addNewUser(email, username, "description", "website", url);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("prefs", true);
+            editor.apply();
+        }
     }
 
     public void onFragmentInteraction(Uri uri) {

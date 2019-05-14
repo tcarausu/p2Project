@@ -18,7 +18,7 @@
         android:layout_gravity="start"
         android:drawableStart="@drawable/arrow_left"
         android:fontFamily="@font/almendra"
-        android:text="Go back" />
+        android:text="@string/go_back_signUpFragment" />
 
     <EditText
 
@@ -43,7 +43,7 @@
         android:id="@+id/pass_field"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/email_field"
+        android:layout_below="@+id/email_field"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="5dp"
         android:background="@drawable/input_fields"
@@ -58,7 +58,7 @@
         tools:counterColor="@color"
         tools:counterEnabled="true"
         tools:counterMinLenght="6"
-        tools:ignore="autofill" />
+        tools:ignore="TextFields,autofill" />
 
     <EditText
 
@@ -75,7 +75,7 @@
         android:inputType="textPassword"
         android:padding="10dp"
         android:textColorHint="@color/black_transparent"
-        tools:ignore="autofill" />
+        tools:ignore="TextFields,autofill" />
 
     <Button
         android:id="@+id/sign_up"

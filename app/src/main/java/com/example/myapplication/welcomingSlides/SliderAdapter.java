@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.myapplication.R;
@@ -22,15 +22,15 @@ public class SliderAdapter extends PagerAdapter {
         mContext = context;
     }
     //array of the images that we will display on the pages
-    private int[] slideImages = {  R.drawable.profile, R.drawable.like_pressed, R.drawable.smartphone};
+    public int[] slideImages = {  R.drawable.simo_designed_slide1, R.drawable.profile_post_simo_design, R.drawable.keep_updated_sim_design};
 
     //array of the titles that we will display on the pages
-    private String[] slidesTitles = {"join us","share your experience\n" ,"like and follow"};
+    public String[] slidesTitles = {"join us","cook & share\n" ,"Stay updated"};
 
     //array of the texts that we will display on the pages
-    private String[] slidesTexts = {"Sign up for FREE now",
-            "Like, Share and Follow to grow your network and improve your cooking skills" ,
-            "Stay updated with your friends kitchen life"};
+    public String[] slidesTexts = {"Multiple FREE Sign up options!",
+            "Improve your cooking skills while sharing your cooking experience" ,
+            "Like, comment, get feedback and improve your cooking skills"};
 
 
     @Override // we return the length
@@ -48,7 +48,7 @@ public class SliderAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
 
         // call for an inflater
-        mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayoutInflater = (LayoutInflater) mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
         View v = mLayoutInflater.inflate(R.layout.first_welcoming_slide_layout,container,false);// create a view
 
         ImageView slideImage = v.findViewById(R.id.slideImage1_id); // find widgets by id
@@ -68,7 +68,7 @@ public class SliderAdapter extends PagerAdapter {
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
 
-        container.removeView((RelativeLayout)object);// this need to be implemented to avoid crushing the app
+        container.removeView((LinearLayout)object);// this need to be implemented to avoid crushing the app
 
 
     }

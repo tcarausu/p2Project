@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/orangeMainTheme"
     tools:context=".post.NextActivity">
 
     <ScrollView
@@ -12,7 +14,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp">
 
             <RelativeLayout
                 android:id="@+id/relLayout1"
@@ -43,12 +45,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@+id/image_tobe_shared"
+                    android:layout_marginStart="20dp"
+
+                    android:layout_toEndOf="@+id/image_tobe_shared"
                     android:background="@null"
                     android:hint="@string/image_description_share" />
 
             </RelativeLayout>
+
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -64,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginBottom="40dp"
                     android:background="@null"
                     android:hint="@string/image_ingredients_share" />
@@ -98,4 +102,4 @@
 
         </RelativeLayout>
     </ScrollView>
-</RelativeLayout>
+</LinearLayout>

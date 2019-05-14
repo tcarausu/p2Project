@@ -98,9 +98,6 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    /*
-    ------------------------------------------------- FIREBASE SETUP -------------------------------------------------
-     */
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
 
@@ -122,8 +119,5 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
         };
 
     }
-   /*
-    ------------------------------------------------- FIREBASE SETUP -------------------------------------------------
-     */
 
 }

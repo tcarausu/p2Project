@@ -20,7 +20,7 @@
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_back_arrow" />
+                    android:src="@drawable/orange_arrow_left" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -28,8 +28,10 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="30dp"
                     android:layout_toEndOf="@id/backArrow"
-                    android:text="@string/post"
-                    android:textColor="@color/black"
+                    android:text="@string/photo"
+                    android:fontFamily="@font/almendra"
+
+                    android:textColor="@color/orange"
                     android:id="@+id/tvBackLabel"
                     android:textSize="20sp" />
             </RelativeLayout>

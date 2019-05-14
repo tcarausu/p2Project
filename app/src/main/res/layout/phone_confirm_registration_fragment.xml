@@ -12,7 +12,7 @@
 
     <EditText
 
-        android:id="@+id/email_field"
+        android:id="@+id/SignUpWithEmail_emailField_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -28,10 +28,10 @@
         android:textColorHint="@color/black" />
 
     <Button
-        android:id="@+id/sign_up"
+        android:id="@+id/SignupWithPhoneFragment_sendCodeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/email_field"
+        android:layout_below="@id/SignUpWithEmail_emailField_id"
         android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
         android:background="@drawable/input_fields"

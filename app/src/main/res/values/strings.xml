@@ -5,6 +5,7 @@
     <string name="login">Login</string>
     <string name="signUp">Sign Up</string>
     <string name="signIn">Sign In</string>
+    <string name="photo">Photo</string>
 
 
     <string name="hint_user_id">User ID</string>
@@ -158,5 +159,7 @@
     <string name="finish">Finish</string>
     <string name="string_recipe">Write down the recipe..</string>
     <string name="please_select_picture">Please select a picture</string>
+    <string name="go_back_signUpFragment">go back</string>
+
 
 </resources>

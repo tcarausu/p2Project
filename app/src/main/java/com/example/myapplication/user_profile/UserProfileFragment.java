@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
@@ -57,7 +58,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private static final int ACTIVITY_NUM = 4;
 
     private static final int NUM_GRID_COLUMNS = 3;
-    private Context mContext;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -75,6 +75,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private Toolbar toolbar;
     private FirebaseMethods firebaseMethods;
     private Uri avatarUri;
+    private FirebaseUser current_user;
 
     private User user;
 
@@ -83,22 +84,17 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         mAuth = FirebaseAuth.getInstance();
         avatarUri = Uri.parse("android.resource://com.example.myapplication/drawable/my_avatar");
-
         initLayout(view);
         setListeners(view);
         setupFirebaseAuth();
-
         setupGridView();
-
         setupBottomNavigationView();
 
         return view;
     }
 
     private void initLayout(View view) {
-        mContext = getActivity();
-        firebaseMethods = new FirebaseMethods(mContext);
-
+        firebaseMethods = new FirebaseMethods(getContext());
         mDisplayName = view.findViewById(R.id.displayName);
         mUserName = view.findViewById(R.id.userName);
         mWebsite = view.findViewById(R.id.website);
@@ -111,16 +107,13 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mProgressBar = view.findViewById(R.id.profile_progress_bar);
         mProgressBar.setVisibility(View.GONE);
         mProfilePhoto = view.findViewById(R.id.profileImage);
-
         toolbar = view.findViewById(R.id.profileToolBar);
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
-
     }
 
     private void setListeners(View view) {
         mEditProfile = view.findViewById(R.id.editProfile);
         profileMenu = view.findViewById(R.id.profileMenu);
-
         mEditProfile.setOnClickListener(this);
         profileMenu.setOnClickListener(this);
 
@@ -130,7 +123,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-
     }
 
     @Override
@@ -164,12 +156,23 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             if (user != null) {
                 Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
             } else Log.d(TAG, "onAuthStateChanged: signed out");
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
+            } else
+                Log.d(TAG, "onAuthStateChanged: signed out");
+
         };
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
+                current_user = mAuth.getCurrentUser();
+                String photoRef = myRef.child(current_user.getUid()).child("profile_photo").getRef().toString();
+                //retrive user information from the database
+                if (photoRef.equals("photo")) {
+                    mProfilePhoto.setImageResource(R.mipmap.simo_design_avatar);
+                } else
+                    setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
 
             }
 
@@ -219,17 +222,17 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         switch (v.getId()) {
 
             case R.id.editProfile:
-                Intent intent = new Intent(mContext, AccountSettingsActivity.class);
+                Intent intent = new Intent(getContext(), AccountSettingsActivity.class);
                 intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
                 startActivity(intent);
 
                 break;
             case R.id.profileMenu:
-
-                ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
                 Log.d(TAG, "onClick: navigating to account settings");
 
-                startActivity(new Intent(mContext, AccountSettingsActivity.class));
+                ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
+
+                startActivity(new Intent(getContext(), AccountSettingsActivity.class));
 
                 break;
         }
@@ -302,12 +305,18 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         });
     }
 
+    private void goToLogin() {
+        startActivity(new Intent(getActivity(), LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        getActivity().finish();
+    }
+
     /**
      * Bottom Navigation View setup
      */
     public void setupBottomNavigationView() {
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getContext(), bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
