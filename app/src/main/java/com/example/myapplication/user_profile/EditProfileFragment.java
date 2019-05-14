@@ -468,18 +468,12 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             if (besoins) {
                 uri = data.getData();
                 Glide.with(this).load(data.getData()).centerCrop().into(mProfilePhoto);
-
-                if (resultCode == RESULT_OK && requestCode == REQUEST_CAMERA && data != null && data.getData() != null) {
-                    uri = data.getData();
-                    Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
-
-                } else if (besoins1) {
-                    uri = data.getData();
-                    Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
-                    Log.d(TAG, "onActivityResult: uri: " + uri.getPath());
-                }
-
             }
+                else if (besoins1) {
+                    uri = data.getData();
+                    Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
+
+                }
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
