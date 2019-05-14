@@ -1,6 +1,5 @@
 package com.example.myapplication.user_profile;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -39,7 +38,7 @@ public class AccountSettingsActivity extends AppCompatActivity
     private static final String TAG = "AccountSettingsActivity";
     private static final int ACTIVITY_NUM = 4;
 
-    private Context mContext;
+
 
     //firebase
     private FirebaseAuth mAuth;
@@ -72,7 +71,6 @@ public class AccountSettingsActivity extends AppCompatActivity
     }
 
     private void initLayout() {
-        mContext = AccountSettingsActivity.this;
 
         listView = findViewById(R.id.listViewAccountSettings);
 
@@ -138,7 +136,7 @@ public class AccountSettingsActivity extends AppCompatActivity
         options.add(getString(R.string.edit_your_profile_fragment));
         options.add(getString(R.string.sign_out_fragment));
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, options);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, options);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
@@ -173,7 +171,7 @@ public class AccountSettingsActivity extends AppCompatActivity
 
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);

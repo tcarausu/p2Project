@@ -1,7 +1,12 @@
 package com.example.myapplication.post;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -30,6 +35,8 @@ import static android.app.Activity.RESULT_OK;
  **/
 public class SelectPictureFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "SelectPictureFragment";
+    private static final int CAMERA_REQUEST = 44;
+    private static final int GALLERY_REQUEST = 11;
 
     private ImageView galleryImageView;
     private Button mSelectPicButton;
@@ -39,12 +46,34 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     private ImageView closePost;
     ByteArrayOutputStream byteArrayOutputStream;
     Bitmap mBitmap;
+
+
+    private BroadcastReceiver broadcastReceiver  = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            setBatteryLevel(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -3));//here i set the int battery level
+        }
+    };
+    private int batteryLevel;
+
+    public int getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    public void setBatteryLevel(int batteryLevel) {
+        this.batteryLevel = batteryLevel;
+    }
+
+
     private static final int GALLERY_REQUEST = 11;
     private static final int CAMERA_REQUEST = 22;
     private static final int GALLERY_REQUEST = 1;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select_picture, container, false);
+
+        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+
 
         intent = new Intent(getActivity(), NextActivity.class);
 
@@ -105,13 +134,19 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     // open camera method
     private void takePicture() {
+
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, GALLERY_REQUEST);
+        if (getBatteryLevel() > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
+            Log.d(TAG, "takePicture: battery level: " + getBatteryLevel());
+            startActivityForResult(cameraIntent, CAMERA_REQUEST);
+        } else Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
+
+
     }
 
     // open gallery method
     private void selectPicture() {
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI );
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
     }
@@ -143,6 +178,28 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
                 break;
         }
     }
+
+
+    // showing picture taken from camera in ImageView
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == GALLERY_REQUEST && data.getData()!= null ) {
+
+            mUri = data.getData();
+            Glide.with(this).load(mUri).centerCrop().into(galleryImageView);
+            intent.putExtra("imageUri", mUri.toString());
+
+        }else if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST && data.getData()!= null){
+
+            mUri = data.getData() ;
+            Glide.with(this).load(mUri).centerCrop().into(galleryImageView);
+            intent.putExtra("imageUri", mUri.toString());
+
+        }
+
+        }
 
 
 }

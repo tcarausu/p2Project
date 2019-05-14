@@ -302,28 +302,13 @@ public class LoginActivity extends AppCompatActivity implements
                                     +"email: "+email+"\n"+ "username: "+username+"\n"+"url: "+url+"\n");
 
                             verifyFirstFBLogin(email,username,url);
-
-                            //TODO, remember that the profile photo will be changed after chosing from gallery
-                            //TODO but after user disconnects and connect again it should not overwrite
-
-
-
-
-
-
-                            new Handler().postDelayed(() -> goToMainActivity(), Toast.LENGTH_SHORT);
+                            new Handler().postDelayed(() -> goToMainActivity(), 500);
 
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(FacebookTag, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Authentication failed, "+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             LoginManager.getInstance().logOut();
-
-                        }
-
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -382,7 +367,7 @@ public class LoginActivity extends AppCompatActivity implements
 
         }
     }
-
+//
     private void addUserToDataBase() {
         final FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -435,8 +420,11 @@ public class LoginActivity extends AppCompatActivity implements
      * @param profile_photo represents the profile_photo from the User Profile
      */
     private void addNewUser(String email, String username, String description, String website, String profile_photo) {
-        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+       String existUser =  myRef.child(mContext.getString(R.string.dbname_users)).child(currentUser.getUid()).toString();
+//       if (existUser.equals(currentUser)){
+//           //TODO, add if not there
+//       }
         User user = new User(
                 description,
                 "Chose a user name",
@@ -450,17 +438,19 @@ public class LoginActivity extends AppCompatActivity implements
                 website);
 
         myRef.child(mContext.getString(R.string.dbname_users))
-                .child(firebaseUser.getUid())
+                .child(currentUser.getUid())
                 .setValue(user);
     }
     private void verifyFirstFBLogin(String email, String username ,String url) {
-        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
-        boolean firstLogin = prefs.getBoolean("prefs", true);
 
-        if (firstLogin) {//if its the first run we change the boolean to false
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        boolean firstLogin = prefs.getBoolean("prefs", false);
+
+        //if its the first run we change the boolean to false
+        if (firstLogin) {
             addNewUser(email,username,"description","website",url);
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("prefs", false);
+            editor.putBoolean("prefs", true);
             editor.apply();
         }
     }

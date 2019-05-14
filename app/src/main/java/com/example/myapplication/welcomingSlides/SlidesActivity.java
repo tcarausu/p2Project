@@ -38,8 +38,6 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
         findWidgets();
         verifyFirstRun();
 
-
-
         sliderAdapter = new SliderAdapter(this);
         slideViewPager.setAdapter(sliderAdapter);
         addDots(0);
@@ -47,7 +45,7 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
 
 
 
-        mPrevious.setOnClickListener(v -> slideViewPager.setCurrentItem(mCurrentSlide + 1));
+        mPrevious.setOnClickListener(v -> slideViewPager.setCurrentItem(mCurrentSlide - 1));
 
         mNext.setOnClickListener(v -> {
             slideViewPager.setCurrentItem(mCurrentSlide + 1);
@@ -56,9 +54,10 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
 
-        mSkip.setOnClickListener(v -> new Handler().postDelayed(() ->startActivity(mIntent), Toast.LENGTH_SHORT));
+        mSkip.setOnClickListener(v -> new Handler().postDelayed(() ->startActivity(mIntent), 500));
     }
-
+/**created by Mo.Msaad
+ * */
     private void verifyFirstRun() {
         SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
         boolean firstRun = prefs.getBoolean("prefs", true);
@@ -102,7 +101,6 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
         dotsLayout.removeAllViews();
 
         for (int i = 0; i < dots.length; i++) {
-
             dots[i] = new TextView(this);
             dots[i].setText(Html.fromHtml("&#8226;"));
             dots[i].setTextSize(35);
@@ -126,7 +124,6 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
             addDots(i);
             mCurrentSlide = i;
 
-
             if (mCurrentSlide == 0) {
 
                 mPrevious.setEnabled(false);
@@ -135,7 +132,8 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
                 mPrevious.setVisibility(View.INVISIBLE);
                 mSkip.setVisibility(View.VISIBLE);
 
-            } else if (mCurrentSlide == dots.length - 1) {
+            }
+            else if (mCurrentSlide == dots.length - 1) {
                 mNext.setEnabled(true);
                 mPrevious.setEnabled(true);
                 mSkip.setEnabled(true);

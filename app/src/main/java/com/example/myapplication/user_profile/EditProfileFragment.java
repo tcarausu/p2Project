@@ -50,7 +50,9 @@ import static android.app.Activity.RESULT_OK;
 public class EditProfileFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "EditProfileFragment";
     private static final int REQUEST_CAMERA = 11;
-    private static final int REQUEST_IMAGE_GALLERY = 22;
+    private static final int REQUEST_GALLERY = 22;
+    private static final int ACTION_WIFI_SETTINGS = 55;
+
 
     //firebase
     private FirebaseAuth mAuth;
@@ -60,8 +62,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private String userID;
 
     //Edit Profile widgets
-    private EditText mDisplayName, mUserName, mWebsite, mAbout, mPhoneNumber;
-    private TextView mEmail;
+    private TextView mChangeProfilePhoto , mPrivateInformation ;
+    private EditText mDisplayName, mWebsite, mAbout, mPhoneNumber;
+    private TextView mEmail , mUserName;
     private CircleImageView mProfilePhoto;
     private ImageView backArrow, saveChanges;
 
@@ -73,24 +76,31 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private StorageReference profilePicStorage;
     private FirebaseStorage storage;
     private FirebaseDatabase database;
-    private BroadcastReceiver broadcastReceiver ;
 
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            setBatteryLevel(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1));
+        }
+    };
+
+    private Uri uri;
+    private Uri avatarUri;
+    private Bitmap bitmap;
+    private String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private String prof_pic_URL;
-    private int batteryLevel;
+    private   int batteryLevel;
 
-    public int getBatteryLevel() {
+
+
+    private  int getBatteryLevel() {
         return batteryLevel;
     }
 
-    public void setBatteryLevel(int batteryLevel) {
+    private  void setBatteryLevel(int batteryLevel) {
         this.batteryLevel = batteryLevel;
     }
 
-
-
-// this method is used to return the battery percentage
-
-        //Methods
     private String getProf_pic_URL() {
         return prof_pic_URL;
     }
@@ -99,11 +109,15 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         this.prof_pic_URL = prof_pic_URL;
     }
 
+
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
+        checkPermissions();
+        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to get the batteryLevel
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+        firebaseMethods = new FirebaseMethods(getActivity());
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
         storage = FirebaseStorage.getInstance();
@@ -111,13 +125,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         userID = mAuth.getCurrentUser().getUid();
         avatarUri = Uri.parse(String.valueOf(R.drawable.my_avatar));//"android.resource://com.example.myapplication/drawable/my_avatar"
 
-
-          broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                setBatteryLevel(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -33));//here i set the int battery level
-            }
-        };
         initLayouts(view);
         setupFirebaseAuth();
 
@@ -125,8 +132,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     }
 
     public void initLayouts(View view) {
-        mContext = getActivity();
-        firebaseMethods = new FirebaseMethods(mContext);
 
         mDisplayName = view.findViewById(R.id.displayName);
         mUserName = view.findViewById(R.id.username);
@@ -134,77 +139,119 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mAbout = view.findViewById(R.id.about);
         mEmail = view.findViewById(R.id.email);
         mPhoneNumber = view.findViewById(R.id.phoneNumber);
-
         mProfilePhoto = view.findViewById(R.id.profile_photo);
         backArrow = view.findViewById(R.id.backArrow);
         saveChanges = view.findViewById(R.id.save_changes);
-
+        mChangeProfilePhoto = view.findViewById(R.id.change_profile_photo);
+        mPrivateInformation = view.findViewById(R.id.privateInformation);
         backArrow.setOnClickListener(this);
         saveChanges.setOnClickListener(this);
         mProfilePhoto.setOnClickListener(this);
-
-
     }
 
-    /**
-     * Retrieves data from the widgets and submits it to database
-     * Before doing so it checks if the username is unique
-     */
-    private void saveProfileSettings() {
+//    /**
+//     * Retrieves data from the widgets and submits it to database
+//     * Before doing so it checks if the username is unique
+//     */
+//    private void saveProfileSettings() {
+//
+//        final String userName = mUserName.getText().toString();
+//        final String displayName = mDisplayName.getText().toString();
+//        final long phoneNumber = Long.valueOf(mPhoneNumber.getText().toString());
+//        final String about = mAbout.getText().toString();
+//        final String website = mWebsite.getText().toString();
+//        final String profile_url = myRef.child(currentUser.getUid()).child("profile_photo").getKey();
+//
+//        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                if (!mUserSettings.getUser().getUsername().equals(userName)
+//                        && !mUserSettings.getUser().getDisplay_name().equals(displayName)) {
+//                    firebaseMethods.checkIfUsernameExists(userName, displayName, website, about, phoneNumber, profile_url);
+//                } else
+//                    firebaseMethods.checkIfUsernameExists(userName, displayName, website, about, phoneNumber, profile_url);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
+/**created byMo.MSaad
+ * **/
+    private void checkWifiState(){
 
-        final String userName = mUserName.getText().toString();
-        final String displayName = mDisplayName.getText().toString();
-        final long phoneNumber = Long.valueOf(mPhoneNumber.getText().toString());
-        final String about = mAbout.getText().toString();
-        final String website = mWebsite.getText().toString();
-        final String profile_url = myRef.child(currentUser.getUid()).child("profile_photo").getKey();
+         boolean isWifiConnected ;
+         boolean isMobileDataConnected ;
+        ConnectivityManager conMngr = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = conMngr.getActiveNetworkInfo();
 
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+            isWifiConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            isMobileDataConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
 
-                if (!mUserSettings.getUser().getUsername().equals(userName)
-                        && !mUserSettings.getUser().getDisplay_name().equals(displayName)) {
-                    firebaseMethods.checkIfUsernameExists(userName, displayName, website, about, phoneNumber, profile_url);
-                } else
-                    firebaseMethods.checkIfUsernameExists(userName, displayName, website, about, phoneNumber, profile_url);
+            if (isWifiConnected){
+                uploadProfilePic(uri);
+                updateUserInfo(getProf_pic_URL());
+            }
+            else if (isMobileDataConnected){
+                //TODO add shared prefs here to allow automatic
+                openDialogChoice();
+            }
+        }
+    }
+    /**created byMo.MSaad
+     * **/
+
+
+    private void openDialogChoice() {
+
+        final CharSequence[] options = {"Mobile data", "WIFI", "CANCEL"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Select network");
+        builder.setIcon(R.drawable.chefood);
+        builder.setItems(options, (dialog, which) -> {
+
+            if (options[which].equals("Mobile data")) {
+                uploadProfilePic(uri);
+                updateUserInfo(getProf_pic_URL());
+
+            } else if (options[which].equals("WIFI")) {
+              Intent wifiIntent =   new Intent(Settings.ACTION_WIFI_SETTINGS);
+              startActivityForResult(wifiIntent,ACTION_WIFI_SETTINGS);
+
+            } else if (options[which].equals("CANCEL")) {
+                dialog.dismiss();
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         });
+        builder.show();
+
     }
 
     private void setProfileWidgets(UserSettings userSettings) {
 
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " + userSettings.toString());
-        user = userSettings;
-        mDisplayName.setText(user.getDisplay_name());
-
-        mUserName.setText(user.getUsername());
-        mWebsite.setText(user.getWebsite());
-        mAbout.setText(user.getAbout());
-        mEmail.setText(String.valueOf(user.getEmail()));
-        mPhoneNumber.setText(String.valueOf(user.getPhone_number()));
-        String profilePicURL = user.getProfile_photo();
+        User settings = userSettings.getUser();
+        mUserSettings = userSettings;
+        mDisplayName.setText(settings.getDisplay_name());
+        mUserName.setText(settings.getUsername());
+        mWebsite.setText(settings.getWebsite());
+        mAbout.setText(settings.getAbout());
+        mEmail.setText(String.valueOf(settings.getEmail()));
+        mPhoneNumber.setText(String.valueOf(settings.getPhone_number()));
+        String profilePicURL = settings.getProfile_photo();
 
         try {
             if (profilePicURL == null) {
-                mProfilePhoto.setImageURI(avatarUri);
+                mProfilePhoto.setImageResource(R.drawable.my_avatar);
             } else
                 Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
 
-        mDisplayName.setText(user.getDisplay_name());
-        mUserName.setText(user.getUsername());
-        mWebsite.setText(user.getWebsite());
-        mAbout.setText(user.getAbout());
-        mEmail.setText(String.valueOf(user.getEmail()));
-        mPhoneNumber.setText(String.valueOf(user.getPhone_number()));
-
         } catch (IllegalArgumentException e) {
-            mProfilePhoto.setImageURI(avatarUri);
+            mProfilePhoto.setImageResource(R.drawable.my_avatar);
         }
 
     }
@@ -227,15 +274,19 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
                 if (dataSnapshot.exists()) {
                     firebaseMethods.updateUsername(username, display_name, website, about, phone_number, imageUrl);
+                    Log.d(TAG, "onDataChange: datasnapshot exissts: " + dataSnapshot.exists());
+                    Log.d(TAG, "onDataChange: user updated with:\n "+"name: "+username
+                    +"\n"+ "displayName: "+display_name+ "\n"+ "website: "+website+ "\n"
+                    +"about: "+about+"\n"+"phone: "+phone_number+"\n"+ "URL: "+imageUrl);
                 } else {
                     firebaseMethods.updateUsername(username, display_name, website, about, phone_number, "");
-                    mProfilePhoto.setImageURI(avatarUri);
+                    mProfilePhoto.setImageResource(R.drawable.my_avatar);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+//                mProfilePhoto.setImageURI(avatarUri);
             }
         });
 
@@ -249,18 +300,14 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 Log.d(TAG, "onClick:  go to profile activity");
                 Objects.requireNonNull(getActivity()).finish();
                 break;
-
             case R.id.save_changes:
                 Log.d(TAG, "onClick:  attempting to save changes");
-
-                uploadProfilePic();
-                updateUserInfo(getProf_pic_URL());
+                checkWifiState();
 
                 break;
             case R.id.profile_photo:
                 dialogChoice();
                 break;
-
             case R.id.about:
                 mAbout.clearComposingText();
                 break;
@@ -280,7 +327,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
 
 
     private void setupFirebaseAuth() {
@@ -305,21 +351,20 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                if (mAuth!= null)
-                    try{
+                if (mAuth != null)
+                    try {
                         Toast.makeText(getContext(), "Proccess canceled, " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Log.d(TAG, "onCancelled: exception: " + e.getMessage());
                     }
-                catch (Exception e){
-                    Log.d(TAG, "onCancelled: exception: "+e.getMessage());
-                }
-
             }
         });
-
     }
 
-
-    private void uploadProfilePic() {
+    /**
+     * method  created by Mo.Msaad
+     **/
+    private void uploadProfilePic(Uri uri) {
 
         if (uri != null) {
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
@@ -358,6 +403,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             Toast.makeText(getActivity(), "Error: Profile picture is " + new NullPointerException().getMessage(), Toast.LENGTH_SHORT).show();// this to handle in case uri or bitmap is null
     }
 
+    /**
+     * method  created by Mo.Msaad
+     **/
     private void pushImageUrl(final String imageUrl) {
 
         myRef.child(getString(R.string.dbname_users)).child(currentUser.getUid()).child("profile_photo").setValue(imageUrl);
@@ -371,26 +419,27 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                if (databaseError.getMessage()!= null) {
-                    Toast.makeText(getActivity(), "Uploading error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                }else return;
+                return;
             }
         });
     }
 
+    /**
+     * method  created by Mo.Msaad
+     **/
     private void dialogChoice() {
 
         final CharSequence[] options = {"CAMERA", "GALLERY", "CANCEL"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Image");
         builder.setIcon(R.drawable.chefood);
-
         builder.setItems(options, (dialog, which) -> {
             if (options[which].equals("CAMERA")) {
                 takePicture();
 
             } else if (options[which].equals("GALLERY")) {
                 selectPicture();
+
             } else if (options[which].equals("CANCEL")) {
                 dialog.dismiss();
             }
@@ -399,38 +448,83 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         builder.show();
     }
 
+    /**
+     * method  created by Mo.Msaad
+     **/
+    private void checkPermissions() {
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), permissions, REQUEST_GALLERY);
+            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), permissions, REQUEST_CAMERA);
+        }
+    }
+
     private void takePicture() {
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (getBatteryLevel() < 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
+        if (getBatteryLevel() > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
+            Log.d(TAG, "takePicture: battery level: "+getBatteryLevel());
             startActivityForResult(cameraIntent, REQUEST_CAMERA);
         } else Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
 
     }
 
+    /**
+     * method  created by Mo.Msaad
+     **/
     private void selectPicture() {
+
         Intent galleryIntent = new Intent();
         galleryIntent.setType("image/*");
         galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(galleryIntent, "Select Picture"), REQUEST_IMAGE_GALLERY);
+        startActivityForResult(Intent.createChooser(galleryIntent, "Select Picture"), REQUEST_GALLERY);
+
     }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        assert data != null;
+        boolean besoins = resultCode == RESULT_OK && requestCode == REQUEST_CAMERA && data.getData() != null;
+        boolean besoins1 = resultCode == RESULT_OK && requestCode == REQUEST_GALLERY && data.getData() != null;
 
+        try {
+            if (besoins) {
+                uri = data.getData();
+                Glide.with(this).load(data.getData()).centerCrop().into(mProfilePhoto);
 
         if (resultCode == RESULT_OK && requestCode == REQUEST_CAMERA && data != null && data.getData() != null) {
             uri = data.getData();
             Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
 
-        } else if (requestCode == REQUEST_IMAGE_GALLERY && data != null && data.getData() != null) {
-            uri = data.getData();
-            Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
-        } else
-            mProfilePhoto.setImageResource(R.drawable.my_avatar);
-        Toast.makeText(getContext(), "Something went wrong! " + new Exception().getMessage(), Toast.LENGTH_SHORT).show();
+            } else if (besoins1) {
+                uri = data.getData();
+                Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
+                Log.d(TAG, "onActivityResult: uri: " + uri.getPath());
+            }
+
+        }catch (Exception e){
+            Toast.makeText(getActivity(),"Error occurred: "+e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
+
+
+//    private void verifyFirstTry() {
+//        SharedPreferences prefs = getActivity().getSharedPreferences("data prefs", MODE_PRIVATE);
+//        boolean First_data_prefs = prefs.getBoolean("data prefs", true);
+//
+//        if (First_data_prefs) {//if its the first run we change the boolean to false
+//            openDialogChoice();
+//            SharedPreferences.Editor editor = prefs.edit();
+//            editor.putBoolean("data prefs", false);
+//
+//            editor.apply();
+//        } else {// then if boolean is false we skip the slides
+//            //TODO
+//            uploadProfilePic(uri);
+//            updateUserInfo(getProf_pic_URL());
+//        }
+//    }
