@@ -17,6 +17,8 @@ import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.RecyclerViewAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,8 +38,9 @@ public class HomeFragment extends Fragment {
     private DatabaseReference mDatabasePostRef;
     private FirebaseDatabase firebasedatabase;
     private DatabaseReference mDatabaseUserRef;
+    private DatabaseReference mDatabaseUserPostRef;
     private List<Post> mPosts;
-
+    private List<User> mUsers;
 
     private String mUsername;
     private String mProfilePhoto;
@@ -53,6 +56,7 @@ public class HomeFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mPosts = new ArrayList<>();
+        mUsers = new ArrayList<>();
 
         mDatabasePostRef = firebasedatabase.getReference("posts");
 
@@ -60,25 +64,12 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                    mUserId = userSnapshot.getKey();
+                    FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                    String postUserId = userSnapshot.getKey();
+                    mUserId = firebaseUser.getUid();
 
                     mDatabaseUserRef = firebasedatabase.getReference("users/" + mUserId);
-
-                    mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            User user = dataSnapshot.getValue(User.class);
-                            mUsername = user.getUsername();
-                            mProfilePhoto = user.getProfile_photo();
-                            Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
+                    mDatabaseUserPostRef = firebasedatabase.getReference("users/" + postUserId);
 
                     Log.d(TAG, "onDataChange: mUserId :" + mUserId);
 
@@ -87,7 +78,6 @@ public class HomeFragment extends Fragment {
                         // NOW JUST CREATE A USER IN THE DATABASE AND TEST
                         final Post post = postSnapshot.getValue(Post.class);
                         Log.d(TAG, "onDataChange: uid for user from post : " + post.getUserId());
-
 
                         Log.d(TAG, "onDataChange: username and profile pic : >>>> : " + mUsername + " " + mProfilePhoto);
 
@@ -100,12 +90,53 @@ public class HomeFragment extends Fragment {
                             likeList.add(like);
                         }
                         post.setLikes(likeList);
+
+                        mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (mUserId.equals(postUserId)) {
+                                    final User user = dataSnapshot.getValue(User.class);
+                                    mUsername = user.getUsername();
+                                    mProfilePhoto = user.getProfile_photo();
+
+                                    mAdapter.setUserForPost(post, user);
+
+                                    Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (!mUserId.equals(postUserId)) {
+                                    final User user = dataSnapshot.getValue(User.class);
+                                    mUsername = user.getUsername();
+                                    mProfilePhoto = user.getProfile_photo();
+
+                                    mAdapter.setUserForPost(post, user);
+
+                                    Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
+
                         mPosts.add(post);
+                        mAdapter.setPostsList(mPosts);
                     }
                 }
-
-                mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
-
                 mRecyclerView.setAdapter(mAdapter);
             }
 

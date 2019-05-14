@@ -112,7 +112,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                     String ingredients = mImageIngredients.getText().toString();
                     String recipe = mImageRecipe.getText().toString();
                     String uploadId = mDatabaseRef.push().getKey();
-                    Post postInfo = new Post(profilePicUrl, username, description,
+                    Post postInfo = new Post(description,
                             URL, recipe, ingredients, mAuth.getUid(),
                             uploadId,firebaseMethods.getTimestamp(), null);
                     Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);

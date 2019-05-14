@@ -2,28 +2,12 @@ package com.example.myapplication.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.util.Log;
 
-import com.example.myapplication.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Post implements Parcelable {
 
     private static final String TAG = "Post";
-    private String mProfileImgUrl;
-    private String mUsername;
     private String mDescription;
     private String mFoodImgUrl;
     private String mRecipe;
@@ -32,17 +16,16 @@ public class Post implements Parcelable {
     private String userId;
     private String postId;
     private List<Like> likes;
+    private User user;
 
     public Post() {
     }
 
-    public Post(String mProfileImgUrl, String mUsername, String mDescription,
+    public Post( String mDescription,
                 String mFoodImgUrl, String mRecipe, String mIngredients, String userId, String postId, String date_created, List<Like> likes) {
         if (mDescription.trim().equals("")) {
             mDescription = "No description available";
         }
-        this.mProfileImgUrl = mProfileImgUrl;
-        this.mUsername = mUsername;
         this.mDescription = mDescription;
         this.date_created = date_created;
         this.mFoodImgUrl = mFoodImgUrl;
@@ -56,9 +39,7 @@ public class Post implements Parcelable {
 
     protected Post(Parcel in) {
         mDescription = in.readString();
-        mProfileImgUrl = in.readString();
         mFoodImgUrl = in.readString();
-        mUsername = in.readString();
         mIngredients = in.readString();
         mRecipe = in.readString();
         date_created = in.readString();
@@ -85,22 +66,6 @@ public class Post implements Parcelable {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getmProfileImgUrl() {
-        return mProfileImgUrl;
-    }
-
-    public void setmProfileImgUrl(String mProfileImgUrl) {
-        this.mProfileImgUrl = mProfileImgUrl;
-    }
-
-    public String getmUsername() {
-        return mUsername;
-    }
-
-    public void setmUsername(String mUsername) {
-        this.mUsername = mUsername;
     }
 
     public String getmDescription() {
@@ -159,11 +124,17 @@ public class Post implements Parcelable {
         this.postId = postId;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @Override
     public String toString() {
         return "Post{" +
-                "mProfileImgUrl='" + mProfileImgUrl + '\'' +
-                ", mUsername='" + mUsername + '\'' +
                 ", mDescription='" + mDescription + '\'' +
                 ", mFoodImgUrl='" + mFoodImgUrl + '\'' +
                 ", mRecipe='" + mRecipe + '\'' +
@@ -184,9 +155,7 @@ public class Post implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mDescription);
         dest.writeString(date_created);
-        dest.writeString(mProfileImgUrl);
         dest.writeString(mFoodImgUrl);
-        dest.writeString(mUsername);
         dest.writeString(mIngredients);
         dest.writeString(mRecipe);
         dest.writeString(userId);

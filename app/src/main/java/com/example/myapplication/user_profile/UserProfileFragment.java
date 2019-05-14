@@ -251,19 +251,15 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-//                           photos.add(singleSnapshot.getValue(Photo.class));
-//                    Photo photo = new Photo();
                     Post post = new Post();
                     Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
 
-                    post.setmProfileImgUrl(objectMap.get(getString(R.string.field_profile_photo)).toString());
                     post.setmDescription(objectMap.get(getString(R.string.field_description)).toString());
                     post.setmFoodImgUrl(objectMap.get(getString(R.string.field_food_photo)).toString());
                     post.setUserId(objectMap.get(getString(R.string.field_user_id)).toString());
                     post.setmRecipe(objectMap.get(getString(R.string.field_recipe)).toString());
                     post.setmIngredients(objectMap.get(getString(R.string.field_ingredients)).toString());
                     post.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
-                    post.setmUsername(objectMap.get(getString(R.string.field_username)).toString());
                     post.setPostId(objectMap.get(getString(R.string.field_post_id)).toString());
 
                     List<Like> likeList = new ArrayList<>();
