@@ -62,7 +62,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private String userID;
 
     //Edit Profile widgets
-    private TextView mChangeProfilePhoto;
     private EditText mDisplayName, mUserName, mWebsite, mAbout, mPhoneNumber;
     private TextView mEmail;
     private CircleImageView mProfilePhoto;
@@ -144,38 +143,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     }
 
-    /**
-     * Retrieves data from the widgets and submits it to database
-     * Before doing so it checks if the username is unique
-     */
-    private void saveProfileSettings() {
-
-        final String userName = mUserName.getText().toString();
-        final String displayName = mDisplayName.getText().toString();
-        final long phoneNumber = Long.valueOf(mPhoneNumber.getText().toString());
-        final String about = mAbout.getText().toString();
-        final String website = mWebsite.getText().toString();
-        final String profile_url = myRef.child(currentUser.getUid()).child("profile_photo").getKey();
-
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-                if (!user.getUsername().equals(userName)
-                        && !user.getDisplay_name().equals(displayName)) {
-                    firebaseMethods.checkIfUsernameExists(userName, displayName, website, about, phoneNumber, profile_url);
-                } else
-                    firebaseMethods.checkIfUsernameExists(userName, displayName, website, about, phoneNumber, profile_url);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
     private void setProfileWidgets(User userSettings) {
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " + userSettings.toString());
         user = userSettings;
@@ -193,8 +160,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 mProfilePhoto.setImageURI(avatarUri);
             } else
                 Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
-
-//        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
 
         mDisplayName.setText(user.getDisplay_name());
         mUserName.setText(user.getUsername());
@@ -303,7 +268,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Proccess canceled, " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                return;
             }
         });
 
@@ -314,7 +279,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         if (uri != null) {
 
-            String dateStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(new Date());
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
             progressDialog.setTitle("uploading, please wait...");
             progressDialog.setCanceledOnTouchOutside(false);
@@ -363,7 +327,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getActivity(), "Uploading error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                return;
             }
         });
     }
@@ -413,7 +377,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
 
         if (resultCode == RESULT_OK && requestCode == REQUEST_CAMERA && data != null && data.getData() != null) {
-//
             uri = data.getData();
             Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
 
@@ -424,47 +387,4 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
         Toast.makeText(getContext(), "Something went wrong! " + new Exception().getMessage(), Toast.LENGTH_SHORT).show();
     }
-
-
-//    private void UpdateUserDataBaseInfo() {
-//        final String userName = mUserName.getText().toString();
-//        final String email = mEmail.getText().toString();
-//        final String displayName = mDisplayName.getText().toString();
-//
-//        final long phoneNumber = Long.valueOf(mPhoneNumber.getText().toString());
-//        final String about = mAbout.getText().toString();
-//        final String website = mWebsite.getText().toString();
-//        final String photo_url = "";
-//        final long followers = 0;
-//        final long following = 0;
-//        final long posts = 0;
-//
-//
-//        myRef.child(currentUser.getUid()).child("about").setValue(about);
-//        myRef.child(currentUser.getUid()).child("display_name").setValue(displayName);
-//        myRef.child(currentUser.getUid()).child("email").setValue(email);
-//        myRef.child(currentUser.getUid()).child("phone_number").setValue(phoneNumber);
-//        myRef.child(currentUser.getUid()).child("profile_photo").setValue(photo_url);
-//        myRef.child(currentUser.getUid()).child("user_name").setValue(userName);
-//        myRef.child(currentUser.getUid()).child("website").setValue(website);
-//
-//        myRef.push().addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Toast.makeText(getActivity(), "Data updated.", Toast.LENGTH_SHORT).show();
-//                firebaseMethods.getUserSettings(dataSnapshot);
-//                mAbout.setText(about);
-//                mDisplayName.setText(displayName);
-//                mEmail.setText(email);
-//                mPhoneNumber.setText(String.valueOf(phoneNumber));
-//                mUserName.setText(userName);
-//                mWebsite.setText(website);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                Toast.makeText(getActivity(), "Data update error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
 }

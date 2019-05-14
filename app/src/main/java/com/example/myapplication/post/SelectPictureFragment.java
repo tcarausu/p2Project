@@ -1,7 +1,6 @@
 package com.example.myapplication.post;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -38,7 +37,6 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     private TextView nextText;
     private ImageView closePost;
     ByteArrayOutputStream byteArrayOutputStream;
-    Bitmap mBitmap;
     private static final int GALLERY_REQUEST = 1;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

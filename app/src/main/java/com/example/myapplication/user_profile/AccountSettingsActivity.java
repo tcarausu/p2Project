@@ -126,7 +126,7 @@ public class AccountSettingsActivity extends AppCompatActivity
     private void setupFragments() {
         pagerAdapter = new SectionsStatePagerAdapter(getSupportFragmentManager());
         pagerAdapter.addFragment(new EditProfileFragment(), getString(R.string.edit_your_profile_fragment));
-        
+
     }
 
     private void setupSettingsList() {

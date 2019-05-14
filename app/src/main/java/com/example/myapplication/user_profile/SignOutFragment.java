@@ -1,12 +1,9 @@
 package com.example.myapplication.user_profile;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,11 +22,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 /**
  * File created by tcarau18
@@ -46,14 +38,12 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
     private Button btnConfirmingSignOut;
 
     private FirebaseMethods firebaseMethods;
-    private Context context;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
             container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sign_out, container, false);
 
-        context = getActivity();
-        firebaseMethods = new FirebaseMethods(context);
+        firebaseMethods = new FirebaseMethods(getActivity());
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
@@ -111,8 +101,6 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
     /*
     ------------------------------------------------- FIREBASE SETUP -------------------------------------------------
      */
-
-
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
 
@@ -134,7 +122,6 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
         };
 
     }
-
    /*
     ------------------------------------------------- FIREBASE SETUP -------------------------------------------------
      */

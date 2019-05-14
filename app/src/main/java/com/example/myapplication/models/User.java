@@ -34,11 +34,6 @@ public class User {
     public User() {
     }
 
-//    public User(String profileImgUrl,String username){
-//        this.profile_photo = profileImgUrl;
-//        this.username = username;
-//    }
-
     public String getAbout() {
         return about;
     }

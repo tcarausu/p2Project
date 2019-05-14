@@ -5,10 +5,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.myapplication.R;
-import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.User;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -213,25 +211,5 @@ public class FirebaseMethods {
         return sdf.format(new Date());
     }
 
-    public void addPhotoToDatabase(String caption, String url) {
-        Log.d(TAG, "addPhotoToDatabase: adding photo to database");
-
-        String userUID = mAuth.getCurrentUser().getUid();
-
-        String tags = StringManipulation.getTags(caption);
-        String newPhotoKey = myRef.child(mContext.getString(R.string.dbname_photos)).push().getKey();
-        Photo photo = new Photo();
-        photo.setCaption(caption);
-        photo.setDate_created(getTimestamp());
-        photo.setImage_path(url);
-        photo.setTags(tags);
-        photo.setUser_id(userUID);
-        photo.setPhoto_id(newPhotoKey);
-
-        //insert into database
-        myRef.child(mContext.getString(R.string.dbname_user_photos)).child(userUID).child(newPhotoKey).setValue(photo);
-        myRef.child(mContext.getString(R.string.dbname_photos)).child(newPhotoKey).setValue(photo);
-
-    }
 
 }

@@ -7,7 +7,6 @@ import java.util.List;
 
 public class Post implements Parcelable {
 
-    private static final String TAG = "Post";
     private String mDescription;
     private String mFoodImgUrl;
     private String mRecipe;
@@ -21,7 +20,7 @@ public class Post implements Parcelable {
     public Post() {
     }
 
-    public Post( String mDescription,
+    public Post(String mDescription,
                 String mFoodImgUrl, String mRecipe, String mIngredients, String userId, String postId, String date_created, List<Like> likes) {
         if (mDescription.trim().equals("")) {
             mDescription = "No description available";

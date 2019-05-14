@@ -306,7 +306,7 @@ public class ViewPostFragment extends Fragment implements View.OnClickListener {
     }
 
     /**
-     * retrieves the Photo from the incoming bundle from ProfileActivity interface
+     * retrieves the Post from the incoming bundle from ProfileActivity interface
      *
      * @return photo
      */
