@@ -92,7 +92,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
     private void initLayout(View view) {
-
         firebaseMethods = new FirebaseMethods(getContext());
         mDisplayName = view.findViewById(R.id.displayName);
         mUserName = view.findViewById(R.id.userName);
@@ -107,7 +106,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mProfilePhoto = view.findViewById(R.id.profileImage);
         toolbar = view.findViewById(R.id.profileToolBar);
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
-
     }
 
     private void setListeners(View view) {
@@ -122,8 +120,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-
-
     }
 
 

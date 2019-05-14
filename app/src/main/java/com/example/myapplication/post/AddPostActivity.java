@@ -31,7 +31,6 @@ public class AddPostActivity extends AppCompatActivity {
 
         initLayout();
         buttonListeners();
-        //setupBottomNavigationView();
 
         if (checkPermissionsArray(Permissions.PERMISSIONS)) {
             setupViewPager();

@@ -35,6 +35,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private String userUID;
     private FirebaseAuth mAuth;
+    private FirebaseUser current_user ;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private GoogleSignInClient mGoogleSignInClient ;
 
@@ -46,6 +47,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
         mAuth = FirebaseAuth.getInstance() ;
+        current_user = mAuth.getCurrentUser();
 
         initLayout();
         buttonListeners();
@@ -59,11 +61,10 @@ public class HomeActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
         mAuth.addAuthStateListener(mAuthListener);
+        checkCurrentUser();
 
-        checkCurrentUser(currentUser);
-        if (currentUser == null) {
+        if (current_user == null) {
             mAuth.signOut();
             LoginManager.getInstance().logOut();
             sendUserToLogin();
@@ -98,13 +99,14 @@ public class HomeActivity extends AppCompatActivity {
 
         mAuth.addAuthStateListener(mAuthListener);
 
-        checkCurrentUser(mAuth.getCurrentUser());
+        checkCurrentUser();
     }
 
     /**
      * Used for adding the tabs: Camera, Home and Direct Messages
      */
     private void setupViewPager() {
+
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new CameraFragment()); //index 0
         adapter.addFragment(new HomeFragment()); //index 1
@@ -125,18 +127,18 @@ public class HomeActivity extends AppCompatActivity {
     /**
      * checks to see if @param 'user'  is logged in
      *
-     * @param user of type FirebaseUser
+     *
      */
-    private void checkCurrentUser(FirebaseUser user) {
+    private void checkCurrentUser() {
         Log.d(TAG, "checkCurrentUser: checking if user is logged in");
 
-        if (user == null) {
+        if (current_user == null) {
             Toast.makeText(mContext, "Your have to Authenticate first before proceeding", Toast.LENGTH_SHORT).show();
             mAuth.signOut();
-            Intent intent = new Intent(mContext, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            LoginManager.getInstance().logOut();
+             sendUserToLogin();
         }
+        else return;
 
     }
 
@@ -148,12 +150,11 @@ public class HomeActivity extends AppCompatActivity {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                checkCurrentUser(user);
+                checkCurrentUser();
 
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
+                if (current_user != null) {
+                    Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
                 } else Log.d(TAG, "onAuthStateChanged: signed out");
             }
         };
