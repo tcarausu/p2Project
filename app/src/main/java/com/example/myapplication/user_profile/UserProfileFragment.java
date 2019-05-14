@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -22,9 +21,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Photo;
+import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
-import com.example.myapplication.models.UserSettings;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.GridImageAdapter;
@@ -39,6 +39,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -58,14 +61,14 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private Context mContext;
 
     //firebase
-
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
-    private TextView mEditProfile, mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mAbout;
 
     private BottomNavigationViewEx bottomNavigationViewEx;
+
+    private TextView mEditProfile, mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mAbout;
     private ProgressBar mProgressBar;
     private CircleImageView mProfilePhoto;
     private ImageView profileMenu;
@@ -74,7 +77,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseMethods firebaseMethods;
     private Uri avatarUri;
 
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    private User user;
+
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
+            container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         mAuth = FirebaseAuth.getInstance();
         avatarUri = Uri.parse("android.resource://com.example.myapplication/drawable/my_avatar");
@@ -101,6 +107,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mPosts = view.findViewById(R.id.tvPosts);
         mFollowers = view.findViewById(R.id.tvFollowers);
         mFollowing = view.findViewById(R.id.tvFollowing);
+
         gridView = view.findViewById(R.id.grid_view_user_profile);
         mProgressBar = view.findViewById(R.id.profile_progress_bar);
         mProgressBar.setVisibility(View.GONE);
@@ -125,10 +132,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
 
-
-    }
-
-    private void updateWidgets(UserSettings settings) {
     }
 
     @Override
@@ -156,27 +159,18 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
-                } else Log.d(TAG, "onAuthStateChanged: signed out");
-
-//                mAuth.signOut();
-            }
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
+            } else Log.d(TAG, "onAuthStateChanged: signed out");
         };
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                //retrive user information from the database
                 setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
-
-                //retrive images for the user in question
 
             }
 
@@ -188,20 +182,22 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     }
 
-    private void setProfileWidgets(UserSettings userSettings) {
-        Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " +
-                userSettings.toString());
+    private void setProfileWidgets(User userSettings) {
+        user = userSettings;
 
-        User settings = userSettings.getUser();
+        Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: "
+                + user.toString());
 
-        mDisplayName.setText(settings.getDisplay_name());
-        mUserName.setText(settings.getUsername());
-        mWebsite.setText(settings.getWebsite());
-        mAbout.setText(settings.getAbout());
-        mFollowers.setText(String.valueOf(settings.getFollowers()));
-        mFollowing.setText(String.valueOf(settings.getFollowing()));
-        mPosts.setText(String.valueOf(settings.getPosts()));
-        String  profilePicURL = settings.getProfile_photo() ;
+        mDisplayName.setText(user.getDisplay_name());
+        mUserName.setText(user.getUsername());
+        mWebsite.setText(user.getWebsite());
+        mAbout.setText(user.getAbout());
+
+        mFollowers.setText(String.valueOf(user.getFollowers()));
+        mFollowing.setText(String.valueOf(user.getFollowing()));
+        mPosts.setText(String.valueOf(user.getPosts()));
+
+        String profilePicURL = user.getProfile_photo();
 
         //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
         try {
@@ -209,14 +205,13 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 mProfilePhoto.setImageResource(R.drawable.my_avatar);
 
             } else
-             Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
+                Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
 
-            }catch (Exception e){
-            Log.d(TAG, "setProfileWidgets: Error: "+e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
 
         }
-
 
     }
 
@@ -245,17 +240,37 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private void setupGridView() {
         Log.d(TAG, "setupGridView: Setting up GridView");
 
-        final ArrayList<Photo> photos = new ArrayList<>();
+        final ArrayList<Post> posts = new ArrayList<>();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
         Query query = reference
-                .child(getString(R.string.dbname_user_photos))
+                .child(getString(R.string.dbname_posts))
                 .child(mAuth.getCurrentUser().getUid());
+
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    photos.add(singleSnapshot.getValue(Photo.class));
+                    Post post = new Post();
+                    Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
+
+                    post.setmDescription(objectMap.get(getString(R.string.field_description)).toString());
+                    post.setmFoodImgUrl(objectMap.get(getString(R.string.field_food_photo)).toString());
+                    post.setUserId(objectMap.get(getString(R.string.field_user_id)).toString());
+                    post.setmRecipe(objectMap.get(getString(R.string.field_recipe)).toString());
+                    post.setmIngredients(objectMap.get(getString(R.string.field_ingredients)).toString());
+                    post.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
+                    post.setPostId(objectMap.get(getString(R.string.field_post_id)).toString());
+
+                    List<Like> likeList = new ArrayList<>();
+                    for (DataSnapshot ds : singleSnapshot
+                            .child(getString(R.string.field_likes)).getChildren()) {
+                        Like like = new Like();
+                        like.setUser_id(ds.getValue(Like.class).getUser_id());
+                        likeList.add(like);
+                    }
+                    post.setLikes(likeList);
+                    posts.add(post);
                 }
 
                 //setup  our grid image
@@ -266,8 +281,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 ArrayList<String> imgURLs = new ArrayList<>();
 
-                for (int i = 0; i < photos.size(); i++) {
-                    imgURLs.add(photos.get(i).getImage_path());
+                for (int i = 0; i < posts.size(); i++) {
+                    imgURLs.add(posts.get(i).getmFoodImgUrl());
                 }
 
                 GridImageAdapter adapter = new GridImageAdapter(getActivity(), R.layout.layout_grid_imageview,
@@ -275,12 +290,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 gridView.setAdapter(adapter);
 
-                gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        onGridImageSelectedListener.onGridImageSelected(photos.get(position), ACTIVITY_NUM);
-                    }
-                });
+                gridView.setOnItemClickListener((parent, view, position, id) ->
+                        onGridImageSelectedListener.onGridImageSelected(posts.get(position), ACTIVITY_NUM));
             }
 
             @Override
@@ -305,7 +316,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
     public interface OnGridImageSelectedListener {
-        void onGridImageSelected(Photo photo, int activityNr);
+        void onGridImageSelected(Post post, int activityNr);
     }
 
 }

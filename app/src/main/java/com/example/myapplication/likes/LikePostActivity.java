@@ -8,7 +8,6 @@ import android.view.MenuItem;
 
 import com.example.myapplication.R;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
-import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 /**
@@ -38,16 +37,6 @@ public class LikePostActivity extends AppCompatActivity {
 
     public void buttonListeners() {
 
-    }
-
-    /**
-     * @param user is the Firebase User used to adjust/perform info exchange
-     */
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-        } else {
-
-        }
     }
 
     /**

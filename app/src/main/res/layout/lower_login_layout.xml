@@ -39,7 +39,7 @@
             android:layout_marginBottom="25dp" />
 
         <TextView
-            android:id="@+id/textView_id_login_layout_registerHereText"
+            android:id="@+id/sign_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/facebookLoginButton"

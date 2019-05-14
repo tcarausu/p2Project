@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Post;
+import com.example.myapplication.models.User;
 
 import java.util.List;
 
@@ -32,10 +33,22 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.mPosts = mPosts;
     }
 
+    public void setUserForPost(Post post, User user) {
+        post.setUser(user);
+    }
+
+    private User getUserForPost(Post post) {
+        return post.getUser();
+    }
+
+    public void setPostsList(List<Post> mPosts) {
+        this.mPosts = mPosts;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.layout_list_item_post,viewGroup,false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.layout_list_item_post, viewGroup, false);
         return new ViewHolder(view);
     }
 
@@ -44,13 +57,25 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Log.d(TAG, "onBindViewHolder: Called");
 
         final Post postCurrent = mPosts.get(index);
+        User postUser = getUserForPost(postCurrent);
 
-        Glide.with(mContext)
-                .load(postCurrent.getmProfileImgUrl())
-                .fitCenter()
-                .centerCrop()
-                .into(viewHolder.mProfilePic);
-        viewHolder.mUserName.setText(postCurrent.getmUsername());
+        if (postUser != null) {
+            Glide.with(mContext)
+                    .load(postUser.getProfile_photo())
+                    .fitCenter()
+                    .centerCrop()
+                    .into(viewHolder.mProfilePic);
+            viewHolder.mUserName.setText(postUser.getUsername());
+
+        } else {
+            Glide.with(mContext)
+                    .load(R.drawable.my_avatar)
+                    .fitCenter()
+                    .centerCrop()
+                    .into(viewHolder.mProfilePic);
+            viewHolder.mUserName.setText(R.string.loading);
+
+        }
 
         viewHolder.mDescription.setText(postCurrent.getmDescription());
 
@@ -61,34 +86,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 .into(viewHolder.mFoodImg);
 
 
-        viewHolder.mLikes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String nrOfLikes ="" + postCurrent.getmLikes();
-                viewHolder.mToolbarExpasionText.setText(nrOfLikes);
-            }
+        viewHolder.mLikes.setOnClickListener(v -> {
+            String nrOfLikes = "" + postCurrent.getLikes().size();
+
+            viewHolder.mToolbarExpasionText.setText(nrOfLikes);
         });
 
-        viewHolder.mComments.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // implementation for displaying the comments for each post
-            }
+        viewHolder.mComments.setOnClickListener(v -> {
+            // implementation for displaying the comments for each post
         });
 
-        viewHolder.mRecipe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewHolder.mToolbarExpasionText.setText(postCurrent.getmRecipe());
-            }
-        });
+        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.mToolbarExpasionText.setText(postCurrent.getmRecipe()));
 
-        viewHolder.mIngredients.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewHolder.mToolbarExpasionText.setText(postCurrent.getmIngredients());
-            }
-        });
+        viewHolder.mIngredients.setOnClickListener(v -> viewHolder.mToolbarExpasionText.setText(postCurrent.getmIngredients()));
     }
 
     @Override

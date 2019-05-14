@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,20 +14,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 
-public class ForgotPassFragment extends Fragment {
+public class ForgotPassFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "ForgotPassFragment";
 
-    private FirebaseUser user;
     private FirebaseAuth mAuth;
     private EditText emailField;
-    private Button sendPassRequest;
-    private Button goBack;
+    private Button sendPassRequest, goBack;
 
     private OnFragmentInteractionListener mListener;
 
@@ -47,23 +41,12 @@ public class ForgotPassFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_forgot_pass, container, false);
 
-        emailField = v.findViewById(R.id.Forgot_Pass_Frag_emailField_id);
-        sendPassRequest = v.findViewById(R.id.Forgot_Pass_Frag_sendMailButton_id);
-        goBack = v.findViewById(R.id.ForgotPassFragment_goBackButton_id);
+        emailField = v.findViewById(R.id.email_field);
+        goBack = v.findViewById(R.id.back_button);
+        sendPassRequest = v.findViewById(R.id.sendPassRequest);
 
-        // listeners
-        goBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToLogin();
-            }
-        });
-        sendPassRequest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendPassResetMail();
-            }
-        });
+        goBack.setOnClickListener(this);
+        sendPassRequest.setOnClickListener(this);
 
         return v;
     }
@@ -76,15 +59,12 @@ public class ForgotPassFragment extends Fragment {
             emailField.setError("Required.");
             Toast.makeText(getContext(), "Please type a valid email", Toast.LENGTH_SHORT).show();
         } else {
-            mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(getContext(), "Please check your inbox, we sent you a change password link", Toast.LENGTH_SHORT).show();
-                        goToLogin();
-                    } else
-                        Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                }
+            mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(getContext(), "Please check your inbox, we sent you a change password link", Toast.LENGTH_SHORT).show();
+                    goToLogin();
+                } else
+                    Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
             });
 
         }
@@ -114,9 +94,23 @@ public class ForgotPassFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+
+            case R.id.back_button:
+                goToLogin();
+
+                break;
+
+            case R.id.sendPassRequest:
+                sendPassResetMail();
+
+                break;
+        }
+    }
+
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+
     }
 }
-
-

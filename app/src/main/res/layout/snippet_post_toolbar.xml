@@ -28,12 +28,11 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="30dp"
                     android:layout_toEndOf="@id/backArrow"
-                    android:text="@string/photo"
+                    android:text="@string/post"
                     android:textColor="@color/black"
                     android:id="@+id/tvBackLabel"
                     android:textSize="20sp" />
             </RelativeLayout>
-
 
         </Toolbar>
 

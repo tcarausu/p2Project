@@ -1,98 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:padding="5dp"
-    android:id="@+id/parentLayoutID">
+    android:id="@+id/parentLayoutID"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
 
     <LinearLayout
+        android:id="@+id/userProfilePicAndNameID"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/userProfilePicAndNameID">
+        android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/userProfilePicID"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:id="@+id/userProfilePicID"
-            android:src="@mipmap/ic_launcher_round"/>
+            android:src="@mipmap/ic_launcher_round" />
+
         <TextView
+            android:id="@+id/userNameID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Here is the user name"
-            android:textSize="15sp"
-            android:id="@+id/userNameID"
             android:layout_gravity="center"
             android:padding="5dp"
-            android:textColor="@color/black"/>
+            android:text="Here is the user name"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <TextView
+        android:id="@+id/postDescriptionID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Description..."
         android:layout_below="@+id/userProfilePicAndNameID"
-        android:id="@+id/postDescriptionID"
-        android:textColor="@color/black"
-        android:padding="5dp"/>
+        android:padding="5dp"
+        android:text="Description..."
+        android:textColor="@color/black" />
 
     <ImageView
+        android:id="@+id/foodImgID"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:id="@+id/foodImgID"
-        android:src="@drawable/bridge"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/postDescriptionID"
-
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/bridge"
         />
 
-
     <LinearLayout
+        android:id="@+id/postToolbarID"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/postToolbarID"
         android:layout_below="@+id/foodImgID">
 
         <ImageButton
+            android:id="@+id/likesBtnID"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/likesBtnID"
             android:layout_weight="1"
             android:src="@drawable/post_like_not_pressed"
             android:text="Like" />
+
         <ImageButton
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/commentsBtnID"
-            android:text="Comments"
-            android:layout_weight="1"
-            android:src="@drawable/post_comments"/>
-        <ImageButton
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/post_comments"
+            android:text="Comments" />
+
+        <ImageButton
             android:id="@+id/recipeBtnID"
-            android:text="Description"
-            android:src="@drawable/post_recipe"/>
-        <ImageButton
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/post_recipe"
+            android:text="Description" />
+
+        <ImageButton
             android:id="@+id/ingredientsBtnID"
-            android:text="Ingredients"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/post_ingredients"/>
+            android:src="@drawable/post_ingredients"
+            android:text="Ingredients" />
     </LinearLayout>
+
     <FrameLayout
+        android:id="@+id/toolbarExpansionContainerID"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/toolbarExpansionContainerID"
         android:layout_below="@+id/postToolbarID">
 
         <TextView
+            android:id="@+id/toolbarExpansionTextID"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/toolbarExpansionTextID"/>
+            android:layout_height="wrap_content" />
     </FrameLayout>
 </RelativeLayout>

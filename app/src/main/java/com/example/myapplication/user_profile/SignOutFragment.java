@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,18 +41,12 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference myRef;
-
     private ProgressBar mProgressBar;
     private TextView tvSignOut, tvSigningOut;
     private Button btnConfirmingSignOut;
 
     private FirebaseMethods firebaseMethods;
     private Context context;
-
-    private String username = "toader carausu";
-    private String append = " ";
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
             container, @Nullable Bundle savedInstanceState) {
@@ -82,76 +77,6 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    /*
-    ------------------------------------------------- FIREBASE SETUP -------------------------------------------------
-     */
-
-
-    private void setupFirebaseAuth() {
-        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
-
-        mAuth = FirebaseAuth.getInstance();
-
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in with " + user.getUid());
-
-                } else {
-                    Log.d(TAG, "onAuthStateChanged: signed out");
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-                    startActivity(intent);
-                }
-            }
-        };
-    }
-
-//    private void setupFirebaseAuth() {
-//        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
-//
-//        mAuth = FirebaseAuth.getInstance();
-//        mFirebaseDatabase = FirebaseDatabase.getInstance();
-//        myRef = mFirebaseDatabase.getReference();
-//
-//        mAuthListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                FirebaseUser user = firebaseAuth.getCurrentUser();
-//
-//                if (user != null) {
-//                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
-//
-//                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                            if (firebaseMethods.checkIfUserExists(username, dataSnapshot)) {
-//                                append = myRef.push().getKey().substring(3, 10); //generates a unique key (method from Firebase Database length of it is 7 chars
-//                                Log.d(TAG, "onDataChange: username already exists. Appending random string to name");
-//                            }
-//
-//                            username = username + append;
-//                            firebaseMethods.addNewUser("t@gg.com", username, "slim shady", "", "");
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                        }
-//                    });
-//
-//                } else {
-//                    Log.d(TAG, "onAuthStateChanged: signed out");
-//                }
-//            }
-//        };
-//
-//    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -168,22 +93,50 @@ public class SignOutFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
+        if (v.getId() == R.id.btnConfirmSignOut) {
+            Log.d(TAG, "onClick: attempting to Sing Out");
+            mProgressBar.setVisibility(View.VISIBLE);
+            tvSigningOut.setVisibility(View.VISIBLE);
 
-            case R.id.btnConfirmSignOut:
-                Log.d(TAG, "onClick: attempting to Sing Out");
-                mProgressBar.setVisibility(View.VISIBLE);
-                tvSigningOut.setVisibility(View.VISIBLE);
+            mAuth.signOut();
+            mGoogleSignInClient.signOut();
+            LoginManager.getInstance().logOut();
 
-                mAuth.signOut();
-                mGoogleSignInClient.signOut();
-                LoginManager.getInstance().logOut();
+            getActivity().finish();
 
-                getActivity().finish();
-
-                Toast.makeText(getActivity(),"Successful Sign Out",Toast.LENGTH_SHORT).show();
-
-                break;
+            Toast.makeText(getActivity(), "Successful Sign Out", Toast.LENGTH_SHORT).show();
         }
     }
+
+    /*
+    ------------------------------------------------- FIREBASE SETUP -------------------------------------------------
+     */
+
+
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in with " + user.getUid());
+
+            } else {
+                Log.d(TAG, "onAuthStateChanged: signed out");
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                startActivity(intent);
+            }
+        };
+
+    }
+
+   /*
+    ------------------------------------------------- FIREBASE SETUP -------------------------------------------------
+     */
+
 }

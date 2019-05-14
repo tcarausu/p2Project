@@ -1,42 +1,24 @@
 package com.example.myapplication.user_profile;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.ViewPostFragment;
 import com.example.myapplication.models.Photo;
+import com.example.myapplication.models.Post;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class UserProfileActivity extends AppCompatActivity implements UserProfileFragment.OnGridImageSelectedListener {
 
     private static final String TAG = "UserProfileActivity";
 
-    private static final int ACTIVITY_NUM = 4;
-    private static final int NUM_GRID_COLUMNS = 3;
-
-    private Context mContext;
-
-    private FirebaseAuth mAuth;
-
-    private TextView displayUserName, editProfile;
-    private String userUID;
-
-    private ProgressBar mProgressBar;
-    private ImageView mProfilePhoto;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        mAuth = FirebaseAuth.getInstance();
-        mContext = getApplicationContext();
+        FirebaseAuth.getInstance();
 
         init();
     }
@@ -54,13 +36,13 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     }
 
     @Override
-    public void onGridImageSelected(Photo photo, int activityNr) {
-        Log.d(TAG, "onGridImageSelected: selected an image gridView:" + photo.toString());
+    public void onGridImageSelected(Post post, int activityNr) {
+        Log.d(TAG, "onGridImageSelected: selected an image gridView:" + post.toString());
 
         ViewPostFragment fragment = new ViewPostFragment();
         Bundle args = new Bundle();
 
-        args.putParcelable(getString(R.string.photo), photo);
+        args.putParcelable(getString(R.string.post), post);
         args.putInt(getString(R.string.activity_number), activityNr);
         fragment.setArguments(args);
 
@@ -70,6 +52,6 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         transaction.addToBackStack(getString(R.string.view_post_fragment));
         transaction.commit();
 
-
     }
+
 }

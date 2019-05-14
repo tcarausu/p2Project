@@ -36,7 +36,6 @@ public class HomeActivity extends AppCompatActivity {
     private String userUID;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private GoogleSignInClient mGoogleSignInClient ;
 
     /**
      * @param savedInstanceState creates the app using the Bundle
@@ -68,8 +67,6 @@ public class HomeActivity extends AppCompatActivity {
             LoginManager.getInstance().logOut();
             sendUserToLogin();
         }
-        else return;
-
     }
     @Override
     protected void onStop() {
@@ -146,17 +143,14 @@ public class HomeActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                checkCurrentUser(user);
+            checkCurrentUser(user);
 
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
-                } else Log.d(TAG, "onAuthStateChanged: signed out");
-            }
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
+            } else Log.d(TAG, "onAuthStateChanged: signed out");
         };
     }
 
