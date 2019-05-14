@@ -210,7 +210,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         final CharSequence[] options = {"Mobile data", "WIFI", "CANCEL"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Select network");
+        builder.setTitle("Select network to proceed");
         builder.setIcon(R.drawable.chefood);
         builder.setItems(options, (dialog, which) -> {
 
@@ -219,8 +219,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 updateUserInfo(getProf_pic_URL());
 
             } else if (options[which].equals("WIFI")) {
-              Intent wifiIntent =   new Intent(Settings.ACTION_WIFI_SETTINGS);
-              startActivityForResult(wifiIntent,ACTION_WIFI_SETTINGS);
+              startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+
 
             } else if (options[which].equals("CANCEL")) {
                 dialog.dismiss();
