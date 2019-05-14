@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -191,18 +190,16 @@ public class LoginActivity extends AppCompatActivity implements
         } else {
             // after checking, we try to login
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-//------------------------------------added for testing purposes------------------------------------
                 addUserToDataBase();
-//------------------------------------added for testing purposes------------------------------------
 
-                    if (mAuth.getCurrentUser() == null) {
+                if (mAuth.getCurrentUser() == null) {
 
-                        Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        mAuth.signOut();
-                    }
-                    // if task is successful
-                    else if (task.isSuccessful()) {
-                        verifyAccount(); // check if user is verified by email
+                    Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    mAuth.signOut();
+                }
+                // if task is successful
+                else if (task.isSuccessful()) {
+                    verifyAccount(); // check if user is verified by email
 
                 } else {
                     // otherwise we display the task error message from database
@@ -262,11 +259,9 @@ public class LoginActivity extends AppCompatActivity implements
                         Log.d(Google_Tag, "signInWithCredential:success");
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
 
-//------------------------------------added for testing purposes------------------------------------
                         addUserToDataBase();
-//------------------------------------added for testing purposes------------------------------------
 
-                        goToMainActivity();
+                        new Handler().postDelayed(() -> goToMainActivity(), Toast.LENGTH_SHORT);
 
                     } else {
                         // If sign in fails, display a message to the user.
@@ -292,20 +287,20 @@ public class LoginActivity extends AppCompatActivity implements
                         // Sign in success, update UI with the signed-in user's information
                         Toast.makeText(LoginActivity.this, "Authentication successful.", Toast.LENGTH_SHORT).show();
 
-                        String uid =  task.getResult().getUser().getUid();
-                        String email =  task.getResult().getUser().getEmail();
-                        String username =  task.getResult().getUser().getDisplayName();
-                        String url =  task.getResult().getUser().getPhotoUrl().toString();
-                        Log.d(TAG, "onComplete: uid: "+uid+"\n"
-                                +"email: "+email+"\n"+ "username: "+username+"\n"+"url: "+url+"\n");
+                        String uid = task.getResult().getUser().getUid();
+                        String email = task.getResult().getUser().getEmail();
+                        String username = task.getResult().getUser().getDisplayName();
+                        String url = task.getResult().getUser().getPhotoUrl().toString();
+                        Log.d(TAG, "onComplete: uid: " + uid + "\n"
+                                + "email: " + email + "\n" + "username: " + username + "\n" + "url: " + url + "\n");
 
-                        verifyFirstFBLogin(email,username,url);
+                        verifyFirstFBLogin(email, username, url);
                         new Handler().postDelayed(() -> goToMainActivity(), 500);
 
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(FacebookTag, "signInWithCredential:failure", task.getException());
-                        Toast.makeText(LoginActivity.this, "Authentication failed, "+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Authentication failed, " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         LoginManager.getInstance().logOut();
                     }
                 });
@@ -364,7 +359,8 @@ public class LoginActivity extends AppCompatActivity implements
 
         }
     }
-//
+
+    //
     private void addUserToDataBase() {
         final FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -418,10 +414,7 @@ public class LoginActivity extends AppCompatActivity implements
      */
     private void addNewUser(String email, String username, String description, String website, String profile_photo) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
-       String existUser =  myRef.child(mContext.getString(R.string.dbname_users)).child(currentUser.getUid()).toString();
-//       if (existUser.equals(currentUser)){
-//           //TODO, add if not there
-//       }
+
         User user = new User(
                 description,
                 "Chose a user name",
@@ -438,14 +431,15 @@ public class LoginActivity extends AppCompatActivity implements
                 .child(currentUser.getUid())
                 .setValue(user);
     }
-    private void verifyFirstFBLogin(String email, String username ,String url) {
+
+    private void verifyFirstFBLogin(String email, String username, String url) {
 
         SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
         boolean firstLogin = prefs.getBoolean("prefs", false);
 
         //if its the first run we change the boolean to false
         if (firstLogin) {
-            addNewUser(email,username,"description","website",url);
+            addNewUser(email, username, "description", "website", url);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("prefs", true);
             editor.apply();

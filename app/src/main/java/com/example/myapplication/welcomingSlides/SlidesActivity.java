@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -19,8 +20,8 @@ import com.example.myapplication.login.LoginActivity;
 /**
  * by M.MSAAD
  **/
-public class SlidesActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String TAG = "MainActivity";
+public class SlidesActivity extends AppCompatActivity  {
+    private static final String TAG = "SlidesActivity";
     private ViewPager slideViewPager;
     private LinearLayout dotsLayout;
     private TextView[] dots;
@@ -86,11 +87,6 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
 
         mIntent = new Intent(SlidesActivity.this, LoginActivity.class);
 
-        mPrevious.setOnClickListener(this);
-
-        mNext.setOnClickListener(this);
-
-        mSkip.setOnClickListener(this);
     }
 
 
@@ -138,7 +134,7 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
                 mPrevious.setEnabled(true);
                 mSkip.setEnabled(true);
                 mPrevious.setVisibility(View.VISIBLE);
-                mNext.setText(getString(R.string.finish));
+                mNext.setText("FINISH");
                 mSkip.setVisibility(View.INVISIBLE);
 
             } else {
@@ -159,27 +155,6 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
         }
     };
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
 
-            case R.id.nextButton_id:
-                slideViewPager.setCurrentItem(mCurrentSlide + 1);
-
-                if (mNext.getText().equals("FINISH")) {
-
-                    startActivity(mIntent);
-                }
-                break;
-
-            case R.id.previousButton_id:
-                slideViewPager.setCurrentItem(mCurrentSlide - 1);
-                break;
-
-            case R.id.skipButton:
-                startActivity(mIntent);
-                break;
-        }
-    }
 }
 

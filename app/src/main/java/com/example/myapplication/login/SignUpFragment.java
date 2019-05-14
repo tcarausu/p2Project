@@ -61,10 +61,10 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
 
     private void findWidgets(View view) {
         mEmail = view.findViewById(R.id.SignUpWithEmail_emailField_id);
-        mPassword = view.findViewById(R.id.SignUpWithEmail_passField_id);
-        mConfirmPassword = view.findViewById(R.id.SignUpWithEmail_confPassField_id);
+        mPassword = view.findViewById(R.id.pass_field);
+        mConfirmPassword = view.findViewById(R.id.confirm_pass);
         signUpButton = view.findViewById(R.id.SignupWithPhoneFragment_sendCodeButton);
-        goBack = view.findViewById(R.id.SignUpWithEmail_goBackButton_id);
+        goBack = view.findViewById(R.id.back_button);
     }
 
     private void createUserWithEmail() {
@@ -96,31 +96,23 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
             loadingBar.setMessage("Please wait while your account is being created.");
             loadingBar.show();
             loadingBar.setCanceledOnTouchOutside(false);
-                        } else if (TextUtils.isEmpty(confPass)) {
-                            mConfirmPassword.setError("");
-                            Toast.makeText(getContext(),"Please confirm password",Toast.LENGTH_SHORT).show();
-                        }
-                        else if ( !password.equals(confPass)){
-                            mPassword.setError("");
-                            mConfirmPassword.setError("");
-                            Toast.makeText(getContext(),"Error: MUST match Password",Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            loadingBar.setTitle("Creating account...");
-                            loadingBar.setMessage("Please wait while your account is being created...");
-                            loadingBar.setIcon(R.drawable.chefood);
-                            loadingBar.show();
-                            loadingBar.setCanceledOnTouchOutside(false);
+        }
+        if (TextUtils.isEmpty(confPass)) {
+            mConfirmPassword.setError("");
+            Toast.makeText(getContext(), "Please confirm password", Toast.LENGTH_SHORT).show();
+        } else if (!password.equals(confPass)) {
+            mPassword.setError("");
+            mConfirmPassword.setError("");
+            Toast.makeText(getContext(), "Error: MUST match Password", Toast.LENGTH_SHORT).show();
+        } else {
+            loadingBar.setTitle("Creating account...");
+            loadingBar.setMessage("Please wait while your account is being created...");
+            loadingBar.setIcon(R.drawable.chefood);
+            loadingBar.show();
+            loadingBar.setCanceledOnTouchOutside(false);
             //if all are fine, then try to create a user
-                            mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    // if success
-                                    if (task.isSuccessful()){
-                                        loadingBar.dismiss();
-                                        Toast.makeText(getContext(), R.string.registration_success, Toast.LENGTH_SHORT).show();
-                                        sendVerifyEmail();
-                                        mAuth.signOut();
+
+
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                 // if success
 
@@ -130,26 +122,19 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                     sendVerifyEmail();
                     mAuth.signOut();
                     // could use a thread instead if needed
-                    new Handler().postDelayed(() -> goToLogin(), Toast.LENGTH_SHORT);//
 
-                                        new Handler().postDelayed(() -> goToLogin(), Toast.LENGTH_SHORT);//
+                    new Handler().postDelayed(() -> goToLogin(), Toast.LENGTH_SHORT);
 
-                                    }else {
-                                        loadingBar.dismiss();
-                                        Toast.makeText(getContext(),"Error: " + task.getException().getMessage() ,Toast.LENGTH_LONG).show();
-                                        mAuth.signOut(); // always sign out the user if something goes wrong
-                                    }
-                                }
-                            });
-                        }
                 } else {
-
                     loadingBar.dismiss();
                     Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     mAuth.signOut(); // always sign out the user if something goes wrong
                 }
+
+
             });
         }
+
     }
 
     // verification email
@@ -171,11 +156,12 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
             });
         }
     }
-// send user to login and erase fragment history
-    private void goToLogin(){
-        startActivity(new Intent(getActivity(),LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+
+    // send user to login and erase fragment history
+    private void goToLogin() {
+        startActivity(new Intent(getActivity(), LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         Objects.requireNonNull(getActivity()).finish();
- }
+    }
 
     @Override
     public void onStart() {
@@ -216,6 +202,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                 break;
         }
     }
+
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);

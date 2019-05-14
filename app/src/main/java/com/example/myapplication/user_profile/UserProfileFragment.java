@@ -21,10 +21,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
-import com.example.myapplication.login.LoginActivity;
-import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
@@ -157,34 +156,23 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             if (user != null) {
                 Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
             } else Log.d(TAG, "onAuthStateChanged: signed out");
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
-                } else
-//                    mAuth.signOut();
-//                    goToLogin();
-                    Log.d(TAG, "onAuthStateChanged: signed out");
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
+            } else
+                Log.d(TAG, "onAuthStateChanged: signed out");
 
-
-            }
-
-            private void goToLogin() {
-                startActivity(new Intent(getActivity(), LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                |Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                getActivity().finish();
-            }
         };
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                 current_user = mAuth.getCurrentUser();
+                current_user = mAuth.getCurrentUser();
                 String photoRef = myRef.child(current_user.getUid()).child("profile_photo").getRef().toString();
                 //retrive user information from the database
-                if (photoRef.equals("photo")){
+                if (photoRef.equals("photo")) {
                     mProfilePhoto.setImageResource(R.mipmap.simo_design_avatar);
-                }
-                else
-                setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
+                } else
+                    setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
 
             }
 
@@ -315,6 +303,12 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
             }
         });
+    }
+
+    private void goToLogin() {
+        startActivity(new Intent(getActivity(), LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        getActivity().finish();
     }
 
     /**

@@ -38,8 +38,6 @@ public class AccountSettingsActivity extends AppCompatActivity
     private static final String TAG = "AccountSettingsActivity";
     private static final int ACTIVITY_NUM = 4;
 
-
-
     //firebase
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;

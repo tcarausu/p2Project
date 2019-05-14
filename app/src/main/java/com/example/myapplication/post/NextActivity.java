@@ -30,7 +30,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class NextActivity<breaks> extends AppCompatActivity {
 public class NextActivity extends AppCompatActivity implements View.OnClickListener {
 
 
@@ -43,10 +42,10 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mUploadTextView;
     private ImageView mBackImageView;
     private StorageReference mStorageRef;
-    private DatabaseReference mDatabaseRef , postRef;
+    private DatabaseReference mDatabaseRef, postRef;
     private DatabaseReference mDatabaseReferenceUserInfo;
     private FirebaseAuth mAuth;
-    private FirebaseUser current_user ;
+    private FirebaseUser current_user;
     private String imageUri;
     private String URL;
     private String username;
@@ -60,30 +59,17 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         findWidgets();
 
 
-        String URL = "";
-
         Intent intent = getIntent();
-        imageUri = getIntent().getStringExtra("imageUri");
+        imageUri = intent.getStringExtra("imageUri");
         Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewfood);
-        mUploadTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uploadImage();
-            }
-        });
+        mUploadTextView.setOnClickListener(this);
 
-        mBackImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: back button working");
-                finish();
-            }
-        });
+        mBackImageView.setOnClickListener(this);
 
         mAuth = FirebaseAuth.getInstance();
         firebaseMethods = new FirebaseMethods(getApplicationContext());
 
-        current_user = mAuth.getCurrentUser() ;
+        current_user = mAuth.getCurrentUser();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         String databasePath = "posts/" + mAuth.getUid() + "/";
         String databasePathPic = "users/" + mAuth.getUid();
@@ -112,7 +98,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         postRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     // TODO push the new parameters from the input
                 }
             }
@@ -123,10 +109,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        initLayout();
     }
 
-    private void initLayout() {
+    private void findWidgets() {
 
         mImageDesc = findViewById(R.id.image_desc_edittext);
         mImageIngredients = findViewById(R.id.image_ingredients_edittext);
@@ -142,6 +127,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         mBackImageView.setOnClickListener(this);
     }
 
+
     // method for uploading image and image content to firebase storage and database
     private void uploadImage() {
 
@@ -153,50 +139,46 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
         StorageReference storageReference = mStorageRef.child("post_pic/users/" + mAuth.getUid() + "/" + System.currentTimeMillis() + ".jpg");
         storageReference.putFile(Uri.parse(imageUri)).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                storageReference.getDownloadUrl().addOnCompleteListener(task1 -> {
-                    URL = task1.getResult().toString();
-                    String description = mImageDesc.getText().toString();
-                    String ingredients = mImageIngredients.getText().toString();
-                    String recipe = mImageRecipe.getText().toString();
-                    String uploadId = mDatabaseRef.push().getKey();
-                    Post postInfo = new Post(description,
-                            URL, recipe, ingredients, mAuth.getUid(),
-                            uploadId, firebaseMethods.getTimestamp(), null);
-                    Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);
+                    if (task.isSuccessful()) {
+                        progressDialog.dismiss();
+                        storageReference.getDownloadUrl().addOnCompleteListener(task1 -> {
+                            URL = task1.getResult().toString();
+                            Log.d(TAG, "onComplete: post URL: " + URL);
+                            String description = mImageDesc.getText().toString();
+                            String ingredients = mImageIngredients.getText().toString();
+                            String recipe = mImageRecipe.getText().toString();
+                            String uploadId = mDatabaseRef.push().getKey();
+                            Post postInfo = new Post(description,
+                                    URL, recipe, ingredients, mAuth.getUid(),
+                                    uploadId, firebaseMethods.getTimestamp(), null);
+                            Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);
 
+                            mDatabaseRef.child(uploadId).setValue(postInfo);
 
-                    mDatabaseRef.child(uploadId).setValue(postInfo);
-        storageReference.putFile(Uri.parse(imageUri)).addOnCompleteListener(task -> {
+                            Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();
+                            Handler handler = new Handler();
+                            handler.postDelayed(() -> {
+                                Intent intent = new Intent(NextActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                            }, 500);
+                        }).addOnFailureListener(e ->
+                                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
+                    }
+                }
+        ).addOnSuccessListener(taskSnapshot -> {
 
-            if (task.isSuccessful()) {
-                progressDialog.dismiss();
-                storageReference.getDownloadUrl().addOnCompleteListener(task1 -> {
-                    URL = task1.getResult().toString();
-                    Log.d(TAG, "onComplete: post URL: "+URL);
-                    String description = mImageDesc.getText().toString();
-                    String ingredients = mImageIngredients.getText().toString();
-                    String recipe = mImageRecipe.getText().toString();
-                    Post postInfo = new Post(profilePicUrl,username,description, URL, 0, recipe, ingredients, mAuth.getUid());
-                    Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);
+            progressDialog.dismiss();
+            Toast.makeText(NextActivity.this, "Post added successfully.", Toast.LENGTH_SHORT).show();
+        }).addOnCanceledListener(() -> {
 
-                    String uploadId = mDatabaseRef.push().getKey();
-                    mDatabaseRef.child(uploadId).setValue(postInfo);
+                }
+        ).addOnProgressListener(taskSnapshot ->
+        {
+            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+            progressDialog.setMessage("uploaded " + (int) progress + "%");
 
-                    Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();
-                    Handler handler = new Handler();
-                    handler.postDelayed(() -> {
-                        Intent intent = new Intent(NextActivity.this, HomeActivity.class);
-                        startActivity(intent);
-                    }, 500);
-                }).addOnFailureListener(e -> Toast.makeText(NextActivity.this, "COULD NOT UPLOAD PICTURE! TRY AGAIN",
-                        Toast.LENGTH_SHORT).show());
-            }
-        }).addOnSuccessListener(taskSnapshot -> {
-
-
-        }).addOnFailureListener(e -> Toast.makeText(NextActivity.this, "COULD NOT UPLOAD PICTURE! TRY AGAIN",
-                Toast.LENGTH_SHORT).show());
+        }).addOnFailureListener(e ->
+                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());;
     }
 
     @Override
@@ -207,34 +189,13 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                 uploadImage();
 
                 break;
-                    Handler handler = new Handler();
-                    handler.postDelayed(() -> {
-                        Intent intent = new Intent(NextActivity.this, HomeActivity.class);
-                        startActivity(intent);
-                    }, 500);
 
-                }).addOnFailureListener(e -> {
-                    progressDialog.dismiss();
-                    Toast.makeText(NextActivity.this, "COULD NOT UPLOAD PICTURE! TRY AGAIN",
-                            Toast.LENGTH_SHORT).show();
-                });
-            }
-        }).addOnSuccessListener(taskSnapshot -> {
-            progressDialog.dismiss();
-            Toast.makeText(NextActivity.this, "Post added successfully.", Toast.LENGTH_SHORT).show();
-        }).addOnProgressListener(taskSnapshot -> {
-            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-            progressDialog.setMessage("uploaded " + (int) progress + "%");
-        }).addOnFailureListener(e -> {
-            progressDialog.dismiss();
-            Toast.makeText(NextActivity.this, "COULD NOT UPLOAD PICTURE! TRY AGAIN", Toast.LENGTH_SHORT).show();
-        });
             case R.id.close_share:
                 Log.d(TAG, "onClick: back button working");
                 finish();
 
                 break;
         }
-    }
 
+    }
 }

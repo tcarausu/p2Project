@@ -130,7 +130,6 @@ public class HomeActivity extends AppCompatActivity {
             LoginManager.getInstance().logOut();
              sendUserToLogin();
         }
-        else return;
 
     }
 
@@ -140,15 +139,15 @@ public class HomeActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = firebaseAuth -> {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
+
 
                 checkCurrentUser();
 
                 if (current_user != null) {
                     Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
                 } else Log.d(TAG, "onAuthStateChanged: signed out");
-            }
-        };
+            };
+
     }
 
     private void initImageLoader() {

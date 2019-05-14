@@ -48,13 +48,14 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     Bitmap mBitmap;
 
 
-    private BroadcastReceiver broadcastReceiver  = new BroadcastReceiver() {
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             setBatteryLevel(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -3));//here i set the int battery level
         }
     };
     private int batteryLevel;
+
 
     public int getBatteryLevel() {
         return batteryLevel;
@@ -64,10 +65,6 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         this.batteryLevel = batteryLevel;
     }
 
-
-    private static final int GALLERY_REQUEST = 11;
-    private static final int CAMERA_REQUEST = 22;
-    private static final int GALLERY_REQUEST = 1;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select_picture, container, false);
@@ -105,11 +102,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
             Glide.with(getContext()).load(mUri).fitCenter().centerCrop().into(galleryImageView);
             intent.putExtra("imageUri", mUri.toString());
         }
-//        else if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST ){
-//            mUri = data.getData();
-//            Glide.with(getContext()).load(mUri).fitCenter().centerCrop().into(galleryImageView);
-//            intent.putExtra("imageUri", mUri.toString());
-//        }
+
     }
 
     // Alert dialog
@@ -181,25 +174,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
 
     // showing picture taken from camera in ImageView
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK && requestCode == GALLERY_REQUEST && data.getData()!= null ) {
-
-            mUri = data.getData();
-            Glide.with(this).load(mUri).centerCrop().into(galleryImageView);
-            intent.putExtra("imageUri", mUri.toString());
-
-        }else if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST && data.getData()!= null){
-
-            mUri = data.getData() ;
-            Glide.with(this).load(mUri).centerCrop().into(galleryImageView);
-            intent.putExtra("imageUri", mUri.toString());
-
-        }
-
-        }
+//
 
 
 }

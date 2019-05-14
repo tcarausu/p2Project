@@ -1,16 +1,23 @@
 package com.example.myapplication.user_profile;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -62,9 +69,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private String userID;
 
     //Edit Profile widgets
-    private TextView mChangeProfilePhoto , mPrivateInformation ;
+    private TextView mChangeProfilePhoto, mPrivateInformation;
     private EditText mDisplayName, mWebsite, mAbout, mPhoneNumber;
-    private TextView mEmail , mUserName;
+    private TextView mEmail, mUserName;
     private CircleImageView mProfilePhoto;
     private ImageView backArrow, saveChanges;
 
@@ -84,20 +91,17 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         }
     };
 
-    private Uri uri;
-    private Uri avatarUri;
     private Bitmap bitmap;
     private String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private String prof_pic_URL;
-    private   int batteryLevel;
+    private int batteryLevel;
 
 
-
-    private  int getBatteryLevel() {
+    private int getBatteryLevel() {
         return batteryLevel;
     }
 
-    private  void setBatteryLevel(int batteryLevel) {
+    private void setBatteryLevel(int batteryLevel) {
         this.batteryLevel = batteryLevel;
     }
 
@@ -149,61 +153,34 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mProfilePhoto.setOnClickListener(this);
     }
 
-//    /**
-//     * Retrieves data from the widgets and submits it to database
-//     * Before doing so it checks if the username is unique
-//     */
-//    private void saveProfileSettings() {
-//
-//        final String userName = mUserName.getText().toString();
-//        final String displayName = mDisplayName.getText().toString();
-//        final long phoneNumber = Long.valueOf(mPhoneNumber.getText().toString());
-//        final String about = mAbout.getText().toString();
-//        final String website = mWebsite.getText().toString();
-//        final String profile_url = myRef.child(currentUser.getUid()).child("profile_photo").getKey();
-//
-//        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                if (!mUserSettings.getUser().getUsername().equals(userName)
-//                        && !mUserSettings.getUser().getDisplay_name().equals(displayName)) {
-//                    firebaseMethods.checkIfUsernameExists(userName, displayName, website, about, phoneNumber, profile_url);
-//                } else
-//                    firebaseMethods.checkIfUsernameExists(userName, displayName, website, about, phoneNumber, profile_url);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
-/**created byMo.MSaad
- * **/
-    private void checkWifiState(){
 
-         boolean isWifiConnected ;
-         boolean isMobileDataConnected ;
-        ConnectivityManager conMngr = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+    /**
+     * created byMo.MSaad
+     **/
+    private void checkWifiState() {
+
+        boolean isWifiConnected;
+        boolean isMobileDataConnected;
+        ConnectivityManager conMngr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = conMngr.getActiveNetworkInfo();
 
         if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
             isWifiConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI;
             isMobileDataConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
 
-            if (isWifiConnected){
+            if (isWifiConnected) {
                 uploadProfilePic(uri);
                 updateUserInfo(getProf_pic_URL());
-            }
-            else if (isMobileDataConnected){
+            } else if (isMobileDataConnected) {
                 //TODO add shared prefs here to allow automatic
                 openDialogChoice();
             }
         }
     }
-    /**created byMo.MSaad
-     * **/
+
+    /**
+     * created byMo.MSaad
+     **/
 
 
     private void openDialogChoice() {
@@ -219,8 +196,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 updateUserInfo(getProf_pic_URL());
 
             } else if (options[which].equals("WIFI")) {
-              startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
 
             } else if (options[which].equals("CANCEL")) {
                 dialog.dismiss();
@@ -231,18 +207,17 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     }
 
-    private void setProfileWidgets(UserSettings userSettings) {
+    private void setProfileWidgets(User userSettings) {
 
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " + userSettings.toString());
-        User settings = userSettings.getUser();
-        mUserSettings = userSettings;
-        mDisplayName.setText(settings.getDisplay_name());
-        mUserName.setText(settings.getUsername());
-        mWebsite.setText(settings.getWebsite());
-        mAbout.setText(settings.getAbout());
-        mEmail.setText(String.valueOf(settings.getEmail()));
-        mPhoneNumber.setText(String.valueOf(settings.getPhone_number()));
-        String profilePicURL = settings.getProfile_photo();
+        user = userSettings;
+        mDisplayName.setText(user.getDisplay_name());
+        mUserName.setText(user.getUsername());
+        mWebsite.setText(user.getWebsite());
+        mAbout.setText(user.getAbout());
+        mEmail.setText(String.valueOf(user.getEmail()));
+        mPhoneNumber.setText(String.valueOf(user.getPhone_number()));
+        String profilePicURL = user.getProfile_photo();
 
         try {
             if (profilePicURL == null) {
@@ -275,9 +250,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 if (dataSnapshot.exists()) {
                     firebaseMethods.updateUsername(username, display_name, website, about, phone_number, imageUrl);
                     Log.d(TAG, "onDataChange: datasnapshot exissts: " + dataSnapshot.exists());
-                    Log.d(TAG, "onDataChange: user updated with:\n "+"name: "+username
-                    +"\n"+ "displayName: "+display_name+ "\n"+ "website: "+website+ "\n"
-                    +"about: "+about+"\n"+"phone: "+phone_number+"\n"+ "URL: "+imageUrl);
+                    Log.d(TAG, "onDataChange: user updated with:\n " + "name: " + username
+                            + "\n" + "displayName: " + display_name + "\n" + "website: " + website + "\n"
+                            + "about: " + about + "\n" + "phone: " + phone_number + "\n" + "URL: " + imageUrl);
                 } else {
                     firebaseMethods.updateUsername(username, display_name, website, about, phone_number, "");
                     mProfilePhoto.setImageResource(R.drawable.my_avatar);
@@ -463,7 +438,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (getBatteryLevel() > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
-            Log.d(TAG, "takePicture: battery level: "+getBatteryLevel());
+            Log.d(TAG, "takePicture: battery level: " + getBatteryLevel());
             startActivityForResult(cameraIntent, REQUEST_CAMERA);
         } else Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
 
@@ -494,21 +469,22 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 uri = data.getData();
                 Glide.with(this).load(data.getData()).centerCrop().into(mProfilePhoto);
 
-        if (resultCode == RESULT_OK && requestCode == REQUEST_CAMERA && data != null && data.getData() != null) {
-            uri = data.getData();
-            Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
+                if (resultCode == RESULT_OK && requestCode == REQUEST_CAMERA && data != null && data.getData() != null) {
+                    uri = data.getData();
+                    Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
 
-            } else if (besoins1) {
-                uri = data.getData();
-                Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
-                Log.d(TAG, "onActivityResult: uri: " + uri.getPath());
+                } else if (besoins1) {
+                    uri = data.getData();
+                    Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
+                    Log.d(TAG, "onActivityResult: uri: " + uri.getPath());
+                }
+
             }
-
-        }catch (Exception e){
-            Toast.makeText(getActivity(),"Error occurred: "+e.getMessage(),Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "Error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-    }
 
+    }
 }
 
 
