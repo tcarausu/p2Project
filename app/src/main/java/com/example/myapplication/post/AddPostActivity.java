@@ -22,8 +22,6 @@ public class AddPostActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
 
-    private Context mContext = AddPostActivity.this;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +29,6 @@ public class AddPostActivity extends AppCompatActivity {
 
         initLayout();
         buttonListeners();
-        //setupBottomNavigationView();
 
         if (checkPermissionsArray(Permissions.PERMISSIONS)) {
             setupViewPager();
@@ -45,7 +42,6 @@ public class AddPostActivity extends AppCompatActivity {
     private void setupViewPager() {
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new SelectPictureFragment());
-       // adapter.addFragment(new PhotoFragment());
 
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(adapter);
@@ -53,7 +49,6 @@ public class AddPostActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabsBottom);
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.getTabAt(0).setText(getString(R.string.post));
-       // tabLayout.getTabAt(1).setText(getString(R.string.photo_add));
 
     }
 
@@ -117,14 +112,4 @@ public class AddPostActivity extends AppCompatActivity {
      * Bottom Navigation View setup
      */
 
-    /*
-    public void setupBottomNavigationView() {
-        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
-        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
-        Menu menu = bottomNavigationViewEx.getMenu();
-        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        menuItem.setChecked(true);
-
-    }*/
 }

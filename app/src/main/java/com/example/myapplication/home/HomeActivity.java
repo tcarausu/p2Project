@@ -3,7 +3,6 @@ package com.example.myapplication.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +17,6 @@ import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.facebook.login.LoginManager;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -44,7 +42,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
-        mAuth = FirebaseAuth.getInstance() ;
+        mAuth = FirebaseAuth.getInstance();
 
         initLayout();
         buttonListeners();
@@ -68,6 +66,7 @@ public class HomeActivity extends AppCompatActivity {
             sendUserToLogin();
         }
     }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -75,6 +74,7 @@ public class HomeActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
+
     public void initLayout() {
         mContext = HomeActivity.this;
 
@@ -86,6 +86,7 @@ public class HomeActivity extends AppCompatActivity {
     public void buttonListeners() {
 
     }
+
     private void sendUserToLogin() {
 
         Intent i = new Intent(getApplicationContext(), LoginActivity.class);
@@ -103,20 +104,14 @@ public class HomeActivity extends AppCompatActivity {
      */
     private void setupViewPager() {
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new CameraFragment()); //index 0
         adapter.addFragment(new HomeFragment()); //index 1
-        adapter.addFragment(new DirectMessagesFragment()); //index 2
         ViewPager viewPager = findViewById(R.id.container);
         viewPager.setAdapter(adapter);
 
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.photo_camera);
-        Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.home);
-        Objects.requireNonNull(tabLayout.getTabAt(1)).select();
-        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.direct_message_pressed);
-
+        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.home);
     }
 
     /**

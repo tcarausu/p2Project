@@ -113,7 +113,7 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
                 mPrevious.setEnabled(true);
                 mSkip.setEnabled(true);
                 mPrevious.setVisibility(View.VISIBLE);
-                mNext.setText("FINISH");
+                mNext.setText(getString(R.string.finish));
                 mSkip.setVisibility(View.INVISIBLE);
 
             } else {
@@ -122,8 +122,8 @@ public class SlidesActivity extends AppCompatActivity implements View.OnClickLis
                 mSkip.setEnabled(true);
                 mPrevious.setVisibility(View.VISIBLE);
                 mSkip.setVisibility(View.VISIBLE);
-                mNext.setText("Next");
-                mPrevious.setText("Back");
+                mNext.setText(getString(R.string.next));
+                mPrevious.setText(getString(R.string.back));
             }
 
 

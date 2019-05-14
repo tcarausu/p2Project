@@ -2,10 +2,7 @@ package com.example.myapplication.utility_classes;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.util.Log;
-import android.view.MenuItem;
 
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;

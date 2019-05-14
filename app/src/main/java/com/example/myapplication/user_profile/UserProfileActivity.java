@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.myapplication.R;
-import com.example.myapplication.models.Photo;
 import com.example.myapplication.models.Post;
 import com.google.firebase.auth.FirebaseAuth;
 

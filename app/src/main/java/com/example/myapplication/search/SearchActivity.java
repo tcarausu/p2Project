@@ -8,7 +8,6 @@ import android.view.MenuItem;
 
 import com.example.myapplication.R;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
-import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 /**

@@ -33,10 +33,6 @@ public class SliderAdapter extends PagerAdapter {
             "Stay updated with your friends kitchen life"};
 
 
-    //for future use
-    public String[] buttonText = {"next","next", "let's start"} ;
-
-
     @Override // we return the length
     public int getCount() {
         return slidesTitles.length;

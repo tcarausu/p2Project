@@ -371,30 +371,30 @@ public class LoginActivity extends AppCompatActivity implements
                     orderByKey().equalTo(nodeID);
 
             query.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (!dataSnapshot.exists()) {
-                                if (user.getDisplayName() != null) {
-                                    addNewUser(userMAIL, user.getDisplayName(), "about", "website", "photo");
-                                    Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.exists()) {
+                        if (user.getDisplayName() != null) {
+                            addNewUser(userMAIL, user.getDisplayName(), "about", "website", "photo");
+                            Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
 
-                                } else {
-                                    addNewUser(userMAIL, "random username", "about", "website", "photo");
-                                    Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
+                        } else {
+                            addNewUser(userMAIL, "random username", "about", "website", "photo");
+                            Log.d(TAG, "addUserToDataBase:  user successfully added" + userMAIL);
 
-                                }
-
-                            } else {
-                                Log.d(TAG, "onDataChange: Found a Match: " + userMAIL);
-
-                            }
                         }
 
-                        @Override
-                        public void onCancelled(DatabaseError  databaseError) {
-                            Toast.makeText(mContext, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    } else {
+                        Log.d(TAG, "onDataChange: Found a Match: " + userMAIL);
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(mContext, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
 
         }
     }
