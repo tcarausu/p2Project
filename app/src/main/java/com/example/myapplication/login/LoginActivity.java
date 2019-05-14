@@ -304,29 +304,26 @@ public class LoginActivity extends AppCompatActivity implements
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Toast.makeText(LoginActivity.this, "Authentication successful.", Toast.LENGTH_SHORT).show();
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Toast.makeText(LoginActivity.this, "Authentication successful.", Toast.LENGTH_SHORT).show();
 
-                            String uid =  task.getResult().getUser().getUid();
-                            String email =  task.getResult().getUser().getEmail();
-                            String username =  task.getResult().getUser().getDisplayName();
-                            String url =  task.getResult().getUser().getPhotoUrl().toString();
-                            Log.d(TAG, "onComplete: uid: "+uid+"\n"
-                                    +"email: "+email+"\n"+ "username: "+username+"\n"+"url: "+url+"\n");
+                        String uid =  task.getResult().getUser().getUid();
+                        String email =  task.getResult().getUser().getEmail();
+                        String username =  task.getResult().getUser().getDisplayName();
+                        String url =  task.getResult().getUser().getPhotoUrl().toString();
+                        Log.d(TAG, "onComplete: uid: "+uid+"\n"
+                                +"email: "+email+"\n"+ "username: "+username+"\n"+"url: "+url+"\n");
 
-                            verifyFirstFBLogin(email,username,url);
-                            new Handler().postDelayed(() -> goToMainActivity(), 500);
+                        verifyFirstFBLogin(email,username,url);
+                        new Handler().postDelayed(() -> goToMainActivity(), 500);
 
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(FacebookTag, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed, "+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            LoginManager.getInstance().logOut();
-                        }
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(FacebookTag, "signInWithCredential:failure", task.getException());
+                        Toast.makeText(LoginActivity.this, "Authentication failed, "+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        LoginManager.getInstance().logOut();
                     }
                 });
     }
