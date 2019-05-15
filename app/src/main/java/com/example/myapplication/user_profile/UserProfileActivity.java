@@ -38,7 +38,8 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     public void onGridImageSelected(Post post, int activityNr) {
         Log.d(TAG, "onGridImageSelected: selected an image gridView:" + post.toString());
 
-        ViewPostFragment fragment = new ViewPostFragment();
+//        ViewPostFragment fragment = new ViewPostFragment();
+        ViewPostFragmentNewsFeed fragment = new ViewPostFragmentNewsFeed();
         Bundle args = new Bundle();
 
         args.putParcelable(getString(R.string.post), post);

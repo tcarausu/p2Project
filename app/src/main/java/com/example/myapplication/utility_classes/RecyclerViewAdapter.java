@@ -7,8 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,10 +17,12 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
+import com.example.myapplication.user_profile.ViewPostFragmentNewsFeed;
 
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private static final String TAG = "RecyclerViewAdapter";
@@ -113,28 +115,36 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView mUserName;
         TextView mDescription;
         ImageView mFoodImg;
-        ImageButton mLikes;
-        ImageButton mComments;
-        ImageButton mRecipe;
-        ImageButton mIngredients;
+        Button mLikes;
+        Button mComments;
+        Button mRecipe;
+        Button mIngredients;
         FrameLayout mPostToolbarBtnsExpansionContainer;
-        TextView mToolbarExpasionText;
-
+        TextView mToolbarExpasionText, post_likes, post_TimeStamp;
+        ViewPostFragmentNewsFeed viewPost;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            viewPost = new ViewPostFragmentNewsFeed();
 
             mParentLayout = itemView.findViewById(R.id.parentLayoutID);
             mProfilePic = itemView.findViewById(R.id.userProfilePicID);
             mUserName = itemView.findViewById(R.id.userNameID);
             mDescription = itemView.findViewById(R.id.postDescriptionID);
             mFoodImg = itemView.findViewById(R.id.foodImgID);
-            mLikes = itemView.findViewById(R.id.likesBtnID);
+            mLikes = itemView.findViewById(R.id.likes_not_pressed);
             mComments = itemView.findViewById(R.id.commentsBtnID);
             mRecipe = itemView.findViewById(R.id.recipeBtnID);
             mIngredients = itemView.findViewById(R.id.ingredientsBtnID);
-            mPostToolbarBtnsExpansionContainer = itemView.findViewById(R.id.toolbarExpansionContainerID);
             mToolbarExpasionText = itemView.findViewById(R.id.toolbarExpansionTextID);
+            mPostToolbarBtnsExpansionContainer = itemView.findViewById(R.id.toolbarExpansionContainerID);
+
+
+            post_likes = itemView.findViewById(R.id.post_likes);
+            post_TimeStamp = itemView.findViewById(R.id.post_TimeStamp);
+
+//            post_likes.setText(viewPost.getLikesString());
+            post_likes.setText(viewPost.getmLikesString());
         }
     }
 }
