@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +26,6 @@ import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.Heart;
-import com.example.myapplication.utility_classes.RecyclerViewAdapter;
 import com.example.myapplication.utility_classes.SquareImageView;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
@@ -70,7 +70,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             comments, share, backArrow;
     private TextView mUserName, mPostLikes, mPostDescription, mPostCommentLink, mPostTimeStamp;
     private Toolbar toolbar;
-    private Button likesPost, recipePost, commentPost, ingredientsPost;
+    private ImageButton likesPost, recipePost, commentPost, ingredientsPost;
     //vars
     private BottomNavigationViewEx bottomNavigationViewEx;
     private Post mPost;
@@ -83,7 +83,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private boolean mLikedByCurrentUser;
     private StringBuilder mUsers;
 
-    public  String mLikesString  = "something";
+    public String mLikesString = "something";
 
     public ViewPostFragmentNewsFeed() {
         super();
@@ -323,6 +323,178 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     }
 
+    public void toggleLikes() {
+        Query query = mPostsRef
+                .child(userId)
+                .child(mPost.getPostId())
+                .child(getString(R.string.field_likes))
+                .orderByChild(Objects.requireNonNull(mPostsRef
+                        .child(mPost.getPostId())
+                        .child(getString(R.string.field_likes))
+                        .child(userId).getKey()));
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+
+                    if (mLikedByCurrentUser &&
+                            Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
+                                    .equals(userId)) {
+                        mPostsRef
+                                .child(userId)
+                                .child(mPost.getPostId())
+                                .child(getString(R.string.field_likes))
+                                .child(Objects.requireNonNull(singleSnapshot.getKey()))
+                                .removeValue();
+
+                        likesPost.setImageResource(R.drawable.post_like_not_pressed);
+
+                                getLikesString();
+                    } else if (!mLikedByCurrentUser) {
+                        addNewLike();
+                        likesPost.setImageResource(R.drawable.post_like_pressed);
+                        break;
+                    }
+
+                }
+                if (!dataSnapshot.exists()) {
+                    addNewLike();
+                    likesPost.setImageResource(R.drawable.post_like_pressed);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                Log.d(TAG, "onCancelled: Query Cancelled");
+
+            }
+        });
+    }
+
+    /**
+     * Bottom Navigation View setup
+     */
+    public void setupBottomNavigationView() {
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getActivity(), bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(mActivityNumber);
+        menuItem.setChecked(true);
+
+    }
+
+    public String getLikesString() {
+
+        Query query = mPostsRef
+                .child(userId)
+                .child(mPost.getPostId())
+                .child(getString(R.string.field_likes))
+                .getRef();
+
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mUsers = new StringBuilder();
+
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                    Query query = mUserRef
+                            .child(userId).getRef();
+
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()
+                                    && dataSnapshot.getKey().equals(singleSnapshot.getValue(Like.class).getUser_id())) {
+                                Log.d(TAG, "onDataChange: found like" + dataSnapshot.getValue(User.class));
+                                mUsers.append(dataSnapshot.getValue(User.class).getUsername());
+                                mUsers.append(",");
+
+                            }
+
+                            String[] splitUsers = mUsers.toString().split(",");
+
+                            mLikedByCurrentUser = mUsers.toString().contains(user.getUsername()
+                                    + ","
+                            );
+
+                            int length = splitUsers.length;
+                            if (length == 1) {
+                                setmLikesString("Liked by " + splitUsers[0]);
+                            } else if (length == 2) {
+                                setmLikesString("Liked by " + splitUsers[0]
+                                        + " and " + splitUsers[1]);
+
+                            } else if (length == 3) {
+                                setmLikesString("Liked by " + splitUsers[0]
+                                        + " , " + splitUsers[1]
+                                        + " and " + splitUsers[2]);
+
+                            } else if (length == 4) {
+                                setmLikesString("Liked by " + splitUsers[0]
+                                        + " , " + splitUsers[1]
+                                        + " , " + splitUsers[2]
+                                        + " and " + splitUsers[3]);
+                            } else if (length > 4) {
+                                setmLikesString("Liked by " + splitUsers[0]
+                                        + " , " + splitUsers[1]
+                                        + " , " + splitUsers[2]
+                                        + " and " + (splitUsers.length - 3) + " others");
+                            }
+                            setupWidgets();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.d(TAG, "onCancelled: Query Cancelled");
+
+                        }
+                    });
+                }
+                if (!dataSnapshot.exists()) {
+                    mLikesString = "";
+                    mLikedByCurrentUser = false;
+                    setupWidgets();
+                }
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: Query Cancelled");
+
+            }
+        });
+        return getmLikesString();
+    }
+
+    public void addNewLike() {
+        Log.d(TAG, "addNewLike: add new like");
+
+//        String newLikeId = mPostsRef.child(mPost.getPostId()).push().getKey();
+        Like like = new Like();
+        like.setUser_id(userId);
+
+        mPostsRef
+                .child(userId)
+                .child(mPost.getPostId())
+                .child(getString(R.string.field_likes))
+//                .child(newLikeId)
+                .setValue(like);
+
+        getLikesString();
+    }
+
+    public String getmLikesString() {
+        return mLikesString;
+    }
+
+    public void setmLikesString(String mLikesString) {
+        this.mLikesString = mLikesString;
+    }
 
     @Override
     public void onClick(View v) {
@@ -375,233 +547,4 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     }
 
-    public void toggleLikes() {
-        Query query = mPostsRef
-                .child(userId)
-                .child(mPost.getPostId())
-                .child(getString(R.string.field_likes))
-                .orderByChild(Objects.requireNonNull(mPostsRef
-                        .child(mPost.getPostId())
-                        .child(getString(R.string.field_likes))
-                        .child(userId).getKey()));
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-
-                    if (mLikedByCurrentUser &&
-                            Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
-                                    .equals(userId)) {
-                        mPostsRef
-                                .child(userId)
-                                .child(mPost.getPostId())
-                                .child(getString(R.string.field_likes))
-                                .child(Objects.requireNonNull(singleSnapshot.getKey()))
-                                .removeValue();
-
-//                                heart.toggleLike();
-                        getLikesString();
-                    } else if (!mLikedByCurrentUser) {
-                        addNewLike();
-                        break;
-                    }
-
-                }
-                if (!dataSnapshot.exists()) {
-                    addNewLike();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                Log.d(TAG, "onCancelled: Query Cancelled");
-
-            }
-        });
-    }
-
-    /**
-     * Bottom Navigation View setup
-     */
-    public void setupBottomNavigationView() {
-        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(getActivity(), bottomNavigationViewEx);
-        Menu menu = bottomNavigationViewEx.getMenu();
-        MenuItem menuItem = menu.getItem(mActivityNumber);
-        menuItem.setChecked(true);
-
-    }
-
-    public void getLikesString() {
-
-        Query query = mPostsRef
-                .child(userId)
-                .child(mPost.getPostId())
-                .child(getString(R.string.field_likes))
-                .getRef();
-
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers = new StringBuilder();
-
-                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    Query query = mUserRef
-                            .child(userId).getRef();
-
-                    query.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()
-                                    && dataSnapshot.getKey().equals(singleSnapshot.getValue(Like.class).getUser_id())) {
-                                Log.d(TAG, "onDataChange: found like" + dataSnapshot.getValue(User.class));
-                                mUsers.append(dataSnapshot.getValue(User.class).getUsername());
-                                mUsers.append(",");
-
-                            }
-
-                            String[] splitUsers = mUsers.toString().split(",");
-
-                            mLikedByCurrentUser = mUsers.toString().contains(user.getUsername()
-                                    + ","
-                            );
-
-                            int length = splitUsers.length;
-                            if (length == 1) {
-                                setmLikesString( "Liked by " + splitUsers[0]);
-
-                            } else if (length == 2) {
-                                setmLikesString("Liked by " + splitUsers[0]
-                                        + " and " + splitUsers[1]);
-
-                            } else if (length == 3) {
-                                setmLikesString("Liked by " + splitUsers[0]
-                                        + " , " + splitUsers[1]
-                                        + " and " + splitUsers[2]);
-
-                            } else if (length == 4) {
-                                setmLikesString("Liked by " + splitUsers[0]
-                                        + " , " + splitUsers[1]
-                                        + " , " + splitUsers[2]
-                                        + " and " + splitUsers[3]);
-                            } else if (length > 4) {
-                                setmLikesString( "Liked by " + splitUsers[0]
-                                        + " , " + splitUsers[1]
-                                        + " , " + splitUsers[2]
-                                        + " and " + (splitUsers.length - 3) + " others");
-                            }
-                            setupWidgets();
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.d(TAG, "onCancelled: Query Cancelled");
-
-                        }
-                    });
-                }
-                if (!dataSnapshot.exists()) {
-                    mLikesString = "";
-                    mLikedByCurrentUser = false;
-                    setupWidgets();
-                }
-            }
-
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "onCancelled: Query Cancelled");
-
-            }
-        });
-    }
-
-//    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-//        @Override
-//        public boolean onDown(MotionEvent e) {
-//            return super.onDown(e);
-//        }
-//
-//        @Override
-//        public void onLongPress(MotionEvent e) {
-//            Log.d(TAG, "onTouch:long press");
-//
-//            Query query = mPostsRef
-//                    .child(userId)
-//                    .child(mPost.getPostId())
-//                    .child(getString(R.string.field_likes))
-//                    .orderByChild(Objects.requireNonNull(mPostsRef
-//                            .child(mPost.getPostId())
-//                            .child(getString(R.string.field_likes))
-//                            .child(userId).getKey()));
-//
-//            query.addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-//
-//                        if (mLikedByCurrentUser &&
-//                                Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
-//                                        .equals(userId)) {
-//                            mPostsRef
-//                                    .child(userId)
-//                                    .child(mPost.getPostId())
-//                                    .child(getString(R.string.field_likes))
-//                                    .child(Objects.requireNonNull(singleSnapshot.getKey()))
-//                                    .removeValue();
-//
-//                            heart.toggleLike();
-//                            getLikesString();
-//                        } else if (!mLikedByCurrentUser) {
-//                            addNewLike();
-//                            break;
-//                        }
-//
-//                    }
-//                    if (!dataSnapshot.exists()) {
-//                        addNewLike();
-//                    }
-//
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    Log.d(TAG, "onCancelled: Query Cancelled");
-//
-//                }
-//            });
-//            super.onLongPress(e);
-//        }
-//    }
-
-    public void addNewLike() {
-        Log.d(TAG, "addNewLike: add new like");
-
-        String newLikeId = mPostsRef.child(mPost.getPostId()).push().getKey();
-        Like like = new Like();
-        like.setUser_id(userId);
-
-        mPostsRef
-                .child(userId)
-                .child(mPost.getPostId())
-                .child(getString(R.string.field_likes))
-                .child(newLikeId)
-                .setValue(like);
-
-//        heart.toggleLike();
-        getLikesString();
-    }
-
-    public  String getmLikesString(){
-        return mLikesString;
-    }
-
-    public  void setmLikesString(String mLikesString) {
-       this.mLikesString = mLikesString ;
-    }
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private Context mContext;
     private List<Post> mPosts;
+    ViewPostFragmentNewsFeed viewPost= new ViewPostFragmentNewsFeed();
 
     public RecyclerViewAdapter(Context mContext, List<Post> mPosts) {
         this.mContext = mContext;
@@ -115,17 +117,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView mUserName;
         TextView mDescription;
         ImageView mFoodImg;
-        Button mLikes;
-        Button mComments;
-        Button mRecipe;
-        Button mIngredients;
+        ImageButton mLikes, mComments, mRecipe, mIngredients;
         FrameLayout mPostToolbarBtnsExpansionContainer;
         TextView mToolbarExpasionText, post_likes, post_TimeStamp;
-        ViewPostFragmentNewsFeed viewPost;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            viewPost = new ViewPostFragmentNewsFeed();
 
             mParentLayout = itemView.findViewById(R.id.parentLayoutID);
             mProfilePic = itemView.findViewById(R.id.userProfilePicID);
@@ -138,7 +135,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             mIngredients = itemView.findViewById(R.id.ingredientsBtnID);
             mToolbarExpasionText = itemView.findViewById(R.id.toolbarExpansionTextID);
             mPostToolbarBtnsExpansionContainer = itemView.findViewById(R.id.toolbarExpansionContainerID);
-
 
             post_likes = itemView.findViewById(R.id.post_likes);
             post_TimeStamp = itemView.findViewById(R.id.post_TimeStamp);

@@ -62,74 +62,125 @@
         android:src="@drawable/bridge" />
 
     <LinearLayout
-        android:id="@+id/postToolbarID"
+        android:id="@+id/food_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/foodImgID">
+        android:layout_below="@+id/foodImgID"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/likes_not_pressed"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/like_relative"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="11dp"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/post_like_not_pressed"
-            android:text="Like"
-            android:textColor="@color/colorAccentOnSignOut" />
-        <!--<Button-->
-        <!--android:id="@+id/likes_pressed"-->
-        <!--style="@style/Widget.AppCompat.Button.Borderless"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="1"-->
-        <!--android:drawableTop="@drawable/post_like_pressed"-->
-        <!--android:text="Like"-->
-        <!--android:textColor="@color/colorAccentOnSignOut" />-->
+            android:layout_weight="1">
 
-        <Button
-            android:id="@+id/commentsBtnID"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
+            <ImageButton
+                android:id="@+id/likes_not_pressed"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/post_like_not_pressed"
+                android:textColor="@color/colorAccentOnSignOut" />
+
+            <TextView
+                android:id="@+id/likes_not_pressed_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/likes_not_pressed"
+                android:layout_centerInParent="true"
+                android:text="Like"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/comment_relative"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/post_comments"
-            android:text="Comments"
-            android:textColor="@color/colorAccentOnSignOut"
-            android:textSize="11dp"
-            />
+            android:layout_weight="1">
 
-        <Button
-            android:id="@+id/recipeBtnID"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
+            <ImageButton
+                android:id="@+id/commentsBtnID"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/post_comments"
+                android:textColor="@color/colorAccentOnSignOut" />
+
+            <TextView
+                android:id="@+id/comments_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/commentsBtnID"
+                android:layout_centerInParent="true"
+                android:text="Comment"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/recipe_relative"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableTop="@drawable/post_recipe"
-            android:text="Recipe"
-            android:textColor="@color/colorAccentOnSignOut"
-            android:textSize="11dp"
-            />
+            android:layout_weight="1">
 
-        <Button
-            android:id="@+id/ingredientsBtnID"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
+            <ImageButton
+                android:id="@+id/recipeBtnID"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/post_recipe"
+                android:textColor="@color/colorAccentOnSignOut" />
+
+            <TextView
+                android:id="@+id/recipe_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/recipeBtnID"
+                android:layout_centerInParent="true"
+                android:text="Recipe"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/ingredients_relative"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/post_ingredients"
-            android:text="Ingredients"
-            android:textColor="@color/colorAccentOnSignOut"
-            android:textSize="10dp" />
+            android:layout_weight="1">
 
+            <ImageButton
+                android:id="@+id/ingredientsBtnID"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/post_ingredients"
+                android:textColor="@color/colorAccentOnSignOut" />
 
+            <TextView
+                android:id="@+id/ingredients_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ingredientsBtnID"
+                android:layout_centerInParent="true"
+                android:text="Ingredients"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+        </RelativeLayout>
     </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/time_Stamp_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/postToolbarID"
-        >
+        android:layout_below="@+id/food_linear">
 
         <TextView
             android:id="@+id/post_likes"
@@ -144,8 +195,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/post_likes"
-            android:layout_marginTop="15dp"
             android:layout_centerInParent="true"
+            android:layout_marginTop="15dp"
             android:text="3 days ago"
             android:textColor="@color/grey_500"
             android:textSize="18sp" />
