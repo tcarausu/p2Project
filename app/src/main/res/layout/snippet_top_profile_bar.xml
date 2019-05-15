@@ -33,7 +33,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
                     android:onClick="onClick"
-                    android:src="@drawable/ic_show_more" />
+                    android:src="@drawable/ic_show_more_vertical" />
             </RelativeLayout>
 
         </android.support.v7.widget.Toolbar>
