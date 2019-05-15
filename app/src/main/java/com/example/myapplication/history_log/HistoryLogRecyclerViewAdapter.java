@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -32,14 +33,15 @@ import java.util.ArrayList;
 
 /**To feed all your data to the list, you must extend the RecyclerView.Adapter class. This object creates views for items,
  * and replaces the content of some of the views with new data items when the original item is no longer visible.*/
-public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecyclerViewAdapter.CustomViewHolder> {
+public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryLogRecyclerViewAdapter.CustomViewHolder> {
 
-    private ArrayList<CardViewItem> mItemsList;
+//    private ArrayList<HistoryLogPostItem> mItemsList;
+    private ArrayList<HistoryLogPostItem> mPostsList;
     private OnRecyclerItemClickListener mListener; // This listener is going to be in our main activity
-    private static Context mContext;
+    private Context mContext;
 
     public interface OnRecyclerItemClickListener {
-        void onRecyclerCardviewClicked(int position);
+//        void onRecyclerCardviewClicked(int position);
         void onMoreDotsClicked(int position);
     }
 
@@ -55,26 +57,28 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
     public static class CustomViewHolder extends RecyclerView.ViewHolder{
 
         public RelativeLayout mBackgroundCardview;
-        public CircularImageView mImageView;
-        public TextView mTextView1;
-        public TextView mTextView2;
-        public TextView mTextView3;
+        public ImageView mPostedImage;
+        public CircularImageView mProfileImage;
+        public TextView mUserName;
+        public TextView mUserAction;
+        public TextView mDescription;
         public ImageView mMoreDotsImage;
 
         public CustomViewHolder(@NonNull View itemView, final OnRecyclerItemClickListener listener) {
             super(itemView);
 
-            mImageView = itemView.findViewById(R.id.imageViewID);
-            mTextView1 = itemView.findViewById(R.id.textView1ID);
-            mTextView2 = itemView.findViewById(R.id.textView2ID);
-            mTextView3 = itemView.findViewById(R.id.textView3ID);
+            mPostedImage = itemView.findViewById(R.id.posted_image_postViewItem);
+            mProfileImage = itemView.findViewById(R.id.profile_image_postViewItem);
+            mUserName = itemView.findViewById(R.id.textView1ID);
+            mUserAction = itemView.findViewById(R.id.textView2ID);
+            mDescription = itemView.findViewById(R.id.textView3ID);
             mBackgroundCardview = itemView.findViewById(R.id.cardview_background);
 
-            mMoreDotsImage = itemView.findViewById(R.id.imageViewDelete);
+            mMoreDotsImage = itemView.findViewById(R.id.onMoreDotsImage);
 
 
             // Passing the position of the item clicked
-            itemView.setOnClickListener(new View.OnClickListener() {
+            /*itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (listener != null) {
@@ -84,7 +88,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
                         }
                     }
                 }
-            });
+            });*/
 
             mMoreDotsImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -101,16 +105,21 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    CustomRecyclerViewAdapter(ArrayList<CardViewItem> itemList){
-        mItemsList = itemList;
+//    HistoryLogRecyclerViewAdapter(ArrayList<HistoryLogPostItem> itemList){
+//        mItemsList = itemList;
+//    }
+
+    HistoryLogRecyclerViewAdapter(ArrayList<HistoryLogPostItem> postsList){
+        mPostsList = postsList;
     }
+
 
 
     // Create new views (invoked by the layout manager)
     @NonNull
     @Override
     public CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.history_log_view_item, parent, false);
         CustomViewHolder cvh = new CustomViewHolder(view, mListener);
         return cvh;
     }
@@ -120,16 +129,26 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
     public void onBindViewHolder(@NonNull CustomViewHolder customViewHolder, int position) {
         // - get element from your dataset/list at this position
         // - replace the contents of the view with that element
-        CardViewItem currentItem = mItemsList.get(position);
+//        HistoryLogPostItem currentItem = mItemsList.get(position);
+        HistoryLogPostItem currentItem = mPostsList.get(position);
 
-        customViewHolder.mImageView.setImageResource(currentItem.getImageResource());
-        customViewHolder.mTextView1.setText(currentItem.getHeadLineText());
-        customViewHolder.mTextView1.setTextColor(currentItem.getTextColor());
-        customViewHolder.mTextView2.setText(currentItem.getSubLineText());
-        customViewHolder.mTextView2.setTextColor(currentItem.getTextColor());
-        customViewHolder.mTextView3.setText(currentItem.getMainText());
-        customViewHolder.mTextView3.setTextColor(currentItem.getTextColor());
+        // Setting posted image
+        Glide.with(mContext).load(currentItem.getmFoodImgUrl()).fitCenter().centerCrop().into(customViewHolder.mPostedImage);
+        // Setting profile image
+        Glide.with(mContext).load(currentItem.getmProfileImgUrl()).fitCenter().centerCrop().into(customViewHolder.mProfileImage);
+
+        customViewHolder.mUserName.setText(currentItem.getmUsername());
+        customViewHolder.mUserName.setTextColor(currentItem.getTextColor());
+
+        customViewHolder.mUserAction.setHintTextColor(currentItem.getHintColor());
+
+        customViewHolder.mDescription.setText(currentItem.getmDescription());
+        customViewHolder.mDescription.setTextColor(currentItem.getTextColor());
+
         customViewHolder.mBackgroundCardview.setSelected(currentItem.isHighlighted());
+
+        // Setting on more dots visibility
+        customViewHolder.mMoreDotsImage.setVisibility(currentItem.getMoreDotsVisibility());
 
 //        customViewHolder.itemView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.zoom_in));
 
@@ -138,7 +157,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
     // Return the size of your dataset/list (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mItemsList.size();
+        return mPostsList.size();
     }
 
 }
