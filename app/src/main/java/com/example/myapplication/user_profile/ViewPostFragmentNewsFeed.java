@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,9 +39,13 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 
@@ -262,6 +265,12 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         mPostLikes.setText(mLikesString);
         mPostDescription.setText(mPost.getmDescription());
 
+        if (mLikedByCurrentUser) {
+            likesPost.setImageResource(R.drawable.post_like_pressed);
+        } else {
+            likesPost.setImageResource(R.drawable.post_like_not_pressed);
+
+        }
 
     }
 
@@ -350,7 +359,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
                         likesPost.setImageResource(R.drawable.post_like_not_pressed);
 
-                                getLikesString();
+                        getLikesString();
                     } else if (!mLikedByCurrentUser) {
                         addNewLike();
                         likesPost.setImageResource(R.drawable.post_like_pressed);
@@ -386,7 +395,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     }
 
-    public String getLikesString() {
+    public void getLikesString() {
 
         Query query = mPostsRef
                 .child(userId)
@@ -414,37 +423,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                 mUsers.append(",");
 
                             }
+                            setupUserLikedString();
 
-                            String[] splitUsers = mUsers.toString().split(",");
-
-                            mLikedByCurrentUser = mUsers.toString().contains(user.getUsername()
-                                    + ","
-                            );
-
-                            int length = splitUsers.length;
-                            if (length == 1) {
-                                setmLikesString("Liked by " + splitUsers[0]);
-                            } else if (length == 2) {
-                                setmLikesString("Liked by " + splitUsers[0]
-                                        + " and " + splitUsers[1]);
-
-                            } else if (length == 3) {
-                                setmLikesString("Liked by " + splitUsers[0]
-                                        + " , " + splitUsers[1]
-                                        + " and " + splitUsers[2]);
-
-                            } else if (length == 4) {
-                                setmLikesString("Liked by " + splitUsers[0]
-                                        + " , " + splitUsers[1]
-                                        + " , " + splitUsers[2]
-                                        + " and " + splitUsers[3]);
-                            } else if (length > 4) {
-                                setmLikesString("Liked by " + splitUsers[0]
-                                        + " , " + splitUsers[1]
-                                        + " , " + splitUsers[2]
-                                        + " and " + (splitUsers.length - 3) + " others");
-                            }
-                            setupWidgets();
                         }
 
                         @Override
@@ -468,13 +448,45 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             }
         });
-        return getmLikesString();
+    }
+
+    private void setupUserLikedString() {
+        String[] splitUsers = mUsers.toString().split(",");
+
+        mLikedByCurrentUser = mUsers.toString().contains(user.getUsername()
+                + ","
+        );
+
+        int length = splitUsers.length;
+        if (length == 1) {
+            mLikesString = "Liked by " + splitUsers[0];
+        } else if (length == 2) {
+            mLikesString = "Liked by " + splitUsers[0]
+                    + " and " + splitUsers[1];
+
+        } else if (length == 3) {
+            mLikesString = "Liked by " + splitUsers[0]
+                    + " , " + splitUsers[1]
+                    + " and " + splitUsers[2];
+
+        } else if (length == 4) {
+            mLikesString = "Liked by " + splitUsers[0]
+                    + " , " + splitUsers[1]
+                    + " , " + splitUsers[2]
+                    + " and " + splitUsers[3];
+        } else if (length > 4) {
+            mLikesString = "Liked by " + splitUsers[0]
+                    + " , " + splitUsers[1]
+                    + " , " + splitUsers[2]
+                    + " and " + (splitUsers.length - 3) + " others";
+        }
+        setupWidgets();
     }
 
     public void addNewLike() {
         Log.d(TAG, "addNewLike: add new like");
 
-//        String newLikeId = mPostsRef.child(mPost.getPostId()).push().getKey();
+        String newLikeId = mPostsRef.child(mPost.getPostId()).push().getKey();
         Like like = new Like();
         like.setUser_id(userId);
 
@@ -482,18 +494,10 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 .child(userId)
                 .child(mPost.getPostId())
                 .child(getString(R.string.field_likes))
-//                .child(newLikeId)
+                .child(newLikeId)
                 .setValue(like);
 
         getLikesString();
-    }
-
-    public String getmLikesString() {
-        return mLikesString;
-    }
-
-    public void setmLikesString(String mLikesString) {
-        this.mLikesString = mLikesString;
     }
 
     @Override

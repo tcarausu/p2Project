@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,7 +29,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private Context mContext;
     private List<Post> mPosts;
-    ViewPostFragmentNewsFeed viewPost= new ViewPostFragmentNewsFeed();
+    ViewPostFragmentNewsFeed viewPost = new ViewPostFragmentNewsFeed();
 
     public RecyclerViewAdapter(Context mContext, List<Post> mPosts) {
         this.mContext = mContext;
@@ -139,8 +138,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             post_likes = itemView.findViewById(R.id.post_likes);
             post_TimeStamp = itemView.findViewById(R.id.post_TimeStamp);
 
-//            post_likes.setText(viewPost.getLikesString());
-            post_likes.setText(viewPost.getmLikesString());
         }
     }
 }
