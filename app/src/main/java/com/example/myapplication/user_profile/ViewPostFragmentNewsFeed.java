@@ -39,13 +39,9 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 
@@ -410,20 +406,47 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 mUsers = new StringBuilder();
 
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                    String userLikeSnapshotID = singleSnapshot.getValue(Like.class).getUser_id();
                     Query query = mUserRef
                             .child(userId).getRef();
 
                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            final User currentUser = dataSnapshot.getValue(User.class);
                             if (dataSnapshot.exists()
-                                    && dataSnapshot.getKey().equals(singleSnapshot.getValue(Like.class).getUser_id())) {
+                                    && dataSnapshot.getKey().equals(userLikeSnapshotID)) {
                                 Log.d(TAG, "onDataChange: found like" + dataSnapshot.getValue(User.class));
-                                mUsers.append(dataSnapshot.getValue(User.class).getUsername());
+
+                                Log.d(TAG, "onDataChange: it's a me mario " + currentUser.getUsername());
+
+                                mUsers.append(currentUser.getUsername());
                                 mUsers.append(",");
 
+                            } else if (dataSnapshot.exists()
+                                    && !dataSnapshot.getKey().equals(userLikeSnapshotID)) {
+                                Query differentUserQuery = mUserRef
+                                        .child(userLikeSnapshotID).getRef();
+                                differentUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshotForDifferentUser) {
+                                        final User differentUser = dataSnapshotForDifferentUser.getValue(User.class);
+                                        Log.d(TAG, "onDataChange: Pika_surprised " + differentUser.getUsername());
+
+                                        mUsers.append(differentUser.getUsername());
+                                        mUsers.append(",");
+                                        setupUserLikedString(differentUser.getUsername());
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+//                                setupUserLikedString();
+
                             }
-                            setupUserLikedString();
+                            setupUserLikedString(user.getUsername());
 
                         }
 
@@ -450,10 +473,10 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         });
     }
 
-    private void setupUserLikedString() {
+    private void setupUserLikedString(String username) {
         String[] splitUsers = mUsers.toString().split(",");
 
-        mLikedByCurrentUser = mUsers.toString().contains(user.getUsername()
+        mLikedByCurrentUser = mUsers.toString().contains(username
                 + ","
         );
 
