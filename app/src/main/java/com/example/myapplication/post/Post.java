@@ -11,6 +11,7 @@ public class Post {
     private String mIngredients;
     private String userId;
 
+
     public String getUserId() {
         return userId;
     }
@@ -92,6 +93,5 @@ public class Post {
         this.mIngredients = mIngredients;
         this.userId = userId;
     }
-
 
 }
