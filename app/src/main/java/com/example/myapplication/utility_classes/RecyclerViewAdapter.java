@@ -17,16 +17,19 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
+import com.example.myapplication.user_profile.ViewPostFragmentNewsFeed;
 
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private static final String TAG = "RecyclerViewAdapter";
 
     private Context mContext;
     private List<Post> mPosts;
+    ViewPostFragmentNewsFeed viewPost = new ViewPostFragmentNewsFeed();
 
     public RecyclerViewAdapter(Context mContext, List<Post> mPosts) {
         this.mContext = mContext;
@@ -113,13 +116,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView mUserName;
         TextView mDescription;
         ImageView mFoodImg;
-        ImageButton mLikes;
-        ImageButton mComments;
-        ImageButton mRecipe;
-        ImageButton mIngredients;
+        ImageButton mLikes, mComments, mRecipe, mIngredients;
         FrameLayout mPostToolbarBtnsExpansionContainer;
-        TextView mToolbarExpasionText;
-
+        TextView mToolbarExpasionText, post_likes, post_TimeStamp;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -129,12 +128,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             mUserName = itemView.findViewById(R.id.userNameID);
             mDescription = itemView.findViewById(R.id.postDescriptionID);
             mFoodImg = itemView.findViewById(R.id.foodImgID);
-            mLikes = itemView.findViewById(R.id.likesBtnID);
+            mLikes = itemView.findViewById(R.id.likes_button);
             mComments = itemView.findViewById(R.id.commentsBtnID);
             mRecipe = itemView.findViewById(R.id.recipeBtnID);
             mIngredients = itemView.findViewById(R.id.ingredientsBtnID);
-            mPostToolbarBtnsExpansionContainer = itemView.findViewById(R.id.toolbarExpansionContainerID);
             mToolbarExpasionText = itemView.findViewById(R.id.toolbarExpansionTextID);
+            mPostToolbarBtnsExpansionContainer = itemView.findViewById(R.id.toolbarExpansionContainerID);
+
+            post_likes = itemView.findViewById(R.id.post_likes);
+            post_TimeStamp = itemView.findViewById(R.id.post_TimeStamp);
+
         }
     }
 }
