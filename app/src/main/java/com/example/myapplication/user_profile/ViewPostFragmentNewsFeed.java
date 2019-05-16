@@ -321,71 +321,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     }
 
-    public void toggleLikes() {
-        Query query = mPostsRef
-                .child(userId)
-                .child(mPost.getPostId())
-                .child(getString(R.string.field_likes))
-                .orderByChild(Objects.requireNonNull(mPostsRef
-                        .child(mPost.getPostId())
-                        .child(getString(R.string.field_likes))
-                        .child(userId).getKey()));
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-
-                    if (mLikedByCurrentUser &&
-                            Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
-                                    .equals(userId)) {
-                        mPostsRef
-                                .child(userId)
-                                .child(mPost.getPostId())
-                                .child(getString(R.string.field_likes))
-                                .child(Objects.requireNonNull(singleSnapshot.getKey()))
-                                .removeValue();
-
-                        likesPost.setImageResource(R.drawable.post_like_not_pressed);
-                        getLikesString();
-                    }
-//                    else if (!mLikedByCurrentUser &&
-//                            !Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
-//                                    .equals(userId)) {
-//                        likesPost.setImageResource(R.drawable.post_like_pressed);
-//                        addNewLike();
-////                        getLikesString();
-//                    } else if (mLikedByCurrentUser &&
-//                            (!singleSnapshot.getValue(Like.class).getUser_id()
-//                                    .equals(userId))) {
-//                        likesPost.setImageResource(R.drawable.post_like_pressed);
-//                        addNewLike();
-//                        getLikesString();
-//                        break;
-//
-//                    }
-                    else if (!mLikedByCurrentUser) {
-                        addNewLike();
-                        likesPost.setImageResource(R.drawable.post_like_pressed);
-                        break;
-                    }
-
-                }
-                if (!dataSnapshot.exists()) {
-                    addNewLike();
-                    likesPost.setImageResource(R.drawable.post_like_pressed);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                Log.d(TAG, "onCancelled: Query Cancelled");
-
-            }
-        });
-    }
 
     /**
      * Bottom Navigation View setup
@@ -430,6 +365,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
                                 mUsers.append(currentUser.getUsername());
                                 mUsers.append(",");
+                                setupUserLikedString(currentUser.getUsername());
 
                             } else if (dataSnapshot.exists()
                                     && !dataSnapshot.getKey().equals(userLikeSnapshotID)) {
@@ -453,7 +389,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                 });
 
                             }
-                            setupUserLikedString(user.getUsername());
+//                            setupUserLikedString(user.getUsername());
 
                         }
 
@@ -578,6 +514,71 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 break;
         }
 
+    }
+    public void toggleLikes() {
+        Query query = mPostsRef
+                .child(userId)
+                .child(mPost.getPostId())
+                .child(getString(R.string.field_likes))
+                .orderByChild(Objects.requireNonNull(mPostsRef
+                        .child(mPost.getPostId())
+                        .child(getString(R.string.field_likes))
+                        .child(userId).getKey()));
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+
+                    if (mLikedByCurrentUser &&
+                            Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
+                                    .equals(userId)) {
+                        mPostsRef
+                                .child(userId)
+                                .child(mPost.getPostId())
+                                .child(getString(R.string.field_likes))
+                                .child(Objects.requireNonNull(singleSnapshot.getKey()))
+                                .removeValue();
+
+                        likesPost.setImageResource(R.drawable.post_like_not_pressed);
+                        getLikesString();
+                    }
+//                    else if (!mLikedByCurrentUser &&
+//                            !Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
+//                                    .equals(userId)) {
+//                        likesPost.setImageResource(R.drawable.post_like_pressed);
+//                        addNewLike();
+////                        getLikesString();
+//                    } else if (mLikedByCurrentUser &&
+//                            (!singleSnapshot.getValue(Like.class).getUser_id()
+//                                    .equals(userId))) {
+//                        likesPost.setImageResource(R.drawable.post_like_pressed);
+//                        addNewLike();
+//                        getLikesString();
+//                        break;
+//
+//                    }
+                    else if (!mLikedByCurrentUser) {
+                        addNewLike();
+                        likesPost.setImageResource(R.drawable.post_like_pressed);
+                        break;
+                    }
+
+                }
+                if (!dataSnapshot.exists()) {
+                    addNewLike();
+                    likesPost.setImageResource(R.drawable.post_like_pressed);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                Log.d(TAG, "onCancelled: Query Cancelled");
+
+            }
+        });
     }
 
 }
