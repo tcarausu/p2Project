@@ -63,12 +63,10 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     //widgets
     private SquareImageView mFoodImg;
     private CircleImageView mProfilePhoto;
-    private ImageView optionsMenu, profileMenu,
-            heartRed, heartWhite,
-            comments, share, backArrow;
-    private TextView mUserName, mPostLikes, mPostDescription, mPostCommentLink, mPostTimeStamp;
-    private Toolbar toolbar;
+    private ImageView optionsMenu, profileMenu, backArrow;
+    private TextView mUserName, mPostLikes, mPostDescription,  mPostTimeStamp;
     private ImageButton likesPost, recipePost, commentPost, ingredientsPost;
+    private Toolbar toolbar;
     //vars
     private BottomNavigationViewEx bottomNavigationViewEx;
     private Post mPost;
@@ -79,7 +77,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private boolean mLikedByCurrentUser;
     private StringBuilder mUsers;
 
-    public String mLikesString = "something";
+    public String mLikesString = "Likes string";
 
     public ViewPostFragmentNewsFeed() {
         super();
@@ -257,7 +255,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             likesPost.setImageResource(R.drawable.post_like_pressed);
         } else {
             likesPost.setImageResource(R.drawable.post_like_not_pressed);
-
         }
 
     }
@@ -388,8 +385,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                 });
 
                             }
-//                            setupUserLikedString(user.getUsername());
-
                         }
 
                         @Override
@@ -537,8 +532,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    if (mLikedByCurrentUser &&
-                            Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
+                    if (mLikedByCurrentUser && Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
                                     .equals(userId)) {
                         mPostsRef
                                 .child(userId)
@@ -546,9 +540,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                 .child(getString(R.string.field_likes))
                                 .child(Objects.requireNonNull(singleSnapshot.getKey()))
                                 .removeValue();
-
                         likesPost.setImageResource(R.drawable.post_like_not_pressed);
-//                        mLikedByCurrentUser = false;
                         getLikesString();
                     } else if (!mLikedByCurrentUser) {
                         addNewLike();
