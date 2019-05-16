@@ -211,17 +211,21 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    // verification of the user if validated or not
+    // verification  if user has validated or not
     private void verifyAccount() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        isVerified = user.isEmailVerified(); // getting boolean true or false from database
+        try{
+            FirebaseUser user = mAuth.getCurrentUser();
+            isVerified = user.isEmailVerified(); // getting boolean true or false from database
 
-        if (isVerified) {
-            goToMainActivity(); // if yes goto mainActivity
-        } else {
-            // else we first sign out the user, until he checks his email then he can connect
-            mAuth.signOut();
-            Toast.makeText(getApplicationContext(), "Please verify your account.", Toast.LENGTH_SHORT).show();
+            if (isVerified) {
+                goToMainActivity(); // if yes goto mainActivity
+            } else {
+                // else we first sign out the user, until he checks his email then he can connect
+                mAuth.signOut();
+                Toast.makeText(getApplicationContext(), "Please verify your account.", Toast.LENGTH_SHORT).show();
+            }
+        }catch (NullPointerException e){
+            Toast.makeText(getApplicationContext(),"Somthing went wrong...",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -255,9 +259,20 @@ public class LoginActivity extends AppCompatActivity implements
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
                         Log.d(Google_Tag, "signInWithCredential:success");
+
+
+                        String displayName = task.getResult().getUser().getDisplayName();
+                        String email = task.getResult().getUser().getEmail();
+                        String photoURL = task.getResult().getUser().getPhotoUrl().toString();
+                        String phoneNumber = task.getResult().getUser().getPhoneNumber();
+                        addNewUser(email,displayName,"google.user","website",photoURL);
+                        Log.d(TAG, "google sign in result: "+"\n"+"displayName: "+displayName+"\n"+"email: "+email
+                        +"\n"+"phoneNumber: "+phoneNumber+"\n"+"PictureURL: "+photoURL);
+
+
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
+
 
                         addUserToDataBase();
 
@@ -291,11 +306,12 @@ public class LoginActivity extends AppCompatActivity implements
                         String email = task.getResult().getUser().getEmail();
                         String username = task.getResult().getUser().getDisplayName();
                         String url = task.getResult().getUser().getPhotoUrl().toString();
+                        addNewUser(email,username,"facebook.user","website",url);
                         Log.d(TAG, "onComplete: uid: " + uid + "\n"
                                 + "email: " + email + "\n" + "username: " + username + "\n" + "url: " + url + "\n");
 
                         verifyFirstFBLogin(email, username, url);
-                        new Handler().postDelayed(() -> goToMainActivity(), 500);
+                        new Handler().postDelayed(() -> goToMainActivity(), 0);
 
                     } else {
                         // If sign in fails, display a message to the user.
@@ -356,7 +372,6 @@ public class LoginActivity extends AppCompatActivity implements
             case R.id.googleSignInButton:
                 signIn();
                 break;
-
         }
     }
 
@@ -413,8 +428,8 @@ public class LoginActivity extends AppCompatActivity implements
      * @param profile_photo represents the profile_photo from the User Profile
      */
     private void addNewUser(String email, String username, String description, String website, String profile_photo) {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
 
+        FirebaseUser currentUser = mAuth.getCurrentUser();
         User user = new User(
                 description,
                 "Chose a user name",
