@@ -24,7 +24,6 @@ import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
-import com.example.myapplication.utility_classes.Heart;
 import com.example.myapplication.utility_classes.SquareImageView;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
@@ -361,7 +360,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                     && dataSnapshot.getKey().equals(userLikeSnapshotID)) {
                                 Log.d(TAG, "onDataChange: found like" + dataSnapshot.getValue(User.class));
 
-                                Log.d(TAG, "onDataChange: it's a me mario " + currentUser.getUsername());
+                                Log.d(TAG, "onDataChange: the current User " + currentUser.getUsername());
 
                                 mUsers.append(currentUser.getUsername());
                                 mUsers.append(",");
@@ -375,7 +374,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshotForDifferentUser) {
                                         final User differentUser = dataSnapshotForDifferentUser.getValue(User.class);
-                                        Log.d(TAG, "onDataChange: Pika_surprised " + differentUser.getUsername());
+                                        Log.d(TAG, "onDataChange: One of the linking Users " + differentUser.getUsername());
 
                                         mUsers.append(differentUser.getUsername());
                                         mUsers.append(",");
@@ -418,10 +417,19 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     private void setupUserLikedString(String username) {
         String[] splitUsers = mUsers.toString().split(",");
+        boolean checkCurrentUserState = mUsers.toString().contains(user.getUsername());
+        boolean checkDesiredUserState = mUsers.toString().contains(username);
 
-        mLikedByCurrentUser = mUsers.toString().contains(username
-                + ","
-        );
+        if (username.equals(user.getUsername())) {
+            mLikedByCurrentUser = mUsers.toString().contains(user.getUsername()
+                    + ","
+            );
+        } else if (checkCurrentUserState && checkDesiredUserState) {
+            mLikedByCurrentUser = true;
+        } else if (!checkCurrentUserState && checkDesiredUserState) {
+            mLikedByCurrentUser = false;
+
+        }
 
         int length = splitUsers.length;
         if (length == 1) {
@@ -515,6 +523,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         }
 
     }
+
     public void toggleLikes() {
         Query query = mPostsRef
                 .child(userId)
@@ -524,12 +533,10 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                         .child(mPost.getPostId())
                         .child(getString(R.string.field_likes))
                         .child(userId).getKey()));
-
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-
                     if (mLikedByCurrentUser &&
                             Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
                                     .equals(userId)) {
@@ -541,32 +548,19 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                 .removeValue();
 
                         likesPost.setImageResource(R.drawable.post_like_not_pressed);
+//                        mLikedByCurrentUser = false;
                         getLikesString();
-                    }
-//                    else if (!mLikedByCurrentUser &&
-//                            !Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
-//                                    .equals(userId)) {
-//                        likesPost.setImageResource(R.drawable.post_like_pressed);
-//                        addNewLike();
-////                        getLikesString();
-//                    } else if (mLikedByCurrentUser &&
-//                            (!singleSnapshot.getValue(Like.class).getUser_id()
-//                                    .equals(userId))) {
-//                        likesPost.setImageResource(R.drawable.post_like_pressed);
-//                        addNewLike();
-//                        getLikesString();
-//                        break;
-//
-//                    }
-                    else if (!mLikedByCurrentUser) {
+                    } else if (!mLikedByCurrentUser) {
                         addNewLike();
+                        mLikedByCurrentUser = true;
                         likesPost.setImageResource(R.drawable.post_like_pressed);
                         break;
-                    }
 
+                    }
                 }
                 if (!dataSnapshot.exists()) {
                     addNewLike();
+                    mLikedByCurrentUser = true;
                     likesPost.setImageResource(R.drawable.post_like_pressed);
                 }
 
