@@ -220,6 +220,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         String profilePicURL = user.getProfile_photo();
 
         try {
+
             if (profilePicURL == null) {
                 mProfilePhoto.setImageResource(R.drawable.my_avatar);
             } else
