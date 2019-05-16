@@ -77,8 +77,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     //vars for Query
     private User user;
-    private Heart heart;
-    //    private GestureDetector mGestureDetector;
     private boolean mLikedByCurrentUser;
     private StringBuilder mUsers;
 
@@ -117,14 +115,9 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         mPostLikes = view.findViewById(R.id.post_likes);
         mPostTimeStamp = view.findViewById(R.id.post_TimeStamp);
 
-//        heartRed = view.findViewById(R.id.image_heart_red);
-//        heartWhite = view.findViewById(R.id.image_heart_white);
 
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
 
-//        heart = new Heart(heartWhite, heartRed);
-
-//        mGestureDetector = new GestureDetector(getActivity(), new GestureListener());
         try {
             mPost = getPhotoFromBundle();
             UniversalImageLoader.setImage(mPost.getmFoodImgUrl(), mFoodImg, null, "");
@@ -143,7 +136,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         profileMenu = view.findViewById(R.id.show_more);
         backArrow = view.findViewById(R.id.backArrow);
 
-        likesPost = view.findViewById(R.id.likes_not_pressed);
+        likesPost = view.findViewById(R.id.likes_button);
         commentPost = view.findViewById(R.id.commentsBtnID);
         recipePost = view.findViewById(R.id.recipeBtnID);
         ingredientsPost = view.findViewById(R.id.ingredientsBtnID);
@@ -354,9 +347,24 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                 .removeValue();
 
                         likesPost.setImageResource(R.drawable.post_like_not_pressed);
-
                         getLikesString();
-                    } else if (!mLikedByCurrentUser) {
+                    }
+//                    else if (!mLikedByCurrentUser &&
+//                            !Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
+//                                    .equals(userId)) {
+//                        likesPost.setImageResource(R.drawable.post_like_pressed);
+//                        addNewLike();
+////                        getLikesString();
+//                    } else if (mLikedByCurrentUser &&
+//                            (!singleSnapshot.getValue(Like.class).getUser_id()
+//                                    .equals(userId))) {
+//                        likesPost.setImageResource(R.drawable.post_like_pressed);
+//                        addNewLike();
+//                        getLikesString();
+//                        break;
+//
+//                    }
+                    else if (!mLikedByCurrentUser) {
                         addNewLike();
                         likesPost.setImageResource(R.drawable.post_like_pressed);
                         break;
@@ -443,7 +451,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
                                     }
                                 });
-//                                setupUserLikedString();
 
                             }
                             setupUserLikedString(user.getUsername());
@@ -556,18 +563,17 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
                 break;
 
-            case R.id.likes_not_pressed:
-                Toast.makeText(getActivity(), "Liking", Toast.LENGTH_SHORT).show();
-                toggleLikes();
-
-                break;
 
             case R.id.backArrow:
                 Log.d(TAG, "onClick: navigating back to " + getActivity());
-
                 startActivity(new Intent(getActivity(), UserProfileActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                 getActivity().finish();
+
+                break;
+
+            case R.id.likes_button:
+                toggleLikes();
 
                 break;
         }

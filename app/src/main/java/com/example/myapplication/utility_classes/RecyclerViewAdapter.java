@@ -128,7 +128,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             mUserName = itemView.findViewById(R.id.userNameID);
             mDescription = itemView.findViewById(R.id.postDescriptionID);
             mFoodImg = itemView.findViewById(R.id.foodImgID);
-            mLikes = itemView.findViewById(R.id.likes_not_pressed);
+            mLikes = itemView.findViewById(R.id.likes_button);
             mComments = itemView.findViewById(R.id.commentsBtnID);
             mRecipe = itemView.findViewById(R.id.recipeBtnID);
             mIngredients = itemView.findViewById(R.id.ingredientsBtnID);

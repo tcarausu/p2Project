@@ -76,7 +76,7 @@
             android:layout_weight="1">
 
             <ImageButton
-                android:id="@+id/likes_not_pressed"
+                android:id="@+id/likes_button"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
                 android:id="@+id/likes_not_pressed_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/likes_not_pressed"
+                android:layout_below="@id/likes_button"
                 android:layout_centerInParent="true"
                 android:text="Like"
                 android:textColor="@color/black"
