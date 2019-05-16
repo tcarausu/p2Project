@@ -28,7 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * File created by tcarau18
@@ -130,25 +130,18 @@ public class AccountSettingsActivity extends AppCompatActivity
 
         ListView listView = findViewById(R.id.listViewAccountSettings);
 
-        ArrayList<String> options = new ArrayList<>();
-        options.add(getString(R.string.edit_your_profile_fragment));
-        options.add(getString(R.string.sign_out_fragment));
+//        ArrayList<String> options = new ArrayList<>();
+//        options.add(getString(R.string.sign_out_fragment));
+         String signOut = "Sign Out";
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, options);
+        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Log.d(TAG, "onItemClick: navigating to fragment nr " + position);
-            switch (position) {
-                case 0:
-                    setupViewPager(position);
-                    break;
 
-                case 1:
-                    Log.d(TAG, "onItemClick: position nr " + position);
-
-                    dialogChoice();
-                    break;
+            if (position == 0) {
+                dialogChoice();
             }
         });
     }
@@ -178,21 +171,21 @@ public class AccountSettingsActivity extends AppCompatActivity
 
     // Alert dialog
     private void dialogChoice() {
-        final CharSequence[] options = {"SIGNOUT", "CANCEL"};
+
+        final CharSequence[] options = {"SIGN-OUT", "CANCEL"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Sign Out");
+        builder.setTitle("Are you sure you want to sign out?");
         builder.setIcon(R.drawable.chefood);
 
         builder.setItems(options, (dialog, which) -> {
-            if (options[which].equals("SIGNOUT")) {
-                Log.d(TAG, "dialogChoice: signout");
+            if (options[which].equals("SIGN-OUT")) {
+                Log.d(TAG, "dialogChoice: sign-out");
                 ProgressBar mProgressBar = new ProgressBar(this);
                 mProgressBar.setVisibility(View.VISIBLE);
 
                 mAuth.signOut();
                 mGoogleSignInClient.signOut();
                 LoginManager.getInstance().logOut();
-
                 this.finish();
                 goToLogin();
 
