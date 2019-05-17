@@ -72,7 +72,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private TextView mChangeProfilePhoto, mPrivateInformation;
     private EditText mDisplayName, mWebsite, mAbout, mPhoneNumber;
     private TextView mEmail, mUserName;
-    private CircleImageView mProfilePhoto;
+    private CircleImageView mProfilePhoto , smallProfilePic;
     private ImageView backArrow, saveChanges;
 
     private FirebaseMethods firebaseMethods;
@@ -138,6 +138,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     public void initLayouts(View view) {
 
         mDisplayName = view.findViewById(R.id.displayName);
+        smallProfilePic = view.findViewById(R.id.EditProfile_small_pic);
+
         mUserName = view.findViewById(R.id.username);
         mWebsite = view.findViewById(R.id.website);
         mAbout = view.findViewById(R.id.about);
@@ -225,9 +227,11 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 mProfilePhoto.setImageResource(R.drawable.my_avatar);
             } else
                 Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
+            Glide.with(this).load(profilePicURL).centerCrop().into(smallProfilePic);
 
         } catch (IllegalArgumentException e) {
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
+            smallProfilePic.setImageResource(R.drawable.my_avatar);
         }
 
     }
@@ -257,6 +261,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 } else {
                     firebaseMethods.updateUsername(username, display_name, website, about, phone_number, "");
                     mProfilePhoto.setImageResource(R.drawable.my_avatar);
+                    smallProfilePic.setImageResource(R.drawable.my_avatar);
                 }
             }
 
