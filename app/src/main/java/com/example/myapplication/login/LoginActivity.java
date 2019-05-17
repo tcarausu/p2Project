@@ -88,8 +88,8 @@ public class LoginActivity extends AppCompatActivity implements
 
         fragmentManager = getSupportFragmentManager();
 
+
         initLayout();
-//      setupFirebaseAuth();
         buttonListeners();
     }
 
@@ -155,9 +155,13 @@ public class LoginActivity extends AppCompatActivity implements
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (currentUser != null) {
+        if (mAuth != null && currentUser != null ) {
             goToMainActivity();
         }
+        else mAuth.signOut();
+        LoginManager.getInstance().logOut();
+        mGoogleSignInClient.signOut();
+
 
     }
 
@@ -259,23 +263,18 @@ public class LoginActivity extends AppCompatActivity implements
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        Log.d(Google_Tag, "signInWithCredential:success");
 
-
-                        String displayName = task.getResult().getUser().getDisplayName();
-                        String email = task.getResult().getUser().getEmail();
-                        String photoURL = task.getResult().getUser().getPhotoUrl().toString();
-                        String phoneNumber = task.getResult().getUser().getPhoneNumber();
-                        addNewUser(email,displayName,"google.user","website",photoURL);
+                        final String displayName = task.getResult().getUser().getDisplayName();
+                        final  String email = task.getResult().getUser().getEmail();
+                        final   String photoURL = task.getResult().getUser().getPhotoUrl().toString();
+                        final String phoneNumber = task.getResult().getUser().getPhoneNumber();
                         Log.d(TAG, "google sign in result: "+"\n"+"displayName: "+displayName+"\n"+"email: "+email
-                        +"\n"+"phoneNumber: "+phoneNumber+"\n"+"PictureURL: "+photoURL);
+                                +"\n"+"phoneNumber: "+phoneNumber+"\n"+"PictureURL: "+photoURL);
 
-
-                        Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
-
-
+                        verifyFirstFBLogin(email,displayName,photoURL);
                         addUserToDataBase();
-
+                        Log.d(Google_Tag, "signInWithCredential:success");
+                        Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
                         new Handler().postDelayed(() -> goToMainActivity(), Toast.LENGTH_SHORT);
 
                     } else {
