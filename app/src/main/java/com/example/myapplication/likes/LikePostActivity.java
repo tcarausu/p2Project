@@ -32,7 +32,6 @@ public class LikePostActivity extends AppCompatActivity {
 
     public void initLayout() {
         mContext = LikePostActivity.this;
-
     }
 
     public void buttonListeners() {

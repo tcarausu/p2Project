@@ -43,7 +43,8 @@
                 android:layout_marginTop="80dp"
                 android:background="@drawable/grey_border_bottom">
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/EditProfile_small_pic"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_centerVertical="true"
