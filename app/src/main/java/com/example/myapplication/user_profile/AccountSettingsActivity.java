@@ -1,5 +1,6 @@
 package com.example.myapplication.user_profile;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -96,12 +97,12 @@ public class AccountSettingsActivity extends AppCompatActivity
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) {
             mAuth.signOut();
-            goToLogin();
+            goToLogin(getApplicationContext(),LoginActivity.class);
         }
     }
 
-    public void goToLogin() {
-        startActivity(new Intent(AccountSettingsActivity.this, LoginActivity.class)
+    public void goToLogin(Context context ,Class<? extends AppCompatActivity> cl) {
+        startActivity(new Intent(getApplicationContext(), cl)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
     }
@@ -186,8 +187,8 @@ public class AccountSettingsActivity extends AppCompatActivity
                 mAuth.signOut();
                 mGoogleSignInClient.signOut();
                 LoginManager.getInstance().logOut();
-                this.finish();
-                goToLogin();
+
+                goToLogin(getApplicationContext(),LoginActivity.class);
 
                 Toast.makeText(getApplicationContext(), "Successful Sign Out", Toast.LENGTH_SHORT).show();
 

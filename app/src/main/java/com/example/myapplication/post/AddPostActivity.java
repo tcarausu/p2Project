@@ -1,6 +1,5 @@
 package com.example.myapplication.post;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -48,7 +47,7 @@ public class AddPostActivity extends AppCompatActivity {
 
         TabLayout tabLayout = findViewById(R.id.tabsBottom);
         tabLayout.setupWithViewPager(mViewPager);
-        tabLayout.getTabAt(0).setText(getString(R.string.post));
+//        tabLayout.getTabAt(0).setText(getString(R.string.post));
 
     }
 
