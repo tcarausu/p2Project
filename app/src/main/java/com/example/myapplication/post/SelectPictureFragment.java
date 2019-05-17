@@ -69,6 +69,12 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select_picture, container, false);
 
+        /**14
+
+         You should unregister the receivers in onPause() and register them in onResume().
+         This way, when Android destroys and recreates the activity for the configuration change,
+         or for any reason you will still have receivers set up.
+         * **/
         getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
 
@@ -127,13 +133,11 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     // open camera method
     private void takePicture() {
-
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (getBatteryLevel() > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
             Log.d(TAG, "takePicture: battery level: " + getBatteryLevel());
             startActivityForResult(cameraIntent, CAMERA_REQUEST);
         } else Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
-
 
     }
 
@@ -172,6 +176,18 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to avoid leakage of intent receiver
+
+    }
 
     // showing picture taken from camera in ImageView
 //

@@ -23,6 +23,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.StringManipulation;
+
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -68,6 +69,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
+    
 
     private TextView signUp, orView;
     private RelativeLayout loginLayout;
@@ -88,8 +90,8 @@ public class LoginActivity extends AppCompatActivity implements
 
         fragmentManager = getSupportFragmentManager();
 
+
         initLayout();
-//      setupFirebaseAuth();
         buttonListeners();
     }
 
@@ -155,9 +157,13 @@ public class LoginActivity extends AppCompatActivity implements
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (currentUser != null) {
+        if (mAuth != null && currentUser != null ) {
             goToMainActivity();
         }
+        else mAuth.signOut();
+        LoginManager.getInstance().logOut();
+        mGoogleSignInClient.signOut();
+
 
     }
 
@@ -211,17 +217,21 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    // verification of the user if validated or not
+    // verification  if user has validated or not
     private void verifyAccount() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        isVerified = user.isEmailVerified(); // getting boolean true or false from database
+        try{
+            FirebaseUser user = mAuth.getCurrentUser();
+            isVerified = user.isEmailVerified(); // getting boolean true or false from database
 
-        if (isVerified) {
-            goToMainActivity(); // if yes goto mainActivity
-        } else {
-            // else we first sign out the user, until he checks his email then he can connect
-            mAuth.signOut();
-            Toast.makeText(getApplicationContext(), "Please verify your account.", Toast.LENGTH_SHORT).show();
+            if (isVerified) {
+                goToMainActivity(); // if yes goto mainActivity
+            } else {
+                // else we first sign out the user, until he checks his email then he can connect
+                mAuth.signOut();
+                Toast.makeText(getApplicationContext(), "Please verify your account.", Toast.LENGTH_SHORT).show();
+            }
+        }catch (NullPointerException e){
+            Toast.makeText(getApplicationContext(),"Somthing went wrong...",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -255,12 +265,18 @@ public class LoginActivity extends AppCompatActivity implements
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
+
+                        final String displayName = task.getResult().getUser().getDisplayName();
+                        final  String email = task.getResult().getUser().getEmail();
+                        final   String photoURL = task.getResult().getUser().getPhotoUrl().toString();
+                        final String phoneNumber = task.getResult().getUser().getPhoneNumber();
+                        Log.d(TAG, "google sign in result: "+"\n"+"displayName: "+displayName+"\n"+"email: "+email
+                                +"\n"+"phoneNumber: "+phoneNumber+"\n"+"PictureURL: "+photoURL);
+
+                        verifyFirstFBLogin(email,displayName,photoURL);
+                        addUserToDataBase();
                         Log.d(Google_Tag, "signInWithCredential:success");
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
-
-                        addUserToDataBase();
-
                         new Handler().postDelayed(() -> goToMainActivity(), Toast.LENGTH_SHORT);
 
                     } else {
@@ -291,11 +307,12 @@ public class LoginActivity extends AppCompatActivity implements
                         String email = task.getResult().getUser().getEmail();
                         String username = task.getResult().getUser().getDisplayName();
                         String url = task.getResult().getUser().getPhotoUrl().toString();
+                        addNewUser(email,username,"facebook.user","website",url);
                         Log.d(TAG, "onComplete: uid: " + uid + "\n"
                                 + "email: " + email + "\n" + "username: " + username + "\n" + "url: " + url + "\n");
 
                         verifyFirstFBLogin(email, username, url);
-                        new Handler().postDelayed(() -> goToMainActivity(), 500);
+                        new Handler().postDelayed(() -> goToMainActivity(), 0);
 
                     } else {
                         // If sign in fails, display a message to the user.
@@ -356,7 +373,6 @@ public class LoginActivity extends AppCompatActivity implements
             case R.id.googleSignInButton:
                 signIn();
                 break;
-
         }
     }
 
@@ -413,8 +429,8 @@ public class LoginActivity extends AppCompatActivity implements
      * @param profile_photo represents the profile_photo from the User Profile
      */
     private void addNewUser(String email, String username, String description, String website, String profile_photo) {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
 
+        FirebaseUser currentUser = mAuth.getCurrentUser();
         User user = new User(
                 description,
                 "Chose a user name",
