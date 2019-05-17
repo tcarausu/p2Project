@@ -17,7 +17,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
-import com.example.myapplication.user_profile.UserProfileActivity;
+import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.utility_classes.RecyclerViewAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -72,6 +72,10 @@ public class HomeFragment extends Fragment {
             mDatabasePostRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.hasChildren()){
+                        goToPostActivity();
+                    }
+                    else
                     for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                         String postUserId = userSnapshot.getKey();
@@ -92,11 +96,14 @@ public class HomeFragment extends Fragment {
 
                             List<Like> likeList = new ArrayList<>();
 
-                            for (DataSnapshot ds : postSnapshot.child("mLikes").getChildren()) {
 
-                                Like like = new Like();
-                                like.setUser_id(ds.getValue(Like.class).getUser_id());
-                                likeList.add(like);
+                            for (DataSnapshot ds : postSnapshot.child("mLikes").getChildren()) {
+                                // TODO, likes if no like yet, it crushes,
+                                    Like like = new Like();
+                                    like.setUser_id(ds.getValue(Like.class).getUser_id());
+                                    likeList.add(like);
+
+
                             }
                             post.setLikes(likeList);
 
@@ -105,6 +112,11 @@ public class HomeFragment extends Fragment {
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     if (mUserId.equals(postUserId)) {
                                         final User user = dataSnapshot.getValue(User.class);
+                                        if (user.getUsername()== null){
+                                            mDatabasePostRef.removeValue() ;
+                                        }
+
+                                        else
                                         mUsername = user.getUsername();
                                         mProfilePhoto = user.getProfile_photo();
 
@@ -131,8 +143,8 @@ public class HomeFragment extends Fragment {
 
                                             mAdapter.setUserForPost(post, user);
                                         }catch (NullPointerException e){
-                                            Toast.makeText(getActivity(),"Nothing to display! create a Post",Toast.LENGTH_SHORT).show();
-                                            goToPostActivity();
+                                            Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
+
                                         }
 
                                         Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
@@ -155,19 +167,21 @@ public class HomeFragment extends Fragment {
                 }
 
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d(TAG, "onCancelled: Canceled.");
+
+                }
+            });
 
         }catch (Exception e){
-            Toast.makeText(getContext(),"Nothing to display! create a Post",Toast.LENGTH_SHORT).show();
-            goToPostActivity();
+                Toast.makeText(getContext(),"Nothing to display! create a Post",Toast.LENGTH_SHORT).show();
+
         }
     }
 
     private void goToPostActivity() {
-        startActivity(new Intent(getActivity(), UserProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        startActivity(new Intent(getActivity(), AddPostActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
         getActivity().finish();
     }
 }
