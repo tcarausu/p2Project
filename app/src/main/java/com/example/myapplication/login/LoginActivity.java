@@ -23,6 +23,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.StringManipulation;
+import com.example.myapplication.utility_classes.TrafficLight;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -68,6 +69,8 @@ public class LoginActivity extends AppCompatActivity implements
 
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
+
+    private TrafficLight mTrafficLight ;
 
     private TextView signUp, orView;
     private RelativeLayout loginLayout;

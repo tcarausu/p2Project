@@ -53,19 +53,26 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         firebasedatabase = FirebaseDatabase.getInstance();
+        mDatabasePostRef = firebasedatabase.getReference("posts");
+
         mRecyclerView = view.findViewById(R.id.recyclerViewID);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mPosts = new ArrayList<>();
         mUsers = new ArrayList<>();
-
-        mDatabasePostRef = firebasedatabase.getReference("posts");
-
         getPostsInfo();
+
+
+
+//        GetData getData = new GetData();
+//        getData.execute();
+
 
         return view;
     }
+
+
 
     private void getPostsInfo() {
         try{
@@ -113,6 +120,7 @@ public class HomeFragment extends Fragment {
                                     if (mUserId.equals(postUserId)) {
                                         final User user = dataSnapshot.getValue(User.class);
                                         if (user.getUsername()== null){
+                                            mPosts.remove(post);
                                             mDatabasePostRef.removeValue() ;
                                         }
 
@@ -132,12 +140,18 @@ public class HomeFragment extends Fragment {
                                 }
                             });
 
-                            mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
+
+                         mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     if (!mUserId.equals(postUserId)) {
                                         final User user = dataSnapshot.getValue(User.class);
                                         try {
+                                            if (user.getUsername()== null){
+                                                mPosts.remove(post);
+                                                mDatabasePostRef.removeValue() ;
+                                            }
+                                            else
                                             mUsername = user.getUsername();
                                             mProfilePhoto = user.getProfile_photo();
 
@@ -157,7 +171,7 @@ public class HomeFragment extends Fragment {
                                 }
                             });
 
-                            mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
+                           mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
 
                             mPosts.add(post);
                             mAdapter.setPostsList(mPosts);
@@ -184,4 +198,14 @@ public class HomeFragment extends Fragment {
         startActivity(new Intent(getActivity(), AddPostActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
         getActivity().finish();
     }
+
+//    private class GetData extends AsyncTask<Void,Void,Void>{
+//        private GetData() {}
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            getPostsInfo();
+//            return null;
+//        }
+//    }
 }
