@@ -6,6 +6,10 @@ import android.util.Log;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,9 +33,14 @@ public class FirebaseMethods {
     private FirebaseAuth mAuth;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
+    private GoogleSignInClient mGoogleSignInClient;
+
+    private GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
+            .requestEmail()
+            .build();
 
     private String userUID;
-
     private Context mContext;
 
     public FirebaseMethods(Context context) {
@@ -39,6 +48,7 @@ public class FirebaseMethods {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
         mContext = context;
+        mGoogleSignInClient = GoogleSignIn.getClient(mContext, gso);
 
         if (mAuth.getCurrentUser() != null) {
             userUID = mAuth.getCurrentUser().getUid();
@@ -48,7 +58,6 @@ public class FirebaseMethods {
 
     public void updateUsername(String username, String dispalyName, String website, String about, long phone, String profile_url) {
         Log.d(TAG, "updateUsername: updating username to:" + username);
-
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userUID)
                 .child(mContext.getString(R.string.field_username))
@@ -211,6 +220,12 @@ public class FirebaseMethods {
         sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
 
         return sdf.format(new Date());
+    }
+
+    public void logOut(){
+        mAuth.signOut();
+        LoginManager.getInstance().logOut();
+        mGoogleSignInClient.signOut();
     }
 
 

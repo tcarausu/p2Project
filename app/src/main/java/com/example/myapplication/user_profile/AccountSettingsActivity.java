@@ -18,13 +18,11 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SectionsStatePagerAdapter;
-import com.facebook.login.LoginManager;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -41,7 +39,8 @@ public class AccountSettingsActivity extends AppCompatActivity
 
     //firebase
     private FirebaseAuth mAuth;
-    private GoogleSignInClient mGoogleSignInClient;
+    private FirebaseMethods mFirebaseMethods ;
+//    private GoogleSignInClient mGoogleSignInClient;
 
     private ListView listView;
 
@@ -54,13 +53,7 @@ public class AccountSettingsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
         mAuth = FirebaseAuth.getInstance();
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
-                .requestEmail()
-                .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
+        mFirebaseMethods = new FirebaseMethods(getApplicationContext());
 
         initLayout();
         setupBottomNavigationView();
@@ -72,10 +65,8 @@ public class AccountSettingsActivity extends AppCompatActivity
     private void initLayout() {
 
         listView = findViewById(R.id.listViewAccountSettings);
-
         findViewById(R.id.backArrow);
         Log.d(TAG, "onCreate: started account");
-
         mViewPager = findViewById(R.id.container);
         mRelativeLayout = findViewById(R.id.relativeLayout1);
 
@@ -95,16 +86,10 @@ public class AccountSettingsActivity extends AppCompatActivity
         super.onStart();
 
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null) {
+        if (mAuth== null && user == null) {
             mAuth.signOut();
-            goToLogin(getApplicationContext(), LoginActivity.class);
+            ((HomeActivity)getApplicationContext()).goTosWithFlags(this,LoginActivity.class);
         }
-    }
-
-    public void goToLogin(Context context, Class<? extends AppCompatActivity> cl) {
-        startActivity(new Intent(getApplicationContext(), cl)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        finish();
     }
 
     private void setupViewPager(int fragmentNr) {
@@ -118,6 +103,7 @@ public class AccountSettingsActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        finish();
     }
 
     private void setupFragments() {
@@ -133,7 +119,7 @@ public class AccountSettingsActivity extends AppCompatActivity
 
 //        ArrayList<String> options = new ArrayList<>();
 //        options.add(getString(R.string.sign_out_fragment));
-        String signOut = "Sign Out";
+         String signOut = "Sign Out";
 
         ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
         listView.setAdapter(adapter);
@@ -181,25 +167,26 @@ public class AccountSettingsActivity extends AppCompatActivity
         builder.setItems(options, (dialog, which) -> {
             if (options[which].equals("SIGN-OUT")) {
                 Log.d(TAG, "dialogChoice: sign-out");
+                mFirebaseMethods.logOut();
                 ProgressBar mProgressBar = new ProgressBar(this);
                 mProgressBar.setVisibility(View.VISIBLE);
 
-                mAuth.signOut();
-                mGoogleSignInClient.signOut();
-                LoginManager.getInstance().logOut();
-
-                goToLogin(getApplicationContext(), LoginActivity.class);
-
+                goToLogin(getApplicationContext(),LoginActivity.class);
                 Toast.makeText(getApplicationContext(), "Successful Sign Out", Toast.LENGTH_SHORT).show();
 
             } else if (options[which].equals("CANCEL")) {
                 Log.d(TAG, "dialogChoice: cancel");
                 dialog.dismiss();
-
             }
         });
 
         builder.show();
 
+    }
+
+    private void goToLogin(Context applicationContext, Class<LoginActivity> cl) {
+        startActivity(new Intent(applicationContext,cl)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        finish();
     }
 }
