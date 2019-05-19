@@ -20,19 +20,23 @@ public class Post implements Parcelable {
     public Post() {
     }
 
-    public Post(String mDescription,
-                String mFoodImgUrl, String mRecipe, String mIngredients, String userId, String postId, String date_created, List<Like> likes) {
-        if (mDescription.trim().equals("")) {
-            mDescription = "No description available";
+    public Post(String mDescription, String mFoodImgUrl, String mRecipe,
+                String mIngredients, String userId, String postId, String date_created, List<Like> likes) {
+
+        synchronized (Post.class) {
+            if (mDescription.trim().equals("")) {
+
+                mDescription = "No description available";
+            }
+            this.mDescription = mDescription;
+            this.date_created = date_created;
+            this.mFoodImgUrl = mFoodImgUrl;
+            this.mRecipe = mRecipe;
+            this.mIngredients = mIngredients;
+            this.userId = userId;
+            this.postId = postId;
+            this.likes = likes;
         }
-        this.mDescription = mDescription;
-        this.date_created = date_created;
-        this.mFoodImgUrl = mFoodImgUrl;
-        this.mRecipe = mRecipe;
-        this.mIngredients = mIngredients;
-        this.userId = userId;
-        this.postId = postId;
-        this.likes = likes;
     }
 
 
@@ -59,7 +63,7 @@ public class Post implements Parcelable {
         }
     };
 
-    public String getUserId() {
+    public synchronized String getUserId() {
         return userId;
     }
 

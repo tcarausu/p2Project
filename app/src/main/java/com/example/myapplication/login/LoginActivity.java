@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.User;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.StringManipulation;
 
 import com.facebook.AccessToken;
@@ -51,7 +52,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
-
+/**Mo.Msaad
+ * **/
 public class LoginActivity extends AppCompatActivity implements
         View.OnClickListener, SignUpFragment.OnFragmentInteractionListener, ForgotPassFragment.OnFragmentInteractionListener {
 
@@ -62,10 +64,13 @@ public class LoginActivity extends AppCompatActivity implements
     private static final int RC_SIGN_IN = 9001;
 
     private FirebaseAuth mAuth;
+    private FirebaseUser currentUser ;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase firebaseDatabase;
+    private FirebaseMethods mFirebaseMethods ;
     private DatabaseReference user_ref;
     private DatabaseReference myRef;
+
 
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
@@ -77,13 +82,19 @@ public class LoginActivity extends AppCompatActivity implements
     private FragmentManager fragmentManager;
     private boolean isVerified;
 
+    private String avatarURL = "https://firebasestorage.googleapis.com/v0/b/p2project-2a81d.appspot.com/o/avatar_chefood%2FGroup%205.png?alt=media&token=87e74817-a27d-4a04-afa3-e7cfa1adca68";
+
     private Context mContext;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        mFirebaseMethods = new FirebaseMethods(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         user_ref = firebaseDatabase.getReference("users");
         myRef = firebaseDatabase.getReference();
@@ -155,15 +166,21 @@ public class LoginActivity extends AppCompatActivity implements
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+
 
         if (mAuth != null && currentUser != null ) {
-            goToMainActivity();
+            goTosWithFlags(getApplicationContext(),HomeActivity.class);
         }
-        else mAuth.signOut();
-        LoginManager.getInstance().logOut();
-        mGoogleSignInClient.signOut();
+        else if (mAuth == null && currentUser!= null){
 
+            try{
+                myRef.removeValue();
+                mFirebaseMethods.logOut();
+            }catch (NullPointerException e){
+                Toast.makeText(this,"Something went wrong, try again: "+mAuth.getCurrentUser().delete().getResult().toString(),Toast.LENGTH_SHORT).show();
+                System.exit(1);
+            }
+        }
 
     }
 
@@ -196,16 +213,17 @@ public class LoginActivity extends AppCompatActivity implements
         } else {
             // after checking, we try to login
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                addUserToDataBase();
+
+
 
                 if (mAuth.getCurrentUser() == null) {
-
                     Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     mAuth.signOut();
                 }
                 // if task is successful
                 else if (task.isSuccessful()) {
-                    verifyAccount(); // check if user is verified by email
+                    verifyAccount(email); // check if user is verified by email
+
 
                 } else {
                     // otherwise we display the task error message from database
@@ -218,13 +236,19 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     // verification  if user has validated or not
-    private void verifyAccount() {
+    /**@author Mo.Msaad
+     * @param email : email of the registered user, allows login if & only if validated
+     * **/
+    private void verifyAccount(String email) {
+
         try{
             FirebaseUser user = mAuth.getCurrentUser();
             isVerified = user.isEmailVerified(); // getting boolean true or false from database
 
             if (isVerified) {
-                goToMainActivity(); // if yes goto mainActivity
+                addNewUser(email,"Chose a user name","description","website",avatarURL);
+                addUserToDataBase();
+                goTosWithFlags(getApplicationContext(),HomeActivity.class); // if yes goto mainActivity
             } else {
                 // else we first sign out the user, until he checks his email then he can connect
                 mAuth.signOut();
@@ -273,11 +297,11 @@ public class LoginActivity extends AppCompatActivity implements
                         Log.d(TAG, "google sign in result: "+"\n"+"displayName: "+displayName+"\n"+"email: "+email
                                 +"\n"+"phoneNumber: "+phoneNumber+"\n"+"PictureURL: "+photoURL);
 
-                        verifyFirstFBLogin(email,displayName,photoURL);
+                        verifyFirstGoogleLogin(email,displayName,photoURL);
                         addUserToDataBase();
                         Log.d(Google_Tag, "signInWithCredential:success");
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
-                        new Handler().postDelayed(() -> goToMainActivity(), Toast.LENGTH_SHORT);
+                        new Handler().postDelayed(() -> goTosWithFlags(getApplicationContext(),HomeActivity.class), Toast.LENGTH_SHORT);
 
                     } else {
                         // If sign in fails, display a message to the user.
@@ -293,6 +317,7 @@ public class LoginActivity extends AppCompatActivity implements
 
 
     // Handle the access token from facebook
+
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(FacebookTag, "handleFacebookAccessToken:" + token);
 
@@ -307,12 +332,13 @@ public class LoginActivity extends AppCompatActivity implements
                         String email = task.getResult().getUser().getEmail();
                         String username = task.getResult().getUser().getDisplayName();
                         String url = task.getResult().getUser().getPhotoUrl().toString();
-                        addNewUser(email,username,"facebook.user","website",url);
+
+                        verifyFirstFBLogin(email, username, url);
+                        addUserToDataBase();
                         Log.d(TAG, "onComplete: uid: " + uid + "\n"
                                 + "email: " + email + "\n" + "username: " + username + "\n" + "url: " + url + "\n");
 
-                        verifyFirstFBLogin(email, username, url);
-                        new Handler().postDelayed(() -> goToMainActivity(), 0);
+                        new Handler().postDelayed(() -> goTosWithFlags(getApplicationContext(),HomeActivity.class), 0);
 
                     } else {
                         // If sign in fails, display a message to the user.
@@ -322,18 +348,23 @@ public class LoginActivity extends AppCompatActivity implements
                     }
                 });
     }
-
     // google sign in
+
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     // send user to main activity without allowing to go back to login again
-    private void goToMainActivity() {
-        startActivity(new Intent(getApplicationContext(), HomeActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    /**responsible to send user to needed activities or fragment
+     * @param context context of the actual actviity or fragment
+     * @param cl is the destination class to load with flags to not allow go back with onBackPressed
+     *
+     * **/
+    public void goTosWithFlags(Context context, Class<? extends AppCompatActivity> cl){
+        startActivity(new Intent(context,cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
+
     }
 
     @Override
@@ -357,14 +388,12 @@ public class LoginActivity extends AppCompatActivity implements
                     fragmentTransaction.add(R.id.useThisFragmentID, fragmentForgotPass).commit();
                 }
                 break;
-            case R.id.sign_up:
-                Toast.makeText(this, "Register using fragment me", Toast.LENGTH_SHORT).show();
-                Fragment fragmentRegister = fragmentManager.findFragmentById(R.id.useThisFragmentID);
 
+            case R.id.sign_up:
+                Fragment fragmentRegister = fragmentManager.findFragmentById(R.id.useThisFragmentID);
                 if (fragmentRegister == null) {
                     fragmentRegister = new SignUpFragment();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.add(R.id.useThisFragmentID, fragmentRegister).commit();
                 }
@@ -377,6 +406,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     //
+
     private void addUserToDataBase() {
         final FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -416,12 +446,11 @@ public class LoginActivity extends AppCompatActivity implements
 
         }
     }
-
     /**
      * Add information to the users and user account settings node
      * Database:user_account_settings
      * Database:users
-     *
+     * @author Mo.Msaad & T.Trasco
      * @param email         represents the email of the Firebase User
      * @param username      represents the username of the Firebase User
      * @param description   represents the about from the User Profile
@@ -448,20 +477,47 @@ public class LoginActivity extends AppCompatActivity implements
                 .setValue(user);
     }
 
+    /**@author Mo.Msaad
+     * @param email: email fetched from the provider, used to add user email
+     * @param username: name fetched from the provider, used to add user name
+     * @param url: phot fetched from the provider, used to add profile pic
+     * **/
     private void verifyFirstFBLogin(String email, String username, String url) {
 
-        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
-        boolean firstLogin = prefs.getBoolean("prefs", false);
+       SharedPreferences facebookPrefs = getSharedPreferences("fbPrefs", MODE_PRIVATE);
+        boolean fbFirstLogin = facebookPrefs.getBoolean("fbPrefs", true);
 
         //if its the first run we change the boolean to false
-        if (firstLogin) {
+        if (fbFirstLogin) {
             addNewUser(email, username, "description", "website", url);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("prefs", true);
+            SharedPreferences.Editor editor = facebookPrefs.edit();
+            editor.putBoolean("fbPrefs", false);
             editor.apply();
+            Log.d(TAG, "verifyFirstRun: boolean first run is: "+fbFirstLogin);
         }
+
     }
 
     public void onFragmentInteraction(Uri uri) {
+    }
+
+    /**@author Mo.Msaad
+     * @param displayName: email fetched from the provider, used to add user email
+     * @param email: name fetched from the provider, used to add user name
+     * @param photoURL: phot fetched from the provider, used to add profile pic
+     * **/
+    private void verifyFirstGoogleLogin(String email, String displayName, String photoURL) {
+
+        SharedPreferences ggPrefs = getSharedPreferences("ggPrefs", MODE_PRIVATE);
+        boolean googleFirstLogin = ggPrefs.getBoolean("ggPrefs", true);
+
+        //if its the first run we change the boolean to false
+        if (googleFirstLogin) {
+            addNewUser(email, displayName, "description", "website", photoURL);
+            SharedPreferences.Editor editor = ggPrefs.edit();
+            editor.putBoolean("ggPrefs", false);
+            editor.apply();
+            Log.d(TAG, "verifyFirstRun: boolean first run is: "+googleFirstLogin);
+        }
     }
 }

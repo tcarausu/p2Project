@@ -18,13 +18,11 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
-import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SectionsStatePagerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.Collections;
@@ -84,11 +82,29 @@ public class AccountSettingsActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
+        if (mFirebaseMethods.checkUserStateIfNull()) {
+            mFirebaseMethods.logOut();
+            goToLogin(AccountSettingsActivity.this, LoginActivity.class);
+        }
 
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (mAuth== null && user == null) {
-            mAuth.signOut();
-            ((HomeActivity)getApplicationContext()).goTosWithFlags(this,LoginActivity.class);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mFirebaseMethods.checkUserStateIfNull()) {
+            mFirebaseMethods.logOut();
+            goToLogin(AccountSettingsActivity.this, LoginActivity.class);
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mFirebaseMethods.checkUserStateIfNull()) {
+            mFirebaseMethods.logOut();
+            goToLogin(AccountSettingsActivity.this, LoginActivity.class);
         }
     }
 
@@ -103,7 +119,7 @@ public class AccountSettingsActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
+
     }
 
     private void setupFragments() {
@@ -114,7 +130,6 @@ public class AccountSettingsActivity extends AppCompatActivity
 
     private void setupSettingsList() {
         Log.d(TAG, "setupSettingsList: initializing 'Account Settings' list");
-
         ListView listView = findViewById(R.id.listViewAccountSettings);
 
 //        ArrayList<String> options = new ArrayList<>();

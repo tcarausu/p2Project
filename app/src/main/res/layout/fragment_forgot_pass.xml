@@ -4,11 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:background="@drawable/back3"
     android:gravity="center_horizontal"
     tools:context=".login.ForgotPassFragment">
 
+
     <LinearLayout
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <Button
+            android:id="@+id/back_button"
+            style="@android:style/Widget.Holo.Button.Borderless"
+            android:drawableStart="@drawable/orange_arrow_left"
+            android:layout_gravity="start"
+            android:text="@string/go_back_signUpFragment"
+            android:paddingEnd="10dp"
+            android:textColor="@color/darkOrange"
+            android:fontFamily="@font/arbutus"
+            android:background="@drawable/input_fields_white_borders"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:clickable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -17,27 +38,21 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/back_button"
-            style="@android:style/Widget.Holo.Button.Borderless"
-            android:drawableStart="@drawable/arrow_left"
-            android:layout_gravity="start"
-            android:text="Go back"
-            android:fontFamily="@font/almendra"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
 
         <TextView
-
+            android:clickable="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/almendra"
             android:foregroundGravity="top"
             android:gravity="center"
             android:shadowColor="@color/black"
+            android:paddingBottom="20dp"
             android:shadowRadius="10"
             android:text="@string/forgot_password_text"
             android:textColor="@color/white"
+            android:drawableBottom="@drawable/dash_icon_white"
             android:textSize="24sp" />
 
         <LinearLayout
@@ -45,7 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_gravity="center_horizontal"
-            android:background="@color/grey_100"
+            android:background="@color/grey"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -55,12 +70,11 @@
                 android:paddingStart="15dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/buttons_design"
+                android:background="@drawable/input_fields_orange_borders"
                 android:hint="@string/hint_forgot_password_email"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-
-                android:textColorHint="@color/white" />
+                android:inputType="textEmailAddress"
+                android:padding="10dp"
+                android:textColorHint="@color/orange" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -73,7 +87,7 @@
                     android:drawableStart="@drawable/email_icone"
                     android:layout_marginTop="10dp"
                     android:padding="10dp"
-                    android:background="@drawable/input_fields"
+                    android:background="@drawable/input_fields_orange_borders"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/orangeMainTheme"

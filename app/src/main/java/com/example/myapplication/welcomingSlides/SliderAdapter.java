@@ -25,7 +25,7 @@ public class SliderAdapter extends PagerAdapter {
     public int[] slideImages = {  R.drawable.simo_designed_slide1, R.drawable.profile_post_simo_design, R.drawable.keep_updated_sim_design};
 
     //array of the titles that we will display on the pages
-    public String[] slidesTitles = {"join us","cook & share\n" ,"Stay updated"};
+    public String[] slidesTitles = {"join us","cook & share" ,"Stay updated"};
 
     //array of the texts that we will display on the pages
     public String[] slidesTexts = {"Multiple FREE Sign up options!",

@@ -1,6 +1,6 @@
 package com.example.myapplication.models;
 
-public class User {
+public  class  User {
 
     private String about;
     private String display_name;
@@ -14,11 +14,11 @@ public class User {
     private long phone_number;
     private String email;
 
-    public User(String about, String display_name,
-                String username, String email, long phone_number,
-                long followers, long following, long posts,
-                String profile_photo, String website
-    ) {
+    public User(String about, String display_name, String username, String email, long phone_number,
+                long followers, long following, long posts, String profile_photo, String website) {
+
+
+        synchronized(User.class){
         this.about = about;
         this.display_name = display_name;
         this.username = username;
@@ -29,6 +29,7 @@ public class User {
         this.website = website;
         this.phone_number = phone_number;
         this.email = email;
+        }
     }
 
     public User() {

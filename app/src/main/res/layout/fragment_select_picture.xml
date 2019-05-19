@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -18,25 +17,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:fontFamily="@font/almendra"
         android:textColor="@color/orange"
         android:text="@string/choose_picture"
         android:layout_marginTop="100dp"
         android:layout_marginLeft="30dp"
-        android:drawableStart="@mipmap/simo_design_camera"
+        android:drawableBottom="@mipmap/simo_design_camera"
+
         android:layout_marginRight="30dp"
-        android:background="@drawable/input_fields"
+        android:background="@drawable/input_fields_orange_borders"
+        android:shadowRadius="5"
+        android:shadowDx="5"
+        android:shadowColor="@color/black"
         android:id="@+id/choose_pic_button"/>
 
     <ImageView
         android:id="@+id/imageView_gallery"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_marginTop="25dp"
         android:layout_marginBottom="25dp"
         android:layout_below="@id/choose_pic_button"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:srcCompat="@drawable/my_avatar"
+        android:src="@drawable/chefood"
         android:layout_centerInParent="true"/>
 
 </RelativeLayout>

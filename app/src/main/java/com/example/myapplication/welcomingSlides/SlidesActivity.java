@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -44,14 +45,12 @@ public class SlidesActivity extends AppCompatActivity  {
         addDots(0);
         slideViewPager.addOnPageChangeListener(vl);
 
-
-
         mPrevious.setOnClickListener(v -> slideViewPager.setCurrentItem(mCurrentSlide - 1));
 
         mNext.setOnClickListener(v -> {
             slideViewPager.setCurrentItem(mCurrentSlide + 1);
-            if (mNext.getText().equals("FINISH")) {
-                new Handler().postDelayed(() ->startActivity(mIntent), Toast.LENGTH_SHORT);
+            if ( mNext.isPressed() && mNext.getText().equals("FINISH") ) {
+                startActivity(mIntent);
             }
         });
 
@@ -60,16 +59,20 @@ public class SlidesActivity extends AppCompatActivity  {
 /**created by Mo.Msaad
  * */
     private void verifyFirstRun() {
-        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
-        boolean firstRun = prefs.getBoolean("prefs", true);
+        SharedPreferences prefs = getSharedPreferences("slidePrefs", MODE_PRIVATE);
+        boolean firstRun = prefs.getBoolean("slidePrefs", true);
 
         if (firstRun) {//if its the first run we change the boolean to false
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("prefs", false);
+            editor.putBoolean("slidePrefs", false);
             editor.apply();
+            Log.d(TAG, "verifyFirstRun: boolean first run is: "+firstRun);
         } else {// then if boolean is false we skip the slides
             startActivity(mIntent);
-            Toast.makeText(getApplicationContext(), "Welcome", Toast.LENGTH_LONG).show();
+            if (firstRun) {
+                Toast.makeText(getApplicationContext(), "Welcome", Toast.LENGTH_LONG).show();
+            }
+
         }
     }
 

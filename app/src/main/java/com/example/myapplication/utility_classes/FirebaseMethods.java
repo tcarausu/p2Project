@@ -35,6 +35,7 @@ public class FirebaseMethods {
     private DatabaseReference myRef;
     private GoogleSignInClient mGoogleSignInClient;
 
+
     private GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
             .requestEmail()
@@ -42,21 +43,41 @@ public class FirebaseMethods {
 
     private String userUID;
     private Context mContext;
+    private LoginManager mLoginManager ;
 
-    public FirebaseMethods(Context context) {
-        mAuth = FirebaseAuth.getInstance();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = mFirebaseDatabase.getReference();
+    // overloaded constructors for multiple use and cases
+    public FirebaseMethods(FirebaseAuth auth, Context context) {
+        mAuth = auth;
         mContext = context;
-        mGoogleSignInClient = GoogleSignIn.getClient(mContext, gso);
+    }
 
-        if (mAuth.getCurrentUser() != null) {
-            userUID = mAuth.getCurrentUser().getUid();
+    public FirebaseMethods(FirebaseAuth auth, FirebaseDatabase firebaseDatabase, GoogleSignInClient googleSignInClient, GoogleSignInOptions gso, Context context, LoginManager loginManager) {
+        mAuth = auth;
+        mFirebaseDatabase = firebaseDatabase;
+        mGoogleSignInClient = googleSignInClient;
+        this.gso = gso;
+        mContext = context;
+        mLoginManager = loginManager;
+    }
+
+    public  FirebaseMethods(Context context) {
+        // Mo.Msaad modification modification
+        synchronized (FirebaseMethods.class) {
+            mAuth = FirebaseAuth.getInstance();
+            mFirebaseDatabase = FirebaseDatabase.getInstance();
+            myRef = mFirebaseDatabase.getReference();
+            mContext = context;
+            mLoginManager = LoginManager.getInstance();
+            mGoogleSignInClient = GoogleSignIn.getClient(mContext, gso);
+
+            if (mAuth.getCurrentUser() != null) {
+                userUID = mAuth.getCurrentUser().getUid();
+            }
         }
     }
 
 
-    public void updateUsername(String username, String dispalyName, String website, String about, long phone, String profile_url) {
+    public synchronized void updateUsername(String username, String dispalyName, String website, String about, long phone, String profile_url) {
         Log.d(TAG, "updateUsername: updating username to:" + username);
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userUID)
@@ -131,7 +152,8 @@ public class FirebaseMethods {
      * @param dataSnapshot represent the data from database
      * @return the User Account Settings
      */
-    public User getUserSettings(DataSnapshot dataSnapshot) {
+    public
+    User getUserSettings(DataSnapshot dataSnapshot) {
         Log.d(TAG, "getUserAccountSettings: retrieving user account settings from database");
 
         User user = new User();
@@ -220,10 +242,22 @@ public class FirebaseMethods {
         return sdf.format(new Date());
     }
 
-    public void logOut(){
+    public  void logOut(){
         mAuth.signOut();
         LoginManager.getInstance().logOut();
         mGoogleSignInClient.signOut();
+    }
+
+
+    public  boolean checkUserStateIfNull() {
+
+        Log.d(TAG, "checkUserStateIfNull: is called");
+        if (mAuth == null || mAuth.getCurrentUser() == null) {
+
+            return true;
+        }
+        else return false;
+
     }
 
 
