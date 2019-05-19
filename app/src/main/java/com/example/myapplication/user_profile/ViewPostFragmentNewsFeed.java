@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -153,6 +154,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+        getView().refreshDrawableState();
 
     }
 
@@ -196,6 +198,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     }
 
     private void getPhotoDetails() {
+
         Query query = mUserRef.child(mAuth.getCurrentUser().getUid());
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -226,7 +229,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private void setupWidgets() {
         String timeStampDiff = getTimeStampDifference();
         if (!timeStampDiff.equals(String.valueOf(0))) {
-            mPostTimeStamp.setText(timeStampDiff + " Days Ago");
+            mPostTimeStamp.setText(String.format("%s Days Ago",timeStampDiff ));
         } else {
             mPostTimeStamp.setText("Today");
         }
@@ -498,13 +501,14 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 break;
 
             case R.id.options_menu:
+                dialogChoice();
                 Toast.makeText(getActivity(), "Make Delete/Report Dialogue", Toast.LENGTH_SHORT).show();
-
                 break;
 
 
             case R.id.backArrow:
                 Log.d(TAG, "onClick: navigating back to " + getActivity());
+
                 startActivity(new Intent(getActivity(), UserProfileActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                 getActivity().finish();
@@ -513,9 +517,37 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             case R.id.likes_button:
                 toggleLikes();
-
                 break;
         }
+
+    }
+
+    private void dialogChoice() {
+
+        final CharSequence[] options = {"Edit","Delete","Report","Cancel"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Are you sure you want to sign out?");
+        builder.setIcon(R.drawable.chefood);
+
+        builder.setItems(options, (dialog, which) -> {
+            if (options[which].equals("SIGN-Edit")) {
+                Toast.makeText(getContext(),"Edit is clicked",Toast.LENGTH_SHORT).show();
+
+            } else if (options[which].equals("Delete")) {
+                Toast.makeText(getContext(),"Delete is clicked",Toast.LENGTH_SHORT).show();
+
+
+            } else if (options[which].equals("Report")) {
+                Toast.makeText(getContext(),"Report is clicked",Toast.LENGTH_SHORT).show();
+
+            } else if (options[which].equals("CANCEL")) {
+                Toast.makeText(getContext(),"CANCEL is clicked",Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+
+        });
+
+        builder.show();
 
     }
 
