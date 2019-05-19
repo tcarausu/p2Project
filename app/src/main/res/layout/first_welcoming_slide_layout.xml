@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/orangeMainTheme"
+    android:background="@drawable/back3"
+
     android:orientation="vertical"
     android:textAlignment="center">
 
@@ -20,14 +21,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:shadowColor="@color/black"
-        android:shadowDx="1"
-        android:shadowDy="2"
-        android:shadowRadius="5"
+        android:shadowColor="@color/darkOrange"
+        android:drawableBottom="@drawable/dash_icon_white"
+        android:shadowDx="5"
+        android:shadowDy="3"
+        android:shadowRadius="10"
         android:text="Title"
-        android:fontFamily="@font/almendra"
+        android:fontFamily="@font/arbutus"
         android:textAlignment="center"
-        android:textColor="@color/white"
+        android:textColor="@color/grey"
         android:textSize="34sp"
         android:textStyle="bold|italic" />
 
@@ -40,7 +42,9 @@
         android:layout_height="0dp">
 
         <ImageView
+
         android:id="@+id/slideImage1_id"
+            android:padding="5dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
@@ -55,20 +59,21 @@
         android:layout_weight=".3">
 
         <TextView
-        android:id="@+id/slide1_text_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:fontFamily="@font/almendra"
-        android:layout_centerInParent="true"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:shadowColor="@color/black"
-        android:shadowDx="1"
-        android:shadowDy="2"
-        android:shadowRadius="1"
-        android:textSize="24sp"
-        android:textStyle="italic|bold" />
+            android:id="@+id/slide1_text_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="dummy message for dummy user"
+            android:layout_centerInParent="true"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:shadowColor="@color/black"
+            android:shadowDx="3"
+            android:shadowDy="2"
+            android:shadowRadius="1"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="italic|bold" />
 
     </RelativeLayout>
 

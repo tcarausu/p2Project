@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +22,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
@@ -307,16 +307,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 }
             });
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), "Error: Nothing to display", Toast.LENGTH_SHORT).show();
-            goTo(getActivity(), AddPostActivity.class);
+        }catch (Exception e){
+            Toast.makeText(getActivity(),"Error: Nothing to display",Toast.LENGTH_SHORT).show();
+            ((HomeActivity)getActivity()).goTosWithFlags(getActivity(),AddPostActivity.class);
         }
-    }
-
-    private void goTo(Context context, Class<? extends AppCompatActivity> cl) {
-        startActivity(new Intent(context, cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        getActivity().finish();
     }
 
     /**

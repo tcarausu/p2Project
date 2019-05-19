@@ -1,7 +1,6 @@
 package com.example.myapplication.login;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -38,16 +37,22 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View v = inflater.inflate(R.layout.fragment_forgot_pass, container, false);
+        findWidgets(v);
+        goBack.setOnClickListener(this);
+        sendPassRequest.setOnClickListener(this);
+
+        return v;
+    }
+
+    private void findWidgets(View v){
 
         emailField = v.findViewById(R.id.email_field);
         goBack = v.findViewById(R.id.back_button);
         sendPassRequest = v.findViewById(R.id.sendPassRequest);
 
-        goBack.setOnClickListener(this);
-        sendPassRequest.setOnClickListener(this);
 
-        return v;
     }
 
     // sending the mail to user to reset pass
@@ -61,18 +66,12 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
             mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(getContext(), "Please check your inbox, we sent you a change password link", Toast.LENGTH_SHORT).show();
-                    goToLogin();
+                    getActivity().finish();
                 } else
                     Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
             });
 
         }
-    }
-
-    private void goToLogin() {
-        startActivity(new Intent(getActivity(), LoginActivity.class).
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        getActivity().finish();
     }
 
 
@@ -98,13 +97,13 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
         switch (v.getId()) {
 
             case R.id.back_button:
-                goToLogin();
+                getActivity().finish();
+
 
                 break;
 
             case R.id.sendPassRequest:
                 sendPassResetMail();
-
                 break;
         }
     }

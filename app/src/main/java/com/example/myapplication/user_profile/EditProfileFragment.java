@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -43,7 +42,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
@@ -63,10 +61,17 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     //firebase
     private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
+    private FirebaseMethods firebaseMethods;
     private String userID;
+
+    // firebase storage
+    private StorageReference profilePicStorage;
+    private FirebaseStorage storage;
+    private FirebaseDatabase database;
 
     //Edit Profile widgets
     private TextView mChangeProfilePhoto, mPrivateInformation;
@@ -75,14 +80,16 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private CircleImageView mProfilePhoto, smallProfilePic;
     private ImageView backArrow, saveChanges;
 
-    private FirebaseMethods firebaseMethods;
-    private FirebaseUser currentUser;
-    private Context mContext;
     private User user;
-    private Uri uri, avatarUri;
-    private StorageReference profilePicStorage;
-    private FirebaseStorage storage;
-    private FirebaseDatabase database;
+    private Uri uri;
+
+    public Uri getUri() {
+        return uri;
+    }
+
+    public void setUri(Uri uri) {
+        this.uri = uri;
+    }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -91,7 +98,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         }
     };
 
-    private Bitmap bitmap;
+
     private String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private String prof_pic_URL;
     private int batteryLevel;
@@ -117,7 +124,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         checkPermissions();
-        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to get the batteryLevel
+        Objects.requireNonNull(getActivity()).registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to get the batteryLevel
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -126,8 +133,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         myRef = mFirebaseDatabase.getReference();
         storage = FirebaseStorage.getInstance();
         profilePicStorage = storage.getReference();
-        userID = mAuth.getCurrentUser().getUid();
-        avatarUri = Uri.parse(String.valueOf(R.drawable.my_avatar));//"android.resource://com.example.myapplication/drawable/my_avatar"
 
         initLayouts(view);
         setupFirebaseAuth();
@@ -150,9 +155,13 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         saveChanges = view.findViewById(R.id.save_changes);
         mChangeProfilePhoto = view.findViewById(R.id.change_profile_photo);
         mPrivateInformation = view.findViewById(R.id.privateInformation);
+
         backArrow.setOnClickListener(this);
         saveChanges.setOnClickListener(this);
         mProfilePhoto.setOnClickListener(this);
+        mChangeProfilePhoto.setOnClickListener(this);
+
+
     }
 
 
@@ -171,7 +180,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             isMobileDataConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
 
             if (isWifiConnected) {
-                uploadProfilePic(uri);
+                uploadProfilePic(getUri());
                 updateUserInfo(getProf_pic_URL());
             } else if (isMobileDataConnected) {
                 //TODO add shared prefs here to allow automatic
@@ -184,7 +193,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
      * created byMo.MSaad
      **/
 
-
     private void openDialogChoice() {
 
         final CharSequence[] options = {"Mobile data", "WIFI", "CANCEL"};
@@ -194,11 +202,13 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         builder.setItems(options, (dialog, which) -> {
 
             if (options[which].equals("Mobile data")) {
-                uploadProfilePic(uri);
+                uploadProfilePic(getUri());
                 updateUserInfo(getProf_pic_URL());
 
             } else if (options[which].equals("WIFI")) {
-                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+               Intent wifiIntent =  new Intent(Settings.ACTION_WIFI_SETTINGS);
+                startActivity(wifiIntent);
+
 
             } else if (options[which].equals("CANCEL")) {
                 dialog.dismiss();
@@ -225,9 +235,10 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
             if (profilePicURL == null) {
                 mProfilePhoto.setImageResource(R.drawable.my_avatar);
+                smallProfilePic.setImageResource(R.drawable.my_avatar);
             } else
                 Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
-            Glide.with(this).load(profilePicURL).centerCrop().into(smallProfilePic);
+                Glide.with(this).load(profilePicURL).centerCrop().into(smallProfilePic);
 
         } catch (IllegalArgumentException e) {
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
@@ -292,6 +303,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             case R.id.about:
                 mAbout.clearComposingText();
                 break;
+            case R.id.change_profile_photo:
+                dialogChoice();
+                break;
         }
     }
 
@@ -299,6 +313,10 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+        if (mAuth == null || currentUser == null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+            firebaseMethods.logOut();
+        }
     }
 
     @Override
@@ -309,6 +327,19 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Objects.requireNonNull(getActivity()).unregisterReceiver(broadcastReceiver);//this to destroy the intent to stop leakage
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Objects.requireNonNull(getActivity()).registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// we create it back in onResume
+
+    }
 
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
@@ -347,15 +378,19 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
      **/
     private void uploadProfilePic(Uri uri) {
 
-        if (uri != null) {
+         if (getUri() == null){
+            Toast.makeText(getActivity(), "No image is selected " , Toast.LENGTH_SHORT).show();// this to handle in case uri or bitmap is null
+            Glide.with(this).load(user.getProfile_photo()).centerInside().into(mProfilePhoto);
+
+        }
+         else if (getUri() != null) {
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setTitle("uploading, please wait...");
-            progressDialog.setIcon(R.drawable.chefood);
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.show();
+             progressDialog.setTitle("uploading, please wait...");
+             progressDialog.setIcon(R.drawable.chefood);
+             progressDialog.setCanceledOnTouchOutside(false);
+             progressDialog.show();
 
             profilePicStorage = storage.getReference().child("profile_pic/" + currentUser.getUid()).child("profile picture");
-
             profilePicStorage.putFile(uri).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     progressDialog.dismiss();
@@ -363,25 +398,38 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                         setProf_pic_URL(task1.getResult().toString()); //prof_pic_URL = task1.getResult().toString();
                         Log.d(TAG, "uploadProfilePic: URL= " + prof_pic_URL);
                         pushImageUrl(task1.getResult().toString());// we push the url of the stored image to database so we can download it later
-                        Picasso.get().load(getProf_pic_URL()).resize(mProfilePhoto.getWidth(), mProfilePhoto.getHeight()).centerCrop().into(mProfilePhoto);
+                        Glide.with(this).load(getProf_pic_URL()).centerCrop().into(mProfilePhoto);
+                        goBack();
+//                        Picasso.get().load(getProf_pic_URL()).resize(mProfilePhoto.getWidth(), mProfilePhoto.getHeight()).centerCrop().into(mProfilePhoto);
                     }).addOnFailureListener(e ->
-                            Toast.makeText(EditProfileFragment.this.getActivity(), "Failed, " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                } else
+                    Toast.makeText(EditProfileFragment.this.getActivity(), "Failed, " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                }
+                else
                     Toast.makeText(EditProfileFragment.this.getActivity(), "Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
+
             }).addOnFailureListener(e -> {
+
                 progressDialog.dismiss();
-                Toast.makeText(getActivity(), "Failed, " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(getActivity(), "upload failed, " + e.getMessage(), Toast.LENGTH_SHORT).show();
 
             }).addOnCanceledListener(() -> {
-                return;
+
 
             }).addOnProgressListener(taskSnapshot -> {
                 double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
                 progressDialog.setMessage("uploaded " + (int) progress + "%");
+
             });
-        } else
-            Toast.makeText(getActivity(), "Error: Profile picture is " + new NullPointerException().getMessage(), Toast.LENGTH_SHORT).show();// this to handle in case uri or bitmap is null
+        }
+
+    }
+
+    private void goBack() {
+        startActivity(new Intent(getActivity(),UserProfileActivity.class)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        getActivity().finish();
     }
 
     /**
@@ -443,10 +491,13 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private void takePicture() {
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (getBatteryLevel() > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
+
+        if (getBatteryLevel() < 10) {
+            Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
+        } else if (cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
             Log.d(TAG, "takePicture: battery level: " + getBatteryLevel());
             startActivityForResult(cameraIntent, REQUEST_CAMERA);
-        } else Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -472,11 +523,17 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         try {
             if (besoins) {
-                uri = data.getData();
-                Glide.with(this).load(data.getData()).centerCrop().into(mProfilePhoto);
+                setUri(data.getData());
+                Glide.with(this).load(this.getUri()).centerCrop().into(mProfilePhoto);
+
+                mProfilePhoto.refreshDrawableState();
+
             } else if (besoins1) {
-                uri = data.getData();
-                Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
+
+                setUri(data.getData());
+                Glide.with(this).load(this.getUri()).centerCrop().into(mProfilePhoto);
+                mProfilePhoto.refreshDrawableState();
+
 
             }
         } catch (Exception e) {
@@ -486,19 +543,16 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     }
 }
 
-
+//TODO this if we dont want to display the dialog everytime and save the user choice for next use.
 //    private void verifyFirstTry() {
 //        SharedPreferences prefs = getActivity().getSharedPreferences("data prefs", MODE_PRIVATE);
 //        boolean First_data_prefs = prefs.getBoolean("data prefs", true);
-//
 //        if (First_data_prefs) {//if its the first run we change the boolean to false
 //            openDialogChoice();
 //            SharedPreferences.Editor editor = prefs.edit();
 //            editor.putBoolean("data prefs", false);
-//
 //            editor.apply();
 //        } else {// then if boolean is false we skip the slides
-//            //TODO
 //            uploadProfilePic(uri);
 //            updateUserInfo(getProf_pic_URL());
 //        }
