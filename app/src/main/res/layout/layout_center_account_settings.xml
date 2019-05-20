@@ -51,19 +51,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+
         <ImageView
+
             android:src="@drawable/dash_icon"
-           android:layout_alignParentEnd="true"
+            android:layout_alignParentEnd="true"
             android:layout_below="@id/textSettings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-
-
-
         <ListView
 
-            android:background="@drawable/input_fields_round_orange"
+            android:background="@drawable/input_fields_orange_round"
             android:layout_marginTop="10dp"
             android:id="@+id/listViewAccountSettings"
             android:clickable="true"

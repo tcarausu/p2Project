@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:background="@drawable/back3"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,25 +15,29 @@
     </RelativeLayout>
 
     <Button
-        android:layout_width="match_parent"
+
+        android:animateLayoutChanges="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:textSize="20sp"
-        android:fontFamily="@font/almendra"
-        android:textColor="@color/orange"
+        android:textSize="16sp"
+        android:fontFamily="@font/arbutus"
+        android:textColor="@color/grey"
         android:text="@string/choose_picture"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:layout_marginTop="100dp"
         android:layout_marginLeft="30dp"
-        android:drawableBottom="@mipmap/simo_design_camera"
-
         android:layout_marginRight="30dp"
-        android:background="@drawable/input_fields_orange_borders"
-        android:shadowRadius="5"
+        android:background="@drawable/input_fields_round"
+        android:shadowRadius="10"
         android:shadowDx="5"
+
         android:shadowColor="@color/black"
         android:id="@+id/choose_pic_button"/>
 
     <ImageView
+        android:animateLayoutChanges="true"
         android:id="@+id/imageView_gallery"
         android:clickable="true"
         android:focusable="true"
@@ -41,7 +46,7 @@
         android:layout_below="@id/choose_pic_button"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/chefood"
+        android:src="@drawable/input_fields_round_orange"
         android:layout_centerInParent="true"/>
 
 </RelativeLayout>

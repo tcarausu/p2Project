@@ -375,6 +375,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     /**
      * method  created by Mo.Msaad
+     * @param uri: this is the received uri from the onActivity result, via setters and getters to avoid getting null if the user
+     *           presses the upload button without chosing a photo
      **/
     private void uploadProfilePic(Uri uri) {
 

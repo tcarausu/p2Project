@@ -57,8 +57,6 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
         findWidgets();
-
-
         Intent intent = getIntent();
         imageUri = intent.getStringExtra("imageUri");
         Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewfood);
@@ -136,6 +134,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         progressDialog.setIcon(R.drawable.chefood);
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
+
 
         StorageReference storageReference = mStorageRef.child("post_pic/users/" + mAuth.getUid() + "/" + System.currentTimeMillis() + ".jpg");
         storageReference.putFile(Uri.parse(imageUri)).addOnCompleteListener(task -> {

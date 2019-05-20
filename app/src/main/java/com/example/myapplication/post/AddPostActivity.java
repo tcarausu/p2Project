@@ -18,7 +18,6 @@ public class AddPostActivity extends AppCompatActivity {
     private static final String TAG = "AddPostActivity";
     private static final int ACTIVITY_NUM = 2;
     private static final int PERMISSION_REQUEST = 1;
-
     private ViewPager mViewPager;
 
     @Override
@@ -47,7 +46,6 @@ public class AddPostActivity extends AppCompatActivity {
 
         TabLayout tabLayout = findViewById(R.id.tabsBottom);
         tabLayout.setupWithViewPager(mViewPager);
-//        tabLayout.getTabAt(0).setText(getString(R.string.post));
 
     }
 
@@ -55,9 +53,9 @@ public class AddPostActivity extends AppCompatActivity {
      * Used to get tabNumber in fragments
      * @return
      */
-    public int getTabNumber() {
-        return mViewPager.getCurrentItem();
-    }
+//    public int getTabNumber() {
+//        return mViewPager.getCurrentItem();
+//    }
 
     /**
      * Checking all permissions
