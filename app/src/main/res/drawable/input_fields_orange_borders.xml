@@ -17,7 +17,7 @@
         android:width="5dp"
         android:dashGap="20dp"
 
-        android:color="@color/warm_orange" />
+        android:color="@color/orange" />
 
 
 

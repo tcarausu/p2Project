@@ -2,12 +2,15 @@ package com.example.myapplication.utility_classes;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -26,6 +29,7 @@ public class GridImageAdapter extends ArrayAdapter<String> {
     private int layoutResource;
     private String mAppend;
     private ArrayList<String> imgURLs;
+
 
 
     public GridImageAdapter(Context mContext, int layoutResource, String mAppend, ArrayList<String> imgURLs) {
@@ -64,10 +68,16 @@ public class GridImageAdapter extends ArrayAdapter<String> {
         String imgURL = getItem(position);
 
         ImageLoader imageLoader = ImageLoader.getInstance();
+
         imageLoader.displayImage(mAppend + imgURL, holder.image, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
+
                 if (holder.mProgressBar != null) {
+                    Drawable drawable = ContextCompat.getDrawable(mContext, R.drawable.chefood);
+                    //TODO make drawable !!!
+                    holder.mProgressBar.setBackgroundResource(R.drawable.chefood);
+                    view.refreshDrawableState();
                     holder.mProgressBar.setVisibility(View.VISIBLE);
                 }
             }
@@ -75,6 +85,7 @@ public class GridImageAdapter extends ArrayAdapter<String> {
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
                 if (holder.mProgressBar != null) {
+                    Toast.makeText(getContext(),"Error loading: "+failReason.getCause().getLocalizedMessage(),Toast.LENGTH_SHORT).show();
                     holder.mProgressBar.setVisibility(View.GONE);
                 }
             }
@@ -83,6 +94,7 @@ public class GridImageAdapter extends ArrayAdapter<String> {
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 if (holder.mProgressBar != null) {
                     holder.mProgressBar.setVisibility(View.GONE);
+
                 }
             }
 

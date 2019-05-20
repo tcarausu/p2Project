@@ -45,6 +45,14 @@ public class FirebaseMethods {
     private Context mContext;
     private LoginManager mLoginManager ;
 
+    public FirebaseAuth getAuth() {
+        return mAuth;
+    }
+
+    public FirebaseDatabase getFirebaseDatabase() {
+        return mFirebaseDatabase;
+    }
+
     // overloaded constructors for multiple use and cases
     public FirebaseMethods(FirebaseAuth auth, Context context) {
         mAuth = auth;
