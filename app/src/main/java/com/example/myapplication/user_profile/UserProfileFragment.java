@@ -20,7 +20,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.Like;
@@ -39,6 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -202,14 +202,18 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mPosts.setText(String.valueOf(user.getNrPosts()));
 
         String profilePicURL = user.getProfile_photo();
+        Log.d(TAG, "setProfileWidgets, PhotoURL: "+profilePicURL);
 
         //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
         try {
-            if (profilePicURL == null) {
-                mProfilePhoto.setImageResource(R.drawable.my_avatar);
+//            if (profilePicURL == null) {
+//                mProfilePhoto.setImageResource(R.drawable.my_avatar);
+//
+//            } else
+//                Glide.with(getActivity()).load(profilePicURL).centerCrop().into(mProfilePhoto);
 
-            } else
-                Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
+            Picasso.get().load(profilePicURL).resize(mProfilePhoto.getWidth(),mProfilePhoto.getHeight()).centerCrop().into(mProfilePhoto);
+            Log.d(TAG, "setProfileWidgets: mProfilePhoto.getDrawableState().length; "+ mProfilePhoto.getDrawableState().length);
 
         } catch (Exception e) {
             Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());

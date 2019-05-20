@@ -53,10 +53,6 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.signup_fragment, container, false);// Inflate the layout for this fragment
         findWidgets(view);
-
-        goBack.setOnClickListener(this);
-        signUpButton.setOnClickListener(this);
-
         buttonListeners();
 
         return view;
@@ -68,11 +64,11 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     }
 
     private void findWidgets(View view) {
-        mEmail = view.findViewById(R.id.email_field);
+        mEmail = view.findViewById(R.id.SignUpFrgmnt_email_field);
         mPassword = view.findViewById(R.id.pass_field);
         mConfirmPassword = view.findViewById(R.id.confirm_pass);
-        signUpButton = view.findViewById(R.id.sign_up);
-        goBack = view.findViewById(R.id.back_button);
+        signUpButton = view.findViewById(R.id.SignUpFragmnt_sign_upButton);
+        goBack = view.findViewById(R.id.SignUpFragmnt_back_button);
     }
 
     private void createUserWithEmail() {
@@ -151,12 +147,6 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    // send user to login and erase fragment history
-    private void goToLogin() {
-        startActivity(new Intent(getActivity(), LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        Objects.requireNonNull(getActivity()).finish();
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -184,12 +174,11 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.back_button:
-                goToLogin();
-
+            case R.id.SignUpFragmnt_back_button:
+                ((LoginActivity)getActivity()).goTosWithFlags(getActivity(),LoginActivity.class);
                 break;
 
-            case R.id.sign_up:
+            case R.id.SignUpFragmnt_sign_upButton:
                 createUserWithEmail();
                 break;
         }

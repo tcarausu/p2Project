@@ -1,11 +1,13 @@
 package com.example.myapplication.login;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,7 +26,6 @@ import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.StringManipulation;
-
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -91,7 +92,7 @@ public class LoginActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        fragmentManager = getSupportFragmentManager();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         mFirebaseMethods = new FirebaseMethods(this);
@@ -106,7 +107,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     public void initLayout() {
         mContext = LoginActivity.this;
-        fragmentManager = getSupportFragmentManager();
+
         mEmailField = findViewById(R.id.email_id_logIn);
         mPasswordField = findViewById(R.id.password_id_logIn);
         loginLayout = findViewById(R.id.login_activity);
@@ -219,25 +220,25 @@ public class LoginActivity extends AppCompatActivity implements
             mPasswordField.setError("Required.");
             Toast.makeText(getApplicationContext(), "Please chose password", Toast.LENGTH_SHORT).show();
         } else {
+            ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Signing in");
+            progressDialog.setMessage("Signing in, please wait...");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setIcon(R.drawable.chefood);
+            progressDialog.show();
+
             // after checking, we try to login
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                // if sign in is successful
+                 if (task.isSuccessful()) {
+                     progressDialog.dismiss();
+                     verifyAccount(email); // check if user is verified by email
 
-
-
-                if (mAuth.getCurrentUser() == null) {
-                    Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    mAuth.signOut();
                 }
-                // if task is successful
-                else if (task.isSuccessful()) {
-                    verifyAccount(email); // check if user is verified by email
-
-
-                } else {
-                    // otherwise we display the task error message from database
-                    Toast.makeText(getApplicationContext(), "Please confirm your email address.", Toast.LENGTH_SHORT).show();
-                    mAuth.signOut();// need to keep user signed out until he confirms
-                }
+            }).addOnFailureListener(e -> {
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                mAuth.signOut();
             });
 
         }
@@ -254,7 +255,8 @@ public class LoginActivity extends AppCompatActivity implements
             isVerified = user.isEmailVerified(); // getting boolean true or false from database
 
             if (isVerified) {
-                addNewUser(email,"Chose a user name","description","website",avatarURL);
+                verifyFirstEmailLogin(email,"Chose a user name", avatarURL);
+
                 addUserToDataBase();
                 goTosWithFlags(getApplicationContext(),HomeActivity.class); // if yes goto mainActivity
             } else {
@@ -270,7 +272,6 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
@@ -301,9 +302,9 @@ public class LoginActivity extends AppCompatActivity implements
                         final String displayName = task.getResult().getUser().getDisplayName();
                         final  String email = task.getResult().getUser().getEmail();
                         final   String photoURL = task.getResult().getUser().getPhotoUrl().toString();
-                        final String phoneNumber = task.getResult().getUser().getPhoneNumber();
+
                         Log.d(TAG, "google sign in result: "+"\n"+"displayName: "+displayName+"\n"+"email: "+email
-                                +"\n"+"phoneNumber: "+phoneNumber+"\n"+"PictureURL: "+photoURL);
+                                +"\n"+"PictureURL: "+photoURL);
 
                         verifyFirstGoogleLogin(email,displayName,photoURL);
                         addUserToDataBase();
@@ -367,7 +368,7 @@ public class LoginActivity extends AppCompatActivity implements
     /**responsible to send user to needed activities or fragment
      * @param context context of the actual actviity or fragment
      * @param cl is the destination class to load with flags to not allow go back with onBackPressed
-     *
+     * The point is we can use this method in all the fragments nested in the activity, by calling it using (()).goTosWithFlags(context,cl);
      * **/
     public void goTosWithFlags(Context context, Class<? extends AppCompatActivity> cl){
         startActivity(new Intent(context,cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -391,10 +392,15 @@ public class LoginActivity extends AppCompatActivity implements
                 if (fragmentForgotPass == null) {
                     fragmentForgotPass = new ForgotPassFragment();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.add(R.id.useThisFragmentID, fragmentForgotPass).commit();
                 }
+//                else {
+//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                    fragmentTransaction.addToBackStack(String.valueOf(R.id.useThisFragmentID));
+//                    fragmentTransaction.remove(fragmentForgotPass).commit();
+//                }
+
                 break;
 
             case R.id.sign_up:
@@ -403,8 +409,15 @@ public class LoginActivity extends AppCompatActivity implements
                     fragmentRegister = new SignUpFragment();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.addToBackStack(null);
+
                     fragmentTransaction.add(R.id.useThisFragmentID, fragmentRegister).commit();
-                }
+                            }
+//                else {
+//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                    fragmentTransaction.remove(fragmentRegister).commit();
+//                }
+
+
                 break;
 
             case R.id.googleSignInButton:
@@ -486,18 +499,20 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     /**@author Mo.Msaad
-     * @param email: email fetched from the provider, used to add user email
+     * @param  email: email fetched from the provider, used to add user email
      * @param username: name fetched from the provider, used to add user name
      * @param url: phot fetched from the provider, used to add profile pic
      * **/
-    private void verifyFirstFBLogin(String email, String username, String url) {
+    private void verifyFirstFBLogin(@NonNull String email,@NonNull String username, @NonNull String url) {
 
        SharedPreferences facebookPrefs = getSharedPreferences("fbPrefs", MODE_PRIVATE);
         boolean fbFirstLogin = facebookPrefs.getBoolean("fbPrefs", true);
 
         //if its the first run we change the boolean to false
         if (fbFirstLogin) {
+            Log.d(TAG, "verifyFirstRun: boolean first run is: "+fbFirstLogin);
             addNewUser(email, username, "description", "website", url);
+            Log.d(TAG, "verifyFirstFBLogin: fetched url from google: "+url);
             SharedPreferences.Editor editor = facebookPrefs.edit();
             editor.putBoolean("fbPrefs", false);
             editor.apply();
@@ -506,8 +521,6 @@ public class LoginActivity extends AppCompatActivity implements
 
     }
 
-    public void onFragmentInteraction(Uri uri) {
-    }
 
     /**@author Mo.Msaad
      * @param displayName: email fetched from the provider, used to add user email
@@ -527,5 +540,24 @@ public class LoginActivity extends AppCompatActivity implements
             editor.apply();
             Log.d(TAG, "verifyFirstRun: boolean first run is: "+googleFirstLogin);
         }
+    }
+
+    private void verifyFirstEmailLogin(String email, String displayName, String photoURL){
+
+        SharedPreferences firstLogin = getSharedPreferences("logPrefs", MODE_PRIVATE);
+        boolean googleFirstLogin = firstLogin.getBoolean("logPrefs", true);
+
+        //if its the first run we change the boolean to false
+        if (googleFirstLogin) {
+            addNewUser(email, displayName, "description", "website", photoURL);
+            SharedPreferences.Editor editor = firstLogin.edit();
+            editor.putBoolean("logPrefs", false);
+            editor.apply();
+            Log.d(TAG, "verifyFirstRun: boolean first run is: "+googleFirstLogin);
+        }
+    }
+
+
+    public void onFragmentInteraction(Uri uri) {
     }
 }

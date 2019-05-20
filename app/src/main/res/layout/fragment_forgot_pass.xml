@@ -20,7 +20,7 @@
             android:shadowColor="@color/black"
             android:paddingEnd="15dp"
             android:layout_marginTop="10dp"
-            android:textColor="@color/grey"
+            android:textColor="@color/orange"
             android:fontFamily="@font/arbutus"
             android:background="@drawable/input_fields_white_borders"
             android:layout_width="wrap_content"
