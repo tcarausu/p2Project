@@ -307,13 +307,13 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 }
             });
-        }catch (Exception e){
-            Toast.makeText(getActivity(),"Error: Nothing to display",Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "Error: Nothing to display", Toast.LENGTH_SHORT).show();
             goTo(getActivity(), AddPostActivity.class);
         }
     }
 
-    private void goTo(Context context, Class<? extends AppCompatActivity > cl) {
+    private void goTo(Context context, Class<? extends AppCompatActivity> cl) {
         startActivity(new Intent(context, cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         getActivity().finish();

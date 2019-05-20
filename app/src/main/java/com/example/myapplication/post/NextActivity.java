@@ -178,7 +178,8 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
             progressDialog.setMessage("uploaded " + (int) progress + "%");
 
         }).addOnFailureListener(e ->
-                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());;
+                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
+        ;
     }
 
     @Override

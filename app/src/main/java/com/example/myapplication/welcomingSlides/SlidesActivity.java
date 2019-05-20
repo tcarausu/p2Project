@@ -20,7 +20,7 @@ import com.example.myapplication.login.LoginActivity;
 /**
  * by M.MSAAD
  **/
-public class SlidesActivity extends AppCompatActivity  {
+public class SlidesActivity extends AppCompatActivity {
     private static final String TAG = "SlidesActivity";
     private ViewPager slideViewPager;
     private LinearLayout dotsLayout;
@@ -44,21 +44,21 @@ public class SlidesActivity extends AppCompatActivity  {
         addDots(0);
         slideViewPager.addOnPageChangeListener(vl);
 
-
-
         mPrevious.setOnClickListener(v -> slideViewPager.setCurrentItem(mCurrentSlide - 1));
 
         mNext.setOnClickListener(v -> {
             slideViewPager.setCurrentItem(mCurrentSlide + 1);
             if (mNext.getText().equals("FINISH")) {
-                new Handler().postDelayed(() ->startActivity(mIntent), Toast.LENGTH_SHORT);
+                new Handler().postDelayed(() -> startActivity(mIntent), Toast.LENGTH_SHORT);
             }
         });
 
-        mSkip.setOnClickListener(v -> new Handler().postDelayed(() ->startActivity(mIntent), 500));
+        mSkip.setOnClickListener(v -> new Handler().postDelayed(() -> startActivity(mIntent), 500));
     }
-/**created by Mo.Msaad
- * */
+
+    /**
+     * created by Mo.Msaad
+     */
     private void verifyFirstRun() {
         SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
         boolean firstRun = prefs.getBoolean("prefs", true);
@@ -128,8 +128,7 @@ public class SlidesActivity extends AppCompatActivity  {
                 mPrevious.setVisibility(View.INVISIBLE);
                 mSkip.setVisibility(View.VISIBLE);
 
-            }
-            else if (mCurrentSlide == dots.length - 1) {
+            } else if (mCurrentSlide == dots.length - 1) {
                 mNext.setEnabled(true);
                 mPrevious.setEnabled(true);
                 mSkip.setEnabled(true);

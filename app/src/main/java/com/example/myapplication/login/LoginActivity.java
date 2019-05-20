@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +23,6 @@ import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.StringManipulation;
-
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -71,7 +69,7 @@ public class LoginActivity extends AppCompatActivity implements
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
 
-    private TextView signUp, orView,forget_pass;
+    private TextView signUp, orView, forget_pass;
     private Button login_button;
     private EditText mEmailField, mPasswordField;
     private FragmentManager fragmentManager;
@@ -156,10 +154,9 @@ public class LoginActivity extends AppCompatActivity implements
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (mAuth != null && currentUser != null ) {
+        if (mAuth != null && currentUser != null) {
             goToMainActivity();
-        }
-        else mAuth.signOut();
+        } else mAuth.signOut();
         LoginManager.getInstance().logOut();
         mGoogleSignInClient.signOut();
 
@@ -218,7 +215,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     // verification  if user has validated or not
     private void verifyAccount() {
-        try{
+        try {
             FirebaseUser user = mAuth.getCurrentUser();
             boolean isVerified = user.isEmailVerified(); // getting boolean true or false from database
 
@@ -229,8 +226,8 @@ public class LoginActivity extends AppCompatActivity implements
                 mAuth.signOut();
                 Toast.makeText(getApplicationContext(), "Please verify your account.", Toast.LENGTH_SHORT).show();
             }
-        }catch (NullPointerException e){
-            Toast.makeText(getApplicationContext(),"Somthing went wrong...",Toast.LENGTH_SHORT).show();
+        } catch (NullPointerException e) {
+            Toast.makeText(getApplicationContext(), "Somthing went wrong...", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -266,13 +263,13 @@ public class LoginActivity extends AppCompatActivity implements
                     if (task.isSuccessful()) {
 
                         final String displayName = task.getResult().getUser().getDisplayName();
-                        final  String email = task.getResult().getUser().getEmail();
-                        final   String photoURL = task.getResult().getUser().getPhotoUrl().toString();
+                        final String email = task.getResult().getUser().getEmail();
+                        final String photoURL = task.getResult().getUser().getPhotoUrl().toString();
                         final String phoneNumber = task.getResult().getUser().getPhoneNumber();
-                        Log.d(TAG, "google sign in result: "+"\n"+"displayName: "+displayName+"\n"+"email: "+email
-                                +"\n"+"phoneNumber: "+phoneNumber+"\n"+"PictureURL: "+photoURL);
+                        Log.d(TAG, "google sign in result: " + "\n" + "displayName: " + displayName + "\n" + "email: " + email
+                                + "\n" + "phoneNumber: " + phoneNumber + "\n" + "PictureURL: " + photoURL);
 
-                        verifyFirstFBLogin(email,displayName,photoURL);
+                        verifyFirstFBLogin(email, displayName, photoURL);
                         addUserToDataBase();
                         Log.d(Google_Tag, "signInWithCredential:success");
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
@@ -306,7 +303,7 @@ public class LoginActivity extends AppCompatActivity implements
                         String email = task.getResult().getUser().getEmail();
                         String username = task.getResult().getUser().getDisplayName();
                         String url = task.getResult().getUser().getPhotoUrl().toString();
-                        addNewUser(email,username,"facebook.user","website",url);
+                        addNewUser(email, username, "facebook.user", "website", url);
                         Log.d(TAG, "onComplete: uid: " + uid + "\n"
                                 + "email: " + email + "\n" + "username: " + username + "\n" + "url: " + url + "\n");
 
@@ -334,6 +331,7 @@ public class LoginActivity extends AppCompatActivity implements
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
     }
+
     private void addUserToDataBase() {
         final FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {

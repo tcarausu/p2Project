@@ -64,7 +64,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private SquareImageView mFoodImg;
     private CircleImageView mProfilePhoto;
     private ImageView optionsMenu, profileMenu, backArrow;
-    private TextView mUserName, mPostLikes, mPostDescription,  mPostTimeStamp;
+    private TextView mUserName, mPostLikes, mPostDescription, mPostTimeStamp;
     private ImageButton likesPost, recipePost, commentPost, ingredientsPost;
     private Toolbar toolbar;
     //vars
@@ -533,7 +533,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
                     if (mLikedByCurrentUser && Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
-                                    .equals(userId)) {
+                            .equals(userId)) {
                         mPostsRef
                                 .child(userId)
                                 .child(mPost.getPostId())

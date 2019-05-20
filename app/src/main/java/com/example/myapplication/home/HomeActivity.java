@@ -33,7 +33,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private String userUID;
     private FirebaseAuth mAuth;
-    private FirebaseUser current_user ;
+    private FirebaseUser current_user;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     /**
@@ -43,7 +43,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
-        mAuth = FirebaseAuth.getInstance() ;
+        mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
 
         initLayout();
@@ -118,8 +118,6 @@ public class HomeActivity extends AppCompatActivity {
 
     /**
      * checks to see if @param 'user'  is logged in
-     *
-     *
      */
     private void checkCurrentUser() {
         Log.d(TAG, "checkCurrentUser: checking if user is logged in");
@@ -128,7 +126,7 @@ public class HomeActivity extends AppCompatActivity {
             Toast.makeText(mContext, "Your have to Authenticate first before proceeding", Toast.LENGTH_SHORT).show();
             mAuth.signOut();
             LoginManager.getInstance().logOut();
-             sendUserToLogin();
+            sendUserToLogin();
         }
 
     }
@@ -141,12 +139,12 @@ public class HomeActivity extends AppCompatActivity {
         mAuthListener = firebaseAuth -> {
 
 
-                checkCurrentUser();
+            checkCurrentUser();
 
-                if (current_user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
-                } else Log.d(TAG, "onAuthStateChanged: signed out");
-            };
+            if (current_user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
+            } else Log.d(TAG, "onAuthStateChanged: signed out");
+        };
 
     }
 

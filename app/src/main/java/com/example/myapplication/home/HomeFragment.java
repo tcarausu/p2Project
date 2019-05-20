@@ -64,7 +64,6 @@ public class HomeFragment extends Fragment {
         getPostsInfo();
 
 
-
 //        GetData getData = new GetData();
 //        getData.execute();
 
@@ -73,110 +72,105 @@ public class HomeFragment extends Fragment {
     }
 
 
-
     private void getPostsInfo() {
-        try{
+        try {
             mDatabasePostRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.hasChildren()){
+                    if (!dataSnapshot.hasChildren()) {
                         goToPostActivity();
-                    }
-                    else
-                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                        String postUserId = userSnapshot.getKey();
-                        mUserId = firebaseUser.getUid();
+                    } else
+                        for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                            String postUserId = userSnapshot.getKey();
+                            mUserId = firebaseUser.getUid();
 
-                        mDatabaseUserRef = firebasedatabase.getReference("users/" + mUserId);
-                        mDatabaseUserPostRef = firebasedatabase.getReference("users/" + postUserId);
+                            mDatabaseUserRef = firebasedatabase.getReference("users/" + mUserId);
+                            mDatabaseUserPostRef = firebasedatabase.getReference("users/" + postUserId);
 
-                        Log.d(TAG, "onDataChange: mUserId :" + mUserId);
+                            Log.d(TAG, "onDataChange: mUserId :" + mUserId);
 
-                        for (DataSnapshot postSnapshot : userSnapshot.getChildren()) {
+                            for (DataSnapshot postSnapshot : userSnapshot.getChildren()) {
 
-                            // NOW JUST CREATE A USER IN THE DATABASE AND TEST
-                            final Post post = postSnapshot.getValue(Post.class);
-                            Log.d(TAG, "onDataChange: uid for user from post : " + post.getUserId());
+                                // NOW JUST CREATE A USER IN THE DATABASE AND TEST
+                                final Post post = postSnapshot.getValue(Post.class);
+                                Log.d(TAG, "onDataChange: uid for user from post : " + post.getUserId());
 
-                            Log.d(TAG, "onDataChange: username and profile pic : >>>> : " + mUsername + " " + mProfilePhoto);
+                                Log.d(TAG, "onDataChange: username and profile pic : >>>> : " + mUsername + " " + mProfilePhoto);
 
-                            List<Like> likeList = new ArrayList<>();
+                                List<Like> likeList = new ArrayList<>();
 
 
-                            for (DataSnapshot ds : postSnapshot.child("mLikes").getChildren()) {
-                                // TODO, likes if no like yet, it crushes,
+                                for (DataSnapshot ds : postSnapshot.child("mLikes").getChildren()) {
+                                    // TODO, likes if no like yet, it crushes,
                                     Like like = new Like();
                                     like.setUser_id(ds.getValue(Like.class).getUser_id());
                                     likeList.add(like);
 
 
-                            }
-                            post.setLikes(likeList);
-
-                            mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (mUserId.equals(postUserId)) {
-                                        final User user = dataSnapshot.getValue(User.class);
-                                        if (user.getUsername()== null){
-                                            mPosts.remove(post);
-                                            mDatabasePostRef.removeValue() ;
-                                        }
-
-                                        else
-                                        mUsername = user.getUsername();
-                                        mProfilePhoto = user.getProfile_photo();
-
-                                        mAdapter.setUserForPost(post, user);
-
-                                        Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
-                                    }
                                 }
+                                post.setLikes(likeList);
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-
-                         mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (!mUserId.equals(postUserId)) {
-                                        final User user = dataSnapshot.getValue(User.class);
-                                        try {
-                                            if (user.getUsername()== null){
+                                mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (mUserId.equals(postUserId)) {
+                                            final User user = dataSnapshot.getValue(User.class);
+                                            if (user.getUsername() == null) {
                                                 mPosts.remove(post);
-                                                mDatabasePostRef.removeValue() ;
-                                            }
-                                            else
-                                            mUsername = user.getUsername();
+                                                mDatabasePostRef.removeValue();
+                                            } else
+                                                mUsername = user.getUsername();
                                             mProfilePhoto = user.getProfile_photo();
 
                                             mAdapter.setUserForPost(post, user);
-                                        }catch (NullPointerException e){
+
                                             Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
-
                                         }
-
-                                        Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
                                     }
-                                }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                }
-                            });
+                                    }
+                                });
 
-                           mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
 
-                            mPosts.add(post);
-                            mAdapter.setPostsList(mPosts);
+                                mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (!mUserId.equals(postUserId)) {
+                                            final User user = dataSnapshot.getValue(User.class);
+                                            try {
+                                                if (user.getUsername() == null) {
+                                                    mPosts.remove(post);
+                                                    mDatabasePostRef.removeValue();
+                                                } else
+                                                    mUsername = user.getUsername();
+                                                mProfilePhoto = user.getProfile_photo();
+
+                                                mAdapter.setUserForPost(post, user);
+                                            } catch (NullPointerException e) {
+                                                Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
+
+                                            }
+
+                                            Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                                mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
+
+                                mPosts.add(post);
+                                mAdapter.setPostsList(mPosts);
+                            }
                         }
-                    }
                     mRecyclerView.setAdapter(mAdapter);
                 }
 
@@ -188,14 +182,14 @@ public class HomeFragment extends Fragment {
                 }
             });
 
-        }catch (Exception e){
-                Toast.makeText(getContext(),"Nothing to display! create a Post",Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Nothing to display! create a Post", Toast.LENGTH_SHORT).show();
 
         }
     }
 
     private void goToPostActivity() {
-        startActivity(new Intent(getActivity(), AddPostActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        startActivity(new Intent(getActivity(), AddPostActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         getActivity().finish();
     }
 

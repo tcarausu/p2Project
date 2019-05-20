@@ -53,6 +53,7 @@ public class AddPostActivity extends AppCompatActivity {
 
     /**
      * Used to get tabNumber in fragments
+     *
      * @return
      */
     public int getTabNumber() {
@@ -61,6 +62,7 @@ public class AddPostActivity extends AppCompatActivity {
 
     /**
      * Checking all permissions
+     *
      * @param permissions
      * @return
      */

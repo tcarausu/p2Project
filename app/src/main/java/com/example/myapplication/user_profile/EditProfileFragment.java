@@ -72,7 +72,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private TextView mChangeProfilePhoto, mPrivateInformation;
     private EditText mDisplayName, mWebsite, mAbout, mPhoneNumber;
     private TextView mEmail, mUserName;
-    private CircleImageView mProfilePhoto , smallProfilePic;
+    private CircleImageView mProfilePhoto, smallProfilePic;
     private ImageView backArrow, saveChanges;
 
     private FirebaseMethods firebaseMethods;
@@ -474,12 +474,11 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             if (besoins) {
                 uri = data.getData();
                 Glide.with(this).load(data.getData()).centerCrop().into(mProfilePhoto);
-            }
-                else if (besoins1) {
-                    uri = data.getData();
-                    Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
+            } else if (besoins1) {
+                uri = data.getData();
+                Glide.with(this).load(uri).centerCrop().into(mProfilePhoto);
 
-                }
+            }
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }

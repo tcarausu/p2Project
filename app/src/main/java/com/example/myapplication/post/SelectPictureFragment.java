@@ -103,7 +103,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == GALLERY_REQUEST ) {
+        if (resultCode == RESULT_OK && requestCode == GALLERY_REQUEST) {
             mUri = data.getData();
             Glide.with(getContext()).load(mUri).fitCenter().centerCrop().into(galleryImageView);
             intent.putExtra("imageUri", mUri.toString());
@@ -143,7 +143,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     // open gallery method
     private void selectPicture() {
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI );
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
     }
