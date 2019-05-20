@@ -52,18 +52,18 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.signup_fragment, container, false);// Inflate the layout for this fragment
         findWidgets(view);
 
-        goBack.setOnClickListener(v -> goToLogin());
-        signUpButton.setOnClickListener(v -> createUserWithEmail());
+        goBack.setOnClickListener(this);
+        signUpButton.setOnClickListener(this);
 
 
         return view;
     }
 
     private void findWidgets(View view) {
-        mEmail = view.findViewById(R.id.SignUpWithEmail_emailField_id);
+        mEmail = view.findViewById(R.id.email_field);
         mPassword = view.findViewById(R.id.pass_field);
         mConfirmPassword = view.findViewById(R.id.confirm_pass);
-        signUpButton = view.findViewById(R.id.SignupWithPhoneFragment_sendCodeButton);
+        signUpButton = view.findViewById(R.id.sign_up);
         goBack = view.findViewById(R.id.back_button);
     }
 

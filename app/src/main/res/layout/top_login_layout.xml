@@ -60,7 +60,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@id/button_id_logIn"
+            android:id="@+id/normal_login_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/passAndUserMail"
@@ -89,7 +89,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/button_id_logIn"
+            android:layout_below="@+id/normal_login_layout"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:gravity="center">
