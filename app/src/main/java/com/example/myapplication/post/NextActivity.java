@@ -57,17 +57,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
         findWidgets();
-        Intent intent = getIntent();
-        imageUri = intent.getStringExtra("imageUri");
-        Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewfood);
-        mUploadTextView.setOnClickListener(this);
-
-        mBackImageView.setOnClickListener(this);
-
         mAuth = FirebaseAuth.getInstance();
-        firebaseMethods = new FirebaseMethods(getApplicationContext());
-
         current_user = mAuth.getCurrentUser();
+        firebaseMethods = new FirebaseMethods(getApplicationContext());
         mStorageRef = FirebaseStorage.getInstance().getReference();
         String databasePath = "posts/" + mAuth.getUid() + "/";
         String databasePathPic = "users/" + mAuth.getUid();
@@ -109,6 +101,8 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+
+
     private void findWidgets() {
 
         mImageDesc = findViewById(R.id.image_desc_edittext);
@@ -120,9 +114,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
         imageUri = getIntent().getStringExtra("imageUri");
         Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewfood);
-
         mUploadTextView.setOnClickListener(this);
         mBackImageView.setOnClickListener(this);
+
     }
 
 

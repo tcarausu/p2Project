@@ -28,17 +28,11 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();// always call mAuth here. this is the first method called
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View v = inflater.inflate(R.layout.fragment_forgot_pass, container, false);
+        mAuth = FirebaseAuth.getInstance();
         findWidgets(v);
         goBack.setOnClickListener(this);
         sendPassRequest.setOnClickListener(this);
@@ -48,9 +42,9 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
 
     private void findWidgets(View v){
 
-        emailField = v.findViewById(R.id.email_field);
-        goBack = v.findViewById(R.id.back_button);
-        sendPassRequest = v.findViewById(R.id.sendPassRequest);
+        emailField = v.findViewById(R.id.ForgotPass_email_field);
+        goBack = v.findViewById(R.id.ForgotPass_back_button);
+        sendPassRequest = v.findViewById(R.id.Forgotpass_resetPass_button);
 
 
     }
@@ -96,13 +90,11 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.back_button:
-                getActivity().finish();
-
-
+            case R.id.ForgotPass_back_button:
+                ((LoginActivity)getActivity()).goTosWithFlags(getContext(),LoginActivity.class);
                 break;
 
-            case R.id.sendPassRequest:
+            case R.id.Forgotpass_resetPass_button:
                 sendPassResetMail();
                 break;
         }

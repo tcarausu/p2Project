@@ -1,5 +1,7 @@
 package com.example.myapplication.user_profile;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -38,19 +40,23 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     public void onGridImageSelected(Post post, int activityNr) {
         Log.d(TAG, "onGridImageSelected: selected an image gridView:" + post.toString());
 
-//        ViewPostFragment fragment = new ViewPostFragment();
+
         ViewPostFragmentNewsFeed fragment = new ViewPostFragmentNewsFeed();
         Bundle args = new Bundle();
-
         args.putParcelable(getString(R.string.post), post);
         args.putInt(getString(R.string.activity_number), activityNr);
         fragment.setArguments(args);
-
         FragmentTransaction transaction = UserProfileActivity.this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, fragment);
-
         transaction.addToBackStack(getString(R.string.view_post_fragment));
         transaction.commit();
+
+    }
+
+
+    public void gotos(Context context, Class<? extends AppCompatActivity> cl){
+        startActivity(new Intent(context,cl)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
 
     }
 

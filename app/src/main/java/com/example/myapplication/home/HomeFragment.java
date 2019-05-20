@@ -134,7 +134,6 @@ public class HomeFragment extends Fragment {
 
                                 List<Like> likeList = new ArrayList<>();
 
-
                                 for (DataSnapshot ds : postSnapshot.child("mLikes").getChildren()) {
                                     // TODO, likes if no like yet, it crushes,
                                     Like like = new Like();

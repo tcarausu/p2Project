@@ -1,71 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/back3"
-    android:gravity="center_horizontal"
-    tools:context=".login.ForgotPassFragment">
-
-
-    <LinearLayout
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
+    android:animateLayoutChanges="true">
 
         <Button
-            android:id="@+id/back_button"
+            android:id="@+id/ForgotPass_back_button"
+            android:animateLayoutChanges="true"
             style="@android:style/Widget.Holo.Button.Borderless"
             android:drawableStart="@drawable/orange_arrow_left"
             android:layout_gravity="start"
             android:text="@string/go_back_signUpFragment"
-            android:paddingEnd="10dp"
-            android:textColor="@color/darkOrange"
+            android:shadowDx="5"
+            android:shadowRadius="10"
+            android:shadowColor="@color/black"
+            android:paddingEnd="15dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/grey"
             android:fontFamily="@font/arbutus"
             android:background="@drawable/input_fields_white_borders"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:clickable="false"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="150dp"
-        android:gravity="center"
-        android:orientation="vertical">
-
-
+            android:layout_height="wrap_content"/>
 
         <TextView
-            android:clickable="false"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="false"
+            android:animateLayoutChanges="true"
+            android:focusable="false"
+            android:id="@+id/ForfotPass_titleText"
+            android:layout_below="@id/ForgotPass_back_button"
+            android:layout_marginTop="15dp"
+            android:layout_centerHorizontal="true"
+            android:drawableBottom="@drawable/dash_icon_white"
             android:fontFamily="@font/almendra"
-            android:foregroundGravity="top"
-            android:gravity="center"
             android:shadowColor="@color/black"
-            android:paddingBottom="20dp"
+            android:shadowDx="5"
             android:shadowRadius="10"
             android:text="@string/forgot_password_text"
             android:textColor="@color/white"
-            android:drawableBottom="@drawable/dash_icon_white"
             android:textSize="24sp" />
 
-        <LinearLayout
-            android:id="@+id/forgotPassLayID"
+        <RelativeLayout
+
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_gravity="center_horizontal"
             android:background="@color/grey"
-            android:gravity="center"
+            android:layout_centerInParent="true"
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/email_field"
+                android:id="@+id/ForgotPass_email_field"
                 android:paddingEnd="15dp"
                 android:paddingStart="15dp"
                 android:layout_width="wrap_content"
@@ -74,29 +64,27 @@
                 android:hint="@string/hint_forgot_password_email"
                 android:inputType="textEmailAddress"
                 android:padding="10dp"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="10dp"
                 android:textColorHint="@color/orange" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-
-
                 <Button
-                    android:id="@+id/sendPassRequest"
+                    android:id="@+id/Forgotpass_resetPass_button"
                     android:drawableStart="@drawable/email_icone"
                     android:layout_marginTop="10dp"
                     android:padding="10dp"
                     android:background="@drawable/input_fields_orange_borders"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/ForgotPass_email_field"
                     android:textColor="@color/orangeMainTheme"
                     android:text="@string/button_send_password" />
 
-            </LinearLayout>
 
-        </LinearLayout>
 
-    </LinearLayout>
+        </RelativeLayout>
+
+
 
 </RelativeLayout>

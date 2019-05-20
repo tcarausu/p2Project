@@ -1,6 +1,7 @@
 package com.example.myapplication.user_profile;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,6 +25,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
+import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.SquareImageView;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
@@ -65,9 +67,10 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private SquareImageView mFoodImg;
     private CircleImageView mProfilePhoto;
     private ImageView optionsMenu, profileMenu, backArrow;
-    private TextView mUserName, mPostLikes, mPostDescription,  mPostTimeStamp;
+    private TextView mUserName, mPostLikes, mPostDescription, mPostTimeStamp;
     private ImageButton likesPost, recipePost, commentPost, ingredientsPost;
     private Toolbar toolbar;
+
     //vars
     private BottomNavigationViewEx bottomNavigationViewEx;
     private Post mPost;
@@ -81,7 +84,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     public String mLikesString = "Likes string";
 
     public ViewPostFragmentNewsFeed() {
-        super();
         setArguments(new Bundle());
     }
 
@@ -93,11 +95,9 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         mAuth = FirebaseAuth.getInstance();
         userId = mAuth.getCurrentUser().getUid();
 
-
         setupFirebaseAuth();
         initLayout(view);
         setListeners(view);
-
         setupBottomNavigationView();
 
         return view;
@@ -109,11 +109,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         mFoodImg = view.findViewById(R.id.foodImgID);
         mPostDescription = view.findViewById(R.id.postDescriptionID);
 
-
         mPostLikes = view.findViewById(R.id.post_likes);
         mPostTimeStamp = view.findViewById(R.id.post_TimeStamp);
-
-
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
 
         try {
@@ -130,8 +127,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     }
 
     private void setListeners(View view) {
-        optionsMenu = view.findViewById(R.id.options_menu);
-        profileMenu = view.findViewById(R.id.show_more);
+        optionsMenu = view.findViewById(R.id.personal_post_options_menu);
+        profileMenu = view.findViewById(R.id.account_settings_options);
         backArrow = view.findViewById(R.id.backArrow);
 
         likesPost = view.findViewById(R.id.likes_button);
@@ -198,9 +195,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     }
 
     private void getPhotoDetails() {
-
         Query query = mUserRef.child(mAuth.getCurrentUser().getUid());
-
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -211,7 +206,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
                 } else {
                     Log.d(TAG, "onDataChange: There is no data: " + dataSnapshot.getValue(User.class).getProfile_photo());
-
                 }
 
             }
@@ -229,7 +223,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private void setupWidgets() {
         String timeStampDiff = getTimeStampDifference();
         if (!timeStampDiff.equals(String.valueOf(0))) {
-            mPostTimeStamp.setText(String.format("%s Days Ago",timeStampDiff ));
+            mPostTimeStamp.setText(String.format("%s Days Ago", timeStampDiff));
         } else {
             mPostTimeStamp.setText("Today");
         }
@@ -340,7 +334,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 .child(mPost.getPostId())
                 .child(getString(R.string.field_likes))
                 .getRef();
-
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -472,17 +465,103 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         getLikesString();
     }
 
+    private void dialogChoice() {
+
+        final CharSequence[] options = {"Edit", "Delete", "Report", "Cancel"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Are you sure you want to sign out?");
+        builder.setIcon(R.drawable.chefood);
+
+        builder.setItems(options, (dialog, which) -> {
+            if (options[which].equals("Edit")) {
+                Toast.makeText(getContext(), "Edit is clicked", Toast.LENGTH_SHORT).show();
+
+            } else if (options[which].equals("Delete")) {
+                Toast.makeText(getContext(), "Delete is clicked", Toast.LENGTH_SHORT).show();
+                deletePost();
+
+
+            } else if (options[which].equals("Report")) {
+                Toast.makeText(getContext(), "Report is clicked", Toast.LENGTH_SHORT).show();
+
+            } else if (options[which].equals("CANCEL")) {
+                Toast.makeText(getContext(), "CANCEL is clicked", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+
+        });
+
+        builder.show();
+
+    }
+
+
+    /**
+     * @author: Mo.Msaad
+     * @use: deletes the current displayed post with all its data
+     **/
+    private void deletePost() {
+
+        try {
+
+            DatabaseReference currentPostRef = mPostsRef.child(mAuth.getCurrentUser().getUid()).child(mPost.getPostId());
+            ProgressDialog progressDialog = new ProgressDialog(this.getContext());
+            progressDialog.setTitle("Deleting");
+            progressDialog.setIcon(R.drawable.chefood);
+            progressDialog.setCanceledOnTouchOutside(false);
+
+
+            progressDialog.setMessage("Deleting post, please wait for task to finish");
+            progressDialog.show();
+
+            Log.d(TAG, "PostDeleted currentPostRef: " + currentPostRef.getRef());
+
+            currentPostRef.removeValue(new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    progressDialog.dismiss();
+                    currentPostRef.removeValue();
+                    ((UserProfileActivity)getActivity()).gotos(getContext(),UserProfileActivity.class);
+                }
+
+            });
+        } catch (NullPointerException e) {
+            Log.d(TAG, "deletePost: error: " + e.getMessage());
+            Toast.makeText(getContext(), "Error occured, " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
+    private void editPost() {
+
+        Intent editPostIntent = new Intent(getContext(), AddPostActivity.class);
+        editPostIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        editPostIntent.putExtra("ingredients",mPost.getmIngredients());
+        editPostIntent.putExtra("recipe",mPost.getmRecipe());
+        editPostIntent.putExtra("ingredients",mPost.getmIngredients());
+        editPostIntent.putExtra("postImage",mPost.getmFoodImgUrl());
+        startActivity(editPostIntent);
+    }
+
+    private void reportPost() {
+
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.show_more:
+            case R.id.account_settings_options:
 
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
-                Log.d(TAG, "onClick: navigating to account settings");
-
                 startActivity(new Intent(getActivity(), AccountSettingsActivity.class));
 
+                break;
+
+            case R.id.personal_post_options_menu:
+                dialogChoice();
+                Toast.makeText(getActivity(), "Make Delete/Report Dialogue", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.commentsBtnID:
@@ -498,11 +577,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             case R.id.recipeBtnID:
                 Toast.makeText(getActivity(), "recipe", Toast.LENGTH_SHORT).show();
 
-                break;
-
-            case R.id.options_menu:
-                dialogChoice();
-                Toast.makeText(getActivity(), "Make Delete/Report Dialogue", Toast.LENGTH_SHORT).show();
                 break;
 
 
@@ -522,35 +596,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     }
 
-    private void dialogChoice() {
-
-        final CharSequence[] options = {"Edit","Delete","Report","Cancel"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Are you sure you want to sign out?");
-        builder.setIcon(R.drawable.chefood);
-
-        builder.setItems(options, (dialog, which) -> {
-            if (options[which].equals("SIGN-Edit")) {
-                Toast.makeText(getContext(),"Edit is clicked",Toast.LENGTH_SHORT).show();
-
-            } else if (options[which].equals("Delete")) {
-                Toast.makeText(getContext(),"Delete is clicked",Toast.LENGTH_SHORT).show();
-
-
-            } else if (options[which].equals("Report")) {
-                Toast.makeText(getContext(),"Report is clicked",Toast.LENGTH_SHORT).show();
-
-            } else if (options[which].equals("CANCEL")) {
-                Toast.makeText(getContext(),"CANCEL is clicked",Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            }
-
-        });
-
-        builder.show();
-
-    }
-
     public void toggleLikes() {
         Query query = mPostsRef
                 .child(userId)
@@ -565,7 +610,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
                     if (mLikedByCurrentUser && Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
-                                    .equals(userId)) {
+                            .equals(userId)) {
                         mPostsRef
                                 .child(userId)
                                 .child(mPost.getPostId())
@@ -598,5 +643,4 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             }
         });
     }
-
 }
