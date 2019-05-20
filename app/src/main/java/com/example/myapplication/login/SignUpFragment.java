@@ -80,7 +80,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         //checking if any is empty or pass doesn't match, the rest mAuth takes care of
         if (TextUtils.isEmpty(email)) {
             mEmail.setError("Required");
-            Toast.makeText(getContext(), "Please type in email or phone", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please type in a valid email", Toast.LENGTH_SHORT).show();
 
         } else if (TextUtils.isEmpty(password)) {
             mPassword.setError("Required");
@@ -93,7 +93,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
 
             mPassword.setError("");
             mConfirmPassword.setError("");
-            Toast.makeText(getContext(), "Error: MUST match Password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Error: Password must match confirm password. Try again", Toast.LENGTH_SHORT).show();
 
         }  else {
             loadingBar.setTitle("Creating account...");
