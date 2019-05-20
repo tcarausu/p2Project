@@ -170,7 +170,7 @@ public class FirebaseMethods {
                                     .getFollowing()
                     );
 
-                    user.setPosts(
+                    user.setNrPosts(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getPosts()

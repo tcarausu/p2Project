@@ -26,12 +26,12 @@ public class Post implements Parcelable {
             mDescription = "No description available";
         }
         this.mDescription = mDescription;
-        this.date_created = date_created;
         this.mFoodImgUrl = mFoodImgUrl;
         this.mRecipe = mRecipe;
         this.mIngredients = mIngredients;
         this.userId = userId;
         this.postId = postId;
+        this.date_created = date_created;
         this.likes = likes;
     }
 
@@ -39,12 +39,11 @@ public class Post implements Parcelable {
     protected Post(Parcel in) {
         mDescription = in.readString();
         mFoodImgUrl = in.readString();
-        mIngredients = in.readString();
         mRecipe = in.readString();
-        date_created = in.readString();
+        mIngredients = in.readString();
         userId = in.readString();
         postId = in.readString();
-
+        date_created = in.readString();
     }
 
     public static final Parcelable.Creator<Post> CREATOR = new Parcelable.Creator<Post>() {
@@ -153,12 +152,15 @@ public class Post implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mDescription);
-        dest.writeString(date_created);
         dest.writeString(mFoodImgUrl);
-        dest.writeString(mIngredients);
         dest.writeString(mRecipe);
+        dest.writeString(mIngredients);
         dest.writeString(userId);
         dest.writeString(postId);
+        dest.writeString(date_created);
     }
 
+//    public Post getDataFromPost() {
+//        return new Post(mDescription, mFoodImgUrl, mRecipe, mIngredients, userId, postId, date_created, likes);
+//    }
 }
