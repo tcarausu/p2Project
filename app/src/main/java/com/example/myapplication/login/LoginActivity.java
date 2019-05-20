@@ -99,9 +99,6 @@ public class LoginActivity extends AppCompatActivity implements
         user_ref = firebaseDatabase.getReference("users");
         myRef = firebaseDatabase.getReference();
 
-        fragmentManager = getSupportFragmentManager();
-
-
         initLayout();
         buttonListeners();
     }
@@ -109,9 +106,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     public void initLayout() {
         mContext = LoginActivity.this;
-
         fragmentManager = getSupportFragmentManager();
-
         mEmailField = findViewById(R.id.email_id_logIn);
         mPasswordField = findViewById(R.id.password_id_logIn);
         loginLayout = findViewById(R.id.login_activity);
@@ -122,7 +117,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     public void buttonListeners() {
 
-        findViewById(R.id.button_id_logIn).setOnClickListener(this);
+        findViewById(R.id.button_id_log_in).setOnClickListener(this);
         findViewById(R.id.googleSignInButton).setOnClickListener(this);
         findViewById(R.id.textView_id_forgotPass_logIn).setOnClickListener(this);
 
@@ -167,7 +162,23 @@ public class LoginActivity extends AppCompatActivity implements
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
 
+       verifyDataBaseState();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        verifyDataBaseState();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        verifyDataBaseState();
+    }
+
+    private void verifyDataBaseState() {
         if (mAuth != null && currentUser != null ) {
             goTosWithFlags(getApplicationContext(),HomeActivity.class);
         }
@@ -181,15 +192,12 @@ public class LoginActivity extends AppCompatActivity implements
                 System.exit(1);
             }
         }
-
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
+        verifyDataBaseState();
     }
 
     // sign in with email method
@@ -372,7 +380,7 @@ public class LoginActivity extends AppCompatActivity implements
 
         switch (v.getId()) {
 
-            case R.id.button_id_logIn:
+            case R.id.button_id_log_in:
                 signInWithEmail();
 
                 break;

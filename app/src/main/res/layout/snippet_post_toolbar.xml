@@ -36,7 +36,7 @@
                     android:textSize="20sp" />
 
                 <ImageView
-                    android:id="@+id/show_more"
+                    android:id="@+id/account_settings_options"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"

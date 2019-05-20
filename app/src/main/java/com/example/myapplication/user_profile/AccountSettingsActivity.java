@@ -199,7 +199,7 @@ public class AccountSettingsActivity extends AppCompatActivity
 
     }
 
-    private void goToLogin(Context applicationContext, Class<LoginActivity> cl) {
+    public void goToLogin(Context applicationContext, Class<LoginActivity> cl) {
         startActivity(new Intent(applicationContext,cl)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
