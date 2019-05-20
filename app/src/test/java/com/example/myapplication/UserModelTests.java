@@ -1,4 +1,4 @@
-package com.example.myapplication.test.java.com.example.myapplication;
+package com.example.myapplication;
 
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.User;

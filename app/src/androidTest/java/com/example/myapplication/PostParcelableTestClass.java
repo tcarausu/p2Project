@@ -1,4 +1,4 @@
-package com.example.myapplication.androidTest.java.com.example.myapplication;
+package com.example.myapplication;
 
 import android.os.Parcel;
 import android.support.test.filters.SmallTest;
