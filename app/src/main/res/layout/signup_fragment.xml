@@ -27,7 +27,7 @@
         android:drawableStart="@drawable/orange_arrow_left"
         android:background="@drawable/input_fields_orange_borders"
         android:fontFamily="@font/arbutus"
-        android:textColor="@color/darkOrange"
+        android:textColor="@color/orange"
         android:text="@string/go_back_signUpFragment" />
 
     <EditText

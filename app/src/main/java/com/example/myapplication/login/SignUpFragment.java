@@ -175,7 +175,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
 
             case R.id.SignUpFragmnt_back_button:
-                getActivity().finish();
+                ((LoginActivity)getActivity()).goTosWithFlags(getActivity(),LoginActivity.class);
                 break;
 
             case R.id.SignUpFragmnt_sign_upButton:
