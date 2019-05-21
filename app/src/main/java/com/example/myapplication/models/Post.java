@@ -1,4 +1,3 @@
-
 package com.example.myapplication.models;
 
 public class Post {
@@ -11,7 +10,6 @@ public class Post {
     private String mRecipe;
     private String mIngredients;
     private String userId;
-
 
     public String getUserId() {
         return userId;
