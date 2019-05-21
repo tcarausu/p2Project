@@ -431,6 +431,8 @@ public class LoginActivity extends AppCompatActivity implements
                 Fragment fragmentForgotPass = fragmentManager.findFragmentById(R.id.useThisFragmentID);
 
                 if (fragmentForgotPass == null) {
+                    Toast.makeText(this, "Forget password", Toast.LENGTH_SHORT).show();
+
                     fragmentForgotPass = new ForgotPassFragment();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -439,10 +441,11 @@ public class LoginActivity extends AppCompatActivity implements
                 }
                 break;
             case R.id.sign_up:
-                Toast.makeText(this, "Register using fragment me", Toast.LENGTH_SHORT).show();
                 Fragment fragmentRegister = fragmentManager.findFragmentById(R.id.useThisFragmentID);
 
                 if (fragmentRegister == null) {
+                    Toast.makeText(this, "Sign Up", Toast.LENGTH_SHORT).show();
+
                     fragmentRegister = new SignUpFragment();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 

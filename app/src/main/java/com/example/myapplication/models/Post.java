@@ -160,7 +160,5 @@ public class Post implements Parcelable {
         dest.writeString(date_created);
     }
 
-//    public Post getDataFromPost() {
-//        return new Post(mDescription, mFoodImgUrl, mRecipe, mIngredients, userId, postId, date_created, likes);
-//    }
+
 }
