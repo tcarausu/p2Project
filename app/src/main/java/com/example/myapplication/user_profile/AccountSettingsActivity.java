@@ -30,8 +30,8 @@ import java.util.Collections;
 /**
  * File created by tcarau18
  **/
-public class AccountSettingsActivity extends AppCompatActivity
-        implements View.OnClickListener {
+public class AccountSettingsActivity extends AppCompatActivity implements View.OnClickListener {
+
     private static final String TAG = "AccountSettingsActivity";
     private static final int ACTIVITY_NUM = 4;
 
@@ -40,11 +40,11 @@ public class AccountSettingsActivity extends AppCompatActivity
     private FirebaseMethods mFirebaseMethods ;
 //    private GoogleSignInClient mGoogleSignInClient;
 
-    private ListView listView;
 
     private SectionsStatePagerAdapter pagerAdapter;
     private ViewPager mViewPager;
     private RelativeLayout mRelativeLayout;
+    private ListView listView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class AccountSettingsActivity extends AppCompatActivity
     public void onClick(View v) {
         if (v.getId() == R.id.backArrow) {
             Log.d(TAG, "onClick: navigating to account settings");
-            finish();
+            goTosWithFlags(getApplicationContext(),UserProfileActivity.class);
         }
 
     }
@@ -84,7 +84,7 @@ public class AccountSettingsActivity extends AppCompatActivity
         super.onStart();
         if (mFirebaseMethods.checkUserStateIfNull()) {
             mFirebaseMethods.logOut();
-            goToLogin(AccountSettingsActivity.this, LoginActivity.class);
+            goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
         }
 
     }
@@ -94,7 +94,7 @@ public class AccountSettingsActivity extends AppCompatActivity
         super.onResume();
         if (mFirebaseMethods.checkUserStateIfNull()) {
             mFirebaseMethods.logOut();
-            goToLogin(AccountSettingsActivity.this, LoginActivity.class);
+            goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
         }
 
     }
@@ -104,7 +104,7 @@ public class AccountSettingsActivity extends AppCompatActivity
         super.onPause();
         if (mFirebaseMethods.checkUserStateIfNull()) {
             mFirebaseMethods.logOut();
-            goToLogin(AccountSettingsActivity.this, LoginActivity.class);
+            goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
         }
     }
 
@@ -186,7 +186,7 @@ public class AccountSettingsActivity extends AppCompatActivity
                 ProgressBar mProgressBar = new ProgressBar(this);
                 mProgressBar.setVisibility(View.VISIBLE);
 
-                goToLogin(getApplicationContext(),LoginActivity.class);
+                goTosWithFlags(getApplicationContext(),LoginActivity.class);
                 Toast.makeText(getApplicationContext(), "Successful Sign Out", Toast.LENGTH_SHORT).show();
 
             } else if (options[which].equals("CANCEL")) {
@@ -199,7 +199,7 @@ public class AccountSettingsActivity extends AppCompatActivity
 
     }
 
-    public void goToLogin(Context applicationContext, Class<LoginActivity> cl) {
+    public void goTosWithFlags(Context applicationContext, Class<? extends AppCompatActivity> cl) {
         startActivity(new Intent(applicationContext,cl)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();

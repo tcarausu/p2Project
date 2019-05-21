@@ -37,17 +37,14 @@
                 android:layout_centerHorizontal="true"
                 android:textAlignment="center"
                 android:text="@string/change_photo"
-                android:padding="10dp"
-                android:shadowRadius="10"
-                android:shadowDx="5"
-                android:shadowColor="@color/black"
+                android:padding="5dp"
                 android:background="@drawable/input_fields_with_shadow"
-                android:fontFamily="@font/arbutus"
                 android:textColor="@color/orange"
                 android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/hint_text"
+                android:textColor="@color/website_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -160,6 +157,7 @@
             </RelativeLayout>
 
             <TextView
+
                 android:id="@+id/privateInformation"
                 android:layout_width="wrap_content"
                 android:drawableBottom="@drawable/dash_icon"
@@ -167,10 +165,8 @@
                 android:layout_below="@+id/relLayout4"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp"
-                android:background="@drawable/grey_border_bottom"
                 android:text="@string/private_information"
-                android:textColor="@color/orange"
-                android:fontFamily="@font/almendra"
+                android:textColor="@color/darkOrange"
                 android:textSize="25sp" />
 
 

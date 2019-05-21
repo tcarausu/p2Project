@@ -19,6 +19,7 @@
             android:shadowRadius="10"
             android:shadowColor="@color/black"
             android:paddingEnd="15dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:textColor="@color/orange"
             android:fontFamily="@font/arbutus"

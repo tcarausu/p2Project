@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/relLayout1"
-                android:background="@drawable/grey_border_bottom">
+                android:background="@drawable/input_fields_rec_with_shadow">
 
                 <ImageView
                     android:id="@+id/image_tobe_shared"
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/relLayout2"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/grey_border_bottom">
+                android:background="@drawable/input_fields_rec_with_shadow">
 
                 <EditText
                     android:id="@+id/image_ingredients_edittext"
@@ -80,11 +80,12 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:background="@drawable/input_fields_rec_with_shadow"
                 android:id="@id/relLayout4"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/relLayout3"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/grey_border_bottom">
+                >
 
                 <EditText
                     android:id="@+id/image_recipe_edittext"

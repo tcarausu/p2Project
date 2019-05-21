@@ -17,8 +17,7 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:background="@drawable/input_fields_round"
-                    android:id="@+id/close_share"
+                    android:background="@drawable/input_fields_with_shadow"                    android:id="@+id/close_share"
                     android:padding="5dp"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -27,7 +26,7 @@
                     android:onClick="onClick"
                     android:clickable="true"
                     android:focusable="true"
-                    android:src="@drawable/white_arrow_back" />
+                    android:src="@drawable/orange_arrow_left" />
 
                 <TextView
 
@@ -35,16 +34,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/upload"
                     android:textStyle="bold"
-                    android:fontFamily="@font/arbutus"
-                    android:background="@drawable/input_fields_round"
+
+                    android:background="@drawable/input_fields_with_shadow"
                     android:padding="10dp"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="15sp"
                     android:textSize="16sp"
-                    android:textColor="@color/white"
-                    android:shadowColor="@color/black"
-                    android:shadowDx="5"
-                    android:shadowRadius="10"
+                    android:textColor="@color/orange"
                     android:layout_centerVertical="true"
                     android:id="@+id/textview_share"/>
 
