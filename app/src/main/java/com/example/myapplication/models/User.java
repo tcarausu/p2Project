@@ -78,7 +78,7 @@ public class User {
         return posts;
     }
 
-    public void setPosts(long posts) {
+    public void setNrPosts(long posts) {
         this.posts = posts;
     }
 

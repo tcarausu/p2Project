@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/orangeMainTheme"
+    android:orientation="vertical"
     tools:context=".post.NextActivity">
 
     <ScrollView
@@ -13,7 +12,7 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="0dp">
 
             <RelativeLayout
@@ -36,27 +35,29 @@
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginBottom="40dp"
+                    android:contentDescription="@string/selected_image"
                     android:scaleType="centerCrop" />
 
                 <EditText
                     android:id="@+id/image_desc_edittext"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="100sp"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="20dp"
-
                     android:layout_toEndOf="@+id/image_tobe_shared"
                     android:background="@null"
-                    android:hint="@string/image_description_share" />
+                    android:hint="@string/image_description_share"
+                    android:importantForAutofill="no"
+                    tools:targetApi="o" />
 
             </RelativeLayout>
 
 
             <RelativeLayout
-                android:layout_width="match_parent"
                 android:id="@id/relLayout3"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/relLayout2"
                 android:layout_marginTop="20dp"
@@ -65,21 +66,22 @@
                 <EditText
                     android:id="@+id/image_ingredients_edittext"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="120sp"
                     android:layout_alignParentTop="true"
                     android:layout_centerInParent="true"
                     android:layout_marginStart="20dp"
-                    android:layout_marginBottom="40dp"
+                    android:layout_marginBottom="0dp"
                     android:background="@null"
-                    android:hint="@string/image_ingredients_share" />
+                    android:hint="@string/image_ingredients_share"
+                    android:importantForAutofill="no"
+                    tools:targetApi="o" />
 
             </RelativeLayout>
 
 
-
             <RelativeLayout
-                android:layout_width="match_parent"
                 android:id="@id/relLayout4"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/relLayout3"
                 android:layout_marginTop="20dp"
@@ -88,18 +90,19 @@
                 <EditText
                     android:id="@+id/image_recipe_edittext"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="120sp"
                     android:layout_alignParentTop="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginBottom="40dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="0dp"
                     android:background="@null"
-                    android:hint="@string/string_recipe" />
+                    android:hint="@string/string_recipe"
+                    android:importantForAutofill="no"
+                    tools:targetApi="o" />
 
             </RelativeLayout>
 
-
-
         </RelativeLayout>
+
     </ScrollView>
 </LinearLayout>

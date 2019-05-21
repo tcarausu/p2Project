@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
+    android:clickable="true"
+    android:focusable="true"
     android:gravity="center_horizontal"
     tools:context=".login.ForgotPassFragment">
 
@@ -20,12 +22,12 @@
         <Button
             android:id="@+id/back_button"
             style="@android:style/Widget.Holo.Button.Borderless"
-            android:drawableStart="@drawable/arrow_left"
-            android:layout_gravity="start"
-            android:text="Go back"
-            android:fontFamily="@font/almendra"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:drawableStart="@drawable/arrow_left"
+            android:fontFamily="@font/almendra"
+            android:text="Go back" />
 
         <TextView
 
@@ -51,13 +53,13 @@
 
             <EditText
                 android:id="@+id/email_field"
-                android:paddingEnd="15dp"
-                android:paddingStart="15dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/buttons_design"
                 android:hint="@string/hint_forgot_password_email"
+                android:paddingStart="15dp"
                 android:paddingTop="5dp"
+                android:paddingEnd="15dp"
                 android:paddingBottom="5dp"
 
                 android:textColorHint="@color/white" />
@@ -67,17 +69,16 @@
                 android:layout_height="wrap_content">
 
 
-
                 <Button
                     android:id="@+id/sendPassRequest"
-                    android:drawableStart="@drawable/email_icone"
-                    android:layout_marginTop="10dp"
-                    android:padding="10dp"
-                    android:background="@drawable/input_fields"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/orangeMainTheme"
-                    android:text="@string/button_send_password" />
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/input_fields"
+                    android:drawableStart="@drawable/email_icone"
+                    android:padding="10dp"
+                    android:text="@string/button_send_password"
+                    android:textColor="@color/orangeMainTheme" />
 
             </LinearLayout>
 

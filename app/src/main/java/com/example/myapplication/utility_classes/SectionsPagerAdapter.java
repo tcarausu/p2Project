@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * File created by tcarau18
- *
+ * <p>
  * Class for storing fragment tabs
  **/
 public class SectionsPagerAdapter extends FragmentPagerAdapter {

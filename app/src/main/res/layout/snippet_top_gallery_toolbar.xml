@@ -16,7 +16,7 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/close_share"
+                    android:id="@+id/close_post"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_centerVertical="true"
@@ -27,7 +27,7 @@
                 <Spinner
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/close_share"
+                    android:layout_toEndOf="@id/close_post"
                     android:id="@+id/spinner_direct"
                     android:layout_centerVertical="true"
                     android:gravity="center_vertical">

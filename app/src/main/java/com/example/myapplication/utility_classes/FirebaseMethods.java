@@ -100,14 +100,15 @@ public class FirebaseMethods {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
                     //add username
-                    updateUsername(userName, displayName,website,about,phone,profile_url );
-                    Log.d(TAG, "onDataChange: saved username and displayname: "+userName+" "+displayName);
+                    updateUsername(userName, displayName, website, about, phone, profile_url);
+                    Log.d(TAG, "onDataChange: saved username and displayname: " + userName + " " + displayName);
 
                 } else {
                     Log.d(TAG, "onDataChange: Found a Match: " + dataSnapshot.getValue(User.class).getUsername());
                 }
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -119,6 +120,7 @@ public class FirebaseMethods {
     /**
      * Retrieves the account settings for the User currently logged in
      * Database:user_account_settings node
+     *
      * @param dataSnapshot represent the data from database
      * @return the User Account Settings
      */
@@ -170,7 +172,7 @@ public class FirebaseMethods {
                                     .getFollowing()
                     );
 
-                    user.setPosts(
+                    user.setNrPosts(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getPosts()

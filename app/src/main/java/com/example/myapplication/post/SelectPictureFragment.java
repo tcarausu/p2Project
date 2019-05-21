@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -24,19 +25,23 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
+import com.example.myapplication.utility_classes.Permissions;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 import java.util.Objects;
+
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.app.Activity.RESULT_OK;
 
-/**
- * File created by tcarau18
- **/
-public class SelectPictureFragment extends Fragment implements View.OnClickListener {
+
+public class SelectPictureFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks  {
     private static final String TAG = "SelectPictureFragment";
     private static final int CAMERA_REQUEST = 44;
     private static final int GALLERY_REQUEST = 11;
+    private static final int PERMISSION = 123;
 
     private ImageView galleryImageView;
     private Button mSelectPicButton;
@@ -89,7 +94,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
         galleryImageView = view.findViewById(R.id.imageView_gallery);
         mSelectPicButton = view.findViewById(R.id.choose_pic_button);
-        closePost = view.findViewById(R.id.close_share);
+        closePost = view.findViewById(R.id.close_post);
         nextText = view.findViewById(R.id.textview_next);
         byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -99,11 +104,17 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     }
 
-    // showing picture taken from camera in ImageView
+    /**
+     * This method will display chosen image in the galleryImageView
+     * using Glide
+     * @param requestCode represents the Request Code
+     * @param resultCode represents the Result Code
+     * @param data represents the Data requested for the URI
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == GALLERY_REQUEST ) {
+        if (resultCode == RESULT_OK && requestCode == GALLERY_REQUEST) {
             mUri = data.getData();
             Glide.with(getContext()).load(mUri).fitCenter().centerCrop().into(galleryImageView);
             intent.putExtra("imageUri", mUri.toString());
@@ -111,7 +122,10 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     }
 
-    // Alert dialog
+    /**
+     * Method that will show a AlertDialog giving user ability to choose
+     * to open CAMERA, GALLERY, or Cancel
+     */
     private void dialogChoice() {
         final CharSequence[] options = {"CAMERA", "GALLERY", "CANCEL"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
@@ -131,7 +145,9 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         builder.show();
     }
 
-    // open camera method
+    /**
+     * Method which will open built-in camera
+     */
     private void takePicture() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (getBatteryLevel() > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
@@ -141,9 +157,11 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     }
 
-    // open gallery method
+    /**
+     * Method which will open phone gallery
+     */
     private void selectPicture() {
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI );
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
     }
@@ -152,12 +170,18 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.close_share:
+            /**
+             * ClickListener which will start the HomeAcivity
+             */
+            case R.id.close_post:
                 Intent toHomeActivity = new Intent(getActivity(), HomeActivity.class);
                 startActivity(toHomeActivity);
 
                 break;
-
+            /**
+             * ClickListener that will open AddPostActivity if
+             * galleryImageView is not empty
+             */
             case R.id.textview_next:
                 if (galleryImageView.getDrawable() == null) {
                     Toast.makeText(getActivity(), R.string.please_select_picture,
@@ -170,12 +194,25 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
             case R.id.choose_pic_button:
                 Log.d(TAG, "onClick: back button working");
-                dialogChoice();
+                checkPermissions();
 
                 break;
         }
     }
-
+    /**
+     * This method calls dialogChoice(); if permissions accepted
+     * if not accepted, it will request for permissions
+     */
+    @AfterPermissionGranted(PERMISSION)
+    private void checkPermissions(){
+        if (EasyPermissions.hasPermissions(getContext(), Permissions.PERMISSIONS)){
+            dialogChoice();
+        }else{
+            EasyPermissions.requestPermissions(this,
+                    getString(R.string.permission_needed),
+                    PERMISSION, Permissions.PERMISSIONS);
+        }
+    }
     @Override
     public void onPause() {
         super.onPause();
@@ -189,8 +226,15 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     }
 
-    // showing picture taken from camera in ImageView
-//
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
+    }
 
 
 }

@@ -97,11 +97,11 @@ public class AccountSettingsActivity extends AppCompatActivity
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) {
             mAuth.signOut();
-            goToLogin(getApplicationContext(),LoginActivity.class);
+            goToLogin(getApplicationContext(), LoginActivity.class);
         }
     }
 
-    public void goToLogin(Context context ,Class<? extends AppCompatActivity> cl) {
+    public void goToLogin(Context context, Class<? extends AppCompatActivity> cl) {
         startActivity(new Intent(getApplicationContext(), cl)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
@@ -133,7 +133,7 @@ public class AccountSettingsActivity extends AppCompatActivity
 
 //        ArrayList<String> options = new ArrayList<>();
 //        options.add(getString(R.string.sign_out_fragment));
-         String signOut = "Sign Out";
+        String signOut = "Sign Out";
 
         ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
         listView.setAdapter(adapter);
@@ -188,7 +188,7 @@ public class AccountSettingsActivity extends AppCompatActivity
                 mGoogleSignInClient.signOut();
                 LoginManager.getInstance().logOut();
 
-                goToLogin(getApplicationContext(),LoginActivity.class);
+                goToLogin(getApplicationContext(), LoginActivity.class);
 
                 Toast.makeText(getApplicationContext(), "Successful Sign Out", Toast.LENGTH_SHORT).show();
 

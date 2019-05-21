@@ -42,7 +42,6 @@ public class GridImageAdapter extends ArrayAdapter<String> {
         ProgressBar mProgressBar;
     }
 
-    @Nullable
     @Override
     public View getView(int position, @Nullable View convertView, @Nullable ViewGroup parent) {
         final ViewHolder holder;

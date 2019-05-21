@@ -1,5 +1,6 @@
 package com.example.myapplication.post;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -77,6 +78,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
 
+        /**
+         * Getting the username and profile picture link for current user
+         */
         mDatabaseReferenceUserInfo = FirebaseDatabase.getInstance().getReference(databasePathPic);
 
         // getting the username and profile picture link for current user
@@ -118,7 +122,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         mImageRecipe = findViewById(R.id.image_recipe_edittext);
         mImageViewfood = findViewById(R.id.image_tobe_shared);
         mUploadTextView = findViewById(R.id.textview_share);
-        mBackImageView = findViewById(R.id.close_share);
+        mBackImageView = findViewById(R.id.close_post);
 
         imageUri = getIntent().getStringExtra("imageUri");
         Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewfood);
@@ -128,7 +132,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    // method for uploading image and image content to firebase storage and database
+    /**
+     * Method that will upload image,description, ingredients, recipe to FireBase
+     */
     private void uploadImage() {
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -162,7 +168,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                                 startActivity(intent);
                             }, 500);
                         }).addOnFailureListener(e ->
-                                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
+                                Toast.makeText(NextActivity.this, R.string.could_not_upload_try_again, Toast.LENGTH_SHORT).show());
                     }
                 }
         ).addOnSuccessListener(taskSnapshot -> {
@@ -178,19 +184,47 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
             progressDialog.setMessage("uploaded " + (int) progress + "%");
 
         }).addOnFailureListener(e ->
-                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());;
+                Toast.makeText(NextActivity.this, R.string.could_not_upload_try_again, Toast.LENGTH_SHORT).show());
+    }
+
+    /**
+     * Method which will show a AlertDialog if editTextFields are empty while uploading
+     * Will ask if user wants to upload the image despite empty fields
+     */
+    protected void dialogConfirm() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.confirm);
+        builder.setMessage(R.string.fill_or_not);
+        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+            uploadImage();
+            dialog.dismiss();
+        });
+        builder.setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss());
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
+
+            /*
+             * ClickListener which will call dialogConfirm(); if any editTextFields are empty
+             * else it will call uploadImage();
+             */
             case R.id.textview_share:
-                uploadImage();
+                if (mImageIngredients.getText().toString().equals("")
+                        || mImageDesc.getText().toString().equals("")
+                        || mImageRecipe.getText().toString().equals("")) {
+                    dialogConfirm();
+                } else {
+                    uploadImage();
+                }
 
                 break;
 
-            case R.id.close_share:
+            case R.id.close_post:
                 Log.d(TAG, "onClick: back button working");
                 finish();
 
