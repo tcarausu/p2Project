@@ -42,6 +42,7 @@
     <string name="hint_forgot_password">Forgot your password ?</string>
     <string name="hint_register">Don\'t have an account? Register here</string>
     <string name="hint_email">Email</string>
+    <string name="search_Hint">Search</string>
 
     <!--Button texts-->
     <string name="btn_log_in">Log In</string>
