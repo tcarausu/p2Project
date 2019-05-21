@@ -52,7 +52,7 @@ public class BottomNavigationViewHelper {
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     break;
                 case R.id.ic_like_posts:
-                    Intent likePost = new Intent(context, LikePostActivity.class);//ACTIVITY_NUM = 3
+                    Intent likePost = new Intent(context, HistoryLogActivity.class);//ACTIVITY_NUM = 3
                     context.startActivity(likePost
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     break;

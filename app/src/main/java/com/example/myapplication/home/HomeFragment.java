@@ -110,25 +110,25 @@ public class HomeFragment extends Fragment {
                             }
                         });
 
-                        mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (!mUserId.equals(postUserId)) {
-                                    final User user = dataSnapshot.getValue(User.class);
-                                    mUsername = user.getUsername();
-                                    mProfilePhoto = user.getProfile_photo();
-
-                                    mAdapter.setUserForPost(post, user);
-
-                                    Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
+//                        mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                if (!mUserId.equals(postUserId)) {
+//                                    final User user = dataSnapshot.getValue(User.class);
+//                                    mUsername = user.getUsername();
+//                                    mProfilePhoto = user.getProfile_photo();
+//
+//                                    mAdapter.setUserForPost(post, user);
+//
+//                                    Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                            }
+//                        });
 
                         mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
 

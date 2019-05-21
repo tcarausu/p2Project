@@ -3,6 +3,7 @@ package com.example.myapplication.post;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -29,6 +30,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 public class NextActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -186,8 +190,10 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
 
             case R.id.textview_share:
-                uploadImage();
-
+//                uploadImage();
+               for(int i = 0; i < 5; i++){
+                   uploadImageDimos(i);
+               }
                 break;
 
             case R.id.close_share:
@@ -197,5 +203,68 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
 
+    }
+
+
+    /**
+     * FOR DEBUGGING
+     * Repetitive upload of an image
+     **/
+
+    // method for uploading image and image content to firebase storage and database
+    private void uploadImageDimos(int counter) {
+
+        final int position = counter;
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("uploading, please wait...");
+        progressDialog.setIcon(R.drawable.chefood);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+
+
+        StorageReference storageReference = mStorageRef.child("post_pic/users/" + mAuth.getUid() + "/" + System.currentTimeMillis() + ".jpg");
+        storageReference.putFile(Uri.parse(imageUri)).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+
+                        progressDialog.dismiss();
+                        storageReference.getDownloadUrl().addOnCompleteListener(task1 -> {
+                            URL = task1.getResult().toString();
+                            Log.d(TAG, "onComplete: post URL: " + URL);
+                            String description = "position " + position;
+                            String ingredients = mImageIngredients.getText().toString();
+                            String recipe = mImageRecipe.getText().toString();
+                            String uploadId = ""+position+mDatabaseRef.push().getKey();
+                            Post postInfo = new Post(description,
+                                    URL, recipe, ingredients, mAuth.getUid(),
+                                    uploadId, firebaseMethods.getTimestamp(), null);
+                            Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);
+
+                            mDatabaseRef.child(uploadId).setValue(postInfo);
+
+//                            Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();
+                            Handler handler = new Handler();
+                            handler.postDelayed(() -> {
+                                Intent intent = new Intent(NextActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                            }, 500);
+                        }).addOnFailureListener(e ->
+                                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
+
+                    }
+                }
+        ).addOnSuccessListener(taskSnapshot -> {
+            progressDialog.dismiss();
+//            Toast.makeText(NextActivity.this, "Post added successfully.", Toast.LENGTH_SHORT).show();
+        }).addOnCanceledListener(() -> {
+
+                }
+        ).addOnProgressListener(taskSnapshot ->
+        {
+            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+            progressDialog.setMessage("uploaded " + (int) progress + "%");
+
+        }).addOnFailureListener(e ->
+                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
     }
 }

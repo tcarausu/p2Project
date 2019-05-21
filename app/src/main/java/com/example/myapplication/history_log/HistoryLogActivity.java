@@ -5,22 +5,24 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
-//import com.example.myapplication.models.Post;
+import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,10 +43,13 @@ public class HistoryLogActivity extends AppCompatActivity {
     private HistoryLogRecyclerViewAdapter mAdapter; // Is the bridge between our recyclerview and our arraylist. Shows only the necessary data from the arraylist
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private DatabaseReference mReference;
+    private DatabaseReference mPostReference, mCurrentUserReference, mDatabaseUserPostRef;
+    private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth mAuth;
 
     private ArrayList<HistoryLogPostItem> mListOfPosts;
+    private ArrayList<User> mUsers;
+    private String mCurrentUserId;
 
 
     @Override
@@ -55,8 +60,9 @@ public class HistoryLogActivity extends AppCompatActivity {
         initLayout();
         buttonListeners();
         setupBottomNavigationView();
+
         connectToDatabase();
-        getDatabasePosts();
+        getCurrentUserPosts();
         buildRecyclerView();
     }
 
@@ -69,18 +75,13 @@ public class HistoryLogActivity extends AppCompatActivity {
      * Setting up the buttons of the main view
      */
     public void buttonListeners() {
-
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(v -> {
+            Toast.makeText(getApplicationContext(), "" + mListOfPosts.size(), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "//Button Clicked//List Size: " + mListOfPosts.size());
+        });
     }
 
-    /**
-     * @param user is the Firebase User used to adjust/perform info exchange
-     */
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-        } else {
-
-        }
-    }
 
     /**
      * Bottom Navigation View setup
@@ -93,6 +94,63 @@ public class HistoryLogActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
     }
+
+
+    /**
+     * Setting Database connection and manipulating nodes
+     */
+
+    // Connection to user's posts node
+    private void connectToDatabase() {
+        mAuth = FirebaseAuth.getInstance();
+        mCurrentUserId = mAuth.getCurrentUser().getUid();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+
+        // Setting the reference to posts branch
+        mPostReference = firebaseDatabase.getReference("posts");
+
+    }
+
+    private void getCurrentUserPosts() {
+        mListOfPosts = new ArrayList<>();
+
+        // Getting the user ID branch inside posts main node
+        Query query = mPostReference.child(mCurrentUserId);
+
+        // Getting each post branch with its contents
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+//                    String postUserId = postSnapshot.getKey();
+//                    mDatabaseUserPostRef = firebaseDatabase.getReference("users/" + postUserId);
+
+                    HistoryLogPostItem post = postSnapshot.getValue(HistoryLogPostItem.class);
+
+                    mCurrentUserReference = firebaseDatabase.getReference("users/" + mCurrentUserId);
+                    mCurrentUserReference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            final User user = dataSnapshot.getValue(User.class);
+//                            mAdapter.setUserForPost(post, user);
+                            post.setUser(user);
+                            mListOfPosts.add(post);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
 
     /**
      * Setting up recycler view
@@ -110,23 +168,29 @@ public class HistoryLogActivity extends AppCompatActivity {
         // the ViewHolder objects will be created and managed by this adapter
         mAdapter = new HistoryLogRecyclerViewAdapter(mListOfPosts);
         mRecyclerView.setAdapter(mAdapter);
+        mAdapter.setOnRecyclerItemClickListener(HistoryLogActivity.this, position -> {
+                    highlightViewItem(position, true);
+                    alertDialogDelete(position);
+                });
 
-        mAdapter.setOnRecyclerItemClickListener(HistoryLogActivity.this, new HistoryLogRecyclerViewAdapter.OnRecyclerItemClickListener() {
-//            @Override
-//            public void onRecyclerCardviewClicked(int position) {
-//                mAdapter.notifyItemChanged(position);
+//        try {
+//            if (mListOfPosts.size() == 0) {
+//
+//                });
+//            } else {
+//                mAdapter.setPostsList(mListOfPosts);
+//                mRecyclerView.setAdapter(mAdapter);
 //            }
+//        } catch (Exception e) {
+//            Log.e(TAG, "buildRecyclerView: Exception", e.getCause());
+//        }
 
-            @Override
-            public void onMoreDotsClicked(int position) {
-                highlightViewItem(position, true);
-                alertDialogDelete(position);
-            }
-        });
+
     }
 
     /**
-     * Alert Dialog: Asking the user if he wants to delete an activity from his history log
+     * Alert Dialog:
+     * Asking the user if he wants to delete an activity from his history log
      */
     private void alertDialogDelete(final int position) {
         View layoutView = getLayoutInflater().inflate(R.layout.alert_dialog_history_log, null);
@@ -150,21 +214,15 @@ public class HistoryLogActivity extends AppCompatActivity {
         alertDialog.show();
 
 
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-                highlightViewItem(position, true);
-                onClickRemoveItem(position);
-            }
+        deleteButton.setOnClickListener(v -> {
+            alertDialog.dismiss();
+            highlightViewItem(position, false);
+            onClickRemoveItem(position);
         });
 
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-                highlightViewItem(position, false);
-            }
+        cancelButton.setOnClickListener(v -> {
+            alertDialog.dismiss();
+            highlightViewItem(position, false);
         });
     }
     // Alert Dialog closes
@@ -179,63 +237,30 @@ public class HistoryLogActivity extends AppCompatActivity {
     }
 
     private void onClickRemoveItem(int position) {
-        mListOfPosts.remove(position);
-        // Updating the recycler view with animation
-        mAdapter.notifyItemRemoved(position);
+        // Important!!! First deleting position in the database and after that the position in our current list
+        deleteUserDatabasePost(position);
     }
+
 
    /* private void onClickAddItem(int position) {
         mListOfItems.add(position, new HistoryLogPostItem(R.drawable.ic_action_eye_open, "New item in position:", "" + position));
         mAdapter.notifyItemInserted(position);
     }*/
 
+    private void deleteUserDatabasePost(int position) {
+        // Delete selected post from the database
+        mPostReference.child(mCurrentUserId).child(mListOfPosts.get(position).getPostId())
+                .removeValue()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(getApplicationContext(), "Post successfully deleted", Toast.LENGTH_SHORT).show();
+                        mListOfPosts.remove(position);
+                        // Updating the recycler view with animation
+                        mAdapter.notifyItemRemoved(position);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Failed to delete post", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
-   /**
-    * Setting Database connection and manipulating nodes
-    */
-
-   // Connection to user's posts node
-   private void connectToDatabase(){
-       mAuth = FirebaseAuth.getInstance();
-       // Setting the reference to posts branch
-       mReference = FirebaseDatabase.getInstance().getReference("posts");
-   }
-
-   private void getDatabasePosts(){
-
-       mListOfPosts = new ArrayList<>();
-
-       // Getting the user ID branch inside posts
-       Query query = mReference.child(mAuth.getCurrentUser().getUid());
-
-       // Getting each post branch with its contents
-       query.addValueEventListener(new ValueEventListener() {
-           @Override
-           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-                    HistoryLogPostItem post = postSnapshot.getValue(HistoryLogPostItem.class);
-                    mListOfPosts.add(post);
-
-//                    System.out.println("\n\n"+postSnapshot.getKey()+" "+post.getmDescription());
-                }
-               System.out.println("\nList Size: "+mListOfPosts.size());
-               for(HistoryLogPostItem postitem : mListOfPosts){
-                   System.out.println("User name: "+postitem.getmUsername()+ " Description: "+postitem.getmDescription()
-                   + " Image: "+postitem.getmProfileImgUrl());
-               }
-           }
-
-           @Override
-           public void onCancelled(@NonNull DatabaseError databaseError) {
-               System.out.println("The read failed: " + databaseError.getCode());
-           }
-       });
-
-       System.out.println("Current User: " + mAuth.getCurrentUser().getUid());
-   }
-
-//   private void deleteDatabasePost(int position){
-//       mListOfPosts.get(position).get...
-//   }
 }
