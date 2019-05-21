@@ -22,7 +22,7 @@
             android:layout_marginTop="10dp"
             android:textColor="@color/orange"
             android:fontFamily="@font/arbutus"
-            android:background="@drawable/input_fields_white_borders"
+            android:background="@drawable/input_fields_with_shadow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

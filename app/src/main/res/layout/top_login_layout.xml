@@ -73,7 +73,7 @@
                 android:id="@+id/button_id_log_in"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/input_fields_white_borders"
+                android:background="@drawable/input_fields_with_shadow"
                 android:drawableEnd="@drawable/log_in_icon_small"
                 android:drawablePadding="10dp"
                 android:fontFamily="@font/arbutus"
