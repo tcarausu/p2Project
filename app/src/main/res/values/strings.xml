@@ -161,5 +161,14 @@
     <string name="please_select_picture">Please select a picture</string>
     <string name="go_back_signUpFragment">go back</string>
 
+    <!--Camera Strings-->
+    <string name="permission_needed">Permission is needed in order to use this functionality</string>
+    <string name="fill_all_fields">Please fill all the fields</string>
+    <string name="could_not_upload_try_again">COULD NOT UPLOAD PICTURE! TRY AGAIN</string>
+    <string name="fill_or_not">Are you sure you don\'t want to fill every field?</string>
+    <string name="confirm">Confirm</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="todo">TODO</string>
 
 </resources>
