@@ -27,7 +27,7 @@
 
             <TextView
                 android:id="@+id/change_profile_photo"
-                android:drawableBottom="@drawable/dash_icon"
+
                 android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
                 android:clickable="true"
@@ -37,8 +37,13 @@
                 android:layout_centerHorizontal="true"
                 android:textAlignment="center"
                 android:text="@string/change_photo"
-                android:fontFamily="@font/almendra"
-                android:textColor="@color/darkOrange"
+                android:padding="10dp"
+                android:shadowRadius="10"
+                android:shadowDx="5"
+                android:shadowColor="@color/black"
+                android:background="@drawable/input_fields_with_shadow"
+                android:fontFamily="@font/arbutus"
+                android:textColor="@color/orange"
                 android:textSize="16sp" />
 
             <TextView

@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.Like;
@@ -38,7 +39,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +65,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference myRef;
+    private DatabaseReference myRef , postsRef , userPostCount;
+    private FirebaseMethods firebaseMethods;
+    private FirebaseUser current_user;
+
 
     private BottomNavigationViewEx bottomNavigationViewEx;
 
@@ -75,22 +78,25 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private ImageView profileMenu;
     private GridView gridView;
     private Toolbar toolbar;
-    private FirebaseMethods firebaseMethods;
     private Uri avatarUri;
-    private FirebaseUser current_user;
 
     private User user;
 
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
-            container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         mAuth = FirebaseAuth.getInstance();
+        current_user = mAuth.getCurrentUser();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
+        postsRef = mFirebaseDatabase.getReference("users").child(current_user.getUid()).child("posts");
+        userPostCount = mFirebaseDatabase.getReference("posts").child(current_user.getUid());
         avatarUri = Uri.parse("android.resource://com.example.myapplication/drawable/my_avatar");
         initLayout(view);
         setListeners(view);
         setupFirebaseAuth();
         setupGridView();
         setupBottomNavigationView();
+        setPostCount();
 
         return view;
     }
@@ -149,10 +155,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
-
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = mFirebaseDatabase.getReference();
-
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
 
@@ -169,7 +171,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                current_user = mAuth.getCurrentUser();
+
                 String photoRef = myRef.child(current_user.getUid()).child("profile_photo").getRef().toString();
                 //retrive user information from the database
                 if (photoRef.equals("photo")) {
@@ -197,29 +199,20 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mUserName.setText(user.getUsername());
         mWebsite.setText(user.getWebsite());
         mAbout.setText(user.getAbout());
-
         mFollowers.setText(String.valueOf(user.getFollowers()));
         mFollowing.setText(String.valueOf(user.getFollowing()));
-        mPosts.setText(String.valueOf(user.getPosts()));
 
         String profilePicURL = user.getProfile_photo();
         Log.d(TAG, "setProfileWidgets, PhotoURL: "+profilePicURL);
 
         //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
         try {
-//            if (profilePicURL == null) {
-//                mProfilePhoto.setImageResource(R.drawable.my_avatar);
-//
-//            } else
-//                Glide.with(getActivity()).load(profilePicURL).centerCrop().into(mProfilePhoto);
-
-            Picasso.get().load(profilePicURL).resize(mProfilePhoto.getWidth(),mProfilePhoto.getHeight()).centerCrop().into(mProfilePhoto);
+                Glide.with(getActivity()).load(profilePicURL).centerCrop().into(mProfilePhoto);
             Log.d(TAG, "setProfileWidgets: mProfilePhoto.getDrawableState().length; "+ mProfilePhoto.getDrawableState().length);
 
         } catch (Exception e) {
             Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
-            mProfilePhoto.setImageResource(R.drawable.my_avatar);
-
+//            mProfilePhoto.setImageResource(R.drawable.my_avatar);
         }
 
     }
@@ -247,6 +240,36 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
 
+
+    private void setPostCount(){
+
+        // here i browse throught the user to get post child count.
+        userPostCount.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot postCountDataSnapshot) {
+                if(postCountDataSnapshot.exists()) {
+                    Log.d(TAG, "simo: dataSnapshotCount: " + postCountDataSnapshot.getChildrenCount());
+                    // here i browse throught the user to get post ref count.
+                    if (postCountDataSnapshot.exists()) {
+                        mPosts.setText(String.valueOf(postCountDataSnapshot.getChildrenCount()));
+
+                    } else
+                        mPosts.setText("0");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+    }
+
+
     private void setupGridView() {
         Log.d(TAG, "setupGridView: Setting up GridView");
 
@@ -262,9 +285,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+
                         Post post = new Post();
                         Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
-
                         post.setmDescription(objectMap.get(getString(R.string.field_description)).toString());
                         post.setmFoodImgUrl(objectMap.get(getString(R.string.field_food_photo)).toString());
                         post.setUserId(objectMap.get(getString(R.string.field_user_id)).toString());
