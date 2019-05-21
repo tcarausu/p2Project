@@ -13,10 +13,8 @@
             android:id="@+id/textSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/grey_border_bottom"
             android:text="@string/account_settings"
-            android:textColor="@color/orange"
-            android:fontFamily="@font/almendra"
+            android:textColor="@color/darkOrange"
             android:textSize="35sp" />
 
         <ImageView
@@ -62,12 +60,12 @@
 
         <ListView
 
-            android:background="@drawable/input_fields_orange_round"
+            android:background="@drawable/input_fields_with_shadow"
             android:layout_marginTop="10dp"
             android:id="@+id/listViewAccountSettings"
             android:clickable="true"
             android:focusable="true"
-            android:cacheColorHint="@color/white"
+            android:cacheColorHint="@color/orange"
             android:clipToPadding="true"
             android:clipChildren="true"
             android:visibility="visible"

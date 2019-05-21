@@ -98,6 +98,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         setupBottomNavigationView();
         setPostCount();
 
+
         return view;
     }
 
@@ -222,6 +223,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         switch (v.getId()) {
 
             case R.id.editProfile:
+
                 Intent intent = new Intent(getContext(), AccountSettingsActivity.class);
                 intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
                 startActivity(intent);
@@ -232,12 +234,14 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
 
-                startActivity(new Intent(getContext(), AccountSettingsActivity.class));
+                ((UserProfileActivity)getActivity()).gotos(getActivity(),AccountSettingsActivity.class);
 
                 break;
         }
 
     }
+
+
 
 
 

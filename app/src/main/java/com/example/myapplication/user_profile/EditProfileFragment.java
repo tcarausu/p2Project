@@ -104,21 +104,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private int batteryLevel;
 
 
-    private int getBatteryLevel() {
-        return batteryLevel;
-    }
-
-    private void setBatteryLevel(int batteryLevel) {
-        this.batteryLevel = batteryLevel;
-    }
-
-    private String getProf_pic_URL() {
-        return prof_pic_URL;
-    }
-
-    private void setProf_pic_URL(String prof_pic_URL) {
-        this.prof_pic_URL = prof_pic_URL;
-    }
 
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -144,7 +129,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         mDisplayName = view.findViewById(R.id.displayName);
         smallProfilePic = view.findViewById(R.id.EditProfile_small_pic);
-
         mUserName = view.findViewById(R.id.username);
         mWebsite = view.findViewById(R.id.website);
         mAbout = view.findViewById(R.id.about);
@@ -161,9 +145,23 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mProfilePhoto.setOnClickListener(this);
         mChangeProfilePhoto.setOnClickListener(this);
 
-
     }
 
+    private int getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    private void setBatteryLevel(int batteryLevel) {
+        this.batteryLevel = batteryLevel;
+    }
+
+    private String getProf_pic_URL() {
+        return prof_pic_URL;
+    }
+
+    private void setProf_pic_URL(String prof_pic_URL) {
+        this.prof_pic_URL = prof_pic_URL;
+    }
 
     /**
      * created byMo.MSaad
@@ -386,8 +384,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         }
          else if (getUri() != null) {
+
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-             progressDialog.setTitle("uploading, please wait...");
+             progressDialog.setMessage("uploading, please wait...");
              progressDialog.setIcon(R.drawable.chefood);
              progressDialog.setCanceledOnTouchOutside(false);
              progressDialog.show();
@@ -462,6 +461,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         final CharSequence[] options = {"CAMERA", "GALLERY", "CANCEL"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+
         builder.setTitle("Add Image");
         builder.setIcon(R.drawable.chefood);
         builder.setItems(options, (dialog, which) -> {

@@ -23,7 +23,7 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="5dp"
                 android:drawableStart="@drawable/white_email_icone"
-                android:drawablePadding="10dp"
+
                 android:ems="10"
                 android:hint="@string/hint_email"
                 android:inputType="textEmailAddress"
@@ -46,7 +46,6 @@
                 android:layout_gravity="center"
                 android:backgroundTint="@color/white"
                 android:drawableStart="@drawable/white_lock_closed"
-                android:drawablePadding="10dp"
                 android:ems="10"
                 android:hint="@string/hint_password"
                 android:inputType="textPassword"
@@ -92,6 +91,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -108,11 +108,13 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:onClick="onClick"
-                android:text="@string/hint_forgot_password"
+
+                android:padding="5dp"
                 android:drawableBottom="@drawable/dash_icon_white"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:textStyle="italic" />
+                android:text="@string/hint_forgot_password"
+                android:textColor="@color/grey"
+                android:textSize="14sp"
+                android:textStyle="bold|italic" />
 
         </RelativeLayout>
 

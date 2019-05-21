@@ -11,24 +11,27 @@
         android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:background="@drawable/input_fields_frame_orange"
             android:id="@+id/userProfilePicID"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/my_avatar" />
 
         <TextView
+
             android:id="@+id/userNameID"
+            android:background="@drawable/input_fields_frame_orange"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:padding="5dp"
             android:text="Here is the user name"
-            android:textColor="@color/black"
+            android:textColor="@color/darkOrange"
             android:textSize="15sp" />
     </LinearLayout>
 
     <LinearLayout
-
+        android:layout_marginTop="2dp"
         android:orientation="horizontal"
         android:id="@+id/layout_description"
         android:layout_width="match_parent"
@@ -42,6 +45,7 @@
 
         <TextView
             android:id="@+id/postDescriptionID"
+            android:background="@drawable/input_fields_frame_grey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
@@ -56,6 +60,7 @@
             android:layout_weight=".15">
 
             <ImageView
+
                 android:id="@+id/personal_post_options_menu"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="wrap_content"
@@ -64,14 +69,11 @@
                 android:src="@drawable/orange_settings" />
         </RelativeLayout>
 
-
-
-
-
     </LinearLayout>
 
 
     <com.example.myapplication.utility_classes.SquareImageView
+        android:background="@drawable/input_fields_frame_grey"
         android:id="@+id/foodImgID"
         android:layout_width="match_parent"
         android:layout_height="350dp"
@@ -81,6 +83,8 @@
         android:src="@drawable/bridge" />
 
     <LinearLayout
+        android:layout_marginTop="1dp"
+        android:background="@drawable/input_fields_frame_grey"
         android:id="@+id/food_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -89,6 +93,8 @@
         android:orientation="horizontal">
 
         <RelativeLayout
+            android:background="@drawable/input_fields_frame_grey"
+
             android:id="@+id/like_relative"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -116,6 +122,8 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:background="@drawable/input_fields_frame_grey"
+
             android:id="@+id/comment_relative"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -143,6 +151,8 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:background="@drawable/input_fields_frame_grey"
+
             android:id="@+id/recipe_relative"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -169,6 +179,8 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:background="@drawable/input_fields_frame_grey"
+
             android:id="@+id/ingredients_relative"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -203,6 +215,7 @@
 
         <TextView
             android:id="@+id/post_likes"
+            android:background="@drawable/input_fields_frame_grey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Liked by whoever, eve, and 30 others"

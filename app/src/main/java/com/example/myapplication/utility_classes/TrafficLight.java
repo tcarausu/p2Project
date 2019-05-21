@@ -29,7 +29,7 @@
 //        this.finish();
 //    }
 //
-//    public void goTos(Context context, Class<? extends AppCompatActivity> cl){
+//    public void goTosWithFlags(Context context, Class<? extends AppCompatActivity> cl){
 //        startActivity(new Intent(context,cl));
 //        this.finish();
 //    }

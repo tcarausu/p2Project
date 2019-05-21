@@ -51,6 +51,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private String username;
     private String profilePicUrl;
     private FirebaseMethods firebaseMethods;
+    private String uploadId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +65,6 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         String databasePath = "posts/" + mAuth.getUid() + "/";
         String databasePathPic = "users/" + mAuth.getUid();
         postRef = FirebaseDatabase.getInstance().getReference("posts").child(current_user.getUid());
-
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
 
         mDatabaseReferenceUserInfo = FirebaseDatabase.getInstance().getReference(databasePathPic);
@@ -129,8 +129,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
 
+        uploadId = mDatabaseRef.push().getKey();
+        StorageReference storageReference = mStorageRef.child("post_pic/users/" + mAuth.getUid() + "/" + uploadId + ".jpg");
 
-        StorageReference storageReference = mStorageRef.child("post_pic/users/" + mAuth.getUid() + "/" + System.currentTimeMillis() + ".jpg");
         storageReference.putFile(Uri.parse(imageUri)).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         progressDialog.dismiss();
@@ -140,11 +141,11 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                             String description = mImageDesc.getText().toString();
                             String ingredients = mImageIngredients.getText().toString();
                             String recipe = mImageRecipe.getText().toString();
-                            String uploadId = mDatabaseRef.push().getKey();
+
                             Post postInfo = new Post(description,
                                     URL, recipe, ingredients, mAuth.getUid(),
                                     uploadId, firebaseMethods.getTimestamp(), null);
-                            Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);
+                            Log.d(TAG, "onComplete: upload uid: " +uploadId);
 
                             mDatabaseRef.child(uploadId).setValue(postInfo);
 

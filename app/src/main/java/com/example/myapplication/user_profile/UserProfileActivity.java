@@ -24,6 +24,12 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         init();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     private void init() {
         Log.d(TAG, "init: inflating" + getString(R.string.profile_fragment));
 

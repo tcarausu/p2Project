@@ -16,6 +16,7 @@
 
                 <ImageView
                     android:id="@+id/backArrow"
+                    android:background="@drawable/input_fields_with_shadow"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:onClick="onClick"
@@ -26,16 +27,14 @@
 
                 <TextView
                     android:textAlignment="center"
-                    android:drawableBottom="@drawable/dash_icon"
                     android:id="@+id/userName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="15dp"
-                    android:fontFamily="@font/almendra"
                     android:layout_toEndOf="@+id/backArrow"
                     android:text="@string/options_account_toolbar"
-                    android:textColor="@color/orange"
+                    android:textColor="@color/darkOrange"
                     android:textSize="20sp" />
 
             </RelativeLayout>

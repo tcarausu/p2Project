@@ -81,6 +81,8 @@ public class HomeFragment extends Fragment {
 
         mPosts = new ArrayList<>();
         mUsers = new ArrayList<>();
+
+
         GetData getData = new GetData();
         getData.execute();
 
@@ -202,9 +204,12 @@ public class HomeFragment extends Fragment {
                                 mPosts.add(post);
                                 mAdapter.setPostsList(mPosts);
 
+
                             }
                         }
+
                         mRecyclerView.setAdapter(mAdapter);
+                        mAdapter.notifyDataSetChanged();
                     }
 
                     @Override

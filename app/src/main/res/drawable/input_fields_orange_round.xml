@@ -4,10 +4,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <solid android:color="@color/orange"/>
+    <solid android:color="@color/orangeMainTheme"/>
     <stroke
         android:width="5dp"
-        android:dashGap="20dp"
+        android:dashGap="1dp"
+        android:dashWidth="2dp"
         android:color="@color/red" />
 
 
