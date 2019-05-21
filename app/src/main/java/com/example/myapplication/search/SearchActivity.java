@@ -1,6 +1,6 @@
 package com.example.myapplication.search;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -10,9 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,10 +31,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private static final String TAG = "SearchActivity";
     private static final int ACTIVITY_NUM = 1;
 
-    private Context mContext = SearchActivity.this;
-
     //widgets
     private EditText mSearchParam;
+    private ImageView backArrow;
     private ImageButton mSearchButton;
 
     //Firebase
@@ -71,27 +72,35 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     private void initLayout() {
         mSearchParam = findViewById(R.id.search_bar_id);
+        backArrow = findViewById(R.id.backArrow);
         mSearchButton = findViewById(R.id.search_button_id);
     }
 
     private void buttonListeners() {
+        backArrow.setOnClickListener(this);
         mSearchParam.setOnClickListener(this);
         mSearchButton.setOnClickListener(this);
     }
 
     public void getUserFromDatabase() {
-        myDatabaseUserRefById = firebaseDatabase.getReference("users/" + mUserId);
+        String keyword = mSearchParam.getText().toString();
 
-        myDatabaseUserRefById.addListenerForSingleValueEvent(new ValueEventListener() {
+        myDatabaseUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                final User user = dataSnapshot.getValue(User.class);
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    final User user = ds.getValue(User.class);
+                    mUsername = user.getUsername();
+                    mProfilePhoto = user.getProfile_photo();
+                    if (ds.exists()
+                            && !mUsername.equals(keyword)) {
+                        Toast.makeText(SearchActivity.this, "No such user exists", Toast.LENGTH_SHORT).show();
 
-                mUsername = user.getUsername();
-                mProfilePhoto = user.getProfile_photo();
+                    } else {
+                        Toast.makeText(SearchActivity.this, "Here is the user: " + mUsername, Toast.LENGTH_SHORT).show();
 
-                Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
-                Toast.makeText(mContext, "The username is: " + mUsername, Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);    }
+                }
             }
 
             @Override
@@ -99,8 +108,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             }
         });
-
-
     }
 
     /**
@@ -109,7 +116,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public void setupBottomNavigationView() {
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
@@ -120,8 +127,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         switch (v.getId()) {
 
-            case R.id.search_bar_id:
-                Toast.makeText(mContext, "Bulshit when  i searth", Toast.LENGTH_SHORT).show();
+            case R.id.backArrow:
+                startActivity(new Intent(getApplicationContext(), HomeActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
 
                 break;
 
