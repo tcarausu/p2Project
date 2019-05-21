@@ -13,40 +13,56 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.models.Post;
+import com.example.myapplication.models.User;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
 
 
-/** The views in the list are represented by view holder objects. These objects are instances of a class you define
+/**
+ * The views in the list are represented by view holder objects. These objects are instances of a class you define
  * by extending RecyclerView.ViewHolder. Each view holder is in charge of displaying a single item with a view.
  * For example, if your list shows music collection, each view holder might represent a single album.
  * The RecyclerView creates only as many view holders as are needed to display the on-screen portion of the dynamic content,
  * plus a few extra. As the user scrolls through the list, the RecyclerView takes the off-screen views and rebinds them to the
  * data which is scrolling onto the screen.
- *
+ * <p>
  * The view holder objects are managed by an adapter, which you create by extending RecyclerView.Adapter.
  * The adapter creates view holders as needed. The adapter also binds the view holders to their data.
  * It does this by assigning the view holder to a position, and calling the adapter's onBindViewHolder() method.
- * That method uses the view holder's position to determine what the contents should be, based on its list position.*/
+ * That method uses the view holder's position to determine what the contents should be, based on its list position.
+ */
 
 
-/**To feed all your data to the list, you must extend the RecyclerView.Adapter class. This object creates views for items,
- * and replaces the content of some of the views with new data items when the original item is no longer visible.*/
+/**
+ * To feed all your data to the list, you must extend the RecyclerView.Adapter class. This object creates views for items,
+ * and replaces the content of some of the views with new data items when the original item is no longer visible.
+ */
 public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryLogRecyclerViewAdapter.CustomViewHolder> {
 
-//    private ArrayList<HistoryLogPostItem> mItemsList;
     private ArrayList<HistoryLogPostItem> mPostsList;
     private OnRecyclerItemClickListener mListener; // This listener is going to be in our main activity
     private Context mContext;
 
+
+    public void setPostsList(ArrayList<HistoryLogPostItem> items) {
+        this.mPostsList = items;
+    }
+
+    public HistoryLogRecyclerViewAdapter(ArrayList<HistoryLogPostItem> postsList) {
+        mPostsList = postsList;
+//        setHasStableIds(true);
+    }
+
+    /** Listener Interface*/
     public interface OnRecyclerItemClickListener {
-//        void onRecyclerCardviewClicked(int position);
+        //        void onRecyclerCardviewClicked(int position);
         void onMoreDotsClicked(int position);
     }
 
     // With this method we connect our main activity with the OnRecyclerItemClickListener interface
-    public void setOnRecyclerItemClickListener(Context context, OnRecyclerItemClickListener listener){
+    public void setOnRecyclerItemClickListener(Context context, OnRecyclerItemClickListener listener) {
         mContext = context;
         mListener = listener;
     }
@@ -54,7 +70,7 @@ public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryL
     // Provide a reference to the views for each list item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a list item in a view holder
-    public static class CustomViewHolder extends RecyclerView.ViewHolder{
+    public static class CustomViewHolder extends RecyclerView.ViewHolder {
 
         public RelativeLayout mBackgroundCardview;
         public ImageView mPostedImage;
@@ -76,7 +92,6 @@ public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryL
 
             mMoreDotsImage = itemView.findViewById(R.id.onMoreDotsImage);
 
-
             // Passing the position of the item clicked
             /*itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -90,29 +105,16 @@ public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryL
                 }
             });*/
 
-            mMoreDotsImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) { // Checking if the position of the adapter item is valid
-                            listener.onMoreDotsClicked(position);
-                        }
+            mMoreDotsImage.setOnClickListener(v -> {
+                if (listener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) { // Checking if the position of the adapter item is valid
+                        listener.onMoreDotsClicked(position);
                     }
                 }
             });
         }
     }
-
-    // Provide a suitable constructor (depends on the kind of dataset)
-//    HistoryLogRecyclerViewAdapter(ArrayList<HistoryLogPostItem> itemList){
-//        mItemsList = itemList;
-//    }
-
-    HistoryLogRecyclerViewAdapter(ArrayList<HistoryLogPostItem> postsList){
-        mPostsList = postsList;
-    }
-
 
 
     // Create new views (invoked by the layout manager)
@@ -129,16 +131,38 @@ public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryL
     public void onBindViewHolder(@NonNull CustomViewHolder customViewHolder, int position) {
         // - get element from your dataset/list at this position
         // - replace the contents of the view with that element
-//        HistoryLogPostItem currentItem = mItemsList.get(position);
         HistoryLogPostItem currentItem = mPostsList.get(position);
+//        User postUser = getUserForPost(currentItem);
+        User user = currentItem.getUser();
+
+        // Setting profile image and username
+        if (user != null) {
+            // Setting profile image
+//            Glide.with(mContext).load(postUser.getProfile_photo()).fitCenter().centerCrop().into(customViewHolder.mProfileImage);
+            Glide.with(mContext)
+                    .load(user.getProfile_photo())
+                    .fitCenter()
+                    .centerCrop()
+                    .into(customViewHolder.mProfileImage);
+            customViewHolder.mUserName.setText(user.getUsername());
+        } else {
+            // Setting profile image
+            Glide.with(mContext)
+                    .load(R.drawable.my_avatar)
+                    .fitCenter()
+                    .centerCrop()
+                    .into(customViewHolder.mProfileImage);
+
+            customViewHolder.mUserName.setText(R.string.loading);
+        }
+
+        customViewHolder.mUserName.setTextColor(currentItem.getTextColor());
 
         // Setting posted image
-        Glide.with(mContext).load(currentItem.getmFoodImgUrl()).fitCenter().centerCrop().into(customViewHolder.mPostedImage);
-        // Setting profile image
-        Glide.with(mContext).load(currentItem.getmProfileImgUrl()).fitCenter().centerCrop().into(customViewHolder.mProfileImage);
-
-        customViewHolder.mUserName.setText(currentItem.getmUsername());
-        customViewHolder.mUserName.setTextColor(currentItem.getTextColor());
+        Glide.with(mContext)
+                .load(currentItem.getmFoodImgUrl())
+                .fitCenter().centerCrop()
+                .into(customViewHolder.mPostedImage);
 
         customViewHolder.mUserAction.setHintTextColor(currentItem.getHintColor());
 
@@ -160,4 +184,11 @@ public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryL
         return mPostsList.size();
     }
 
+    public void setUserForPost(Post post, User user) {
+        post.setUser(user);
+    }
+
+    private User getUserForPost(Post post) {
+        return post.getUser();
+    }
 }
