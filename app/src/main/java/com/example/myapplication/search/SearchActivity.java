@@ -1,143 +1,157 @@
 package com.example.myapplication.search;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
-import com.example.myapplication.home.HomeActivity;
-import com.example.myapplication.models.User;
+import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.example.myapplication.utility_classes.SectionsPagerAdapter;
+import com.example.myapplication.utility_classes.UniversalImageLoader;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 
-public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
+public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
+
     private static final int ACTIVITY_NUM = 1;
 
-    //widgets
-    private EditText mSearchParam;
-    private ImageView backArrow;
-    private ImageButton mSearchButton;
+    private Context mContext;
 
-    //Firebase
+    private String userUID;
     private FirebaseAuth mAuth;
-    private FirebaseDatabase firebaseDatabase;
-    private FirebaseUser user;
-    private DatabaseReference myDatabaseUserRef;
+    private FirebaseUser current_user;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
-    //user data strings
-    private String mUsername;
-    private String mProfilePhoto;
-    private String mUserId;
-
-    //ListView
-    private ListView search_list_view;
-    private List<User> userList = new ArrayList<>();
-    private SearchActivityAdapter adapter;
-
+    /**
+     * @param savedInstanceState creates the app using the Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
-        Log.d(TAG, "OnCreate: started.");
-
+        setContentView(R.layout.search_activity);
         mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
-        mUserId = user.getUid();
-
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        myDatabaseUserRef = FirebaseDatabase.getInstance().getReference("userList");
+        current_user = mAuth.getCurrentUser();
 
         initLayout();
         buttonListeners();
-
+        initImageLoader();
         setupBottomNavigationView();
+        setupFirebaseAuth();
+        setupViewPager();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        mAuth.addAuthStateListener(mAuthListener);
+        checkCurrentUser();
+
+        if (current_user == null) {
+            mAuth.signOut();
+            LoginManager.getInstance().logOut();
+            sendUserToLogin();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+    public void initLayout() {
+        mContext = SearchActivity.this;
+
+        mAuth = FirebaseAuth.getInstance();
+        Intent getLoginIntent = getIntent();
+        userUID = getLoginIntent.getStringExtra("userUid");
+    }
+
+    public void buttonListeners() {
 
     }
 
+    private void sendUserToLogin() {
 
-    private void initLayout() {
-        mSearchParam = findViewById(R.id.search_bar_id);
-        backArrow = findViewById(R.id.backArrow);
-        mSearchButton = findViewById(R.id.search_button_id);
-        search_list_view = findViewById(R.id.search_view_list);
+        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        finish();
 
+        mAuth.addAuthStateListener(mAuthListener);
+
+        checkCurrentUser();
+    }
+
+    /**
+     * Used for adding the tabs: Camera, Home and Direct Messages
+     */
+    private void setupViewPager() {
+
+        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new SearchFragment()); //index 1
+        ViewPager viewPager = findViewById(R.id.container);
+        viewPager.setAdapter(adapter);
+
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.home);
+    }
+
+    /**
+     * checks to see if @param 'user'  is logged in
+     */
+    private void checkCurrentUser() {
+        Log.d(TAG, "checkCurrentUser: checking if user is logged in");
+
+        if (current_user == null) {
+            Toast.makeText(mContext, "Your have to Authenticate first before proceeding", Toast.LENGTH_SHORT).show();
+            mAuth.signOut();
+            LoginManager.getInstance().logOut();
+            sendUserToLogin();
+        }
 
     }
 
-    private void buttonListeners() {
-        backArrow.setOnClickListener(this);
-        mSearchParam.setOnClickListener(this);
-        mSearchButton.setOnClickListener(this);
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = firebaseAuth -> {
+
+
+            checkCurrentUser();
+
+            if (current_user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
+            } else Log.d(TAG, "onAuthStateChanged: signed out");
+        };
+
     }
 
-    public void getUserFromDatabase() {
-        String keyword = mSearchParam.getText().toString();
-
-        Query query = myDatabaseUserRef
-//                .orderByChild(myDatabaseUserRef
-//                        .child(getString(R.string.field_user_id))
-//                        .child(getString(R.string.field_username))
-//                        .getKey()
-//                )
-                ;
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Log.d(TAG, "onDataChange: buls" + ds.toString());
-                    final User user = ds.getValue(User.class);
-                    mUsername = user.getUsername();
-                    mProfilePhoto = user.getProfile_photo();
-
-                    if (ds.exists()
-                            && !mUsername.equals(keyword)) {
-
-                        adapter = new SearchActivityAdapter(getApplicationContext(), userList);
-
-                        userList.add(user);
-                        search_list_view.setAdapter(adapter);
-
-                        Toast.makeText(SearchActivity.this, "Here is the user: " + mUsername, Toast.LENGTH_SHORT).show();
-
-                        Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
-
-
-                    } else {
-                        Toast.makeText(SearchActivity.this, "No such user exists", Toast.LENGTH_SHORT).show();
-
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+    private void initImageLoader() {
+        UniversalImageLoader imageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(imageLoader.getConfig());
     }
 
     /**
@@ -146,28 +160,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public void setupBottomNavigationView() {
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
-    }
 
-    @Override
-    public void onClick(View v) {
-
-        switch (v.getId()) {
-
-            case R.id.backArrow:
-                startActivity(new Intent(getApplicationContext(), HomeActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-
-                break;
-
-            case R.id.search_button_id:
-                getUserFromDatabase();
-
-                break;
-        }
     }
 }
 

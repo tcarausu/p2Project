@@ -1,12 +1,12 @@
 package com.example.myapplication.search;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,61 +19,42 @@ import java.util.List;
 /**
  * File created by tcarau18
  **/
-public class SearchActivityAdapter extends ArrayAdapter<User> {
-
+public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAdapter.ViewHolder> {
+    private static final String TAG = "SearchActivityAdapter";
     private Context context;
     private List<User> userList;
     private int lastPosition = -1;
+
+    public SearchActivityAdapter(Context context, List<User> userList) {
+        this.context = context;
+        this.userList = userList;
+    }
 
     public void setUserList(List<User> userList) {
         this.userList = userList;
     }
 
-    public SearchActivityAdapter(Context context, List<User> userList) {
-        super(context, R.layout.list_search_item);
-        this.context = context;
-        this.userList = userList;
+    @NonNull
+    @Override
+    public SearchActivityAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(context).inflate(R.layout.list_search_item, viewGroup, false);
+
+        return new ViewHolder(view);
     }
 
-
-    private static class ViewHolder {
-        TextView username;
-        ImageView profile_pic;
-    }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public void onBindViewHolder(@NonNull final SearchActivityAdapter.ViewHolder viewHolder, int position) {
+        Log.d(TAG, "onBindViewHolder: Called");
+
         final User currentUser = userList.get(position);
-        ViewHolder viewHolder;
-
-        final View result;
-
-        if (convertView == null) {
-
-            viewHolder = new ViewHolder();
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.list_search_item, parent, false);
-            viewHolder.username = convertView.findViewById(R.id.user_name_on_search_list_id);
-            viewHolder.profile_pic = convertView.findViewById(R.id.user_profile_Image_item_id);
-
-            result = convertView;
-
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-            result = convertView;
-        }
-
-        Animation animation = AnimationUtils.loadAnimation(context, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
-        result.startAnimation(animation);
-        lastPosition = position;
 
         if (currentUser != null) {
             Glide.with(context)
                     .load(currentUser.getProfile_photo())
                     .fitCenter()
                     .centerCrop()
-                    .into(viewHolder.profile_pic);
+                    .into(viewHolder.profile_photo);
             viewHolder.username.setText(currentUser.getUsername());
 
 
@@ -82,11 +63,29 @@ public class SearchActivityAdapter extends ArrayAdapter<User> {
                     .load(R.drawable.my_avatar)
                     .fitCenter()
                     .centerCrop()
-                    .into(viewHolder.profile_pic);
+                    .into(viewHolder.profile_photo);
             viewHolder.username.setText(R.string.loading);
 
         }
-
-        return convertView;
     }
+
+    @Override
+    public int getItemCount() {
+        return userList.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        TextView username;
+        ImageView profile_photo;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            profile_photo = itemView.findViewById(R.id.userProfilePicID);
+            username = itemView.findViewById(R.id.userNameID);
+
+        }
+    }
+
 }
