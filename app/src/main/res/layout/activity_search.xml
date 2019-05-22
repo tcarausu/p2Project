@@ -1,27 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:orientation="vertical"
+    tools:context=".search.SearchActivity">
 
     <RelativeLayout
-        android:id="@+id/search_bar_layout_id"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <include layout="@layout/snippet_search_bar" />
+        <RelativeLayout
+            android:id="@+id/search_bar_layout_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/snippet_search_bar" />
+
+        </RelativeLayout>
+
+        <!--Mid Section-->
+        <RelativeLayout
+            android:id="@+id/midSectionSearch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/search_bar_layout_id">
+
+            <include layout="@layout/layout_center_view_pager" />
+
+        </RelativeLayout>
+
+        <include layout="@layout/layout_bottom_navigation" />
 
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/search_view_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/search_bar_layout_id"
-        >
-
-    </ListView>
-
-    <include layout="@layout/layout_bottom_navigation" />
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
