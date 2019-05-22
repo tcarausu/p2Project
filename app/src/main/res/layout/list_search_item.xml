@@ -13,7 +13,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="clip_vertical">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/user_name_on_search_list_user"
@@ -22,7 +22,16 @@
             android:gravity="center_vertical"
             android:paddingStart="10dp"
             android:text="@string/user_name"
-            android:textSize="40dp" />
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/nr_of_posts_on_search_list_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingStart="10dp"
+            android:text="@string/numberOfPosts"
+            android:textSize="14dp" />
 
     </LinearLayout>
 </LinearLayout>

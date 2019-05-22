@@ -2,6 +2,7 @@ package com.example.myapplication.search;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +15,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -60,7 +60,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
                     .centerCrop()
                     .into(viewHolder.profile_photo);
             viewHolder.username.setText(currentUser.getUsername());
-
+            viewHolder.nrOfPosts.setText(String.valueOf(currentUser.getPosts()));
 
         } else {
             Glide.with(context)
@@ -69,6 +69,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
                     .centerCrop()
                     .into(viewHolder.profile_photo);
             viewHolder.username.setText(R.string.loading);
+            viewHolder.nrOfPosts.setText(R.string.numberOfPosts);
 
         }
 
@@ -84,7 +85,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView username;
+        TextView username, nrOfPosts;
         CircleImageView profile_photo;
 
         public ViewHolder(@NonNull View itemView) {
@@ -92,8 +93,14 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
 
             profile_photo = itemView.findViewById(R.id.user_profile_Image_item_id);
             username = itemView.findViewById(R.id.user_name_on_search_list_user);
+            nrOfPosts = itemView.findViewById(R.id.nr_of_posts_on_search_list_user);
 
+//            profile_photo.setOnClickListener(v ->
+//                    dialogChoice(username.getText(), nrOfPosts.getText())
+//            );
         }
     }
+
+
 
 }

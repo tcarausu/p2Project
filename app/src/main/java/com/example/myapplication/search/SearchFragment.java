@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -50,9 +51,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private DatabaseReference myDatabaseUserRef;
 
     //user data strings
-    private String mUsername;
-    private String mProfilePhoto;
-    private String mUserId;
+    private String username;
+    private String profile_photo_url;
+    private String nrOfPosts;
+    private String user_id;
 
     //ListView
     private RecyclerView search_recycler_view;
@@ -65,7 +67,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        mUserId = user.getUid();
+        user_id = user.getUid();
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         myDatabaseUserRef = FirebaseDatabase.getInstance().getReference("users");
@@ -98,39 +100,46 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     public void getUserFromDatabase() {
         String keyword = mSearchParam.getText().toString();
 
-        myDatabaseUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    final User user = ds.getValue(User.class);
-                    mUsername = user.getUsername();
-                    mProfilePhoto = user.getProfile_photo();
+        if (!keyword.equals("")) {
 
-                    if (ds.exists()
-                            && mUsername.equals(keyword)) {
+            myDatabaseUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        if (ds.exists()) {
+                            final User user = ds.getValue(User.class);
+                            username = user.getUsername();
+                            profile_photo_url = user.getProfile_photo();
+                            nrOfPosts = String.valueOf(user.getPosts());
 
-                        adapter = new SearchActivityAdapter(getApplicationContext(), userList);
+                            if (username.equals(keyword)) {
 
-                        userList.add(user);
-                        adapter.setUserList(userList);
-                        Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
-                        search_recycler_view.setAdapter(adapter);
+                                adapter = new SearchActivityAdapter(getApplicationContext(), userList);
 
-                    } else {
-//                        Toast.makeText(getApplicationContext(), "No such user exists", Toast.LENGTH_SHORT).show();
+                                userList.add(user);
+                                dialogChoice(username,nrOfPosts);
 
+                                adapter.setUserList(userList);
+
+                                search_recycler_view.setAdapter(adapter);
+                            }
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), "No user exists", Toast.LENGTH_SHORT).show();
+
+                        }
                     }
+
                 }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }
 
-            }
-        });
     }
-
 
     @Override
     public void onClick(View v) {
@@ -147,7 +156,27 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 getUserFromDatabase();
 
                 break;
+
         }
     }
+    private void dialogChoice(CharSequence username, CharSequence nrOfPosts) {
 
+        final CharSequence[] options = {username,nrOfPosts, "Dismiss"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        builder.setTitle("ChefooD User");
+        builder.setIcon(R.drawable.chefood);
+        builder.setView(R.layout.list_search_item);
+
+        builder.setItems(options, (dialog, which) -> {
+            if (options[which].equals("Dismiss")) {
+                dialog.dismiss();
+            }
+//            else if (options[which].equals(username)) {
+//                Log.d(TAG, "dialogChoice: username is: " + username);
+//                dialog.dismiss();
+//            }
+
+        });
+        builder.show();
+    }
 }
