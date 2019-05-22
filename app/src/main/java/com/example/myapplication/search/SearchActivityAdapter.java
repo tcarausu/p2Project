@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -59,8 +60,8 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
                     .fitCenter()
                     .centerCrop()
                     .into(viewHolder.profile_photo);
-            viewHolder.username.setText(currentUser.getUsername());
-            viewHolder.nrOfPosts.setText(String.valueOf(currentUser.getPosts()));
+            viewHolder.username.setText(String.format("User name: %s", currentUser.getUsername()));
+            viewHolder.nrOfPosts.setText(MessageFormat.format("Number of posts: {0}", currentUser.getPosts()));
 
         } else {
             Glide.with(context)
@@ -95,12 +96,31 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
             username = itemView.findViewById(R.id.user_name_on_search_list_user);
             nrOfPosts = itemView.findViewById(R.id.nr_of_posts_on_search_list_user);
 
-//            profile_photo.setOnClickListener(v ->
-//                    dialogChoice(username.getText(), nrOfPosts.getText())
-//            );
+            profile_photo.setOnClickListener(v ->
+                    dialogChoice(username.getText(), nrOfPosts.getText())
+            );
         }
     }
 
 
+    private void dialogChoice(CharSequence username, CharSequence nrOfPosts) {
 
+        final CharSequence[] options = {username, nrOfPosts, "Dismiss"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("ChefooD User");
+        builder.setIcon(R.drawable.chefood);
+
+        builder.setItems(options, (dialog, which) -> {
+
+            if (options[which].equals(username)) {
+                Log.d(TAG, "dialogChoice: username is: " + username);
+                dialog.dismiss();
+            } else if (options[which].equals(nrOfPosts)) {
+                dialog.dismiss();
+            } else if (options[which].equals("Dismiss")) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
 }
