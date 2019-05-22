@@ -20,9 +20,13 @@
         android:layout_gravity="start"
         android:paddingEnd="15dp"
         android:layout_marginStart="10dp"
+        android:shadowDx="5"
+        android:shadowRadius="10"
+        android:shadowColor="@color/black"
         android:layout_marginTop="10dp"
         android:drawableStart="@drawable/orange_arrow_left"
         android:background="@drawable/input_fields_with_shadow"
+        android:fontFamily="@font/arbutus"
         android:textColor="@color/orange"
         android:text="@string/go_back_signUpFragment" />
 
@@ -105,7 +109,10 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/input_fields_with_shadow"
         android:padding="10dp"
-
+        android:fontFamily="@font/arbutus"
+        android:shadowColor="@color/black"
+        android:shadowDx="5"
+        android:shadowRadius="10"
         android:text="@string/signUp"
         android:textColor="@color/orange" />
 

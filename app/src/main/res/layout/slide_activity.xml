@@ -44,11 +44,14 @@
         android:layout_marginStart="20dp"
         android:layout_marginBottom="30dp"
         android:text="@string/previous_slide"
+        android:fontFamily="@font/arbutus"
+        android:shadowColor="@color/darkOrange"
+        android:shadowDx="3"
         android:padding="5dp"
         android:shadowDy="2"
         android:shadowRadius="3"
         android:textColor="@color/orange"
-        android:background="@drawable/input_fields_with_shadow"
+        android:background="@drawable/input_fields_round"
         />
 
     <Button
@@ -61,7 +64,12 @@
         android:layout_centerHorizontal="true"
         android:layout_marginEnd="21dp"
         android:layout_marginBottom="89dp"
-        android:background="@drawable/input_fields_with_shadow"
+        android:shadowColor="@color/darkOrange"
+        android:shadowDx="3"
+        android:shadowDy="2"
+        android:shadowRadius="3"
+        android:fontFamily="@font/arbutus"
+        android:background="@drawable/input_fields_round"
         android:text="@string/skip_slide"
         android:textColor="@color/orange" />
 
@@ -74,8 +82,13 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="30dp"
-        android:background="@drawable/input_fields_with_shadow"
+        android:fontFamily="@font/arbutus"
+        android:shadowColor="@color/darkOrange"
+        android:background="@drawable/input_fields_round"
         android:padding="5dp"
+        android:shadowDx="3"
+        android:shadowDy="2"
+        android:shadowRadius="3"
         android:text="@string/next_slide"
         android:textColor="@color/orange" />
 

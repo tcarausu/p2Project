@@ -16,7 +16,7 @@
 
         android:width="5dp"
         android:dashGap="1dp"
-        android:dashWidth="50dp"
+        android:dashWidth="5dp"
 
         android:color="@color/orange" />
 
