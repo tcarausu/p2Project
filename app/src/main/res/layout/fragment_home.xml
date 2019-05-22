@@ -5,9 +5,8 @@
 
 
     <android.support.v7.widget.RecyclerView
-        android:background="@drawable/input_fields_frame_orange"
         android:layout_width="match_parent"
-        android:padding="5dp"
+        android:padding="1px"
         android:layout_height="match_parent"
         android:id="@+id/recyclerViewID"/>
 
