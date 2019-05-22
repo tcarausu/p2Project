@@ -3,6 +3,8 @@ package com.example.myapplication.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.List;
 
 public class Post implements Parcelable {
@@ -48,7 +50,6 @@ public class Post implements Parcelable {
         date_created = in.readString();
         userId = in.readString();
         postId = in.readString();
-
     }
 
     public static final Parcelable.Creator<Post> CREATOR = new Parcelable.Creator<Post>() {
@@ -67,6 +68,7 @@ public class Post implements Parcelable {
         return userId;
     }
 
+    @Exclude
     public void setUserId(String userId) {
         this.userId = userId;
     }
@@ -74,7 +76,7 @@ public class Post implements Parcelable {
     public String getmDescription() {
         return mDescription;
     }
-
+    @Exclude
     public void setmDescription(String mDescription) {
         this.mDescription = mDescription;
     }
@@ -83,6 +85,7 @@ public class Post implements Parcelable {
         return mFoodImgUrl;
     }
 
+    @Exclude
     public void setmFoodImgUrl(String mFoodImgUrl) {
         this.mFoodImgUrl = mFoodImgUrl;
     }
@@ -90,7 +93,7 @@ public class Post implements Parcelable {
     public String getmRecipe() {
         return mRecipe;
     }
-
+    @Exclude
     public void setmRecipe(String mRecipe) {
         this.mRecipe = mRecipe;
     }
@@ -98,7 +101,7 @@ public class Post implements Parcelable {
     public String getmIngredients() {
         return mIngredients;
     }
-
+    @Exclude
     public void setmIngredients(String mIngredients) {
         this.mIngredients = mIngredients;
     }
@@ -106,7 +109,7 @@ public class Post implements Parcelable {
     public List<Like> getLikes() {
         return likes;
     }
-
+    @Exclude
     public void setLikes(List<Like> likes) {
         this.likes = likes;
     }
@@ -114,7 +117,7 @@ public class Post implements Parcelable {
     public String getDate_created() {
         return date_created;
     }
-
+    @Exclude
     public void setDate_created(String date_created) {
         this.date_created = date_created;
     }
@@ -122,7 +125,7 @@ public class Post implements Parcelable {
     public String getPostId() {
         return postId;
     }
-
+    @Exclude
     public void setPostId(String postId) {
         this.postId = postId;
     }
@@ -130,7 +133,7 @@ public class Post implements Parcelable {
     public User getUser() {
         return user;
     }
-
+    @Exclude
     public void setUser(User user) {
         this.user = user;
     }

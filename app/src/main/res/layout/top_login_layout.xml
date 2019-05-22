@@ -75,16 +75,12 @@
                 android:background="@drawable/input_fields_with_shadow"
                 android:drawableEnd="@drawable/log_in_icon_small"
                 android:drawablePadding="10dp"
-                android:fontFamily="@font/arbutus"
                 android:onClick="onClick"
                 android:paddingStart="15dp"
-                android:shadowDx="5"
-                android:shadowColor="@color/black"
-                android:shadowRadius="5"
                 android:paddingEnd="5dp"
                 android:text="@string/btn_log_in"
                 android:textAllCaps="false"
-                android:textColor="@color/orangeMainTheme"
+                android:textColor="@color/orange"
                 android:textAlignment="textEnd"
                 android:textSize="18sp" />
 
