@@ -117,7 +117,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                                 adapter = new SearchActivityAdapter(getApplicationContext(), userList);
 
                                 userList.add(user);
-                                dialogChoice(username,nrOfPosts);
+                                dialogChoice(username, nrOfPosts);
 
                                 adapter.setUserList(userList);
 
@@ -159,23 +159,24 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         }
     }
+
     private void dialogChoice(CharSequence username, CharSequence nrOfPosts) {
 
-        final CharSequence[] options = {username,nrOfPosts, "Dismiss"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        final CharSequence[] options = {username, nrOfPosts, "Dismiss"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("ChefooD User");
         builder.setIcon(R.drawable.chefood);
-        builder.setView(R.layout.list_search_item);
 
         builder.setItems(options, (dialog, which) -> {
-            if (options[which].equals("Dismiss")) {
+
+            if (options[which].equals(username)) {
+                Log.d(TAG, "dialogChoice: username is: " + username);
+                dialog.dismiss();
+            } else if (options[which].equals(nrOfPosts)) {
+                dialog.dismiss();
+            } else if (options[which].equals("Dismiss")) {
                 dialog.dismiss();
             }
-//            else if (options[which].equals(username)) {
-//                Log.d(TAG, "dialogChoice: username is: " + username);
-//                dialog.dismiss();
-//            }
-
         });
         builder.show();
     }
