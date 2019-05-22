@@ -49,24 +49,24 @@ public class FirebaseMethods {
         return mAuth;
     }
 
-    public FirebaseDatabase getFirebaseDatabase() {
-        return mFirebaseDatabase;
-    }
-
-    // overloaded constructors for multiple use and cases
-    public FirebaseMethods(FirebaseAuth auth, Context context) {
-        mAuth = auth;
-        mContext = context;
-    }
-
-    public FirebaseMethods(FirebaseAuth auth, FirebaseDatabase firebaseDatabase, GoogleSignInClient googleSignInClient, GoogleSignInOptions gso, Context context, LoginManager loginManager) {
-        mAuth = auth;
-        mFirebaseDatabase = firebaseDatabase;
-        mGoogleSignInClient = googleSignInClient;
-        this.gso = gso;
-        mContext = context;
-        mLoginManager = loginManager;
-    }
+//    public FirebaseDatabase getFirebaseDatabase() {
+//        return mFirebaseDatabase;
+//    }
+//
+//    // overloaded constructors for multiple use and cases
+//    public FirebaseMethods(FirebaseAuth auth, Context context) {
+//        mAuth = auth;
+//        mContext = context;
+//    }
+//
+//    public FirebaseMethods(FirebaseAuth auth, FirebaseDatabase firebaseDatabase, GoogleSignInClient googleSignInClient, GoogleSignInOptions gso, Context context, LoginManager loginManager) {
+//        mAuth = auth;
+//        mFirebaseDatabase = firebaseDatabase;
+//        mGoogleSignInClient = googleSignInClient;
+//        this.gso = gso;
+//        mContext = context;
+//        mLoginManager = loginManager;
+//    }
 
     public  FirebaseMethods(Context context) {
         // Mo.Msaad modification modification

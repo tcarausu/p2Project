@@ -26,6 +26,7 @@
             android:layout_gravity="center"
             android:padding="5dp"
             android:text="Here is the user name"
+            android:textStyle="italic|bold"
             android:textColor="@color/darkOrange"
             android:textSize="15sp" />
     </LinearLayout>
@@ -50,7 +51,7 @@
             android:layout_height="wrap_content"
             android:padding="5dp"
             android:text="Description..."
-            android:textStyle="bold"
+            android:textStyle="bold|italic"
             android:textColor="@color/black" />
     </RelativeLayout>
 
@@ -94,7 +95,6 @@
 
         <RelativeLayout
             android:background="@drawable/input_fields_frame_grey"
-
             android:id="@+id/like_relative"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -116,8 +116,9 @@
                 android:layout_below="@id/likes_button"
                 android:layout_centerInParent="true"
                 android:text="Like"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textStyle="bold"
+                android:textColor="@color/orange"
+                android:textSize="14sp" />
 
         </RelativeLayout>
 
@@ -145,8 +146,9 @@
                 android:layout_below="@id/commentsBtnID"
                 android:layout_centerInParent="true"
                 android:text="Comment"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textStyle="bold"
+                android:textColor="@color/orange"
+                android:textSize="14sp" />
 
         </RelativeLayout>
 
@@ -174,8 +176,9 @@
                 android:layout_below="@id/recipeBtnID"
                 android:layout_centerInParent="true"
                 android:text="Recipe"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textStyle="bold"
+                android:textColor="@color/orange"
+                android:textSize="14sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -202,8 +205,9 @@
                 android:layout_below="@id/ingredientsBtnID"
                 android:layout_centerInParent="true"
                 android:text="Ingredients"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textStyle="bold"
+                android:textColor="@color/orange"
+                android:textSize="14sp" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -218,8 +222,9 @@
             android:background="@drawable/input_fields_frame_grey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Liked by whoever, eve, and 30 others"
+            android:text="@string/empty_line"
             android:textColor="@color/black"
+            android:textStyle="bold|italic"
             android:textSize="18sp" />
 
         <TextView
@@ -230,6 +235,7 @@
             android:layout_centerInParent="true"
             android:layout_marginTop="15dp"
             android:text="3 days ago"
+            android:textStyle="bold|italic"
             android:textColor="@color/grey_500"
             android:textSize="18sp" />
     </RelativeLayout>

@@ -58,31 +58,20 @@ public class HomeFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
         mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
         mFirebaseMethods = new FirebaseMethods(getContext());
         mUserId = current_user.getUid();
         firebasedatabase = FirebaseDatabase.getInstance();
         mDatabasePostRef = firebasedatabase.getReference("posts");
-
         mRecyclerView = view.findViewById(R.id.recyclerViewID);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                recyclerView.refreshDrawableState();
-
-            }
-        });
-
         mPosts = new ArrayList<>();
         mUsers = new ArrayList<>();
-
-
+        mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
+        mRecyclerView.setAdapter(mAdapter);
         GetData getData = new GetData();
         getData.execute();
 
@@ -119,6 +108,10 @@ public class HomeFragment extends Fragment {
                 mDatabasePostRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            mPosts.clear();
+                            mUsers.clear();
+
+
                         for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                             String postUserId = userSnapshot.getKey();
                             mDatabaseUserRef = firebasedatabase.getReference("users/" + mUserId);
@@ -159,6 +152,7 @@ public class HomeFragment extends Fragment {
                                             mProfilePhoto = user.getProfile_photo();
 
                                             mAdapter.setUserForPost(post, user);
+                                            mAdapter.notifyDataSetChanged();
 
                                             Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
                                         }
@@ -186,6 +180,7 @@ public class HomeFragment extends Fragment {
                                                 mProfilePhoto = user.getProfile_photo();
 
                                                 mAdapter.setUserForPost(post, user);
+                                                mAdapter.notifyDataSetChanged();
                                             }catch (NullPointerException e){
                                                 Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
 
@@ -200,15 +195,13 @@ public class HomeFragment extends Fragment {
 
                                     }
                                 });
-                                mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
+
                                 mPosts.add(post);
                                 mAdapter.setPostsList(mPosts);
-
+                                mAdapter.notifyDataSetChanged();
 
                             }
                         }
-
-                        mRecyclerView.setAdapter(mAdapter);
                         mAdapter.notifyDataSetChanged();
                     }
 
