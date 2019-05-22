@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.User;
+import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +29,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +41,13 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  **/
 public class SearchFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "SearchActivity";
+    private static final int ACTIVITY_NUM = 1;
 
     //widgets
     private EditText mSearchParam;
     private ImageView backArrow;
     private ImageButton mSearchButton;
+    private BottomNavigationViewEx bottomNavigationViewEx;
 
     //Firebase
     private FirebaseAuth mAuth;
@@ -77,6 +83,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         initLayout(view);
         buttonListeners();
+        setupBottomNavigationView();
 
         getUserFromDatabase();
 
@@ -92,6 +99,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         backArrow = view.findViewById(R.id.backArrow);
         mSearchButton = view.findViewById(R.id.search_button_id);
         search_recycler_view = view.findViewById(R.id.search_recycler_view_id);
+        bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
 
     }
 
@@ -163,5 +171,17 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                 break;
         }
+    }
+
+    /**
+     * Bottom Navigation View setup
+     */
+    public void setupBottomNavigationView() {
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getContext(), bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
+
     }
 }

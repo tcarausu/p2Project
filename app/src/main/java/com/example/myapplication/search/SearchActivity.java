@@ -3,32 +3,23 @@ package com.example.myapplication.search;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
-import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
-
-import java.util.Objects;
 
 
 public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
-
-    private static final int ACTIVITY_NUM = 1;
 
     private Context mContext;
 
@@ -43,14 +34,15 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.search_activity);
+        setContentView(R.layout.activity_search);
         mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
 
         initLayout();
         buttonListeners();
         initImageLoader();
-        setupBottomNavigationView();
+
+
         setupFirebaseAuth();
         setupViewPager();
     }
@@ -108,13 +100,10 @@ public class SearchActivity extends AppCompatActivity {
 
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new SearchFragment()); //index 1
+
         ViewPager viewPager = findViewById(R.id.container);
         viewPager.setAdapter(adapter);
 
-        TabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-
-        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.home);
     }
 
     /**
@@ -139,7 +128,6 @@ public class SearchActivity extends AppCompatActivity {
 
         mAuthListener = firebaseAuth -> {
 
-
             checkCurrentUser();
 
             if (current_user != null) {
@@ -154,18 +142,6 @@ public class SearchActivity extends AppCompatActivity {
         ImageLoader.getInstance().init(imageLoader.getConfig());
     }
 
-    /**
-     * Bottom Navigation View setup
-     */
-    public void setupBottomNavigationView() {
-        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
-        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
-        Menu menu = bottomNavigationViewEx.getMenu();
-        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        menuItem.setChecked(true);
-
-    }
 }
 
 
