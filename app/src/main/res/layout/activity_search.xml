@@ -10,21 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/search_bar_layout_id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <include layout="@layout/snippet_search_bar" />
-
-        </RelativeLayout>
-
         <!--Mid Section-->
         <RelativeLayout
             android:id="@+id/midSectionSearch"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/search_bar_layout_id">
+            >
 
             <include layout="@layout/layout_center_view_pager" />
 
