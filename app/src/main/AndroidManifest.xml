@@ -15,6 +15,7 @@
     <!--getting the wifi state permission -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/chefood"
@@ -50,8 +51,10 @@
         </activity>
         <!-- END facebook login -->
 
+
         <activity android:name=".search.SearchActivity" />
-        <activity android:name=".post.AddPostActivity" />
+        <activity
+            android:name=".post.AddPostActivity" />
         <activity android:name=".home.HomeActivity" />
         <activity android:name=".user_profile.UserProfileActivity" />
         <activity android:name=".likes.LikePostActivity" />
