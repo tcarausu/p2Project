@@ -9,14 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * File created by tcarau18
@@ -46,10 +48,10 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
 
 
     @Override
-    public void onBindViewHolder(@NonNull final SearchActivityAdapter.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull final SearchActivityAdapter.ViewHolder viewHolder, int index) {
         Log.d(TAG, "onBindViewHolder: Called");
 
-        final User currentUser = userList.get(position);
+        final User currentUser = userList.get(index);
 
         if (currentUser != null) {
             Glide.with(context)
@@ -70,9 +72,9 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
 
         }
 
-        Animation animation = AnimationUtils.loadAnimation(context, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
+        Animation animation = AnimationUtils.loadAnimation(context, (index > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
         viewHolder.itemView.startAnimation(animation);
-        lastPosition = position;
+        lastPosition = index;
     }
 
     @Override
@@ -83,13 +85,13 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView username;
-        ImageView profile_photo;
+        CircleImageView profile_photo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            profile_photo = itemView.findViewById(R.id.userProfilePicID);
-            username = itemView.findViewById(R.id.userNameID);
+            profile_photo = itemView.findViewById(R.id.user_profile_Image_item_id);
+            username = itemView.findViewById(R.id.user_name_on_search_list_user);
 
         }
     }
