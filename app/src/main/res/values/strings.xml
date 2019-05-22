@@ -170,5 +170,6 @@
     <string name="yes">YES</string>
     <string name="no">NO</string>
     <string name="todo">TODO</string>
+    <string name="post_added">Post added successfully.</string>
 
 </resources>

@@ -50,6 +50,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private String username;
     private String profilePicUrl;
     private FirebaseMethods firebaseMethods;
+    private String uploadId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,7 +142,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
 
-        StorageReference storageReference = mStorageRef.child("post_pic/users/" + mAuth.getUid() + "/" + System.currentTimeMillis() + ".jpg");
+        StorageReference storageReference = mStorageRef.child("post_pic/users/" + mAuth.getUid() + "/" + uploadId + ".jpg");
         storageReference.putFile(Uri.parse(imageUri)).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         progressDialog.dismiss();
@@ -151,7 +152,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                             String description = mImageDesc.getText().toString();
                             String ingredients = mImageIngredients.getText().toString();
                             String recipe = mImageRecipe.getText().toString();
-                            String uploadId = mDatabaseRef.push().getKey();
+                            uploadId = mDatabaseRef.push().getKey();
                             Post postInfo = new Post(description,
                                     URL, recipe, ingredients, mAuth.getUid(),
                                     uploadId, firebaseMethods.getTimestamp(), null);
@@ -159,7 +160,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
                             mDatabaseRef.child(uploadId).setValue(postInfo);
 
-                            Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();
                             Handler handler = new Handler();
                             handler.postDelayed(() -> {
                                 Intent intent = new Intent(NextActivity.this, HomeActivity.class);
@@ -172,7 +173,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         ).addOnSuccessListener(taskSnapshot -> {
 
             progressDialog.dismiss();
-            Toast.makeText(NextActivity.this, "Post added successfully.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(NextActivity.this, R.string.post_added, Toast.LENGTH_SHORT).show();
         }).addOnCanceledListener(() -> {
 
                 }

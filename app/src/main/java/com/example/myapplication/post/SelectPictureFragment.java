@@ -1,6 +1,7 @@
 package com.example.myapplication.post;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.utility_classes.Permissions;
@@ -39,8 +41,8 @@ import static android.app.Activity.RESULT_OK;
 
 public class SelectPictureFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks  {
     private static final String TAG = "SelectPictureFragment";
-    private static final int CAMERA_REQUEST = 44;
-    private static final int GALLERY_REQUEST = 11;
+    private static final int CAMERA_REQUEST = 11;
+    private static final int GALLERY_REQUEST = 22;
     private static final int PERMISSION = 123;
 
     private ImageView galleryImageView;
@@ -112,15 +114,29 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
      * @param data represents the Data requested for the URI
      */
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == GALLERY_REQUEST) {
-            mUri = data.getData();
-            Glide.with(getContext()).load(mUri).fitCenter().centerCrop().into(galleryImageView);
-            intent.putExtra("imageUri", mUri.toString());
-        }
+        assert data != null;
+        boolean besoins = resultCode == RESULT_OK && requestCode == CAMERA_REQUEST && mUri != null;
 
+        try {
+
+            if (besoins) {
+                    Glide.with(this).load(mUri)
+                            .centerCrop().into(galleryImageView);
+                    intent.putExtra("imageUri", mUri.toString());
+            } else if (resultCode == RESULT_OK) {
+                 mUri = data.getData();
+                Glide.with(this).load(mUri).
+                        centerCrop().into(galleryImageView);
+                intent.putExtra("imageUri", mUri.toString());
+            }
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "Error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
+
+
 
     /**
      * Method that will show a AlertDialog giving user ability to choose
@@ -149,9 +165,15 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
      * Method which will open built-in camera
      */
     private void takePicture() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "NEW PICTURE");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From the camerea");
+        mUri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                values);
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (getBatteryLevel() > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
             Log.d(TAG, "takePicture: battery level: " + getBatteryLevel());
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
             startActivityForResult(cameraIntent, CAMERA_REQUEST);
         } else Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
 
@@ -163,6 +185,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     private void selectPicture() {
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         photoPickerIntent.setType("image/*");
+        photoPickerIntent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
     }
 
@@ -183,7 +206,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
              * galleryImageView is not empty
              */
             case R.id.textview_next:
-                if (galleryImageView.getDrawable() == null) {
+                if (mUri == null) {
                     Toast.makeText(getActivity(), R.string.please_select_picture,
                             Toast.LENGTH_LONG).show();
                 } else {
