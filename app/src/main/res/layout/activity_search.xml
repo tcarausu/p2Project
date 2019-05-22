@@ -13,29 +13,14 @@
 
     </RelativeLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <ListView
+        android:id="@+id/search_view_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/search_bar_id">
+        android:layout_below="@+id/search_bar_layout_id"
+        >
 
-        <!--<RelativeLayout-->
-        <!--android:id="@+id/relLayoutSearch1"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content">-->
-
-
-        <!--</RelativeLayout>-->
-
-        <!--<RelativeLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@id/relLayoutSearch1">-->
-
-        <!--<include layout="@layout/layout_user_listitem" />-->
-
-        <!--</RelativeLayout>-->
-
-    </android.support.v7.widget.RecyclerView>
+    </ListView>
 
     <include layout="@layout/layout_bottom_navigation" />
 
