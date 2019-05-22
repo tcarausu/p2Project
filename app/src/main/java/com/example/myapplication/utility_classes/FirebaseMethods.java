@@ -263,11 +263,9 @@ public class FirebaseMethods {
 
         Log.d(TAG, "checkUserStateIfNull: is called");
         if (mAuth == null || mAuth.getCurrentUser() == null) {
-
             return true;
         }
         else return false;
-
     }
 
 

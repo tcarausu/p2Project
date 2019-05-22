@@ -3,6 +3,8 @@ package com.example.myapplication.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.List;
 
 public class Post implements Parcelable {
@@ -20,19 +22,23 @@ public class Post implements Parcelable {
     public Post() {
     }
 
-    public Post(String mDescription,
-                String mFoodImgUrl, String mRecipe, String mIngredients, String userId, String postId, String date_created, List<Like> likes) {
-        if (mDescription.trim().equals("")) {
-            mDescription = "No description available";
+    public Post(String mDescription, String mFoodImgUrl, String mRecipe,
+                String mIngredients, String userId, String postId, String date_created, List<Like> likes) {
+
+        synchronized (Post.class) {
+            if (mDescription.trim().equals("")) {
+
+                mDescription = "No description available";
+            }
+            this.mDescription = mDescription;
+            this.date_created = date_created;
+            this.mFoodImgUrl = mFoodImgUrl;
+            this.mRecipe = mRecipe;
+            this.mIngredients = mIngredients;
+            this.userId = userId;
+            this.postId = postId;
+            this.likes = likes;
         }
-        this.mDescription = mDescription;
-        this.mFoodImgUrl = mFoodImgUrl;
-        this.mRecipe = mRecipe;
-        this.mIngredients = mIngredients;
-        this.userId = userId;
-        this.postId = postId;
-        this.date_created = date_created;
-        this.likes = likes;
     }
 
 
@@ -58,10 +64,11 @@ public class Post implements Parcelable {
         }
     };
 
-    public String getUserId() {
+    public synchronized String getUserId() {
         return userId;
     }
 
+    @Exclude
     public void setUserId(String userId) {
         this.userId = userId;
     }
@@ -69,7 +76,7 @@ public class Post implements Parcelable {
     public String getmDescription() {
         return mDescription;
     }
-
+    @Exclude
     public void setmDescription(String mDescription) {
         this.mDescription = mDescription;
     }
@@ -78,6 +85,7 @@ public class Post implements Parcelable {
         return mFoodImgUrl;
     }
 
+    @Exclude
     public void setmFoodImgUrl(String mFoodImgUrl) {
         this.mFoodImgUrl = mFoodImgUrl;
     }
@@ -85,7 +93,7 @@ public class Post implements Parcelable {
     public String getmRecipe() {
         return mRecipe;
     }
-
+    @Exclude
     public void setmRecipe(String mRecipe) {
         this.mRecipe = mRecipe;
     }
@@ -93,7 +101,7 @@ public class Post implements Parcelable {
     public String getmIngredients() {
         return mIngredients;
     }
-
+    @Exclude
     public void setmIngredients(String mIngredients) {
         this.mIngredients = mIngredients;
     }
@@ -101,7 +109,7 @@ public class Post implements Parcelable {
     public List<Like> getLikes() {
         return likes;
     }
-
+    @Exclude
     public void setLikes(List<Like> likes) {
         this.likes = likes;
     }
@@ -109,7 +117,7 @@ public class Post implements Parcelable {
     public String getDate_created() {
         return date_created;
     }
-
+    @Exclude
     public void setDate_created(String date_created) {
         this.date_created = date_created;
     }
@@ -117,7 +125,7 @@ public class Post implements Parcelable {
     public String getPostId() {
         return postId;
     }
-
+    @Exclude
     public void setPostId(String postId) {
         this.postId = postId;
     }
@@ -125,7 +133,7 @@ public class Post implements Parcelable {
     public User getUser() {
         return user;
     }
-
+    @Exclude
     public void setUser(User user) {
         this.user = user;
     }

@@ -1,5 +1,8 @@
 package com.example.myapplication.models;
 
+import com.google.firebase.database.Exclude;
+
+public  class  User {
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -17,11 +20,11 @@ public class User implements Parcelable {
     private long phone_number;
     private String email;
 
-    public User(String about, String display_name,
-                String username, String email, long phone_number,
-                long followers, long following, long posts,
-                String profile_photo, String website
-    ) {
+    public User(String about, String display_name, String username, String email, long phone_number,
+                long followers, long following, long posts, String profile_photo, String website) {
+
+
+        synchronized(User.class){
         this.about = about;
         this.display_name = display_name;
         this.username = username;
@@ -32,6 +35,7 @@ public class User implements Parcelable {
         this.website = website;
         this.phone_number = phone_number;
         this.email = email;
+        }
     }
 
     public User() {
@@ -65,7 +69,7 @@ public class User implements Parcelable {
     public String getAbout() {
         return about;
     }
-
+    @Exclude
     public void setAbout(String about) {
         this.about = about;
     }
@@ -73,7 +77,7 @@ public class User implements Parcelable {
     public String getDisplay_name() {
         return display_name;
     }
-
+    @Exclude
     public void setDisplay_name(String display_name) {
         this.display_name = display_name;
     }
@@ -82,6 +86,7 @@ public class User implements Parcelable {
         return username;
     }
 
+    @Exclude
     public void setUsername(String username) {
         this.username = username;
     }
@@ -89,7 +94,7 @@ public class User implements Parcelable {
     public long getFollowers() {
         return followers;
     }
-
+    @Exclude
     public void setFollowers(long followers) {
         this.followers = followers;
     }
@@ -97,7 +102,7 @@ public class User implements Parcelable {
     public long getFollowing() {
         return following;
     }
-
+    @Exclude
     public void setFollowing(long following) {
         this.following = following;
     }
@@ -107,13 +112,15 @@ public class User implements Parcelable {
     }
 
     public void setNrPosts(long posts) {
+    @Exclude
+    public void setPosts(long posts) {
         this.posts = posts;
     }
 
     public String getProfile_photo() {
         return profile_photo;
     }
-
+    @Exclude
     public void setProfile_photo(String profile_photo) {
         this.profile_photo = profile_photo;
     }
@@ -121,7 +128,7 @@ public class User implements Parcelable {
     public String getEmail() {
         return email;
     }
-
+    @Exclude
     public void setEmail(String email) {
         this.email = email;
     }
@@ -129,7 +136,7 @@ public class User implements Parcelable {
     public long getPhone_number() {
         return phone_number;
     }
-
+    @Exclude
     public void setPhone_number(long phone_number) {
         this.phone_number = phone_number;
     }
@@ -137,7 +144,7 @@ public class User implements Parcelable {
     public String getWebsite() {
         return website;
     }
-
+    @Exclude
     public void setWebsite(String website) {
         this.website = website;
     }

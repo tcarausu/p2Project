@@ -1,6 +1,5 @@
 package com.example.myapplication.home;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -60,7 +59,7 @@ public class HomeActivity extends AppCompatActivity {
         current_user = mAuth.getCurrentUser();
         firebasedatabase = FirebaseDatabase.getInstance();
         mDatabasePostRef = firebasedatabase.getReference("posts").getRef();
-        
+
         checkDatabaseState();
         initImageLoader();
         setupBottomNavigationView();
@@ -73,12 +72,15 @@ public class HomeActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-         checkDatabaseState();
+        checkDatabaseState();
+         if (mFirebaseMethods.checkUserStateIfNull()){
+             mAuth.removeAuthStateListener(mAuthListener);
+             mFirebaseMethods.logOut();
+         }
 
 
     }
 
-    @SuppressLint("RestrictedApi")
     private void checkDatabaseState() {
 
         try{
@@ -101,26 +103,6 @@ public class HomeActivity extends AppCompatActivity {
             Toast.makeText(this,"Nothing to display: "+e.getMessage(),Toast.LENGTH_SHORT).show();
             goTosWithFlags(this, LoginActivity.class);
         }
-
-
-
-//        try {
-//        boolean  hasChildren = postQuery.getPath().iterator().hasNext() ;
-//        Log.d(TAG, "checkDatabaseState: has children:  "+ hasChildren);
-//
-//        if (!hasChildren) {
-//            Log.d(TAG, "checkDatabaseState: has children:  "+ hasChildren);
-//            goTosWithFlags(this, AddPostActivity.class);
-//        }
-//
-//        else if (mFirebaseMethods.checkUserStateIfNull()) {
-//            mFirebaseMethods.logOut();
-//            goTosWithFlags(this, LoginActivity.class);
-//        }
-//        }catch (Exception e){
-//            Toast.makeText(this,"Nothing to display: "+e.getMessage(),Toast.LENGTH_SHORT).show();
-//            goTosWithFlags(this, LoginActivity.class);
-//        }
     }
 
 
@@ -128,6 +110,10 @@ public class HomeActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         checkDatabaseState();
+        if (mFirebaseMethods.checkUserStateIfNull()){
+            mAuth.removeAuthStateListener(mAuthListener);
+            mFirebaseMethods.logOut();
+        }
 
     }
 
@@ -137,11 +123,16 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         checkDatabaseState();
+        if (mFirebaseMethods.checkUserStateIfNull()){
+            mAuth.removeAuthStateListener(mAuthListener);
+            mFirebaseMethods.logOut();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
