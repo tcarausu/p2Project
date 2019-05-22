@@ -114,10 +114,9 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                             if (username.equals(keyword)) {
 
-                                adapter = new SearchActivityAdapter(getApplicationContext(), userList);
+                                adapter = new SearchActivityAdapter(requireContext(), userList);
 
                                 userList.add(user);
-                                dialogChoice(username, nrOfPosts);
 
                                 adapter.setUserList(userList);
 
@@ -160,24 +159,4 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void dialogChoice(CharSequence username, CharSequence nrOfPosts) {
-
-        final CharSequence[] options = {username, nrOfPosts, "Dismiss"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("ChefooD User");
-        builder.setIcon(R.drawable.chefood);
-
-        builder.setItems(options, (dialog, which) -> {
-
-            if (options[which].equals(username)) {
-                Log.d(TAG, "dialogChoice: username is: " + username);
-                dialog.dismiss();
-            } else if (options[which].equals(nrOfPosts)) {
-                dialog.dismiss();
-            } else if (options[which].equals("Dismiss")) {
-                dialog.dismiss();
-            }
-        });
-        builder.show();
-    }
 }
