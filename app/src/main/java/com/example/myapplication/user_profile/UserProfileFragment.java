@@ -79,6 +79,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private GridView gridView;
     private Toolbar toolbar;
     private Uri avatarUri;
+    //avatarUri = Uri.parse("android.resource://com.example.myapplication/drawable/my_avatar");
 
     private User user;
 
@@ -90,7 +91,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         myRef = mFirebaseDatabase.getReference();
         postsRef = mFirebaseDatabase.getReference("users").child(current_user.getUid()).child("posts");
         userPostCount = mFirebaseDatabase.getReference("posts").child(current_user.getUid());
-        avatarUri = Uri.parse("android.resource://com.example.myapplication/drawable/my_avatar");
         initLayout(view);
         setListeners(view);
         setupFirebaseAuth();
@@ -103,6 +103,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
     private void initLayout(View view) {
+
         firebaseMethods = new FirebaseMethods(getContext());
         mDisplayName = view.findViewById(R.id.displayName);
         mUserName = view.findViewById(R.id.userName);
@@ -111,7 +112,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mPosts = view.findViewById(R.id.tvPosts);
         mFollowers = view.findViewById(R.id.tvFollowers);
         mFollowing = view.findViewById(R.id.tvFollowing);
-
         gridView = view.findViewById(R.id.grid_view_user_profile);
         mProgressBar = view.findViewById(R.id.profile_progress_bar);
         mProgressBar.setVisibility(View.GONE);
@@ -121,11 +121,11 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
     private void setListeners(View view) {
+
         mEditProfile = view.findViewById(R.id.editProfile);
         profileMenu = view.findViewById(R.id.profileMenu);
         mEditProfile.setOnClickListener(this);
         profileMenu.setOnClickListener(this);
-
     }
 
     @Override

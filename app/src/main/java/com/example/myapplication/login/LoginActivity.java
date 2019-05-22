@@ -75,6 +75,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
+    private LoginButton loginButton ;
     
 
     private TextView signUp, orView;
@@ -83,6 +84,8 @@ public class LoginActivity extends AppCompatActivity implements
     private FragmentManager fragmentManager;
     private boolean isVerified;
 
+
+    // this is set to create an email_signed_in_user with default avatar. We store the picture on database an download it later.
     private String avatarURL = "https://firebasestorage.googleapis.com/v0/b/p2project-2a81d.appspot.com/o/avatar_chefood%2FGroup%205.png?alt=media&token=87e74817-a27d-4a04-afa3-e7cfa1adca68";
 
     private Context mContext;
@@ -113,6 +116,7 @@ public class LoginActivity extends AppCompatActivity implements
         loginLayout = findViewById(R.id.login_activity);
         signUp = findViewById(R.id.sign_up);
         orView = findViewById(R.id.orView);
+        loginButton = findViewById(R.id.facebookLoginButton);
 
     }
 
@@ -135,22 +139,29 @@ public class LoginActivity extends AppCompatActivity implements
 
         // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = findViewById(R.id.facebookLoginButton);
+
         loginButton.setReadPermissions("email", "public_profile");
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(FacebookTag, "facebook:onSuccess:" + loginResult);
+                loginButton.setEnabled(false);
+                loginButton.setVisibility(View.GONE);
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
             @Override
             public void onCancel() {
+                loginButton.setVisibility(View.VISIBLE);
+                loginButton.setEnabled(true);
                 Log.d(FacebookTag, "facebook:onCancel");
             }
 
             @Override
             public void onError(FacebookException error) {
+                loginButton.setVisibility(View.VISIBLE);
+                loginButton.setEnabled(true);
+                Toast.makeText(getApplicationContext(),"Error: "+error.getMessage(),Toast.LENGTH_SHORT).show();
                 Log.d(FacebookTag, "facebook:onError", error);
             }
         });
@@ -334,6 +345,7 @@ public class LoginActivity extends AppCompatActivity implements
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+
                         // Sign in success, update UI with the signed-in user's information
                         Toast.makeText(LoginActivity.this, "Authentication successful.", Toast.LENGTH_SHORT).show();
 

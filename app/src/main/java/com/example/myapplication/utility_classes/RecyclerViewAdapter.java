@@ -90,18 +90,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
         viewHolder.mLikes.setOnClickListener(v -> {
-            String nrOfLikes = "" + postCurrent.getLikes().size();
-
-            viewHolder.mToolbarExpasionText.setText(nrOfLikes);
+            int nrOfLikes =  postCurrent.getLikes().size();
+            if (nrOfLikes > 1){
+            viewHolder.post_likes.setText(nrOfLikes+ " Likes");
+            }
+            else
+            viewHolder.post_likes.setText(nrOfLikes+ " Like");
         });
 
         viewHolder.mComments.setOnClickListener(v -> {
             // implementation for displaying the comments for each post
         });
 
-        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.mToolbarExpasionText.setText(postCurrent.getmRecipe()));
+        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmRecipe()));
 
-        viewHolder.mIngredients.setOnClickListener(v -> viewHolder.mToolbarExpasionText.setText(postCurrent.getmIngredients()));
+        viewHolder.mIngredients.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmIngredients()));
     }
 
     @Override
