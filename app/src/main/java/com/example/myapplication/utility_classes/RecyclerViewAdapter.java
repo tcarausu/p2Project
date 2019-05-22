@@ -61,8 +61,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         final Post postCurrent = mPosts.get(index);
         User postUser = getUserForPost(postCurrent);
-        viewHolder.setIsRecyclable(true);
-
 
         if (postUser != null) {
             Glide.with(mContext)
@@ -84,7 +82,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         viewHolder.mDescription.setText(postCurrent.getmDescription());
 
-
         Glide.with(mContext)
                 .load(postCurrent.getmFoodImgUrl())
                 .fitCenter()
@@ -95,18 +92,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         viewHolder.mLikes.setOnClickListener(v -> {
             String nrOfLikes = "" + postCurrent.getLikes().size();
 
-            viewHolder.post_likes.setText(nrOfLikes);
+            viewHolder.mToolbarExpasionText.setText(nrOfLikes);
         });
 
         viewHolder.mComments.setOnClickListener(v -> {
             // implementation for displaying the comments for each post
         });
 
-        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmRecipe()));
+        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.mToolbarExpasionText.setText(postCurrent.getmRecipe()));
 
-        viewHolder.mIngredients.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmIngredients()));
-
-
+        viewHolder.mIngredients.setOnClickListener(v -> viewHolder.mToolbarExpasionText.setText(postCurrent.getmIngredients()));
     }
 
     @Override

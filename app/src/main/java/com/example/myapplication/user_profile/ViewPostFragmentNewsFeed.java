@@ -98,6 +98,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_post_news_feeed, container, false);
+
         mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
         userId = current_user.getUid();
@@ -125,6 +126,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         try {
 
             DatabaseReference currentPostRef = mPostsRef.child(mAuth.getCurrentUser().getUid()).child(this.mPost.getPostId());
+
             ProgressDialog progressDialog = new ProgressDialog(this.getContext());
             progressDialog.setTitle("Deleting");
             progressDialog.setMessage("Deleting post, please wait for task to finish");

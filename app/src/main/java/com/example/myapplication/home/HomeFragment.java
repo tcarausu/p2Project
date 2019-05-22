@@ -81,8 +81,6 @@ public class HomeFragment extends Fragment {
 
         mPosts = new ArrayList<>();
         mUsers = new ArrayList<>();
-        mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
-        mRecyclerView.setAdapter(mAdapter);
 
 
         GetData getData = new GetData();
@@ -94,20 +92,22 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
+        mFirebaseMethods.checkUserStateIfNull();
+        GetData getData = new GetData();
+        getData.execute();
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
+        mFirebaseMethods.checkUserStateIfNull();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
+        mFirebaseMethods.checkUserStateIfNull();
     }
 
     public class GetData extends AsyncTask<Void,Void,Void> {
@@ -120,8 +120,6 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                            mPosts.clear();
-                            mUsers.clear();
                             String postUserId = userSnapshot.getKey();
                             mDatabaseUserRef = firebasedatabase.getReference("users/" + mUserId);
                             mDatabaseUserPostRef = firebasedatabase.getReference("users/" + postUserId);
@@ -161,7 +159,6 @@ public class HomeFragment extends Fragment {
                                             mProfilePhoto = user.getProfile_photo();
 
                                             mAdapter.setUserForPost(post, user);
-                                            mAdapter.notifyDataSetChanged();
 
                                             Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
                                         }
@@ -189,7 +186,6 @@ public class HomeFragment extends Fragment {
                                                 mProfilePhoto = user.getProfile_photo();
 
                                                 mAdapter.setUserForPost(post, user);
-                                                mAdapter.notifyDataSetChanged();
                                             }catch (NullPointerException e){
                                                 Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
 
@@ -204,17 +200,16 @@ public class HomeFragment extends Fragment {
 
                                     }
                                 });
-
+                                mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
                                 mPosts.add(post);
                                 mAdapter.setPostsList(mPosts);
-                                mAdapter.notifyDataSetChanged();
 
 
                             }
                         }
 
-
-
+                        mRecyclerView.setAdapter(mAdapter);
+                        mAdapter.notifyDataSetChanged();
                     }
 
                     @Override

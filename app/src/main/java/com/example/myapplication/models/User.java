@@ -1,7 +1,5 @@
 package com.example.myapplication.models;
 
-import com.google.firebase.database.Exclude;
-
 public  class  User {
 
     private String about;
@@ -40,7 +38,7 @@ public  class  User {
     public String getAbout() {
         return about;
     }
-    @Exclude
+
     public void setAbout(String about) {
         this.about = about;
     }
@@ -48,7 +46,7 @@ public  class  User {
     public String getDisplay_name() {
         return display_name;
     }
-    @Exclude
+
     public void setDisplay_name(String display_name) {
         this.display_name = display_name;
     }
@@ -57,7 +55,6 @@ public  class  User {
         return username;
     }
 
-    @Exclude
     public void setUsername(String username) {
         this.username = username;
     }
@@ -65,7 +62,7 @@ public  class  User {
     public long getFollowers() {
         return followers;
     }
-    @Exclude
+
     public void setFollowers(long followers) {
         this.followers = followers;
     }
@@ -73,7 +70,7 @@ public  class  User {
     public long getFollowing() {
         return following;
     }
-    @Exclude
+
     public void setFollowing(long following) {
         this.following = following;
     }
@@ -81,7 +78,7 @@ public  class  User {
     public long getPosts() {
         return posts;
     }
-    @Exclude
+
     public void setPosts(long posts) {
         this.posts = posts;
     }
@@ -89,7 +86,7 @@ public  class  User {
     public String getProfile_photo() {
         return profile_photo;
     }
-    @Exclude
+
     public void setProfile_photo(String profile_photo) {
         this.profile_photo = profile_photo;
     }
@@ -97,7 +94,7 @@ public  class  User {
     public String getEmail() {
         return email;
     }
-    @Exclude
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -105,7 +102,7 @@ public  class  User {
     public long getPhone_number() {
         return phone_number;
     }
-    @Exclude
+
     public void setPhone_number(long phone_number) {
         this.phone_number = phone_number;
     }
@@ -113,7 +110,7 @@ public  class  User {
     public String getWebsite() {
         return website;
     }
-    @Exclude
+
     public void setWebsite(String website) {
         this.website = website;
     }
