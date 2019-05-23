@@ -1,11 +1,12 @@
 package com.example.myapplication.user_profile;
 
-import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
+import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.SquareImageView;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
@@ -34,6 +36,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.text.ParseException;
@@ -55,9 +59,14 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     //firebase
     private FirebaseAuth mAuth;
+    private FirebaseUser current_user;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUserRef;
     private DatabaseReference mPostsRef;
+
+    //fire-base storage
+    private FirebaseStorage mStorageRef;
     private String userId;
 
     //widgets
@@ -67,6 +76,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private TextView mUserName, mPostLikes, mPostDescription, mPostTimeStamp;
     private ImageButton likesPost, recipePost, commentPost, ingredientsPost;
     private Toolbar toolbar;
+
     //vars
     private BottomNavigationViewEx bottomNavigationViewEx;
     private Post mPost;
@@ -78,9 +88,9 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private StringBuilder mUsers;
 
     public String mLikesString = "Likes string";
+    private DatabaseReference myRef;
 
     public ViewPostFragmentNewsFeed() {
-        super();
         setArguments(new Bundle());
     }
 
@@ -90,16 +100,53 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         View view = inflater.inflate(R.layout.fragment_view_post_news_feeed, container, false);
 
         mAuth = FirebaseAuth.getInstance();
-        userId = mAuth.getCurrentUser().getUid();
-
+        current_user = mAuth.getCurrentUser();
+        userId = current_user.getUid();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
+        mUserRef = mFirebaseDatabase.getReference("users");
+        mPostsRef = mFirebaseDatabase.getReference("posts");
+        mStorageRef = FirebaseStorage.getInstance();
 
         setupFirebaseAuth();
         initLayout(view);
         setListeners(view);
-
         setupBottomNavigationView();
 
         return view;
+    }
+
+
+    /**
+     * @author: Mo.Msaad
+     * @use: deletes the current displayed post with all its data and deletes the item from database.
+     **/
+    private void deletePost() {
+
+        try {
+
+            DatabaseReference currentPostRef = mPostsRef.child(mAuth.getCurrentUser().getUid()).child(this.mPost.getPostId());
+
+            ProgressDialog progressDialog = new ProgressDialog(this.getContext());
+            progressDialog.setTitle("Deleting");
+            progressDialog.setMessage("Deleting post, please wait for task to finish");
+            progressDialog.setIcon(R.drawable.chefood);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+            StorageReference imageRef = mStorageRef.getReferenceFromUrl(this.mPost.getmFoodImgUrl());
+            Log.d(TAG, "deletePost: currentPostRef: " + imageRef);
+
+            imageRef.delete().addOnSuccessListener(aVoid -> {
+                currentPostRef.removeValue();
+                progressDialog.dismiss();
+                ((UserProfileActivity) getActivity()).gotos(getContext(), UserProfileActivity.class);
+                Toast.makeText(getContext(), "Item deleted.", Toast.LENGTH_SHORT).show();
+
+            });
+
+        } catch (Exception e) {
+            Log.d(TAG, "deletePost: error: " + e.getMessage());
+        }
     }
 
     private void initLayout(View view) {
@@ -107,12 +154,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         mProfilePhoto = view.findViewById(R.id.userProfilePicID);
         mFoodImg = view.findViewById(R.id.foodImgID);
         mPostDescription = view.findViewById(R.id.postDescriptionID);
-
-
         mPostLikes = view.findViewById(R.id.post_likes);
         mPostTimeStamp = view.findViewById(R.id.post_TimeStamp);
-
-
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
 
         try {
@@ -129,8 +172,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     }
 
     private void setListeners(View view) {
-        optionsMenu = view.findViewById(R.id.options_menu);
-        profileMenu = view.findViewById(R.id.show_more);
+        optionsMenu = view.findViewById(R.id.personal_post_options_menu);
+        profileMenu = view.findViewById(R.id.account_settings_options);
         backArrow = view.findViewById(R.id.backArrow);
 
         likesPost = view.findViewById(R.id.likes_button);
@@ -153,6 +196,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+        getView().refreshDrawableState();
 
     }
 
@@ -168,9 +212,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
 
         FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = mFirebaseDatabase.getReference();
-        mUserRef = FirebaseDatabase.getInstance().getReference("users");
-        mPostsRef = FirebaseDatabase.getInstance().getReference("posts");
 
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -180,53 +221,49 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             } else Log.d(TAG, "onAuthStateChanged: signed out");
         };
 
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+//        myRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
     }
 
     private void getPhotoDetails() {
         Query query = mUserRef.child(mAuth.getCurrentUser().getUid());
-
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()
-                        && dataSnapshot.getKey()
-                        .equals(mPost.getUserId())) {
+                if (dataSnapshot.exists() && dataSnapshot.getKey().equals(mPost.getUserId()) && !dataSnapshot.getValue().equals(null)) {
                     user = dataSnapshot.getValue(User.class);
 
                 } else {
-                    Log.d(TAG, "onDataChange: There is no data: " + dataSnapshot.getValue(User.class).getProfile_photo());
 
+                    Log.d(TAG, "onDataChange: There is no data: " + dataSnapshot.getValue(User.class).getProfile_photo());
                 }
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
                 Log.d(TAG, "onCancelled: Query Cancelled");
 
             }
         });
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+
     private void setupWidgets() {
         String timeStampDiff = getTimeStampDifference();
         if (!timeStampDiff.equals(String.valueOf(0))) {
-            mPostTimeStamp.setText(timeStampDiff + " Days Ago");
+            mPostTimeStamp.setText(String.format("%s Days Ago", timeStampDiff));
         } else {
             mPostTimeStamp.setText("Today");
         }
@@ -242,12 +279,10 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
         } catch (Exception e) {
             Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
-            mProfilePhoto.setImageResource(R.drawable.my_avatar);
 
         }
 
         mUserName.setText(user.getUsername());
-
         mPostLikes.setText(mLikesString);
         mPostDescription.setText(mPost.getmDescription());
 
@@ -338,7 +373,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 .child(getString(R.string.field_likes))
                 .getRef();
 
-
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -411,6 +445,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     }
 
     private void setupUserLikedString(String username) {
+
         String[] splitUsers = mUsers.toString().split(",");
         boolean checkCurrentUserState = mUsers.toString().contains(user.getUsername());
         boolean checkDesiredUserState = mUsers.toString().contains(username);
@@ -469,16 +504,67 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         getLikesString();
     }
 
+    private void dialogChoice() {
+
+        final CharSequence[] options = {"Delete", "Report", "Cancel"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Chose an action: ");
+        builder.setIcon(R.drawable.chefood);
+        builder.setItems(options, (dialog, which) -> {
+            if (options[which].equals("Delete")) {
+                deletePost();
+
+            } else if (options[which].equals("Report")) {
+                reportPost();
+
+            } else if (options[which].equals("CANCEL")) {
+                Toast.makeText(getContext(), "CANCEL is clicked", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
+
+    }
+
+
+//            currentPostRef.removeValue((databaseError, databaseReference) -> {
+//                Log.d(TAG, "deletePost: currentPostRef: " + currentPostRef);
+//                currentPostRef.removeValue();
+//                progressDialog.dismiss();
+//                ((UserProfileActivity) getActivity()).gotos(getContext(), UserProfileActivity.class);
+//            });
+
+
+//
+
+
+    private void editPost() {
+
+        Intent editPostIntent = new Intent(getContext(), AddPostActivity.class);
+        editPostIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        editPostIntent.putExtra("ingredients", mPost.getmIngredients());
+        editPostIntent.putExtra("recipe", mPost.getmRecipe());
+        editPostIntent.putExtra("ingredients", mPost.getmIngredients());
+        editPostIntent.putExtra("postImage", mPost.getmFoodImgUrl());
+        startActivity(editPostIntent);
+    }
+
+
+    private void reportPost() {
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.show_more:
-
+            case R.id.account_settings_options:
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
-                Log.d(TAG, "onClick: navigating to account settings");
+                ((UserProfileActivity) getActivity()).gotos(getContext(), AccountSettingsActivity.class);
+                break;
 
-                startActivity(new Intent(getActivity(), AccountSettingsActivity.class));
+            case R.id.personal_post_options_menu:
+                dialogChoice();
 
                 break;
 
@@ -488,32 +574,22 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 break;
 
             case R.id.ingredientsBtnID:
-                Toast.makeText(getActivity(), "ingredients", Toast.LENGTH_SHORT).show();
-
+                String ingredients = mPost.getmIngredients();
+                mPostLikes.setText(ingredients);
                 break;
 
             case R.id.recipeBtnID:
-                Toast.makeText(getActivity(), "recipe", Toast.LENGTH_SHORT).show();
-
+                String recipe = mPost.getmRecipe();
+                mPostLikes.setText(recipe);
                 break;
-
-            case R.id.options_menu:
-                Toast.makeText(getActivity(), "Make Delete/Report Dialogue", Toast.LENGTH_SHORT).show();
-
-                break;
-
 
             case R.id.backArrow:
                 Log.d(TAG, "onClick: navigating back to " + getActivity());
-                startActivity(new Intent(getActivity(), UserProfileActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                getActivity().finish();
-
+                ((UserProfileActivity) getActivity()).gotos(getActivity(), UserProfileActivity.class);// this is working and bug free
                 break;
 
             case R.id.likes_button:
                 toggleLikes();
-
                 break;
         }
 
@@ -566,5 +642,4 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             }
         });
     }
-
 }

@@ -17,7 +17,6 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
-import com.example.myapplication.user_profile.ViewPostFragmentNewsFeed;
 
 import java.util.List;
 
@@ -51,11 +50,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_list_item_post, viewGroup, false);
+
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int index) {
+        viewHolder.mOptions.setVisibility(View.INVISIBLE);
         Log.d(TAG, "onBindViewHolder: Called");
 
         final Post postCurrent = mPosts.get(index);
@@ -89,19 +90,25 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
         viewHolder.mLikes.setOnClickListener(v -> {
-            String nrOfLikes = "" + postCurrent.getLikes().size();
-
-            viewHolder.mToolbarExpasionText.setText(nrOfLikes);
+            int nrOfLikes =  postCurrent.getLikes().size();
+            if (nrOfLikes > 1){
+            viewHolder.post_likes.setText(nrOfLikes+ " Likes");
+            }
+            else
+            viewHolder.post_likes.setText(nrOfLikes+ " Like");
         });
 
         viewHolder.mComments.setOnClickListener(v -> {
             // implementation for displaying the comments for each post
         });
 
-        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.mToolbarExpasionText.setText(postCurrent.getmRecipe()));
+        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmRecipe()));
 
-        viewHolder.mIngredients.setOnClickListener(v -> viewHolder.mToolbarExpasionText.setText(postCurrent.getmIngredients()));
+        viewHolder.mIngredients.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmIngredients()));
+
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -115,7 +122,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView mUserName;
         TextView mDescription;
         ImageView mFoodImg;
-        ImageButton mLikes, mComments, mRecipe, mIngredients;
+        ImageButton mLikes, mComments, mRecipe, mIngredients , mOptions;
         FrameLayout mPostToolbarBtnsExpansionContainer;
         TextView mToolbarExpasionText, post_likes, post_TimeStamp;
 
@@ -128,12 +135,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             mDescription = itemView.findViewById(R.id.postDescriptionID);
             mFoodImg = itemView.findViewById(R.id.foodImgID);
             mLikes = itemView.findViewById(R.id.likes_button);
+            mOptions = itemView.findViewById(R.id.personal_post_options_menu);
             mComments = itemView.findViewById(R.id.commentsBtnID);
             mRecipe = itemView.findViewById(R.id.recipeBtnID);
             mIngredients = itemView.findViewById(R.id.ingredientsBtnID);
-            mToolbarExpasionText = itemView.findViewById(R.id.toolbarExpansionTextID);
             mPostToolbarBtnsExpansionContainer = itemView.findViewById(R.id.toolbarExpansionContainerID);
-
             post_likes = itemView.findViewById(R.id.post_likes);
             post_TimeStamp = itemView.findViewById(R.id.post_TimeStamp);
 

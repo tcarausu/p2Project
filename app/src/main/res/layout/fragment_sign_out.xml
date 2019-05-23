@@ -1,51 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@drawable/back3"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp">
+        android:layout_weight=".3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
 
-        <TextView
-            android:id="@+id/tvConfirmSignOut"
+        <ImageView
+            android:src="@drawable/chefood"
+            android:id="@+id/EditPost_postImage"
+            android:layout_centerInParent="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/confirm_sing_out"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
 
-        <Button
-            android:id="@+id/btnConfirmSignOut"
-            android:layout_width="200dp"
+
+
+    <RelativeLayout
+      android:layout_marginTop="10dp"
+        android:layout_weight=".2"
+        android:background="@color/grey"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <EditText
+            android:id="@+id/EditPost_descriptions"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tvConfirmSignOut"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:onClick="onClick"
-            android:background="@drawable/white_rounded_button"
-            android:text="@string/sign_out_fragment"
-            android:textSize="20sp" />
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_weight=".2"
+        android:layout_marginTop="10dp"
+        android:background="@color/grey"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <EditText
+        android:id="@+id/EditPost_ingrdients"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_weight=".2"
+        android:layout_marginTop="10dp"
+        android:background="@color/grey"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <EditText
+        android:id="@+id/EditPost_recipe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     </RelativeLayout>
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_centerInParent="true" />
+    <RelativeLayout
+        android:layout_weight=".1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/tvSigningOut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/progress_bar"
-        android:layout_alignEnd="@+id/progress_bar"
-        android:layout_alignBottom="@+id/progress_bar"
-        android:text="@string/signing_out"
-        android:textColor="@color/black"
-        android:textSize="20sp" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/EditPost_floating_b"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:src="@drawable/simo_designed_check"
 
-</RelativeLayout>
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

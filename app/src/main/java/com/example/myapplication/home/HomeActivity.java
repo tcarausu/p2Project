@@ -1,8 +1,10 @@
 package com.example.myapplication.home;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,12 +15,19 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
+import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
-import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -30,42 +39,106 @@ public class HomeActivity extends AppCompatActivity {
     private static final int ACTIVITY_NUM = 0;
 
     private Context mContext;
-
-    private String userUID;
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseMethods mFirebaseMethods ;
+    private DatabaseReference mDatabasePostRef;
+    private FirebaseDatabase firebasedatabase;
+    private Query postQuery ;
+
 
     /**
      * @param savedInstanceState creates the app using the Bundle
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
-        mAuth = FirebaseAuth.getInstance();
+        mContext = getApplicationContext() ;
+        mFirebaseMethods = new FirebaseMethods(mContext);
+        mAuth = FirebaseAuth.getInstance() ;
         current_user = mAuth.getCurrentUser();
-
-        initLayout();
-        buttonListeners();
+        firebasedatabase = FirebaseDatabase.getInstance();
+        mDatabasePostRef = firebasedatabase.getReference("posts").getRef();
+        
+        checkDatabaseState();
         initImageLoader();
         setupBottomNavigationView();
         setupFirebaseAuth();
         setupViewPager();
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        mAuth.addAuthStateListener(mAuthListener);
-        checkCurrentUser();
+         checkDatabaseState();
 
-        if (current_user == null) {
-            mAuth.signOut();
-            LoginManager.getInstance().logOut();
-            sendUserToLogin();
+
+    }
+
+    @SuppressLint("RestrictedApi")
+    private void checkDatabaseState() {
+
+        try{
+        mDatabasePostRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "Snapshot HomeActivity, Snapshot.has children: "+dataSnapshot.hasChildren());
+                if (!dataSnapshot.exists() || !dataSnapshot.hasChildren() ){
+                    Toast.makeText(getApplicationContext(),"Nothing to display, Add a post to begin",Toast.LENGTH_SHORT).show();
+                    goTosWithFlags(HomeActivity.this, AddPostActivity.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        }catch (Exception e){
+            Toast.makeText(this,"Nothing to display: "+e.getMessage(),Toast.LENGTH_SHORT).show();
+            goTosWithFlags(this, LoginActivity.class);
         }
+
+
+
+//        try {
+//        boolean  hasChildren = postQuery.getPath().iterator().hasNext() ;
+//        Log.d(TAG, "checkDatabaseState: has children:  "+ hasChildren);
+//
+//        if (!hasChildren) {
+//            Log.d(TAG, "checkDatabaseState: has children:  "+ hasChildren);
+//            goTosWithFlags(this, AddPostActivity.class);
+//        }
+//
+//        else if (mFirebaseMethods.checkUserStateIfNull()) {
+//            mFirebaseMethods.logOut();
+//            goTosWithFlags(this, LoginActivity.class);
+//        }
+//        }catch (Exception e){
+//            Toast.makeText(this,"Nothing to display: "+e.getMessage(),Toast.LENGTH_SHORT).show();
+//            goTosWithFlags(this, LoginActivity.class);
+//        }
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        checkDatabaseState();
+
+    }
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkDatabaseState();
     }
 
     @Override
@@ -74,30 +147,6 @@ public class HomeActivity extends AppCompatActivity {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
-    }
-
-    public void initLayout() {
-        mContext = HomeActivity.this;
-
-        mAuth = FirebaseAuth.getInstance();
-        Intent getLoginIntent = getIntent();
-        userUID = getLoginIntent.getStringExtra("userUid");
-    }
-
-    public void buttonListeners() {
-
-    }
-
-    private void sendUserToLogin() {
-
-        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(i);
-        finish();
-
-        mAuth.addAuthStateListener(mAuthListener);
-
-        checkCurrentUser();
     }
 
     /**
@@ -119,32 +168,15 @@ public class HomeActivity extends AppCompatActivity {
     /**
      * checks to see if @param 'user'  is logged in
      */
-    private void checkCurrentUser() {
-        Log.d(TAG, "checkCurrentUser: checking if user is logged in");
-
-        if (current_user == null) {
-            Toast.makeText(mContext, "Your have to Authenticate first before proceeding", Toast.LENGTH_SHORT).show();
-            mAuth.signOut();
-            LoginManager.getInstance().logOut();
-            sendUserToLogin();
-        }
-
-    }
 
     private void setupFirebaseAuth() {
-        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
-
-        mAuth = FirebaseAuth.getInstance();
-
+        Log.d(TAG, "setupFire-base-Auth: setting up fire-base auth");
         mAuthListener = firebaseAuth -> {
 
-
-            checkCurrentUser();
-
-            if (current_user != null) {
-                Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
-            } else Log.d(TAG, "onAuthStateChanged: signed out");
-        };
+                if (current_user != null) {
+                    Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
+                } else Log.d(TAG, "onAuthStateChanged: signed out");
+            };
 
     }
 
@@ -165,4 +197,17 @@ public class HomeActivity extends AppCompatActivity {
         menuItem.setChecked(true);
 
     }
+
+    public void goTosWithFlags(Context context, Class<? extends AppCompatActivity> cl){
+        startActivity(new Intent(context,cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        finish();
+
+    }
+
+
+    public void goTos(Context context, Class<? extends AppCompatActivity> cl){
+        startActivity(new Intent(context,cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+
+    }
+
 }

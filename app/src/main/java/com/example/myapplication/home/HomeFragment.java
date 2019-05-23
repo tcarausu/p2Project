@@ -1,9 +1,11 @@
 package com.example.myapplication.home;
 
-import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +19,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
-import com.example.myapplication.post.AddPostActivity;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.RecyclerViewAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,6 +43,10 @@ public class HomeFragment extends Fragment {
     private FirebaseDatabase firebasedatabase;
     private DatabaseReference mDatabaseUserRef;
     private DatabaseReference mDatabaseUserPostRef;
+    private FirebaseMethods mFirebaseMethods ;
+
+    private FirebaseUser current_user ;
+    private FirebaseAuth mAuth ;
     private List<Post> mPosts;
     private List<User> mUsers;
 
@@ -49,42 +55,65 @@ public class HomeFragment extends Fragment {
     private String mUserId;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        mAuth = FirebaseAuth.getInstance();
+        current_user = mAuth.getCurrentUser();
+        mFirebaseMethods = new FirebaseMethods(getContext());
+        mUserId = current_user.getUid();
         firebasedatabase = FirebaseDatabase.getInstance();
         mDatabasePostRef = firebasedatabase.getReference("posts");
-
         mRecyclerView = view.findViewById(R.id.recyclerViewID);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         mPosts = new ArrayList<>();
         mUsers = new ArrayList<>();
-        getPostsInfo();
-
-
-//        GetData getData = new GetData();
-//        getData.execute();
-
+        mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
+        mRecyclerView.setAdapter(mAdapter);
+        GetData getData = new GetData();
+        getData.execute();
 
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mFirebaseMethods.checkUserStateIfNull();
+        GetData getData = new GetData();
+        getData.execute();
 
-    private void getPostsInfo() {
-        try {
-            mDatabasePostRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.hasChildren()) {
-                        goToPostActivity();
-                    } else
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mFirebaseMethods.checkUserStateIfNull();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mFirebaseMethods.checkUserStateIfNull();
+    }
+
+    public class GetData extends AsyncTask<Void,Void,Void> {
+
+        private GetData() {}
+
+        private void getPostsInfo() {
+            try{
+                mDatabasePostRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            mPosts.clear();
+                            mUsers.clear();
+
+
                         for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                             String postUserId = userSnapshot.getKey();
-                            mUserId = firebaseUser.getUid();
-
                             mDatabaseUserRef = firebasedatabase.getReference("users/" + mUserId);
                             mDatabaseUserPostRef = firebasedatabase.getReference("users/" + postUserId);
 
@@ -100,13 +129,11 @@ public class HomeFragment extends Fragment {
 
                                 List<Like> likeList = new ArrayList<>();
 
-
                                 for (DataSnapshot ds : postSnapshot.child("mLikes").getChildren()) {
                                     // TODO, likes if no like yet, it crushes,
                                     Like like = new Like();
                                     like.setUser_id(ds.getValue(Like.class).getUser_id());
                                     likeList.add(like);
-
                                 }
                                 post.setLikes(likeList);
 
@@ -115,14 +142,17 @@ public class HomeFragment extends Fragment {
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         if (mUserId.equals(postUserId)) {
                                             final User user = dataSnapshot.getValue(User.class);
-                                            if (user.getUsername() == null) {
+                                            if (user.getUsername()== null){
                                                 mPosts.remove(post);
-                                                mDatabasePostRef.removeValue();
-                                            } else
+                                                mDatabasePostRef.removeValue() ;
+                                            }
+
+                                            else
                                                 mUsername = user.getUsername();
                                             mProfilePhoto = user.getProfile_photo();
 
                                             mAdapter.setUserForPost(post, user);
+                                            mAdapter.notifyDataSetChanged();
 
                                             Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
                                         }
@@ -141,15 +171,17 @@ public class HomeFragment extends Fragment {
                                         if (!mUserId.equals(postUserId)) {
                                             final User user = dataSnapshot.getValue(User.class);
                                             try {
-                                                if (user.getUsername() == null) {
+                                                if (user.getUsername()== null){
                                                     mPosts.remove(post);
-                                                    mDatabasePostRef.removeValue();
-                                                } else
+                                                    mDatabasePostRef.removeValue() ;
+                                                }
+                                                else
                                                     mUsername = user.getUsername();
                                                 mProfilePhoto = user.getProfile_photo();
 
                                                 mAdapter.setUserForPost(post, user);
-                                            } catch (NullPointerException e) {
+                                                mAdapter.notifyDataSetChanged();
+                                            }catch (NullPointerException e){
                                                 Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
 
                                             }
@@ -164,41 +196,31 @@ public class HomeFragment extends Fragment {
                                     }
                                 });
 
-                                mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
-
                                 mPosts.add(post);
                                 mAdapter.setPostsList(mPosts);
+                                mAdapter.notifyDataSetChanged();
+
                             }
                         }
-                    mRecyclerView.setAdapter(mAdapter);
-                }
+                        mAdapter.notifyDataSetChanged();
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.d(TAG, "onCancelled: Canceled.");
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.d(TAG, "onCancelled: Canceled.");
+                    }
+                });
 
-                }
-            });
+            }catch (Exception e){
+                Toast.makeText(getContext(),"Nothing to display! create a Post",Toast.LENGTH_SHORT).show();
+            }
+        }
 
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "Nothing to display! create a Post", Toast.LENGTH_SHORT).show();
-
+        @Override
+        protected Void doInBackground(Void... voids) {
+            getPostsInfo();
+            return null;
         }
     }
-
-    private void goToPostActivity() {
-        startActivity(new Intent(getActivity(), AddPostActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        getActivity().finish();
-    }
-
-//    private class GetData extends AsyncTask<Void,Void,Void>{
-//        private GetData() {}
-//
-//        @Override
-//        protected Void doInBackground(Void... voids) {
-//            getPostsInfo();
-//            return null;
-//        }
-//    }
 }

@@ -3,6 +3,8 @@ package com.example.myapplication.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.Exclude;
+
 public class User implements Parcelable {
 
     private String about;
@@ -10,28 +12,29 @@ public class User implements Parcelable {
     private String username;
     private long followers;
     private long following;
-    private long posts;
+    private long nrOfPosts;
     private String profile_photo;
     private String website;
 
     private long phone_number;
     private String email;
 
-    public User(String about, String display_name,
-                String username, String email, long phone_number,
-                long followers, long following, long posts,
-                String profile_photo, String website
-    ) {
-        this.about = about;
-        this.display_name = display_name;
-        this.username = username;
-        this.followers = followers;
-        this.following = following;
-        this.posts = posts;
-        this.profile_photo = profile_photo;
-        this.website = website;
-        this.phone_number = phone_number;
-        this.email = email;
+    public User(String about, String display_name, String username, String email, long phone_number,
+                long followers, long following, long posts, String profile_photo, String website) {
+
+
+        synchronized (User.class) {
+            this.about = about;
+            this.display_name = display_name;
+            this.username = username;
+            this.followers = followers;
+            this.following = following;
+            this.nrOfPosts = posts;
+            this.profile_photo = profile_photo;
+            this.website = website;
+            this.phone_number = phone_number;
+            this.email = email;
+        }
     }
 
     public User() {
@@ -43,7 +46,7 @@ public class User implements Parcelable {
         username = in.readString();
         followers = in.readLong();
         following = in.readLong();
-        posts = in.readLong();
+        nrOfPosts = in.readLong();
         profile_photo = in.readString();
         website = in.readString();
         phone_number = in.readLong();
@@ -66,6 +69,7 @@ public class User implements Parcelable {
         return about;
     }
 
+    @Exclude
     public void setAbout(String about) {
         this.about = about;
     }
@@ -74,6 +78,7 @@ public class User implements Parcelable {
         return display_name;
     }
 
+    @Exclude
     public void setDisplay_name(String display_name) {
         this.display_name = display_name;
     }
@@ -82,6 +87,7 @@ public class User implements Parcelable {
         return username;
     }
 
+    @Exclude
     public void setUsername(String username) {
         this.username = username;
     }
@@ -90,6 +96,7 @@ public class User implements Parcelable {
         return followers;
     }
 
+    @Exclude
     public void setFollowers(long followers) {
         this.followers = followers;
     }
@@ -98,16 +105,18 @@ public class User implements Parcelable {
         return following;
     }
 
+    @Exclude
     public void setFollowing(long following) {
         this.following = following;
     }
 
-    public long getNrPosts() {
-        return posts;
+    public long getNrOfPosts() {
+        return nrOfPosts;
     }
 
+    @Exclude
     public void setNrPosts(long posts) {
-        this.posts = posts;
+        this.nrOfPosts = posts;
     }
 
     public String getProfile_photo() {
@@ -152,7 +161,7 @@ public class User implements Parcelable {
                 ", about='" + about + '\'' +
                 ", followers=" + followers +
                 ", following=" + following +
-                ", posts=" + posts +
+                ", nrOfPosts=" + nrOfPosts +
                 ", profile_photo='" + profile_photo + '\'' +
                 ", website='" + website + '\'' +
                 '}';
@@ -168,12 +177,12 @@ public class User implements Parcelable {
         dest.writeString(about);
         dest.writeString(display_name);
         dest.writeString(username);
-        dest.writeString(email);
-        dest.writeString(String.valueOf(phone_number));
-        dest.writeString(String.valueOf(followers));
-        dest.writeString(String.valueOf(following));
-        dest.writeString(String.valueOf(posts));
+        dest.writeLong(followers);
+        dest.writeLong(following);
+        dest.writeLong(nrOfPosts);
         dest.writeString(profile_photo);
         dest.writeString(website);
+        dest.writeLong(phone_number);
+        dest.writeString(email);
     }
 }

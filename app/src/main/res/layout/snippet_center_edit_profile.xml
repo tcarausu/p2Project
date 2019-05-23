@@ -13,26 +13,46 @@
             android:background="@color/white"
             android:padding="20dp">
 
+
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_photo"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
                 android:src="@drawable/my_avatar"
+                android:layout_marginTop="50dp"
                 app:civ_border_color="@color/black"
                 app:civ_border_width="2dp" />
 
             <TextView
                 android:id="@+id/change_profile_photo"
+
+                android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/profile_photo"
                 android:layout_centerHorizontal="true"
+                android:textAlignment="center"
                 android:text="@string/change_photo"
-                android:fontFamily="@font/almendra"
-                android:textColor="@color/orangeMainTheme"
+                android:padding="5dp"
+                android:background="@drawable/input_fields_with_shadow"
+                android:textColor="@color/orange"
                 android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/hint_text"
+                android:textColor="@color/website_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="25dp"
+                android:text="@string/click_here_or_on_the_profile_picture_to_change_profile_photo"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:textStyle="italic" />
 
             <!--username section-->
             <RelativeLayout
@@ -137,6 +157,7 @@
             </RelativeLayout>
 
             <TextView
+
                 android:id="@+id/privateInformation"
                 android:layout_width="wrap_content"
                 android:drawableBottom="@drawable/dash_icon"
@@ -144,10 +165,8 @@
                 android:layout_below="@+id/relLayout4"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp"
-                android:background="@drawable/grey_border_bottom"
                 android:text="@string/private_information"
-                android:textColor="@color/orange"
-                android:fontFamily="@font/almendra"
+                android:textColor="@color/darkOrange"
                 android:textSize="25sp" />
 
 

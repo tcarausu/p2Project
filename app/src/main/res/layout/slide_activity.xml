@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/orangeMainTheme"
+    android:background="@drawable/back3"
     android:clickable="true"
     android:focusable="true">
 
@@ -45,11 +45,13 @@
         android:layout_marginBottom="30dp"
         android:text="@string/previous_slide"
         android:fontFamily="@font/arbutus"
-        android:shadowColor="@color/colorAccent"
+        android:shadowColor="@color/darkOrange"
         android:shadowDx="3"
+        android:padding="5dp"
         android:shadowDy="2"
         android:shadowRadius="3"
-        android:textColor="@color/white"
+        android:textColor="@color/orange"
+        android:background="@drawable/input_fields_round"
         />
 
     <Button
@@ -58,16 +60,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:padding="5dp"
         android:layout_centerHorizontal="true"
         android:layout_marginEnd="21dp"
         android:layout_marginBottom="89dp"
-        android:shadowColor="@color/colorAccent"
+        android:shadowColor="@color/darkOrange"
         android:shadowDx="3"
         android:shadowDy="2"
         android:shadowRadius="3"
         android:fontFamily="@font/arbutus"
+        android:background="@drawable/input_fields_round"
         android:text="@string/skip_slide"
-        android:textColor="@color/white" />
+        android:textColor="@color/orange" />
 
     <Button
         android:id="@+id/nextButton_id"
@@ -79,12 +83,14 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="30dp"
         android:fontFamily="@font/arbutus"
-        android:shadowColor="@color/colorAccent"
+        android:shadowColor="@color/darkOrange"
+        android:background="@drawable/input_fields_round"
+        android:padding="5dp"
         android:shadowDx="3"
         android:shadowDy="2"
         android:shadowRadius="3"
         android:text="@string/next_slide"
-        android:textColor="@color/white" />
+        android:textColor="@color/orange" />
 
 
 </RelativeLayout>

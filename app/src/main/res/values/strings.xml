@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Chefood</string>
+    <string name="app_name">ChefooD</string>
 
     <string name="password">Password</string>
     <string name="login">Login</string>
@@ -45,7 +45,7 @@
     <string name="search_Hint">Search</string>
 
     <!--Button texts-->
-    <string name="btn_log_in">Log In</string>
+    <string name="btn_log_in">Sign in</string>
     <string name="or">OR</string>
 
 
@@ -93,7 +93,7 @@
     <!--Forgot password fragment strings -->
 
     <string name="hint_forgot_password_email">Enter your email here</string>
-    <string name="forgot_password_text">Forgot Password</string>
+    <string name="forgot_password_text">Forgot Password?</string>
     <string name="password_receive_text">Your password will be sent to your email</string>
     <string name="button_send_password">Send Mail</string>
     <string name="confirm_sing_out">Are you sure you want to SignOut?</string>
@@ -151,7 +151,7 @@
 
     <string name="image_description_share">Write something about this food....</string>
     <string name="upload">Upload</string>
-    <string name="choose_picture">Select Picture</string>
+    <string name="choose_picture">Picture</string>
     <string name="image_ingredients_share">Write down the ingredients...</string>
     <string name="photo_add">PHOTO</string>
     <string name="open_camera">Open camera</string>
@@ -160,7 +160,9 @@
     <string name="finish">Finish</string>
     <string name="string_recipe">Write down the recipe..</string>
     <string name="please_select_picture">Please select a picture</string>
-    <string name="go_back_signUpFragment">go back</string>
+    <string name="go_back_signUpFragment">Back</string>
+    <string name="click_here_or_on_the_profile_picture_to_change_profile_photo">click on profile picture to change profile photo</string>
+    <string name="empty_line">__________________________________</string>
 
     <!--Camera Strings-->
     <string name="permission_needed">Permission is needed in order to use this functionality</string>

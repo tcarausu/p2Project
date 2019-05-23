@@ -61,7 +61,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
                     .centerCrop()
                     .into(viewHolder.profile_photo);
             viewHolder.username.setText(String.format("User name: %s", currentUser.getUsername()));
-            viewHolder.nrOfPosts.setText(MessageFormat.format("Number of posts: {0}", currentUser.getNrPosts()));
+            viewHolder.nrOfPosts.setText(MessageFormat.format("Number of posts: {0}", currentUser.getNrOfPosts()));
 
         } else {
             Glide.with(context)

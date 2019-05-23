@@ -1,7 +1,6 @@
 package com.example.myapplication.login;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -29,25 +28,25 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();// always call mAuth here. this is the first method called
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_forgot_pass, container, false);
-
-        emailField = v.findViewById(R.id.email_field);
-        goBack = v.findViewById(R.id.back_button);
-        sendPassRequest = v.findViewById(R.id.sendPassRequest);
-
+        mAuth = FirebaseAuth.getInstance();
+        findWidgets(v);
         goBack.setOnClickListener(this);
         sendPassRequest.setOnClickListener(this);
 
         return v;
+    }
+
+    private void findWidgets(View v){
+
+        emailField = v.findViewById(R.id.ForgotPass_email_field);
+        goBack = v.findViewById(R.id.ForgotPass_back_button);
+        sendPassRequest = v.findViewById(R.id.Forgotpass_resetPass_button);
+
+
     }
 
     // sending the mail to user to reset pass
@@ -61,18 +60,12 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
             mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(getContext(), "Please check your inbox, we sent you a change password link", Toast.LENGTH_SHORT).show();
-                    goToLogin();
+                    ((LoginActivity)getActivity()).goTosWithFlags(getActivity(),LoginActivity.class);
                 } else
                     Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
             });
 
         }
-    }
-
-    private void goToLogin() {
-        startActivity(new Intent(getActivity(), LoginActivity.class).
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        getActivity().finish();
     }
 
 
@@ -97,14 +90,12 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.back_button:
-                goToLogin();
-
+            case R.id.ForgotPass_back_button:
+                ((LoginActivity)getActivity()).goTosWithFlags(getContext(),LoginActivity.class);
                 break;
 
-            case R.id.sendPassRequest:
+            case R.id.Forgotpass_resetPass_button:
                 sendPassResetMail();
-
                 break;
         }
     }

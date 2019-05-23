@@ -20,13 +20,9 @@ import android.widget.Toast;
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SectionsStatePagerAdapter;
-import com.facebook.login.LoginManager;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.Collections;
@@ -34,33 +30,28 @@ import java.util.Collections;
 /**
  * File created by tcarau18
  **/
-public class AccountSettingsActivity extends AppCompatActivity
-        implements View.OnClickListener {
+public class AccountSettingsActivity extends AppCompatActivity implements View.OnClickListener {
+
     private static final String TAG = "AccountSettingsActivity";
     private static final int ACTIVITY_NUM = 4;
 
     //firebase
     private FirebaseAuth mAuth;
-    private GoogleSignInClient mGoogleSignInClient;
+    private FirebaseMethods mFirebaseMethods ;
+//    private GoogleSignInClient mGoogleSignInClient;
 
-    private ListView listView;
 
     private SectionsStatePagerAdapter pagerAdapter;
     private ViewPager mViewPager;
     private RelativeLayout mRelativeLayout;
+    private ListView listView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
         mAuth = FirebaseAuth.getInstance();
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
-                .requestEmail()
-                .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
+        mFirebaseMethods = new FirebaseMethods(getApplicationContext());
 
         initLayout();
         setupBottomNavigationView();
@@ -72,10 +63,8 @@ public class AccountSettingsActivity extends AppCompatActivity
     private void initLayout() {
 
         listView = findViewById(R.id.listViewAccountSettings);
-
         findViewById(R.id.backArrow);
         Log.d(TAG, "onCreate: started account");
-
         mViewPager = findViewById(R.id.container);
         mRelativeLayout = findViewById(R.id.relativeLayout1);
 
@@ -85,7 +74,7 @@ public class AccountSettingsActivity extends AppCompatActivity
     public void onClick(View v) {
         if (v.getId() == R.id.backArrow) {
             Log.d(TAG, "onClick: navigating to account settings");
-            finish();
+            goTosWithFlags(getApplicationContext(),UserProfileActivity.class);
         }
 
     }
@@ -93,18 +82,30 @@ public class AccountSettingsActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
-
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null) {
-            mAuth.signOut();
-            goToLogin(getApplicationContext(), LoginActivity.class);
+        if (mFirebaseMethods.checkUserStateIfNull()) {
+            mFirebaseMethods.logOut();
+            goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
         }
+
     }
 
-    public void goToLogin(Context context, Class<? extends AppCompatActivity> cl) {
-        startActivity(new Intent(getApplicationContext(), cl)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        finish();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mFirebaseMethods.checkUserStateIfNull()) {
+            mFirebaseMethods.logOut();
+            goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mFirebaseMethods.checkUserStateIfNull()) {
+            mFirebaseMethods.logOut();
+            goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
+        }
     }
 
     private void setupViewPager(int fragmentNr) {
@@ -118,6 +119,7 @@ public class AccountSettingsActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+
     }
 
     private void setupFragments() {
@@ -128,12 +130,11 @@ public class AccountSettingsActivity extends AppCompatActivity
 
     private void setupSettingsList() {
         Log.d(TAG, "setupSettingsList: initializing 'Account Settings' list");
-
         ListView listView = findViewById(R.id.listViewAccountSettings);
 
 //        ArrayList<String> options = new ArrayList<>();
 //        options.add(getString(R.string.sign_out_fragment));
-        String signOut = "Sign Out";
+         String signOut = "Sign Out";
 
         ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
         listView.setAdapter(adapter);
@@ -181,25 +182,26 @@ public class AccountSettingsActivity extends AppCompatActivity
         builder.setItems(options, (dialog, which) -> {
             if (options[which].equals("SIGN-OUT")) {
                 Log.d(TAG, "dialogChoice: sign-out");
+                mFirebaseMethods.logOut();
                 ProgressBar mProgressBar = new ProgressBar(this);
                 mProgressBar.setVisibility(View.VISIBLE);
 
-                mAuth.signOut();
-                mGoogleSignInClient.signOut();
-                LoginManager.getInstance().logOut();
-
-                goToLogin(getApplicationContext(), LoginActivity.class);
-
+                goTosWithFlags(getApplicationContext(),LoginActivity.class);
                 Toast.makeText(getApplicationContext(), "Successful Sign Out", Toast.LENGTH_SHORT).show();
 
             } else if (options[which].equals("CANCEL")) {
                 Log.d(TAG, "dialogChoice: cancel");
                 dialog.dismiss();
-
             }
         });
 
         builder.show();
 
+    }
+
+    public void goTosWithFlags(Context applicationContext, Class<? extends AppCompatActivity> cl) {
+        startActivity(new Intent(applicationContext,cl)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        finish();
     }
 }

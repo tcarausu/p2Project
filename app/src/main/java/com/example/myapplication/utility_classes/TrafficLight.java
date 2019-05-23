@@ -13,29 +13,13 @@
 //
 //import java.util.Objects;
 //
-//public class TrafficLight extends AppCompatActivity {
+//public class TrafficLight extends AppCompatActivity a{
 //    public static final String TAG = "TrafficLight";
 //    public int REQUEST_IMAGE_GALLERY = 22;
 //    public int REQUEST_CAMERA = 11;
-//    public int batteryLevel;
-//
-//    public int getBatteryLevel() {
-//        return batteryLevel;
-//    }
-//
-//    public void setBatteryLevel(int batteryLevel) {
-//        this.batteryLevel = batteryLevel;
-//    }
 //
 //
 //
-//
-//    public BroadcastReceiver broadcastReceiver  = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            setBatteryLevel( intent.getIntExtra(BatteryManager.EXTRA_LEVEL,-33));
-//        }
-//    };
 //
 //    public TrafficLight() {}
 //
@@ -45,38 +29,38 @@
 //        this.finish();
 //    }
 //
-//    public void goTos(Context context, Class<? extends AppCompatActivity> cl){
+//    public void goTosWithFlags(Context context, Class<? extends AppCompatActivity> cl){
 //        startActivity(new Intent(context,cl));
 //        this.finish();
 //    }
 //
-//    public void dialogChoice(Context context) {
+////    public void dialogChoice(Context context) {
+////
+////        final CharSequence[] options = {"CAMERA", "GALLERY", "CANCEL"};
+////        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+////        builder.setTitle("Add Image");
+////        builder.setIcon(R.drawable.chefood);
+////        builder.setItems(options, (dialog, which) -> {
+////            if (options[which].equals("CAMERA")) {
+////                takePicture(context);
+////
+////            } else if (options[which].equals("GALLERY")) {
+////                selectPicture();
+////            } else if (options[which].equals("CANCEL")) {
+////                dialog.dismiss();
+////            }
+////
+////        });
+////        builder.show();
+////    }
 //
-//        final CharSequence[] options = {"CAMERA", "GALLERY", "CANCEL"};
-//        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//        builder.setTitle("Add Image");
-//        builder.setIcon(R.drawable.chefood);
-//        builder.setItems(options, (dialog, which) -> {
-//            if (options[which].equals("CAMERA")) {
-//                takePicture(context);
-//
-//            } else if (options[which].equals("GALLERY")) {
-//                selectPicture();
-//            } else if (options[which].equals("CANCEL")) {
-//                dialog.dismiss();
-//            }
-//
-//        });
-//        builder.show();
-//    }
-//
-//    public void takePicture(Context context) {
-//        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        if (getBatteryLevel() < 10 && cameraIntent.resolveActivity(Objects.requireNonNull(context).getPackageManager()) != null) {
-//            startActivityForResult(cameraIntent, REQUEST_CAMERA);
-//        } else Toast.makeText(context, "Battery is low...", Toast.LENGTH_SHORT).show();
-//
-//    }
+////    public void takePicture(Context context) {
+////        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+////        if (getBatteryLevel() < 10 && cameraIntent.resolveActivity(Objects.requireNonNull(context).getPackageManager()) != null) {
+////            startActivityForResult(cameraIntent, REQUEST_CAMERA);
+////        } else Toast.makeText(context, "Battery is low...", Toast.LENGTH_SHORT).show();
+////
+////    }
 //
 //    public void selectPicture() {
 //        Intent galleryIntent = new Intent();

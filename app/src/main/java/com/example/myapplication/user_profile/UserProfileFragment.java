@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +22,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
@@ -65,7 +65,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference myRef;
+    private DatabaseReference myRef , postsRef , userPostCount;
+    private FirebaseMethods firebaseMethods;
+    private FirebaseUser current_user;
+
 
     private BottomNavigationViewEx bottomNavigationViewEx;
 
@@ -75,27 +78,32 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private ImageView profileMenu;
     private GridView gridView;
     private Toolbar toolbar;
-    private FirebaseMethods firebaseMethods;
     private Uri avatarUri;
-    private FirebaseUser current_user;
+    //avatarUri = Uri.parse("android.resource://com.example.myapplication/drawable/my_avatar");
 
     private User user;
 
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
-            container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         mAuth = FirebaseAuth.getInstance();
-        avatarUri = Uri.parse("android.resource://com.example.myapplication/drawable/my_avatar");
+        current_user = mAuth.getCurrentUser();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
+        postsRef = mFirebaseDatabase.getReference("users").child(current_user.getUid()).child("posts");
+        userPostCount = mFirebaseDatabase.getReference("posts").child(current_user.getUid());
         initLayout(view);
         setListeners(view);
         setupFirebaseAuth();
         setupGridView();
         setupBottomNavigationView();
+        setPostCount();
+
 
         return view;
     }
 
     private void initLayout(View view) {
+
         firebaseMethods = new FirebaseMethods(getContext());
         mDisplayName = view.findViewById(R.id.displayName);
         mUserName = view.findViewById(R.id.userName);
@@ -104,7 +112,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mPosts = view.findViewById(R.id.tvPosts);
         mFollowers = view.findViewById(R.id.tvFollowers);
         mFollowing = view.findViewById(R.id.tvFollowing);
-
         gridView = view.findViewById(R.id.grid_view_user_profile);
         mProgressBar = view.findViewById(R.id.profile_progress_bar);
         mProgressBar.setVisibility(View.GONE);
@@ -114,11 +121,11 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
     private void setListeners(View view) {
+
         mEditProfile = view.findViewById(R.id.editProfile);
         profileMenu = view.findViewById(R.id.profileMenu);
         mEditProfile.setOnClickListener(this);
         profileMenu.setOnClickListener(this);
-
     }
 
     @Override
@@ -135,6 +142,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         }
     }
 
+
     @Override
     public void onAttach(Context context) {
         try {
@@ -148,10 +156,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
-
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = mFirebaseDatabase.getReference();
-
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
 
@@ -168,7 +172,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                current_user = mAuth.getCurrentUser();
+
                 String photoRef = myRef.child(current_user.getUid()).child("profile_photo").getRef().toString();
                 //retrive user information from the database
                 if (photoRef.equals("photo")) {
@@ -196,25 +200,20 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mUserName.setText(user.getUsername());
         mWebsite.setText(user.getWebsite());
         mAbout.setText(user.getAbout());
-
         mFollowers.setText(String.valueOf(user.getFollowers()));
         mFollowing.setText(String.valueOf(user.getFollowing()));
-        mPosts.setText(String.valueOf(user.getNrPosts()));
 
         String profilePicURL = user.getProfile_photo();
+        Log.d(TAG, "setProfileWidgets, PhotoURL: "+profilePicURL);
 
         //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
         try {
-            if (profilePicURL == null) {
-                mProfilePhoto.setImageResource(R.drawable.my_avatar);
-
-            } else
-                Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
+                Glide.with(getActivity()).load(profilePicURL).centerCrop().into(mProfilePhoto);
+            Log.d(TAG, "setProfileWidgets: mProfilePhoto.getDrawableState().length; "+ mProfilePhoto.getDrawableState().length);
 
         } catch (Exception e) {
             Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
-            mProfilePhoto.setImageResource(R.drawable.my_avatar);
-
+//            mProfilePhoto.setImageResource(R.drawable.my_avatar);
         }
 
     }
@@ -224,6 +223,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         switch (v.getId()) {
 
             case R.id.editProfile:
+
                 Intent intent = new Intent(getContext(), AccountSettingsActivity.class);
                 intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
                 startActivity(intent);
@@ -234,12 +234,45 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
 
-                startActivity(new Intent(getContext(), AccountSettingsActivity.class));
+                ((UserProfileActivity)getActivity()).gotos(getActivity(),AccountSettingsActivity.class);
 
                 break;
         }
 
     }
+
+
+
+
+
+    private void setPostCount(){
+
+        // here i browse throught the user to get post child count.
+        userPostCount.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot postCountDataSnapshot) {
+                if(postCountDataSnapshot.exists()) {
+                    Log.d(TAG, "simo: dataSnapshotCount: " + postCountDataSnapshot.getChildrenCount());
+                    // here i browse throught the user to get post ref count.
+                    if (postCountDataSnapshot.exists()) {
+                        mPosts.setText(String.valueOf(postCountDataSnapshot.getChildrenCount()));
+
+                    } else
+                        mPosts.setText("0");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+    }
+
 
     private void setupGridView() {
         Log.d(TAG, "setupGridView: Setting up GridView");
@@ -256,9 +289,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+
                         Post post = new Post();
                         Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
-
                         post.setmDescription(objectMap.get(getString(R.string.field_description)).toString());
                         post.setmFoodImgUrl(objectMap.get(getString(R.string.field_food_photo)).toString());
                         post.setUserId(objectMap.get(getString(R.string.field_user_id)).toString());
@@ -298,6 +331,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     gridView.setOnItemClickListener((parent, view, position, id) ->
                             onGridImageSelectedListener.onGridImageSelected(posts.get(position), ACTIVITY_NUM));
 
+
                 }
 
                 @Override
@@ -307,16 +341,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 }
             });
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), "Error: Nothing to display", Toast.LENGTH_SHORT).show();
-            goTo(getActivity(), AddPostActivity.class);
+        }catch (Exception e){
+            Toast.makeText(getActivity(),"Error: Nothing to display",Toast.LENGTH_SHORT).show();
+            ((HomeActivity)getActivity()).goTosWithFlags(getActivity(),AddPostActivity.class);
         }
-    }
-
-    private void goTo(Context context, Class<? extends AppCompatActivity> cl) {
-        startActivity(new Intent(context, cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        getActivity().finish();
     }
 
     /**

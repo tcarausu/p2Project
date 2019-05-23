@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
@@ -24,12 +23,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.utility_classes.Permissions;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,58 +48,75 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     private Intent intent;
     private TextView nextText;
     private ImageView closePost;
-    ByteArrayOutputStream byteArrayOutputStream;
-    Bitmap mBitmap;
-
-
+    private Bundle savedState ;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            setBatteryLevel(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -3));//here i set the int battery level
+            batteryLevel = (intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -3));//here i set the int battery level
         }
     };
     private int batteryLevel;
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-    public int getBatteryLevel() {
-        return batteryLevel;
-    }
-
-    public void setBatteryLevel(int batteryLevel) {
-        this.batteryLevel = batteryLevel;
-    }
-
-
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select_picture, container, false);
 
-        /**14
-
+        /**
          You should unregister the receivers in onPause() and register them in onResume().
          This way, when Android destroys and recreates the activity for the configuration change,
          or for any reason you will still have receivers set up.
          * **/
         getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-
-
         intent = new Intent(getActivity(), NextActivity.class);
-
         setLayout(view);
-
         return view;
     }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null)
+            galleryImageView.setImageURI(Uri.parse((String) savedInstanceState.get("img")));
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null)
+            galleryImageView.setImageURI(Uri.parse((String) savedInstanceState.get("img")));
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("img", String.valueOf(mUri));
+        getFragmentManager().getFragment(outState, "SelectPictureFragment");
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
 
     private void setLayout(View view) {
 
         galleryImageView = view.findViewById(R.id.imageView_gallery);
         mSelectPicButton = view.findViewById(R.id.choose_pic_button);
-        closePost = view.findViewById(R.id.close_post);
+        closePost = view.findViewById(R.id.close_share);
         nextText = view.findViewById(R.id.textview_next);
-        byteArrayOutputStream = new ByteArrayOutputStream();
-
         closePost.setOnClickListener(this);
         nextText.setOnClickListener(this);
         mSelectPicButton.setOnClickListener(this);
+        galleryImageView.setOnClickListener(this);
 
     }
 
@@ -113,6 +127,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
      * @param resultCode represents the Result Code
      * @param data represents the Data requested for the URI
      */
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -171,8 +186,8 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         mUri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 values);
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (getBatteryLevel() > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
-            Log.d(TAG, "takePicture: battery level: " + getBatteryLevel());
+        if (batteryLevel > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
+            Log.d(TAG, "takePicture: battery level: " + batteryLevel);
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
             startActivityForResult(cameraIntent, CAMERA_REQUEST);
         } else Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
@@ -196,7 +211,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
             /**
              * ClickListener which will start the HomeAcivity
              */
-            case R.id.close_post:
+            case R.id.close_share:
                 Intent toHomeActivity = new Intent(getActivity(), HomeActivity.class);
                 startActivity(toHomeActivity);
 
@@ -218,8 +233,10 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
             case R.id.choose_pic_button:
                 Log.d(TAG, "onClick: back button working");
                 checkPermissions();
-
                 break;
+
+            case R.id.imageView_gallery:
+                dialogChoice();
         }
     }
     /**

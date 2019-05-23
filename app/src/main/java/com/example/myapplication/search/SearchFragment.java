@@ -109,7 +109,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                             final User user = ds.getValue(User.class);
                             username = user.getUsername();
                             profile_photo_url = user.getProfile_photo();
-                            nrOfPosts = String.valueOf(user.getNrPosts());
+                            nrOfPosts = String.valueOf(user.getNrOfPosts());
 
                             if (keyword.equals(username)) {
 

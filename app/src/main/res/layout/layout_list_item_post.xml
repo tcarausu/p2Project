@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/input_fields_frame_grey"
     android:id="@+id/parentLayoutID"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -11,48 +13,69 @@
         android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:background="@drawable/input_fields_frame_orange"
             android:id="@+id/userProfilePicID"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/my_avatar" />
 
         <TextView
+
             android:id="@+id/userNameID"
+            android:background="@drawable/input_fields_frame_orange"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:padding="5dp"
             android:text="Here is the user name"
-            android:textColor="@color/black"
+            android:textStyle="italic|bold"
+            android:textColor="@color/darkOrange"
             android:textSize="15sp" />
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
+        android:layout_marginTop="2dp"
+        android:orientation="horizontal"
         android:id="@+id/layout_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_below="@+id/userProfilePicAndNameID">
+
+    <RelativeLayout
+        android:layout_weight=".85"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/postDescriptionID"
+            android:background="@drawable/input_fields_frame_grey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
             android:text="Description..."
+            android:textStyle="bold|italic"
             android:textColor="@color/black" />
-
-        <ImageView
-            android:id="@+id/options_menu"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/orange_show_more" />
     </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".15">
+
+            <ImageButton
+                android:id="@+id/personal_post_options_menu"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/orange_settings" />
+        </RelativeLayout>
+
+    </LinearLayout>
 
 
     <com.example.myapplication.utility_classes.SquareImageView
+        android:background="@drawable/input_fields_frame_grey"
         android:id="@+id/foodImgID"
         android:layout_width="match_parent"
         android:layout_height="350dp"
@@ -62,6 +85,8 @@
         android:src="@drawable/bridge" />
 
     <LinearLayout
+        android:layout_marginTop="1dp"
+        android:background="@drawable/input_fields_frame_grey"
         android:id="@+id/food_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -70,6 +95,7 @@
         android:orientation="horizontal">
 
         <RelativeLayout
+            android:background="@drawable/input_fields_frame_grey"
             android:id="@+id/like_relative"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -91,12 +117,15 @@
                 android:layout_below="@id/likes_button"
                 android:layout_centerInParent="true"
                 android:text="Like"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textStyle="bold"
+                android:textColor="@color/orange"
+                android:textSize="14sp" />
 
         </RelativeLayout>
 
         <RelativeLayout
+            android:background="@drawable/input_fields_frame_grey"
+
             android:id="@+id/comment_relative"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -118,12 +147,15 @@
                 android:layout_below="@id/commentsBtnID"
                 android:layout_centerInParent="true"
                 android:text="Comment"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textStyle="bold"
+                android:textColor="@color/orange"
+                android:textSize="14sp" />
 
         </RelativeLayout>
 
         <RelativeLayout
+            android:background="@drawable/input_fields_frame_grey"
+
             android:id="@+id/recipe_relative"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -145,11 +177,14 @@
                 android:layout_below="@id/recipeBtnID"
                 android:layout_centerInParent="true"
                 android:text="Recipe"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textStyle="bold"
+                android:textColor="@color/orange"
+                android:textSize="14sp" />
         </RelativeLayout>
 
         <RelativeLayout
+            android:background="@drawable/input_fields_frame_grey"
+
             android:id="@+id/ingredients_relative"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -171,8 +206,9 @@
                 android:layout_below="@id/ingredientsBtnID"
                 android:layout_centerInParent="true"
                 android:text="Ingredients"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:textStyle="bold"
+                android:textColor="@color/orange"
+                android:textSize="14sp" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -183,21 +219,13 @@
         android:layout_below="@+id/food_linear">
 
         <TextView
-            android:id="@+id/post_likes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Liked by whoever, eve, and 30 others"
-            android:textColor="@color/black"
-            android:textSize="18sp" />
-
-        <TextView
             android:id="@+id/post_TimeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/post_likes"
             android:layout_centerInParent="true"
             android:layout_marginTop="15dp"
             android:text="3 days ago"
+            android:textStyle="bold|italic"
             android:textColor="@color/grey_500"
             android:textSize="18sp" />
     </RelativeLayout>
@@ -208,10 +236,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/time_Stamp_linear">
-
         <TextView
-            android:id="@+id/toolbarExpansionTextID"
+
+            android:id="@+id/post_likes"
+            android:background="@drawable/input_fields_frame_grey"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textStyle="bold|italic"
+            android:textSize="18sp" />
+        <!--<TextView-->
+        <!--android:id="@+id/toolbarExpansionTextID"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
     </FrameLayout>
 </RelativeLayout>

@@ -1,6 +1,5 @@
 package com.example.myapplication.post;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -32,6 +31,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class NextActivity extends AppCompatActivity implements View.OnClickListener {
+
+
     private static final String TAG = "NextActivity";
 
     private EditText mImageDesc;
@@ -41,7 +42,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mUploadTextView;
     private ImageView mBackImageView;
     private StorageReference mStorageRef;
-    private DatabaseReference mDatabaseRef, postRef, userRef;
+    private DatabaseReference mDatabaseRef, postRef;
     private DatabaseReference mDatabaseReferenceUserInfo;
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
@@ -57,30 +58,15 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
         findWidgets();
-
-
-        Intent intent = getIntent();
-        imageUri = intent.getStringExtra("imageUri");
-        Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewfood);
-        mUploadTextView.setOnClickListener(this);
-
-        mBackImageView.setOnClickListener(this);
-
         mAuth = FirebaseAuth.getInstance();
-        firebaseMethods = new FirebaseMethods(getApplicationContext());
-
         current_user = mAuth.getCurrentUser();
+        firebaseMethods = new FirebaseMethods(getApplicationContext());
         mStorageRef = FirebaseStorage.getInstance().getReference();
         String databasePath = "posts/" + mAuth.getUid() + "/";
         String databasePathPic = "users/" + mAuth.getUid();
         postRef = FirebaseDatabase.getInstance().getReference("posts").child(current_user.getUid());
-        userRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_users)).child(current_user.getUid());
-
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
 
-        /**
-         * Getting the username and profile picture link for current user
-         */
         mDatabaseReferenceUserInfo = FirebaseDatabase.getInstance().getReference(databasePathPic);
 
         // getting the username and profile picture link for current user
@@ -115,6 +101,8 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+
+
     private void findWidgets() {
 
         mImageDesc = findViewById(R.id.image_desc_edittext);
@@ -122,19 +110,17 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         mImageRecipe = findViewById(R.id.image_recipe_edittext);
         mImageViewfood = findViewById(R.id.image_tobe_shared);
         mUploadTextView = findViewById(R.id.textview_share);
-        mBackImageView = findViewById(R.id.close_post);
+        mBackImageView = findViewById(R.id.close_share);
 
         imageUri = getIntent().getStringExtra("imageUri");
         Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewfood);
-
         mUploadTextView.setOnClickListener(this);
         mBackImageView.setOnClickListener(this);
+
     }
 
 
-    /**
-     * Method that will upload image,description, ingredients, recipe to FireBase
-     */
+    // method for uploading image and image content to firebase storage and database
     private void uploadImage() {
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -143,7 +129,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
 
+        uploadId = mDatabaseRef.push().getKey();
         StorageReference storageReference = mStorageRef.child("post_pic/users/" + mAuth.getUid() + "/" + uploadId + ".jpg");
+
         storageReference.putFile(Uri.parse(imageUri)).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         progressDialog.dismiss();
@@ -153,42 +141,28 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                             String description = mImageDesc.getText().toString();
                             String ingredients = mImageIngredients.getText().toString();
                             String recipe = mImageRecipe.getText().toString();
-                            uploadId = mDatabaseRef.push().getKey();
+
                             Post postInfo = new Post(description,
                                     URL, recipe, ingredients, mAuth.getUid(),
                                     uploadId, firebaseMethods.getTimestamp(), null);
-                            Log.d(TAG, "onComplete: " + profilePicUrl + " " + username);
+                            Log.d(TAG, "onComplete: upload uid: " +uploadId);
 
                             mDatabaseRef.child(uploadId).setValue(postInfo);
 
-                            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    User currentUser = dataSnapshot.getValue(User.class);
-
-                                    currentUser.setNrPosts(currentUser.getNrPosts() + 1);
-                                    userRef.setValue(currentUser);
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-                            // Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();
                             Handler handler = new Handler();
                             handler.postDelayed(() -> {
                                 Intent intent = new Intent(NextActivity.this, HomeActivity.class);
                                 startActivity(intent);
                             }, 500);
                         }).addOnFailureListener(e ->
-                                Toast.makeText(NextActivity.this, R.string.could_not_upload_try_again, Toast.LENGTH_SHORT).show());
+                                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
                     }
                 }
         ).addOnSuccessListener(taskSnapshot -> {
 
             progressDialog.dismiss();
-            Toast.makeText(NextActivity.this, R.string.post_added, Toast.LENGTH_SHORT).show();
+            Toast.makeText(NextActivity.this, "Post added successfully.", Toast.LENGTH_SHORT).show();
         }).addOnCanceledListener(() -> {
 
                 }
@@ -198,47 +172,19 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
             progressDialog.setMessage("uploaded " + (int) progress + "%");
 
         }).addOnFailureListener(e ->
-                Toast.makeText(NextActivity.this, R.string.could_not_upload_try_again, Toast.LENGTH_SHORT).show());
-    }
-
-    /**
-     * Method which will show a AlertDialog if editTextFields are empty while uploading
-     * Will ask if user wants to upload the image despite empty fields
-     */
-    protected void dialogConfirm() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.confirm);
-        builder.setMessage(R.string.fill_or_not);
-        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-            uploadImage();
-            dialog.dismiss();
-        });
-        builder.setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss());
-        AlertDialog alert = builder.create();
-        alert.show();
+                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());;
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
-
-            /*
-             * ClickListener which will call dialogConfirm(); if any editTextFields are empty
-             * else it will call uploadImage();
-             */
             case R.id.textview_share:
-                if (mImageIngredients.getText().toString().equals("")
-                        || mImageDesc.getText().toString().equals("")
-                        || mImageRecipe.getText().toString().equals("")) {
-                    dialogConfirm();
-                } else {
-                    uploadImage();
-                }
+                uploadImage();
 
                 break;
 
-            case R.id.close_post:
+            case R.id.close_share:
                 Log.d(TAG, "onClick: back button working");
                 finish();
 

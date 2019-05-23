@@ -20,33 +20,37 @@ public class Post implements Parcelable {
     public Post() {
     }
 
-    public Post(String mDescription,
-                String mFoodImgUrl, String mRecipe, String mIngredients, String userId, String postId, String date_created, List<Like> likes) {
-        if (mDescription.trim().equals("")) {
-            mDescription = "No description available";
-        }
-        this.mDescription = mDescription;
-        this.mFoodImgUrl = mFoodImgUrl;
-        this.mRecipe = mRecipe;
-        this.mIngredients = mIngredients;
-        this.userId = userId;
-        this.postId = postId;
-        this.date_created = date_created;
-        this.likes = likes;
-    }
+    public Post(String mDescription, String mFoodImgUrl, String mRecipe,
+                String mIngredients, String userId, String postId, String date_created, List<Like> likes) {
 
+        synchronized (Post.class) {
+            if (mDescription.trim().equals("")) {
+
+                mDescription = "No description available";
+            }
+            this.mDescription = mDescription;
+            this.date_created = date_created;
+            this.mFoodImgUrl = mFoodImgUrl;
+            this.mRecipe = mRecipe;
+            this.mIngredients = mIngredients;
+            this.userId = userId;
+            this.postId = postId;
+            this.likes = likes;
+        }
+    }
 
     protected Post(Parcel in) {
         mDescription = in.readString();
         mFoodImgUrl = in.readString();
         mRecipe = in.readString();
         mIngredients = in.readString();
+        date_created = in.readString();
         userId = in.readString();
         postId = in.readString();
-        date_created = in.readString();
+        user = in.readParcelable(User.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<Post> CREATOR = new Parcelable.Creator<Post>() {
+    public static final Creator<Post> CREATOR = new Creator<Post>() {
         @Override
         public Post createFromParcel(Parcel in) {
             return new Post(in);
@@ -58,7 +62,7 @@ public class Post implements Parcelable {
         }
     };
 
-    public String getUserId() {
+    public synchronized String getUserId() {
         return userId;
     }
 
@@ -144,6 +148,7 @@ public class Post implements Parcelable {
                 '}';
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -155,10 +160,9 @@ public class Post implements Parcelable {
         dest.writeString(mFoodImgUrl);
         dest.writeString(mRecipe);
         dest.writeString(mIngredients);
+        dest.writeString(date_created);
         dest.writeString(userId);
         dest.writeString(postId);
-        dest.writeString(date_created);
+        dest.writeParcelable(user, flags);
     }
-
-
 }
