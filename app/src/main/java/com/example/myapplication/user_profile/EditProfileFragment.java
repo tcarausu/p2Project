@@ -94,7 +94,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            setBatteryLevel(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1));
+            batteryLevel = (intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1));
         }
     };
 
@@ -147,13 +147,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     }
 
-    private int getBatteryLevel() {
-        return batteryLevel;
-    }
 
-    private void setBatteryLevel(int batteryLevel) {
-        this.batteryLevel = batteryLevel;
-    }
 
     private String getProf_pic_URL() {
         return prof_pic_URL;
@@ -269,8 +263,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                             + "about: " + about + "\n" + "phone: " + phone_number + "\n" + "URL: " + imageUrl);
                 } else {
                     firebaseMethods.updateUsername(username, display_name, website, about, phone_number, "");
-                    mProfilePhoto.setImageResource(R.drawable.my_avatar);
-                    smallProfilePic.setImageResource(R.drawable.my_avatar);
+//                    mProfilePhoto.setImageResource(R.drawable.my_avatar);
+//                    smallProfilePic.setImageResource(R.drawable.my_avatar);
                 }
             }
 
@@ -494,10 +488,10 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        if (getBatteryLevel() < 10) {
+        if (batteryLevel > 100) {
             Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
         } else if (cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
-            Log.d(TAG, "takePicture: battery level: " + getBatteryLevel());
+            Log.d(TAG, "takePicture: battery level: " + batteryLevel);
             startActivityForResult(cameraIntent, REQUEST_CAMERA);
         }
 
