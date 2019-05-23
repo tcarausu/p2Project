@@ -103,25 +103,26 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             myDatabaseUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         userList.clear();
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         if (ds.exists()) {
                             final User user = ds.getValue(User.class);
                             username = user.getUsername();
                             profile_photo_url = user.getProfile_photo();
                             nrOfPosts = String.valueOf(user.getPosts());
-                            if (username.equals(keyword)) {
+
+                            if (keyword.equals(username)) {
 
                                 adapter = new SearchActivityAdapter(requireContext(), userList);
 
                                 userList.add(user);
-
                                 adapter.setUserList(userList);
 
                                 search_recycler_view.setAdapter(adapter);
 
                             } else
                                 Toast.makeText(requireContext(), "Incorrect reference", Toast.LENGTH_SHORT).show();
+
 
                         } else {
                             Toast.makeText(getApplicationContext(), "No user exists", Toast.LENGTH_SHORT).show();
