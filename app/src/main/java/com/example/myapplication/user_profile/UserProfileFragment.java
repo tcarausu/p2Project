@@ -199,7 +199,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         mFollowers.setText(String.valueOf(user.getFollowers()));
         mFollowing.setText(String.valueOf(user.getFollowing()));
-        mPosts.setText(String.valueOf(user.getPosts()));
+        mPosts.setText(String.valueOf(user.getNrPosts()));
 
         String profilePicURL = user.getProfile_photo();
 

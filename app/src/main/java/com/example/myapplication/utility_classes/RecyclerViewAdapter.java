@@ -29,7 +29,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private Context mContext;
     private List<Post> mPosts;
-    ViewPostFragmentNewsFeed viewPost = new ViewPostFragmentNewsFeed();
 
     public RecyclerViewAdapter(Context mContext, List<Post> mPosts) {
         this.mContext = mContext;

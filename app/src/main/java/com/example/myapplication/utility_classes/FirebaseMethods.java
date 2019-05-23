@@ -175,7 +175,7 @@ public class FirebaseMethods {
                     user.setNrPosts(
                             ds.child(userID)
                                     .getValue(User.class)
-                                    .getPosts()
+                                    .getNrPosts()
                     );
 
                     user.setProfile_photo(

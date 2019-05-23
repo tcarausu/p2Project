@@ -1,6 +1,9 @@
 package com.example.myapplication.models;
 
-public class User {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class User implements Parcelable {
 
     private String about;
     private String display_name;
@@ -33,6 +36,31 @@ public class User {
 
     public User() {
     }
+
+    protected User(Parcel in) {
+        about = in.readString();
+        display_name = in.readString();
+        username = in.readString();
+        followers = in.readLong();
+        following = in.readLong();
+        posts = in.readLong();
+        profile_photo = in.readString();
+        website = in.readString();
+        phone_number = in.readLong();
+        email = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getAbout() {
         return about;
@@ -74,7 +102,7 @@ public class User {
         this.following = following;
     }
 
-    public long getPosts() {
+    public long getNrPosts() {
         return posts;
     }
 
@@ -128,5 +156,24 @@ public class User {
                 ", profile_photo='" + profile_photo + '\'' +
                 ", website='" + website + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(about);
+        dest.writeString(display_name);
+        dest.writeString(username);
+        dest.writeString(email);
+        dest.writeString(String.valueOf(phone_number));
+        dest.writeString(String.valueOf(followers));
+        dest.writeString(String.valueOf(following));
+        dest.writeString(String.valueOf(posts));
+        dest.writeString(profile_photo);
+        dest.writeString(website);
     }
 }

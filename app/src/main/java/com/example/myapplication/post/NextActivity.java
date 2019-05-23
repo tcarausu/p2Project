@@ -41,7 +41,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mUploadTextView;
     private ImageView mBackImageView;
     private StorageReference mStorageRef;
-    private DatabaseReference mDatabaseRef, postRef;
+    private DatabaseReference mDatabaseRef, postRef, userRef;
     private DatabaseReference mDatabaseReferenceUserInfo;
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
@@ -74,6 +74,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         String databasePath = "posts/" + mAuth.getUid() + "/";
         String databasePathPic = "users/" + mAuth.getUid();
         postRef = FirebaseDatabase.getInstance().getReference("posts").child(current_user.getUid());
+        userRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_users)).child(current_user.getUid());
 
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
 
@@ -160,7 +161,21 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
                             mDatabaseRef.child(uploadId).setValue(postInfo);
 
-                           // Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();
+                            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    User currentUser = dataSnapshot.getValue(User.class);
+
+                                    currentUser.setNrPosts(currentUser.getNrPosts() + 1);
+                                    userRef.setValue(currentUser);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                            // Toast.makeText(NextActivity.this, "Uploaded...", Toast.LENGTH_SHORT).show();
                             Handler handler = new Handler();
                             handler.postDelayed(() -> {
                                 Intent intent = new Intent(NextActivity.this, HomeActivity.class);
