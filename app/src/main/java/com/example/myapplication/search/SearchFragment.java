@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,12 +104,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        userList.clear();
                         if (ds.exists()) {
                             final User user = ds.getValue(User.class);
                             username = user.getUsername();
                             profile_photo_url = user.getProfile_photo();
                             nrOfPosts = String.valueOf(user.getPosts());
-
                             if (username.equals(keyword)) {
 
                                 adapter = new SearchActivityAdapter(requireContext(), userList);
@@ -121,7 +119,9 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                                 adapter.setUserList(userList);
 
                                 search_recycler_view.setAdapter(adapter);
-                            }
+
+                            } else
+                                Toast.makeText(requireContext(), "Incorrect reference", Toast.LENGTH_SHORT).show();
 
                         } else {
                             Toast.makeText(getApplicationContext(), "No user exists", Toast.LENGTH_SHORT).show();
