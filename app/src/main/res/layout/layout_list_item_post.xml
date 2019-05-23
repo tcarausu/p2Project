@@ -224,7 +224,7 @@
             android:background="@drawable/input_fields_frame_grey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/empty_line"
+            android:hint="@string/empty_line"
             android:textColor="@color/black"
             android:textStyle="bold|italic"
             android:textSize="18sp" />
