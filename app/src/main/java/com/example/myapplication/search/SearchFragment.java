@@ -125,7 +125,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
 
                         } else {
-                            Toast.makeText(getApplicationContext(), "No user exists", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "No user exists", Toast.LENGTH_SHORT).show();
 
                         }
                     }
