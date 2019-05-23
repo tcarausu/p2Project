@@ -101,8 +101,6 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-
-
     private void findWidgets() {
 
         mImageDesc = findViewById(R.id.image_desc_edittext);

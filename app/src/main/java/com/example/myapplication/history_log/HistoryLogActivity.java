@@ -121,36 +121,31 @@ public class HistoryLogActivity extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-//                    String postUserId = postSnapshot.getKey();
-//                    mDatabaseUserPostRef = firebaseDatabase.getReference("users/" + postUserId);
-
                     HistoryLogPostItem post = postSnapshot.getValue(HistoryLogPostItem.class);
-
                     mCurrentUserReference = firebaseDatabase.getReference("users/" + mCurrentUserId);
                     mCurrentUserReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             final User user = dataSnapshot.getValue(User.class);
-//                            mAdapter.setUserForPost(post, user);
                             post.setUser(user);
                             mListOfPosts.add(post);
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                            Toast.makeText(getApplicationContext(),"Canceled",Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(),"Canceled",Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 
     /**
      * Setting up recycler view
@@ -158,7 +153,6 @@ public class HistoryLogActivity extends AppCompatActivity {
     private void buildRecyclerView() {
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
-
 
         // Declare how ViewHolder objects are going to be displayed inside adapter
         mLayoutManager = new LinearLayoutManager(HistoryLogActivity.this);
@@ -172,19 +166,6 @@ public class HistoryLogActivity extends AppCompatActivity {
                     highlightViewItem(position, true);
                     alertDialogDelete(position);
                 });
-
-//        try {
-//            if (mListOfPosts.size() == 0) {
-//
-//                });
-//            } else {
-//                mAdapter.setPostsList(mListOfPosts);
-//                mRecyclerView.setAdapter(mAdapter);
-//            }
-//        } catch (Exception e) {
-//            Log.e(TAG, "buildRecyclerView: Exception", e.getCause());
-//        }
-
 
     }
 

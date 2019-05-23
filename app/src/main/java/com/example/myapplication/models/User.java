@@ -1,13 +1,18 @@
 package com.example.myapplication.models;
 
-public  class  User {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.google.firebase.database.Exclude;
+
+public class User implements Parcelable {
 
     private String about;
     private String display_name;
     private String username;
     private long followers;
     private long following;
-    private long posts;
+    private long nrOfPosts;
     private String profile_photo;
     private String website;
 
@@ -18,27 +23,53 @@ public  class  User {
                 long followers, long following, long posts, String profile_photo, String website) {
 
 
-        synchronized(User.class){
-        this.about = about;
-        this.display_name = display_name;
-        this.username = username;
-        this.followers = followers;
-        this.following = following;
-        this.posts = posts;
-        this.profile_photo = profile_photo;
-        this.website = website;
-        this.phone_number = phone_number;
-        this.email = email;
+        synchronized (User.class) {
+            this.about = about;
+            this.display_name = display_name;
+            this.username = username;
+            this.followers = followers;
+            this.following = following;
+            this.nrOfPosts = posts;
+            this.profile_photo = profile_photo;
+            this.website = website;
+            this.phone_number = phone_number;
+            this.email = email;
         }
     }
 
     public User() {
     }
 
+    protected User(Parcel in) {
+        about = in.readString();
+        display_name = in.readString();
+        username = in.readString();
+        followers = in.readLong();
+        following = in.readLong();
+        nrOfPosts = in.readLong();
+        profile_photo = in.readString();
+        website = in.readString();
+        phone_number = in.readLong();
+        email = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
     public String getAbout() {
         return about;
     }
 
+    @Exclude
     public void setAbout(String about) {
         this.about = about;
     }
@@ -47,6 +78,7 @@ public  class  User {
         return display_name;
     }
 
+    @Exclude
     public void setDisplay_name(String display_name) {
         this.display_name = display_name;
     }
@@ -55,6 +87,7 @@ public  class  User {
         return username;
     }
 
+    @Exclude
     public void setUsername(String username) {
         this.username = username;
     }
@@ -63,6 +96,7 @@ public  class  User {
         return followers;
     }
 
+    @Exclude
     public void setFollowers(long followers) {
         this.followers = followers;
     }
@@ -71,16 +105,18 @@ public  class  User {
         return following;
     }
 
+    @Exclude
     public void setFollowing(long following) {
         this.following = following;
     }
 
-    public long getPosts() {
-        return posts;
+    public long getNrOfPosts() {
+        return nrOfPosts;
     }
 
-    public void setPosts(long posts) {
-        this.posts = posts;
+    @Exclude
+    public void setNrPosts(long posts) {
+        this.nrOfPosts = posts;
     }
 
     public String getProfile_photo() {
@@ -125,9 +161,28 @@ public  class  User {
                 ", about='" + about + '\'' +
                 ", followers=" + followers +
                 ", following=" + following +
-                ", posts=" + posts +
+                ", nrOfPosts=" + nrOfPosts +
                 ", profile_photo='" + profile_photo + '\'' +
                 ", website='" + website + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(about);
+        dest.writeString(display_name);
+        dest.writeString(username);
+        dest.writeLong(followers);
+        dest.writeLong(following);
+        dest.writeLong(nrOfPosts);
+        dest.writeString(profile_photo);
+        dest.writeString(website);
+        dest.writeLong(phone_number);
+        dest.writeString(email);
     }
 }

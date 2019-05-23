@@ -60,7 +60,7 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
             mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(getContext(), "Please check your inbox, we sent you a change password link", Toast.LENGTH_SHORT).show();
-                    getActivity().finish();
+                    ((LoginActivity)getActivity()).goTosWithFlags(getActivity(),LoginActivity.class);
                 } else
                     Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
             });

@@ -14,6 +14,7 @@ public class AddPostActivity extends AppCompatActivity {
     private static final String TAG = "AddPostActivity";
     private static final int ACTIVITY_NUM = 2;
     private static final int PERMISSION_REQUEST = 1;
+//    private SelectPictureFragment selectPictureFragment ;
 
     private ViewPager mViewPager;
 

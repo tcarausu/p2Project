@@ -32,6 +32,7 @@
         android:id="@+id/choose_pic_button"/>
 
     <ImageView
+
         android:animateLayoutChanges="true"
         android:id="@+id/imageView_gallery"
         android:clickable="true"

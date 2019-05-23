@@ -39,19 +39,18 @@ public class Post implements Parcelable {
         }
     }
 
-
     protected Post(Parcel in) {
         mDescription = in.readString();
         mFoodImgUrl = in.readString();
-        mIngredients = in.readString();
         mRecipe = in.readString();
+        mIngredients = in.readString();
         date_created = in.readString();
         userId = in.readString();
         postId = in.readString();
-
+        user = in.readParcelable(User.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<Post> CREATOR = new Parcelable.Creator<Post>() {
+    public static final Creator<Post> CREATOR = new Creator<Post>() {
         @Override
         public Post createFromParcel(Parcel in) {
             return new Post(in);
@@ -149,6 +148,7 @@ public class Post implements Parcelable {
                 '}';
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -157,12 +157,12 @@ public class Post implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mDescription);
-        dest.writeString(date_created);
         dest.writeString(mFoodImgUrl);
-        dest.writeString(mIngredients);
         dest.writeString(mRecipe);
+        dest.writeString(mIngredients);
+        dest.writeString(date_created);
         dest.writeString(userId);
         dest.writeString(postId);
+        dest.writeParcelable(user, flags);
     }
-
 }

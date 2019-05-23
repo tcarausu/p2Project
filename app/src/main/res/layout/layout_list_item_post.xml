@@ -62,8 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_weight=".15">
 
-            <ImageView
-
+            <ImageButton
                 android:id="@+id/personal_post_options_menu"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="wrap_content"
@@ -220,20 +219,9 @@
         android:layout_below="@+id/food_linear">
 
         <TextView
-            android:id="@+id/post_likes"
-            android:background="@drawable/input_fields_frame_grey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/empty_line"
-            android:textColor="@color/black"
-            android:textStyle="bold|italic"
-            android:textSize="18sp" />
-
-        <TextView
             android:id="@+id/post_TimeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/post_likes"
             android:layout_centerInParent="true"
             android:layout_marginTop="15dp"
             android:text="3 days ago"
@@ -248,10 +236,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/time_Stamp_linear">
-
         <TextView
-            android:id="@+id/toolbarExpansionTextID"
+
+            android:id="@+id/post_likes"
+            android:background="@drawable/input_fields_frame_grey"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textStyle="bold|italic"
+            android:textSize="18sp" />
+        <!--<TextView-->
+        <!--android:id="@+id/toolbarExpansionTextID"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
     </FrameLayout>
 </RelativeLayout>

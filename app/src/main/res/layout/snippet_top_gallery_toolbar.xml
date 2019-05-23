@@ -16,7 +16,8 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/close_post"
+                    android:background="@drawable/input_fields_with_shadow"
+                    android:id="@+id/close_share"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_centerVertical="true"
@@ -24,24 +25,16 @@
                     android:onClick="onClick"
                     android:src="@drawable/orange_cancel" />
 
-                <Spinner
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/close_post"
-                    android:id="@+id/spinner_direct"
-                    android:layout_centerVertical="true"
-                    android:gravity="center_vertical">
-
-                </Spinner>
 
                 <TextView
+                    android:background="@drawable/input_fields_with_shadow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/next"
-                    android:fontFamily="@font/almendra"
                     android:layout_alignParentEnd="true"
+                    android:padding="5dp"
                     android:layout_marginEnd="15dp"
-                    android:textSize="20sp"
+                    android:textSize="16dp"
                     android:textColor="@color/orange"
                     android:layout_centerVertical="true"
                     android:id="@+id/textview_next"/>
