@@ -92,7 +92,7 @@ public class UserModelTests {
     public void setUser_Posts() {
         long posts = 28;
         user.setNrPosts(posts);
-        assertEquals(posts, user.getPosts());
+        assertEquals(posts, user.getNrPosts());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class UserModelTests {
         assertEquals(website, user.getWebsite());
         assertEquals(followers, user.getFollowers());
         assertEquals(following, user.getFollowing());
-        assertEquals(posts, user.getPosts());
+        assertEquals(posts, user.getNrPosts());
         assertEquals(phoneNumber, user.getPhone_number());
         assertEquals(email, user.getEmail());
 

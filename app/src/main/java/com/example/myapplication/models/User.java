@@ -102,7 +102,7 @@ public class User implements Parcelable {
         this.following = following;
     }
 
-    public long getPosts() {
+    public long getNrPosts() {
         return posts;
     }
 
