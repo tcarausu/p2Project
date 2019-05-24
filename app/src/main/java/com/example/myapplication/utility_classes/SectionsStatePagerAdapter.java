@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * Is used for setting up the Sections States, for multiple fragments.
+ * Used in Account settings.
+ * <p>
  * File created by tcarau18
  **/
 public class SectionsStatePagerAdapter extends FragmentStatePagerAdapter {
@@ -53,31 +56,4 @@ public class SectionsStatePagerAdapter extends FragmentStatePagerAdapter {
         }
     }
 
-    /**
-     * returns the fragment with the name @param
-     *
-     * @param fragment represents the Fragment
-     * @return returns the fragment with the name @param
-     */
-    public Integer getFragmentNumber(Fragment fragment) {
-        if (mFragmentNumbers.containsKey(fragment)) {
-            return mFragmentNumbers.get(fragment);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * returns the fragment with the name @param
-     *
-     * @param fragmentNumber represents the Fragment
-     * @return returns the fragment with the name @param
-     */
-    public String getFragmentName(Integer fragmentNumber) {
-        if (mFragmentNames.containsKey(fragmentNumber)) {
-            return mFragmentNames.get(fragmentNumber);
-        } else {
-            return null;
-        }
-    }
 }
