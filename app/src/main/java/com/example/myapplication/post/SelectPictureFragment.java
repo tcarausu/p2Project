@@ -36,7 +36,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 import static android.app.Activity.RESULT_OK;
 
 
-public class SelectPictureFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks  {
+public class SelectPictureFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks {
     private static final String TAG = "SelectPictureFragment";
     private static final int CAMERA_REQUEST = 11;
     private static final int GALLERY_REQUEST = 22;
@@ -48,7 +48,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     private Intent intent;
     private TextView nextText;
     private ImageView closePost;
-    private Bundle savedState ;
+    private Bundle savedState;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -106,6 +106,18 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to avoid leakage of intent receiver
+
+    }
 
     private void setLayout(View view) {
 
@@ -123,9 +135,10 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     /**
      * This method will display chosen image in the galleryImageView
      * using Glide
+     *
      * @param requestCode represents the Request Code
-     * @param resultCode represents the Result Code
-     * @param data represents the Data requested for the URI
+     * @param resultCode  represents the Result Code
+     * @param data        represents the Data requested for the URI
      */
 
     @Override
@@ -137,11 +150,11 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         try {
 
             if (besoins) {
-                    Glide.with(this).load(mUri)
-                            .centerCrop().into(galleryImageView);
-                    intent.putExtra("imageUri", mUri.toString());
+                Glide.with(this).load(mUri)
+                        .centerCrop().into(galleryImageView);
+                intent.putExtra("imageUri", mUri.toString());
             } else if (resultCode == RESULT_OK) {
-                 mUri = data.getData();
+                mUri = data.getData();
                 Glide.with(this).load(mUri).
                         centerCrop().into(galleryImageView);
                 intent.putExtra("imageUri", mUri.toString());
@@ -150,7 +163,6 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
             Toast.makeText(getActivity(), "Error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
     /**
@@ -204,19 +216,44 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
     }
 
+    /**
+     * This method calls dialogChoice(); if permissions accepted
+     * if not accepted, it will request for permissions
+     */
+    @AfterPermissionGranted(PERMISSION)
+    private void checkPermissions() {
+        if (EasyPermissions.hasPermissions(getContext(), Permissions.PERMISSIONS)) {
+            dialogChoice();
+        } else {
+            EasyPermissions.requestPermissions(this,
+                    getString(R.string.permission_needed),
+                    PERMISSION, Permissions.PERMISSIONS);
+        }
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
-            /**
-             * ClickListener which will start the HomeAcivity
+            /*
+             * ClickListener which will start the HomeActivity
              */
             case R.id.close_share:
                 Intent toHomeActivity = new Intent(getActivity(), HomeActivity.class);
                 startActivity(toHomeActivity);
 
                 break;
-            /**
+            /*
              * ClickListener that will open AddPostActivity if
              * galleryImageView is not empty
              */
@@ -236,45 +273,8 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.imageView_gallery:
-                dialogChoice();
+                checkPermissions();
+                break;
         }
     }
-    /**
-     * This method calls dialogChoice(); if permissions accepted
-     * if not accepted, it will request for permissions
-     */
-    @AfterPermissionGranted(PERMISSION)
-    private void checkPermissions(){
-        if (EasyPermissions.hasPermissions(getContext(), Permissions.PERMISSIONS)){
-            dialogChoice();
-        }else{
-            EasyPermissions.requestPermissions(this,
-                    getString(R.string.permission_needed),
-                    PERMISSION, Permissions.PERMISSIONS);
-        }
-    }
-    @Override
-    public void onPause() {
-        super.onPause();
-        getActivity().unregisterReceiver(broadcastReceiver);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to avoid leakage of intent receiver
-
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-
-    }
-
-
 }

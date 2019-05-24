@@ -61,7 +61,7 @@ public class HomeActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance() ;
         current_user = mAuth.getCurrentUser();
         firebasedatabase = FirebaseDatabase.getInstance();
-        mDatabasePostRef = firebasedatabase.getReference("posts").getRef();
+        mDatabasePostRef = firebasedatabase.getReference(getString(R.string.dbname_posts)).getRef();
         
         checkDatabaseState();
         initImageLoader();

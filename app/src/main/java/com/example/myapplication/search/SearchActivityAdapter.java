@@ -1,6 +1,8 @@
 package com.example.myapplication.search;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +25,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * File created by tcarau18
+ * <p>
+ * This class creates a Search View Adapter which takes all the users provided by,
+ * the actual search in the Search Activity, actuality Fragment
  **/
 public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAdapter.ViewHolder> {
     private static final String TAG = "SearchActivityAdapter";
@@ -30,12 +35,12 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
     private List<User> userList;
     private int lastPosition = -1;
 
-    public SearchActivityAdapter(Context context, List<User> userList) {
+    SearchActivityAdapter(Context context, List<User> userList) {
         this.context = context;
         this.userList = userList;
     }
 
-    public void setUserList(List<User> userList) {
+    void setUserList(List<User> userList) {
         this.userList = userList;
     }
 
@@ -49,7 +54,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
 
 
     @Override
-    public void onBindViewHolder(@NonNull final SearchActivityAdapter.ViewHolder viewHolder, int index) {
+    public void onBindViewHolder(@NonNull final SearchActivityAdapter.ViewHolder viewHolder, @SuppressLint("RecyclerView") int index) {
         Log.d(TAG, "onBindViewHolder: Called");
 
         final User currentUser = userList.get(index);
@@ -74,6 +79,10 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
 
         }
 
+        viewHolder.profile_photo.setOnClickListener(v ->
+                dialogChoice(currentUser.getUsername(), String.valueOf(currentUser.getNrOfPosts()), currentUser.getWebsite(),viewHolder.profile_photo.getDrawable())
+        );
+
         Animation animation = AnimationUtils.loadAnimation(context, (index > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
         viewHolder.itemView.startAnimation(animation);
         lastPosition = index;
@@ -89,33 +98,36 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
         TextView username, nrOfPosts;
         CircleImageView profile_photo;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             profile_photo = itemView.findViewById(R.id.user_profile_Image_item_id);
             username = itemView.findViewById(R.id.user_name_on_search_list_user);
             nrOfPosts = itemView.findViewById(R.id.nr_of_posts_on_search_list_user);
 
-            profile_photo.setOnClickListener(v ->
-                    dialogChoice(username.getText(), nrOfPosts.getText())
-            );
         }
     }
 
 
-    private void dialogChoice(CharSequence username, CharSequence nrOfPosts) {
+    private void dialogChoice(CharSequence username, CharSequence nrOfPosts, CharSequence website, Drawable drawable) {
+        nrOfPosts = "Number of Posts: " + nrOfPosts;
+        website = "Website: " + website;
 
-        final CharSequence[] options = {username, nrOfPosts, "Dismiss"};
+        final CharSequence[] options = {username, nrOfPosts, website, "Dismiss"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("ChefooD User");
-        builder.setIcon(R.drawable.chefood);
+        builder.setTitle(username);
+        builder.setIcon(drawable);
 
+        CharSequence finalNrOfPosts = nrOfPosts;
+        CharSequence finalWebsite = website;
         builder.setItems(options, (dialog, which) -> {
 
             if (options[which].equals(username)) {
                 Log.d(TAG, "dialogChoice: username is: " + username);
                 dialog.dismiss();
-            } else if (options[which].equals(nrOfPosts)) {
+            } else if (options[which].equals(finalNrOfPosts)) {
+                dialog.dismiss();
+            } else if (options[which].equals(finalWebsite)) {
                 dialog.dismiss();
             } else if (options[which].equals("Dismiss")) {
                 dialog.dismiss();

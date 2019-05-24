@@ -52,6 +52,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * File created by tcarau18
+ * <p>
+ * The ViewPostFragmentNewsFeed.class is Displaying the User's selected post, he can display all the information
+ * that the post contains, display or like (a post),comment etc.
  **/
 public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickListener {
 
@@ -104,8 +107,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         userId = current_user.getUid();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
-        mUserRef = mFirebaseDatabase.getReference("users");
-        mPostsRef = mFirebaseDatabase.getReference("posts");
+        mUserRef = mFirebaseDatabase.getReference(getString(R.string.dbname_users));
+        mPostsRef = mFirebaseDatabase.getReference(getString(R.string.dbname_posts));
         mStorageRef = FirebaseStorage.getInstance();
 
         setupFirebaseAuth();
@@ -211,8 +214,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
 
-        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
-
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
 
@@ -221,18 +222,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             } else Log.d(TAG, "onAuthStateChanged: signed out");
         };
 
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
 
     }
 
@@ -241,7 +230,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists() && dataSnapshot.getKey().equals(mPost.getUserId()) && !dataSnapshot.getValue().equals(null)) {
+                if (dataSnapshot.exists() && dataSnapshot.getKey().equals(mPost.getUserId())) {
                     user = dataSnapshot.getValue(User.class);
 
                 } else {
@@ -294,6 +283,12 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     }
 
+    /**
+     * The method gets the proper timestamp of the post creation and make the difference between
+     * current time and the time created
+     *
+     * @return the difference
+     */
     private String getTimeStampDifference() {
         Log.d(TAG, "getTimeStampDifference: getting TimeStamp Difference");
 
@@ -365,6 +360,11 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     }
 
+    /**
+     * This method displays retrieves the Likes from the user's post and displaying the likes in the
+     * setupUserLikedString
+     *
+     */
     public void getLikesString() {
 
         Query query = mPostsRef
@@ -388,9 +388,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             final User currentUser = dataSnapshot.getValue(User.class);
                             if (dataSnapshot.exists()
-                                    && dataSnapshot.getKey().equals(userLikeSnapshotID)) {
-                                Log.d(TAG, "onDataChange: found like" + dataSnapshot.getValue(User.class));
-
+                                    && Objects.equals(dataSnapshot.getKey(), userLikeSnapshotID)) {
                                 Log.d(TAG, "onDataChange: the current User " + currentUser.getUsername());
 
                                 mUsers.append(currentUser.getUsername());
