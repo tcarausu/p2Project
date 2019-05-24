@@ -2,6 +2,7 @@ package com.example.myapplication.search;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -79,7 +80,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
         }
 
         viewHolder.profile_photo.setOnClickListener(v ->
-                dialogChoice(currentUser.getUsername(), String.valueOf(currentUser.getNrOfPosts()), currentUser.getWebsite())
+                dialogChoice(currentUser.getUsername(), String.valueOf(currentUser.getNrOfPosts()), currentUser.getWebsite(),viewHolder.profile_photo.getDrawable())
         );
 
         Animation animation = AnimationUtils.loadAnimation(context, (index > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
@@ -108,14 +109,14 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
     }
 
 
-    private void dialogChoice(CharSequence username, CharSequence nrOfPosts, CharSequence website) {
+    private void dialogChoice(CharSequence username, CharSequence nrOfPosts, CharSequence website, Drawable drawable) {
         nrOfPosts = "Number of Posts: " + nrOfPosts;
         website = "Website: " + website;
 
         final CharSequence[] options = {username, nrOfPosts, website, "Dismiss"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(username);
-        builder.setIcon(R.drawable.chefood);
+        builder.setIcon(drawable);
 
         CharSequence finalNrOfPosts = nrOfPosts;
         CharSequence finalWebsite = website;
