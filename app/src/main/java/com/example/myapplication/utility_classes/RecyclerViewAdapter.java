@@ -126,7 +126,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         FrameLayout mPostToolbarBtnsExpansionContainer;
         TextView mToolbarExpasionText, post_likes, post_TimeStamp;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             mParentLayout = itemView.findViewById(R.id.parentLayoutID);

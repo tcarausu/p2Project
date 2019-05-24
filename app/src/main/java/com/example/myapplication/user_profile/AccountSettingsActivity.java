@@ -37,9 +37,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
 
     //firebase
     private FirebaseAuth mAuth;
-    private FirebaseMethods mFirebaseMethods ;
-//    private GoogleSignInClient mGoogleSignInClient;
-
+    private FirebaseMethods mFirebaseMethods;
 
     private SectionsStatePagerAdapter pagerAdapter;
     private ViewPager mViewPager;
@@ -74,7 +72,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     public void onClick(View v) {
         if (v.getId() == R.id.backArrow) {
             Log.d(TAG, "onClick: navigating to account settings");
-            goTosWithFlags(getApplicationContext(),UserProfileActivity.class);
+            goTosWithFlags(getApplicationContext(), UserProfileActivity.class);
         }
 
     }
@@ -128,15 +126,17 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
 
     }
 
+    /**
+     * Set's up the Setting list, our case Sign Out.
+     */
     private void setupSettingsList() {
         Log.d(TAG, "setupSettingsList: initializing 'Account Settings' list");
         ListView listView = findViewById(R.id.listViewAccountSettings);
 
-//        ArrayList<String> options = new ArrayList<>();
-//        options.add(getString(R.string.sign_out_fragment));
-         String signOut = "Sign Out";
+        String signOut = "Sign Out";
 
-        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),
+                android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
@@ -148,6 +148,9 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         });
     }
 
+    /**
+     * Get the incoming intent to check which activity it is related to.
+     */
     private void getIncomingIntent() {
         Intent intent = getIntent();
 
@@ -171,22 +174,24 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
 
     }
 
-    // Alert dialog
+    /**
+     * Here we have the dialogue to Sign Out and Cancel
+     */
     private void dialogChoice() {
 
-        final CharSequence[] options = {"SIGN-OUT", "CANCEL"};
+        final CharSequence[] options = {"SIGN OUT", "CANCEL"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Are you sure you want to sign out?");
         builder.setIcon(R.drawable.chefood);
 
         builder.setItems(options, (dialog, which) -> {
-            if (options[which].equals("SIGN-OUT")) {
-                Log.d(TAG, "dialogChoice: sign-out");
+            if (options[which].equals("SIGN OUT")) {
+                Log.d(TAG, "dialogChoice: sign out");
                 mFirebaseMethods.logOut();
                 ProgressBar mProgressBar = new ProgressBar(this);
                 mProgressBar.setVisibility(View.VISIBLE);
 
-                goTosWithFlags(getApplicationContext(),LoginActivity.class);
+                goTosWithFlags(getApplicationContext(), LoginActivity.class);
                 Toast.makeText(getApplicationContext(), "Successful Sign Out", Toast.LENGTH_SHORT).show();
 
             } else if (options[which].equals("CANCEL")) {
@@ -200,8 +205,8 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     }
 
     public void goTosWithFlags(Context applicationContext, Class<? extends AppCompatActivity> cl) {
-        startActivity(new Intent(applicationContext,cl)
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        startActivity(new Intent(applicationContext, cl)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
     }
 }

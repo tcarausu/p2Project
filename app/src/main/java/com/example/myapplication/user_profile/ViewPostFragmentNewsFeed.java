@@ -1,7 +1,6 @@
 package com.example.myapplication.user_profile;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +23,6 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
-import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.SquareImageView;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
@@ -128,7 +126,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
         try {
 
-            DatabaseReference currentPostRef = mPostsRef.child(mAuth.getCurrentUser().getUid()).child(this.mPost.getPostId());
+            DatabaseReference currentPostRef = mPostsRef.child(current_user.getUid()).child(this.mPost.getPostId());
+            DatabaseReference currentUserRef = mUserRef.child(current_user.getUid());
 
             ProgressDialog progressDialog = new ProgressDialog(this.getContext());
             progressDialog.setTitle("Deleting");
@@ -141,8 +140,26 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             imageRef.delete().addOnSuccessListener(aVoid -> {
                 currentPostRef.removeValue();
+
+                currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            final User user = dataSnapshot.getValue(User.class);
+                            if (user.getNrOfPosts() != 0) {
+                                user.setNrPosts(user.getNrOfPosts() - 1);
+                                currentUserRef.setValue(user);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 progressDialog.dismiss();
-                ((UserProfileActivity) getActivity()).gotos(getContext(), UserProfileActivity.class);
+                ((UserProfileActivity) getActivity()).goTos(getContext(), UserProfileActivity.class);
                 Toast.makeText(getContext(), "Item deleted.", Toast.LENGTH_SHORT).show();
 
             });
@@ -225,16 +242,20 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     }
 
+    /**
+     * The method gets the Photo details for a specific user
+     * If there is an user with this id, in our case the current user exists and the User's id is equal to
+     * the requested ost's id then it should return the data for the user.
+     */
     private void getPhotoDetails() {
-        Query query = mUserRef.child(mAuth.getCurrentUser().getUid());
+        Query query = mUserRef.child(current_user.getUid());
+
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists() && dataSnapshot.getKey().equals(mPost.getUserId())) {
+                if (dataSnapshot.exists() && Objects.equals(dataSnapshot.getKey(), mPost.getUserId())) {
                     user = dataSnapshot.getValue(User.class);
-
                 } else {
-
                     Log.d(TAG, "onDataChange: There is no data: " + dataSnapshot.getValue(User.class).getProfile_photo());
                 }
 
@@ -262,7 +283,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         try {
             if (profilePicURL == null) {
                 mProfilePhoto.setImageResource(R.drawable.my_avatar);
-
             } else
                 Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
 
@@ -361,9 +381,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     }
 
     /**
-     * This method displays retrieves the Likes from the user's post and displaying the likes in the
-     * setupUserLikedString
-     *
+     * This method displays retrieves the Likes from the user's post
+     * and displaying the likes in the setupUserLikedString method
      */
     public void getLikesString() {
 
@@ -442,6 +461,15 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         });
     }
 
+    /**
+     * The methods takes a
+     *
+     * @param username which is the Username of an existing username in the databse,
+     *                 being already checked by the getLikesString method
+     *                 <p>
+     *                 Here we create a array of String which will be taking all the users,
+     *                 Then based on the length it will display "Liked by" and number of them
+     */
     private void setupUserLikedString(String username) {
 
         String[] splitUsers = mUsers.toString().split(",");
@@ -485,6 +513,9 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         setupWidgets();
     }
 
+    /**
+     * This method add a new like directly the requests, current post.
+     */
     public void addNewLike() {
         Log.d(TAG, "addNewLike: add new like");
 
@@ -502,6 +533,9 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         getLikesString();
     }
 
+    /**
+     * Here we have the dialogue to delete, report a post
+     */
     private void dialogChoice() {
 
         final CharSequence[] options = {"Delete", "Report", "Cancel"};
@@ -525,30 +559,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     }
 
-
-//            currentPostRef.removeValue((databaseError, databaseReference) -> {
-//                Log.d(TAG, "deletePost: currentPostRef: " + currentPostRef);
-//                currentPostRef.removeValue();
-//                progressDialog.dismiss();
-//                ((UserProfileActivity) getActivity()).gotos(getContext(), UserProfileActivity.class);
-//            });
-
-
-//
-
-
-    private void editPost() {
-
-        Intent editPostIntent = new Intent(getContext(), AddPostActivity.class);
-        editPostIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        editPostIntent.putExtra("ingredients", mPost.getmIngredients());
-        editPostIntent.putExtra("recipe", mPost.getmRecipe());
-        editPostIntent.putExtra("ingredients", mPost.getmIngredients());
-        editPostIntent.putExtra("postImage", mPost.getmFoodImgUrl());
-        startActivity(editPostIntent);
-    }
-
-
     private void reportPost() {
     }
 
@@ -558,7 +568,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             case R.id.account_settings_options:
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
-                ((UserProfileActivity) getActivity()).gotos(getContext(), AccountSettingsActivity.class);
+                ((UserProfileActivity) getActivity()).goTos(getContext(), AccountSettingsActivity.class);
                 break;
 
             case R.id.personal_post_options_menu:
@@ -583,7 +593,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             case R.id.backArrow:
                 Log.d(TAG, "onClick: navigating back to " + getActivity());
-                ((UserProfileActivity) getActivity()).gotos(getActivity(), UserProfileActivity.class);// this is working and bug free
+                ((UserProfileActivity) getActivity()).goTos(getActivity(), UserProfileActivity.class);// this is working and bug free
                 break;
 
             case R.id.likes_button:
@@ -593,6 +603,11 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     }
 
+    /**
+     * This method Toggles likes based on the the current user, meaning,
+     * If the user has already liked it will display one answer;
+     * If he didn't add a like, or there is no like then it will add one.
+     */
     public void toggleLikes() {
         Query query = mPostsRef
                 .child(userId)
