@@ -64,7 +64,7 @@ public class HomeFragment extends Fragment {
         mFirebaseMethods = new FirebaseMethods(getContext());
         mUserId = current_user.getUid();
         firebasedatabase = FirebaseDatabase.getInstance();
-        mDatabasePostRef = firebasedatabase.getReference("posts");
+        mDatabasePostRef = firebasedatabase.getReference(getString(R.string.dbname_posts));
         mRecyclerView = view.findViewById(R.id.recyclerViewID);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

@@ -107,7 +107,7 @@ public class HistoryLogActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         // Setting the reference to posts branch
-        mPostReference = firebaseDatabase.getReference("posts");
+        mPostReference = firebaseDatabase.getReference(getString(R.string.dbname_posts));
 
     }
 

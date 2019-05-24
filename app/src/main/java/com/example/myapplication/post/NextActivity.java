@@ -32,7 +32,6 @@ import com.google.firebase.storage.StorageReference;
 
 public class NextActivity extends AppCompatActivity implements View.OnClickListener {
 
-
     private static final String TAG = "NextActivity";
 
     private EditText mImageDesc;
@@ -42,7 +41,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mUploadTextView;
     private ImageView mBackImageView;
     private StorageReference mStorageRef;
-    private DatabaseReference mDatabaseRef, postRef,userRef;
+    private DatabaseReference mDatabaseRef, postRef, userRef;
     private DatabaseReference mDatabaseReferenceUserInfo;
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
@@ -62,9 +61,11 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         current_user = mAuth.getCurrentUser();
         firebaseMethods = new FirebaseMethods(getApplicationContext());
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        String databasePath = "posts/" + mAuth.getUid() + "/";
+
+        String databasePath = getString(R.string.dbname_posts) + "/" + mAuth.getUid() + "/";
         String databasePathPic = "users/" + mAuth.getUid();
-        postRef = FirebaseDatabase.getInstance().getReference("posts").child(current_user.getUid());
+
+        postRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_posts)).child(current_user.getUid());
         userRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_users)).child(current_user.getUid());
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
 
@@ -87,9 +88,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
-
     }
-
 
 
     private void findWidgets() {
@@ -134,7 +133,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                             Post postInfo = new Post(description,
                                     URL, recipe, ingredients, mAuth.getUid(),
                                     uploadId, firebaseMethods.getTimestamp(), null);
-                            Log.d(TAG, "onComplete: upload uid: " +uploadId);
+                            Log.d(TAG, "onComplete: upload uid: " + uploadId);
 
                             mDatabaseRef.child(uploadId).setValue(postInfo);
 
@@ -176,7 +175,8 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
             progressDialog.setMessage("uploaded " + (int) progress + "%");
 
         }).addOnFailureListener(e ->
-                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());;
+                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
+        ;
     }
 
     @Override

@@ -107,8 +107,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         userId = current_user.getUid();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
-        mUserRef = mFirebaseDatabase.getReference("users");
-        mPostsRef = mFirebaseDatabase.getReference("posts");
+        mUserRef = mFirebaseDatabase.getReference(getString(R.string.dbname_users));
+        mPostsRef = mFirebaseDatabase.getReference(getString(R.string.dbname_posts));
         mStorageRef = FirebaseStorage.getInstance();
 
         setupFirebaseAuth();

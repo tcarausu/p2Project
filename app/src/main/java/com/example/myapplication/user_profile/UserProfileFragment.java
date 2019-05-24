@@ -65,7 +65,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference myRef , postsRef , userPostCount;
+    private DatabaseReference myRef, postsRef, userPostCount;
     private FirebaseMethods firebaseMethods;
     private FirebaseUser current_user;
 
@@ -89,15 +89,14 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         current_user = mAuth.getCurrentUser();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
-        postsRef = mFirebaseDatabase.getReference("users").child(current_user.getUid()).child("posts");
-        userPostCount = mFirebaseDatabase.getReference("posts").child(current_user.getUid());
+        postsRef = mFirebaseDatabase.getReference(getString(R.string.dbname_posts));
+        userPostCount = mFirebaseDatabase.getReference(getString(R.string.dbname_posts)).child(current_user.getUid());
         initLayout(view);
         setListeners(view);
         setupFirebaseAuth();
         setupGridView();
         setupBottomNavigationView();
         setPostCount();
-
 
         return view;
     }
@@ -204,12 +203,12 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mFollowing.setText(String.valueOf(user.getFollowing()));
 
         String profilePicURL = user.getProfile_photo();
-        Log.d(TAG, "setProfileWidgets, PhotoURL: "+profilePicURL);
+        Log.d(TAG, "setProfileWidgets, PhotoURL: " + profilePicURL);
 
         //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
         try {
-                Glide.with(getActivity()).load(profilePicURL).centerCrop().into(mProfilePhoto);
-            Log.d(TAG, "setProfileWidgets: mProfilePhoto.getDrawableState().length; "+ mProfilePhoto.getDrawableState().length);
+            Glide.with(getActivity()).load(profilePicURL).centerCrop().into(mProfilePhoto);
+            Log.d(TAG, "setProfileWidgets: mProfilePhoto.getDrawableState().length; " + mProfilePhoto.getDrawableState().length);
 
         } catch (Exception e) {
             Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
@@ -234,7 +233,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
 
-                ((UserProfileActivity)getActivity()).gotos(getActivity(),AccountSettingsActivity.class);
+                ((UserProfileActivity) getActivity()).gotos(getActivity(), AccountSettingsActivity.class);
 
                 break;
         }
@@ -242,16 +241,13 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
 
-
-
-
-    private void setPostCount(){
+    private void setPostCount() {
 
         // here i browse throught the user to get post child count.
         userPostCount.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot postCountDataSnapshot) {
-                if(postCountDataSnapshot.exists()) {
+                if (postCountDataSnapshot.exists()) {
                     Log.d(TAG, "simo: dataSnapshotCount: " + postCountDataSnapshot.getChildrenCount());
                     // here i browse throught the user to get post ref count.
                     if (postCountDataSnapshot.exists()) {
@@ -270,7 +266,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         });
 
 
-
     }
 
 
@@ -279,10 +274,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         try {
             final ArrayList<Post> posts = new ArrayList<>();
-            DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-
-            Query query = reference
-                    .child(getString(R.string.dbname_posts))
+            Query query = postsRef
                     .child(mAuth.getCurrentUser().getUid());
 
             query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -341,9 +333,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 }
             });
-        }catch (Exception e){
-            Toast.makeText(getActivity(),"Error: Nothing to display",Toast.LENGTH_SHORT).show();
-            ((HomeActivity)getActivity()).goTosWithFlags(getActivity(),AddPostActivity.class);
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "Error: Nothing to display", Toast.LENGTH_SHORT).show();
+            ((HomeActivity) getActivity()).goTosWithFlags(getActivity(), AddPostActivity.class);
         }
     }
 
