@@ -42,10 +42,10 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseMethods mFirebaseMethods ;
+    private FirebaseMethods mFirebaseMethods;
     private DatabaseReference mDatabasePostRef;
     private FirebaseDatabase firebasedatabase;
-    private Query postQuery ;
+    private Query postQuery;
 
 
     /**
@@ -56,13 +56,13 @@ public class HomeActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
-        mContext = getApplicationContext() ;
+        mContext = getApplicationContext();
         mFirebaseMethods = new FirebaseMethods(mContext);
-        mAuth = FirebaseAuth.getInstance() ;
+        mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
         firebasedatabase = FirebaseDatabase.getInstance();
         mDatabasePostRef = firebasedatabase.getReference(getString(R.string.dbname_posts)).getRef();
-        
+
         checkDatabaseState();
         initImageLoader();
         setupBottomNavigationView();
@@ -75,54 +75,33 @@ public class HomeActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-         checkDatabaseState();
-
-
+        checkDatabaseState();
     }
 
     @SuppressLint("RestrictedApi")
     private void checkDatabaseState() {
 
-        try{
-        mDatabasePostRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "Snapshot HomeActivity, Snapshot.has children: "+dataSnapshot.hasChildren());
-                if (!dataSnapshot.exists() || !dataSnapshot.hasChildren() ){
-                    Toast.makeText(getApplicationContext(),"Nothing to display, Add a post to begin",Toast.LENGTH_SHORT).show();
-                    goTosWithFlags(HomeActivity.this, AddPostActivity.class);
+        try {
+            mDatabasePostRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "Snapshot HomeActivity, Snapshot.has children: " + dataSnapshot.hasChildren());
+                    if (!dataSnapshot.exists() || !dataSnapshot.hasChildren()) {
+                        Toast.makeText(getApplicationContext(), "Nothing to display, Add a post to begin", Toast.LENGTH_SHORT).show();
+                        goTosWithFlags(HomeActivity.this, AddPostActivity.class);
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
-        }catch (Exception e){
-            Toast.makeText(this,"Nothing to display: "+e.getMessage(),Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception e) {
+            Toast.makeText(this, "Nothing to display: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             goTosWithFlags(this, LoginActivity.class);
         }
 
-
-
-//        try {
-//        boolean  hasChildren = postQuery.getPath().iterator().hasNext() ;
-//        Log.d(TAG, "checkDatabaseState: has children:  "+ hasChildren);
-//
-//        if (!hasChildren) {
-//            Log.d(TAG, "checkDatabaseState: has children:  "+ hasChildren);
-//            goTosWithFlags(this, AddPostActivity.class);
-//        }
-//
-//        else if (mFirebaseMethods.checkUserStateIfNull()) {
-//            mFirebaseMethods.logOut();
-//            goTosWithFlags(this, LoginActivity.class);
-//        }
-//        }catch (Exception e){
-//            Toast.makeText(this,"Nothing to display: "+e.getMessage(),Toast.LENGTH_SHORT).show();
-//            goTosWithFlags(this, LoginActivity.class);
-//        }
     }
 
 
@@ -132,7 +111,6 @@ public class HomeActivity extends AppCompatActivity {
         checkDatabaseState();
 
     }
-
 
 
     @Override
@@ -173,10 +151,10 @@ public class HomeActivity extends AppCompatActivity {
         Log.d(TAG, "setupFire-base-Auth: setting up fire-base auth");
         mAuthListener = firebaseAuth -> {
 
-                if (current_user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
-                } else Log.d(TAG, "onAuthStateChanged: signed out");
-            };
+            if (current_user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
+            } else Log.d(TAG, "onAuthStateChanged: signed out");
+        };
 
     }
 
@@ -198,15 +176,9 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    public void goTosWithFlags(Context context, Class<? extends AppCompatActivity> cl){
-        startActivity(new Intent(context,cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    public void goTosWithFlags(Context context, Class<? extends AppCompatActivity> cl) {
+        startActivity(new Intent(context, cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
-
-    }
-
-
-    public void goTos(Context context, Class<? extends AppCompatActivity> cl){
-        startActivity(new Intent(context,cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
 
     }
 
