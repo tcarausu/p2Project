@@ -106,6 +106,18 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to avoid leakage of intent receiver
+
+    }
 
     private void setLayout(View view) {
 
@@ -204,19 +216,44 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
     }
 
+    /**
+     * This method calls dialogChoice(); if permissions accepted
+     * if not accepted, it will request for permissions
+     */
+    @AfterPermissionGranted(PERMISSION)
+    private void checkPermissions() {
+        if (EasyPermissions.hasPermissions(getContext(), Permissions.PERMISSIONS)) {
+            dialogChoice();
+        } else {
+            EasyPermissions.requestPermissions(this,
+                    getString(R.string.permission_needed),
+                    PERMISSION, Permissions.PERMISSIONS);
+        }
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
-            /**
-             * ClickListener which will start the HomeAcivity
+            /*
+             * ClickListener which will start the HomeActivity
              */
             case R.id.close_share:
                 Intent toHomeActivity = new Intent(getActivity(), HomeActivity.class);
                 startActivity(toHomeActivity);
 
                 break;
-            /**
+            /*
              * ClickListener that will open AddPostActivity if
              * galleryImageView is not empty
              */
@@ -240,44 +277,4 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
                 break;
         }
     }
-
-    /**
-     * This method calls dialogChoice(); if permissions accepted
-     * if not accepted, it will request for permissions
-     */
-    @AfterPermissionGranted(PERMISSION)
-    private void checkPermissions() {
-        if (EasyPermissions.hasPermissions(getContext(), Permissions.PERMISSIONS)) {
-            dialogChoice();
-        } else {
-            EasyPermissions.requestPermissions(this,
-                    getString(R.string.permission_needed),
-                    PERMISSION, Permissions.PERMISSIONS);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        getActivity().unregisterReceiver(broadcastReceiver);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to avoid leakage of intent receiver
-
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-
-    }
-
-
 }

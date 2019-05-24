@@ -74,6 +74,10 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
 
         }
 
+        viewHolder.profile_photo.setOnClickListener(v ->
+                dialogChoice(currentUser.getUsername(), String.valueOf(currentUser.getNrOfPosts()), currentUser.getWebsite())
+        );
+
         Animation animation = AnimationUtils.loadAnimation(context, (index > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
         viewHolder.itemView.startAnimation(animation);
         lastPosition = index;
@@ -96,26 +100,29 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
             username = itemView.findViewById(R.id.user_name_on_search_list_user);
             nrOfPosts = itemView.findViewById(R.id.nr_of_posts_on_search_list_user);
 
-            profile_photo.setOnClickListener(v ->
-                    dialogChoice(username.getText(), nrOfPosts.getText())
-            );
         }
     }
 
 
-    private void dialogChoice(CharSequence username, CharSequence nrOfPosts) {
+    private void dialogChoice(CharSequence username, CharSequence nrOfPosts, CharSequence website) {
+        nrOfPosts = "Number of Posts: " + nrOfPosts;
+        website = "Website: " + website;
 
-        final CharSequence[] options = {username, nrOfPosts, "Dismiss"};
+        final CharSequence[] options = {username, nrOfPosts, website, "Dismiss"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("ChefooD User");
+        builder.setTitle(username);
         builder.setIcon(R.drawable.chefood);
 
+        CharSequence finalNrOfPosts = nrOfPosts;
+        CharSequence finalWebsite = website;
         builder.setItems(options, (dialog, which) -> {
 
             if (options[which].equals(username)) {
                 Log.d(TAG, "dialogChoice: username is: " + username);
                 dialog.dismiss();
-            } else if (options[which].equals(nrOfPosts)) {
+            } else if (options[which].equals(finalNrOfPosts)) {
+                dialog.dismiss();
+            } else if (options[which].equals(finalWebsite)) {
                 dialog.dismiss();
             } else if (options[which].equals("Dismiss")) {
                 dialog.dismiss();
