@@ -50,8 +50,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     //user data strings
     private String username;
-    private String profile_photo_url;
-    private String nrOfPosts;
     private String user_id;
 
     //ListView
@@ -108,8 +106,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                         if (ds.exists()) {
                             final User user = ds.getValue(User.class);
                             username = user.getUsername();
-                            profile_photo_url = user.getProfile_photo();
-                            nrOfPosts = String.valueOf(user.getNrOfPosts());
 
                             if (keyword.equals(username)) {
 
@@ -120,8 +116,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                                 search_recycler_view.setAdapter(adapter);
 
-                            } else
-                                Toast.makeText(getApplicationContext(), "Incorrect reference", Toast.LENGTH_SHORT).show();
+                            }
 
                         } else {
                             Toast.makeText(getApplicationContext(), "No user exists", Toast.LENGTH_SHORT).show();

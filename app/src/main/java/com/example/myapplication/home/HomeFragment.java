@@ -125,12 +125,9 @@ public class HomeFragment extends Fragment {
                                 final Post post = postSnapshot.getValue(Post.class);
                                 Log.d(TAG, "onDataChange: uid for user from post : " + post.getUserId());
 
-                                Log.d(TAG, "onDataChange: username and profile pic : >>>> : " + mUsername + " " + mProfilePhoto);
-
                                 List<Like> likeList = new ArrayList<>();
 
                                 for (DataSnapshot ds : postSnapshot.child("mLikes").getChildren()) {
-                                    // TODO, likes if no like yet, it crushes,
                                     Like like = new Like();
                                     like.setUser_id(ds.getValue(Like.class).getUser_id());
                                     likeList.add(like);
