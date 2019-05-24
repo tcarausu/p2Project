@@ -1,5 +1,6 @@
 package com.example.myapplication.search;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -23,6 +24,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * File created by tcarau18
+ * <p>
+ * This class creates a Search View Adapter which takes all the users provided by,
+ * the actual search in the Search Activity, actuality Fragment
  **/
 public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAdapter.ViewHolder> {
     private static final String TAG = "SearchActivityAdapter";
@@ -30,12 +34,12 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
     private List<User> userList;
     private int lastPosition = -1;
 
-    public SearchActivityAdapter(Context context, List<User> userList) {
+    SearchActivityAdapter(Context context, List<User> userList) {
         this.context = context;
         this.userList = userList;
     }
 
-    public void setUserList(List<User> userList) {
+    void setUserList(List<User> userList) {
         this.userList = userList;
     }
 
@@ -49,7 +53,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
 
 
     @Override
-    public void onBindViewHolder(@NonNull final SearchActivityAdapter.ViewHolder viewHolder, int index) {
+    public void onBindViewHolder(@NonNull final SearchActivityAdapter.ViewHolder viewHolder, @SuppressLint("RecyclerView") int index) {
         Log.d(TAG, "onBindViewHolder: Called");
 
         final User currentUser = userList.get(index);
@@ -93,7 +97,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
         TextView username, nrOfPosts;
         CircleImageView profile_photo;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             profile_photo = itemView.findViewById(R.id.user_profile_Image_item_id);
