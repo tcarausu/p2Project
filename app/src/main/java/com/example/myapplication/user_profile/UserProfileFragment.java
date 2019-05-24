@@ -85,9 +85,11 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        mAuth = FirebaseAuth.getInstance();
+
+        firebaseMethods =  FirebaseMethods.getInstance(getContext());
+        mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myRef = mFirebaseDatabase.getReference();
         postsRef = mFirebaseDatabase.getReference("users").child(current_user.getUid()).child("posts");
         userPostCount = mFirebaseDatabase.getReference("posts").child(current_user.getUid());
@@ -104,7 +106,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private void initLayout(View view) {
 
-        firebaseMethods = new FirebaseMethods(getContext());
         mDisplayName = view.findViewById(R.id.displayName);
         mUserName = view.findViewById(R.id.userName);
         mWebsite = view.findViewById(R.id.website);

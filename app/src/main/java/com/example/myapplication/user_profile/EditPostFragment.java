@@ -21,7 +21,7 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sign_out, container, false);
-        firebaseMethods = new FirebaseMethods(getContext());
+        firebaseMethods =  FirebaseMethods.getInstance(getContext());
 
 
         return view;

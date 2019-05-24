@@ -61,9 +61,9 @@ public class HomeFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
-        mFirebaseMethods = new FirebaseMethods(getContext());
+        mFirebaseMethods =  FirebaseMethods.getInstance(getContext());
         mUserId = current_user.getUid();
-        firebasedatabase = FirebaseDatabase.getInstance();
+        firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
         mDatabasePostRef = firebasedatabase.getReference("posts");
         mRecyclerView = view.findViewById(R.id.recyclerViewID);
         mRecyclerView.setHasFixedSize(true);
@@ -195,14 +195,11 @@ public class HomeFragment extends Fragment {
 
                                     }
                                 });
-
                                 mPosts.add(post);
                                 mAdapter.setPostsList(mPosts);
                                 mAdapter.notifyDataSetChanged();
-
                             }
                         }
-                        mAdapter.notifyDataSetChanged();
                     }
 
                     @Override

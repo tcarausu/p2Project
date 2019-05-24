@@ -56,11 +56,11 @@ public class HomeActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
-        mContext = getApplicationContext() ;
-        mFirebaseMethods = new FirebaseMethods(mContext);
-        mAuth = FirebaseAuth.getInstance() ;
+
+        mFirebaseMethods =  FirebaseMethods.getInstance(getApplicationContext());
+        mAuth = FirebaseMethods.getAuth() ;
         current_user = mAuth.getCurrentUser();
-        firebasedatabase = FirebaseDatabase.getInstance();
+        firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
         mDatabasePostRef = firebasedatabase.getReference("posts").getRef();
         
         checkDatabaseState();
@@ -181,7 +181,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initImageLoader() {
-        UniversalImageLoader imageLoader = new UniversalImageLoader(mContext);
+        UniversalImageLoader imageLoader = new UniversalImageLoader(getApplicationContext());
         ImageLoader.getInstance().init(imageLoader.getConfig());
     }
 
@@ -191,7 +191,7 @@ public class HomeActivity extends AppCompatActivity {
     public void setupBottomNavigationView() {
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);

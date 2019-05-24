@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.User;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -59,16 +61,16 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private List<User> userList = new ArrayList<>();
     private SearchActivityAdapter adapter;
 
-
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseMethods.getAuth();
         user = mAuth.getCurrentUser();
         user_id = user.getUid();
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        myDatabaseUserRef = FirebaseDatabase.getInstance().getReference("users");
+        firebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
+        myDatabaseUserRef = firebaseDatabase.getReference("users");
 
         initLayout(view);
         buttonListeners();
@@ -98,36 +100,35 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     public void getUserFromDatabase() {
         String keyword = mSearchParam.getText().toString();
 
-        if (!keyword.equals("")) {
+        if (!TextUtils.isEmpty(keyword)) {
 
             myDatabaseUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        userList.clear();
+                    userList.clear();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        if (ds.exists()) {
+                        if (dataSnapshot.hasChildren()&& ds.exists()) {
                             final User user = ds.getValue(User.class);
                             username = user.getUsername();
-                            profile_photo_url = user.getProfile_photo();
-                            nrOfPosts = String.valueOf(user.getNrOfPosts());
 
-                            if (keyword.equals(username)) {
+                            if (username.toLowerCase().contains(keyword.toLowerCase())) {
 
                                 adapter = new SearchActivityAdapter(requireContext(), userList);
 
                                 userList.add(user);
                                 adapter.setUserList(userList);
-
                                 search_recycler_view.setAdapter(adapter);
 
                             } else
-                                Toast.makeText(getApplicationContext(), "Incorrect reference", Toast.LENGTH_SHORT).show();
-
-                        } else {
-                            Toast.makeText(getApplicationContext(), "No user exists", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "No match found", Toast.LENGTH_SHORT).show();
+                                search_recycler_view.removeAllViews();
 
                         }
+
                     }
+
+                    adapter.notifyDataSetChanged();
+                    search_recycler_view.removeAllViews();
 
                 }
 
@@ -136,7 +137,9 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                 }
             });
-        }
+        } else if (mSearchButton.isPressed() && TextUtils.isEmpty(keyword))
+            Toast.makeText(getApplicationContext(), "Please type a keyword", Toast.LENGTH_SHORT).show();
+              search_recycler_view.removeAllViews();
 
     }
 

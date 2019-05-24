@@ -26,6 +26,7 @@ import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SquareImageView;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
@@ -99,14 +100,14 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_post_news_feeed, container, false);
 
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
         userId = current_user.getUid();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myRef = mFirebaseDatabase.getReference();
         mUserRef = mFirebaseDatabase.getReference("users");
         mPostsRef = mFirebaseDatabase.getReference("posts");
-        mStorageRef = FirebaseStorage.getInstance();
+        mStorageRef = FirebaseMethods.getFirebaseStorage();
 
         setupFirebaseAuth();
         initLayout(view);

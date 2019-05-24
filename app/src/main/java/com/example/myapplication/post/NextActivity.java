@@ -27,7 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class NextActivity extends AppCompatActivity implements View.OnClickListener {
@@ -41,6 +40,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mImageViewfood;
     private TextView mUploadTextView;
     private ImageView mBackImageView;
+    private FirebaseDatabase mFirebaseDatabase ;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef, postRef;
     private DatabaseReference mDatabaseReferenceUserInfo;
@@ -60,14 +60,15 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         findWidgets();
         mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
-        firebaseMethods = new FirebaseMethods(getApplicationContext());
-        mStorageRef = FirebaseStorage.getInstance().getReference();
+        firebaseMethods =  FirebaseMethods.getInstance(getApplicationContext());
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase() ;
+        mStorageRef = FirebaseMethods.getFirebaseStorage().getReference();
         String databasePath = "posts/" + mAuth.getUid() + "/";
         String databasePathPic = "users/" + mAuth.getUid();
-        postRef = FirebaseDatabase.getInstance().getReference("posts").child(current_user.getUid());
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
+        postRef = mFirebaseDatabase.getReference("posts").child(current_user.getUid());
+        mDatabaseRef = mFirebaseDatabase.getReference(databasePath);
 
-        mDatabaseReferenceUserInfo = FirebaseDatabase.getInstance().getReference(databasePathPic);
+        mDatabaseReferenceUserInfo = mFirebaseDatabase.getReference(databasePathPic);
 
         // getting the username and profile picture link for current user
         mDatabaseReferenceUserInfo.addValueEventListener(new ValueEventListener() {

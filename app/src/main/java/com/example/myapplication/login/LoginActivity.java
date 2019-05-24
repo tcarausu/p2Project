@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements
     private static final String Google_Tag = "GoogleActivity";
     private static final String FacebookTag = "FacebookLogin";
     private static final int RC_SIGN_IN = 9001;
-
+//firebase
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser ;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -71,13 +71,11 @@ public class LoginActivity extends AppCompatActivity implements
     private FirebaseMethods mFirebaseMethods ;
     private DatabaseReference user_ref;
     private DatabaseReference myRef;
-
-
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
-    private LoginButton loginButton ;
-    
 
+    // widgets
+    private LoginButton loginButton ;
     private TextView signUp, orView;
     private RelativeLayout loginLayout;
     private EditText mEmailField, mPasswordField;
@@ -87,19 +85,17 @@ public class LoginActivity extends AppCompatActivity implements
 
     // this is set to create an email_signed_in_user with default avatar. We store the picture on database an download it later.
     private String avatarURL = "https://firebasestorage.googleapis.com/v0/b/p2project-2a81d.appspot.com/o/avatar_chefood%2FGroup%205.png?alt=media&token=87e74817-a27d-4a04-afa3-e7cfa1adca68";
-
     private Context mContext;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mFirebaseMethods =  FirebaseMethods.getInstance(this);
         fragmentManager = getSupportFragmentManager();
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseMethods.getAuth();
         currentUser = mAuth.getCurrentUser();
-        mFirebaseMethods = new FirebaseMethods(this);
-        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         user_ref = firebaseDatabase.getReference("users");
         myRef = firebaseDatabase.getReference();
 
