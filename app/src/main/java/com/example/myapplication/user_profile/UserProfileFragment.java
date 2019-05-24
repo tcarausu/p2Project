@@ -91,6 +91,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         myRef = mFirebaseDatabase.getReference();
         postsRef = mFirebaseDatabase.getReference(getString(R.string.dbname_posts));
         userPostCount = mFirebaseDatabase.getReference(getString(R.string.dbname_posts)).child(current_user.getUid());
+
         initLayout(view);
         setListeners(view);
         setupFirebaseAuth();
@@ -212,7 +213,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         } catch (Exception e) {
             Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
-//            mProfilePhoto.setImageResource(R.drawable.my_avatar);
         }
 
     }
@@ -233,7 +233,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
 
-                ((UserProfileActivity) getActivity()).gotos(getActivity(), AccountSettingsActivity.class);
+                ((UserProfileActivity) getActivity()).goTos(getActivity(), AccountSettingsActivity.class);
 
                 break;
         }
@@ -241,15 +241,17 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
 
+    /**
+     * Represent the Number of Posts, the current user has.
+     */
     private void setPostCount() {
-
-        // here i browse throught the user to get post child count.
+        // here i browse through the user to get post child count.
         userPostCount.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot postCountDataSnapshot) {
                 if (postCountDataSnapshot.exists()) {
                     Log.d(TAG, "simo: dataSnapshotCount: " + postCountDataSnapshot.getChildrenCount());
-                    // here i browse throught the user to get post ref count.
+                    // here i browse through the user to get post ref count.
                     if (postCountDataSnapshot.exists()) {
                         mPosts.setText(String.valueOf(postCountDataSnapshot.getChildrenCount()));
 
@@ -258,7 +260,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 }
 
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -269,6 +270,13 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
 
+    /**
+     * In this method we setup the Grid View base on an Object Map of the Post entity for our database
+     *
+     * It creates a list of likes, which is later on used in the View Post Fragment
+     *
+     * Based on the number of posts it will display the post, but it will be limited to 3 per Row.
+     */
     private void setupGridView() {
         Log.d(TAG, "setupGridView: Setting up GridView");
 

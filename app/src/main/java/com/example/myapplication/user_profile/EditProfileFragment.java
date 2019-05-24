@@ -56,7 +56,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private static final String TAG = "EditProfileFragment";
     private static final int REQUEST_CAMERA = 11;
     private static final int REQUEST_GALLERY = 22;
-    private static final int ACTION_WIFI_SETTINGS = 55;
 
 
     //firebase
@@ -104,8 +103,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private int batteryLevel;
 
 
-
-
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         checkPermissions();
@@ -146,7 +143,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mChangeProfilePhoto.setOnClickListener(this);
 
     }
-
 
 
     private String getProf_pic_URL() {
@@ -198,7 +194,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 updateUserInfo(getProf_pic_URL());
 
             } else if (options[which].equals("WIFI")) {
-               Intent wifiIntent =  new Intent(Settings.ACTION_WIFI_SETTINGS);
+                Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                 startActivity(wifiIntent);
 
 
@@ -230,7 +226,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 smallProfilePic.setImageResource(R.drawable.my_avatar);
             } else
                 Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
-                Glide.with(this).load(profilePicURL).centerCrop().into(smallProfilePic);
+            Glide.with(this).load(profilePicURL).centerCrop().into(smallProfilePic);
 
         } catch (IllegalArgumentException e) {
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
@@ -263,42 +259,14 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                             + "about: " + about + "\n" + "phone: " + phone_number + "\n" + "URL: " + imageUrl);
                 } else {
                     firebaseMethods.updateUsername(username, display_name, website, about, phone_number, "");
-//                    mProfilePhoto.setImageResource(R.drawable.my_avatar);
-//                    smallProfilePic.setImageResource(R.drawable.my_avatar);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-//                mProfilePhoto.setImageURI(avatarUri);
             }
         });
 
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-
-            case R.id.backArrow:
-                Log.d(TAG, "onClick:  go to profile activity");
-                Objects.requireNonNull(getActivity()).finish();
-                break;
-            case R.id.save_changes:
-                Log.d(TAG, "onClick:  attempting to save changes");
-                checkWifiState();
-
-                break;
-            case R.id.profile_photo:
-                dialogChoice();
-                break;
-            case R.id.about:
-                mAbout.clearComposingText();
-                break;
-            case R.id.change_profile_photo:
-                dialogChoice();
-                break;
-        }
     }
 
     @Override
@@ -333,57 +301,24 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     }
 
-    private void setupFirebaseAuth() {
-        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
-        mAuthListener = firebaseAuth -> {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-
-            if (user != null) {
-                Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
-            } else Log.d(TAG, "onAuthStateChanged: signed out");
-        };
-
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                // retrive user information from the database
-                if (isAdded())
-                    setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                if (mAuth != null)
-                    try {
-                        Toast.makeText(getContext(), "Proccess canceled, " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        Log.d(TAG, "onCancelled: exception: " + e.getMessage());
-                    }
-            }
-        });
-    }
-
     /**
      * method  created by Mo.Msaad
+     *
      * @param uri: this is the received uri from the onActivity result, via setters and getters to avoid getting null if the user
-     *           presses the upload button without chosing a photo
+     *             presses the upload button without chosing a photo
      **/
     private void uploadProfilePic(Uri uri) {
 
-         if (getUri() == null){
-            Toast.makeText(getActivity(), "No image is selected " , Toast.LENGTH_SHORT).show();// this to handle in case uri or bitmap is null
+        if (getUri() == null) {
+            Toast.makeText(getActivity(), "No image is selected ", Toast.LENGTH_SHORT).show();// this to handle in case uri or bitmap is null
             Glide.with(this).load(user.getProfile_photo()).centerInside().into(mProfilePhoto);
 
-        }
-         else if (getUri() != null) {
-
+        } else if (getUri() != null) {
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-             progressDialog.setMessage("uploading, please wait...");
-             progressDialog.setIcon(R.drawable.chefood);
-             progressDialog.setCanceledOnTouchOutside(false);
-             progressDialog.show();
+            progressDialog.setMessage("uploading, please wait...");
+            progressDialog.setIcon(R.drawable.chefood);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
 
             profilePicStorage = storage.getReference().child("profile_pic/" + currentUser.getUid()).child("profile picture");
             profilePicStorage.putFile(uri).addOnCompleteListener(task -> {
@@ -395,11 +330,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                         pushImageUrl(task1.getResult().toString());// we push the url of the stored image to database so we can download it later
                         Glide.with(this).load(getProf_pic_URL()).centerCrop().into(mProfilePhoto);
                         goBack();
-//                        Picasso.get().load(getProf_pic_URL()).resize(mProfilePhoto.getWidth(), mProfilePhoto.getHeight()).centerCrop().into(mProfilePhoto);
                     }).addOnFailureListener(e ->
-                    Toast.makeText(EditProfileFragment.this.getActivity(), "Failed, " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                }
-                else
+                            Toast.makeText(EditProfileFragment.this.getActivity(), "Failed, " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                } else
                     Toast.makeText(EditProfileFragment.this.getActivity(), "Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
 
@@ -411,7 +344,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
             }).addOnCanceledListener(() -> {
 
-
             }).addOnProgressListener(taskSnapshot -> {
                 double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
                 progressDialog.setMessage("uploaded " + (int) progress + "%");
@@ -419,12 +351,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             });
         }
 
-    }
-
-    private void goBack() {
-        startActivity(new Intent(getActivity(),UserProfileActivity.class)
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        getActivity().finish();
     }
 
     /**
@@ -438,12 +364,10 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (isAdded())
                     Toast.makeText(getActivity(), "Image Uploaded successfully. ", Toast.LENGTH_SHORT).show();
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                return;
             }
         });
     }
@@ -536,6 +460,69 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             Toast.makeText(getActivity(), "Error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void goBack() {
+        startActivity(new Intent(getActivity(), UserProfileActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        getActivity().finish();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+
+            case R.id.backArrow:
+                Log.d(TAG, "onClick:  go to profile activity");
+                Objects.requireNonNull(getActivity()).finish();
+                break;
+            case R.id.save_changes:
+                Log.d(TAG, "onClick:  attempting to save changes");
+                checkWifiState();
+
+                break;
+            case R.id.profile_photo:
+                dialogChoice();
+                break;
+            case R.id.about:
+                mAbout.clearComposingText();
+                break;
+            case R.id.change_profile_photo:
+                dialogChoice();
+                break;
+        }
+    }
+
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
+            } else Log.d(TAG, "onAuthStateChanged: signed out");
+        };
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // retrive user information from the database
+                if (isAdded())
+                    setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                if (mAuth != null)
+                    try {
+                        Toast.makeText(getContext(), "Proccess canceled, " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Log.d(TAG, "onCancelled: exception: " + e.getMessage());
+                    }
+            }
+        });
     }
 }
 

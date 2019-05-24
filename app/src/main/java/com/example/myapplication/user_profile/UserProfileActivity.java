@@ -42,10 +42,16 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
     }
 
+    /**
+     * Here we setup the View Post News Fragment, which later utilizes it to display the data,
+     * providing with options such as deleting the post or reporting.
+     *
+     * @param post We have to Post which the User Profile Fragment and later, View Post does utilize.
+     * @param activityNr the Activity Number which is displaying the post.
+     */
     @Override
     public void onGridImageSelected(Post post, int activityNr) {
         Log.d(TAG, "onGridImageSelected: selected an image gridView:" + post.toString());
-
 
         ViewPostFragmentNewsFeed fragment = new ViewPostFragmentNewsFeed();
         Bundle args = new Bundle();
@@ -60,7 +66,7 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     }
 
 
-    public void gotos(Context context, Class<? extends AppCompatActivity> cl){
+    public void goTos(Context context, Class<? extends AppCompatActivity> cl){
         startActivity(new Intent(context,cl)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
 
