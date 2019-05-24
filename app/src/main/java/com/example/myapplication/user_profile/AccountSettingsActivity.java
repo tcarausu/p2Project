@@ -48,8 +48,8 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
-        mAuth = FirebaseAuth.getInstance();
-        mFirebaseMethods = new FirebaseMethods(getApplicationContext());
+        mFirebaseMethods =  FirebaseMethods.getInstance(getApplicationContext());
+        mAuth = FirebaseMethods.getAuth();
 
         initLayout();
         setupBottomNavigationView();

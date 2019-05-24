@@ -1,7 +1,6 @@
 package com.example.myapplication.utility_classes;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.myapplication.R;
@@ -12,11 +11,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,13 +23,14 @@ import java.util.TimeZone;
 /**
  * File created by tcarau18
  **/
-public class FirebaseMethods {
+public class FirebaseMethods  {
 
     private static final String TAG = "FirebaseMethods";
 
-    private FirebaseAuth mAuth;
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference myRef;
+    private static   FirebaseAuth mAuth;
+    private static FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance() ;
+    private static FirebaseStorage sFirebaseStorage = FirebaseStorage.getInstance() ;
+    private static DatabaseReference myRef = mFirebaseDatabase.getReference();
     private GoogleSignInClient mGoogleSignInClient;
 
 
@@ -41,34 +39,23 @@ public class FirebaseMethods {
             .requestEmail()
             .build();
 
-    private String userUID;
-    private Context mContext;
-    private LoginManager mLoginManager ;
+    public static FirebaseStorage getFirebaseStorage() {
+        return sFirebaseStorage;
+    }
 
-    public FirebaseAuth getAuth() {
+    public static FirebaseDatabase getmFirebaseDatabase() {
+        return mFirebaseDatabase;
+    }
+
+    private String userUID ;
+    private Context mContext ;
+    private LoginManager mLoginManager = LoginManager.getInstance() ;
+
+    public static FirebaseAuth getAuth() {
         return mAuth;
     }
 
-//    public FirebaseDatabase getFirebaseDatabase() {
-//        return mFirebaseDatabase;
-//    }
-//
-//    // overloaded constructors for multiple use and cases
-//    public FirebaseMethods(FirebaseAuth auth, Context context) {
-//        mAuth = auth;
-//        mContext = context;
-//    }
-//
-//    public FirebaseMethods(FirebaseAuth auth, FirebaseDatabase firebaseDatabase, GoogleSignInClient googleSignInClient, GoogleSignInOptions gso, Context context, LoginManager loginManager) {
-//        mAuth = auth;
-//        mFirebaseDatabase = firebaseDatabase;
-//        mGoogleSignInClient = googleSignInClient;
-//        this.gso = gso;
-//        mContext = context;
-//        mLoginManager = loginManager;
-//    }
-
-    public  FirebaseMethods(Context context) {
+    private   FirebaseMethods(Context context) {
         // Mo.Msaad modification modification
         synchronized (FirebaseMethods.class) {
             mAuth = FirebaseAuth.getInstance();
@@ -76,16 +63,18 @@ public class FirebaseMethods {
             myRef = mFirebaseDatabase.getReference();
             mContext = context;
             mLoginManager = LoginManager.getInstance();
-            mGoogleSignInClient = GoogleSignIn.getClient(mContext, gso);
+            mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
 
-            if (mAuth.getCurrentUser() != null) {
-                userUID = mAuth.getCurrentUser().getUid();
-            }
         }
     }
 
+    public static FirebaseMethods getInstance(Context context){
 
-    public synchronized void updateUsername(String username, String dispalyName, String website, String about, long phone, String profile_url) {
+        return new FirebaseMethods(context);
+    }
+
+
+    public  void updateUsername(String username, String dispalyName, String website, String about, long phone, String profile_url) {
         Log.d(TAG, "updateUsername: updating username to:" + username);
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userUID)
@@ -118,47 +107,10 @@ public class FirebaseMethods {
                 .setValue(profile_url);
     }
 
-    /**
-     * Check if @param username already exists
-     *
-     * @param userName of the User from Firebase database
-     */
-    public void checkIfUsernameExists(final String userName, final String displayName,
-                                      final String website, final String about, final long phone, final String profile_url) {
-        Log.d(TAG, "checkIfUsernameExists: checking if " + userName + " already exists");
-
-        DatabaseReference reference = mFirebaseDatabase.getReference("users");
-
-        Query query = reference
-                .orderByChild(reference.child(userUID).child(mContext.getString(R.string.field_username)).getKey())
-                .equalTo(userName);
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    //add username
-                    updateUsername(userName, displayName, website, about, phone, profile_url);
-                    Log.d(TAG, "onDataChange: saved username and displayname: " + userName + " " + displayName);
-
-                } else {
-                    Log.d(TAG, "onDataChange: Found a Match: " + dataSnapshot.getValue(User.class).getUsername());
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 
     /**
      * Retrieves the account settings for the User currently logged in
      * Database:user_account_settings node
-     *
      * @param dataSnapshot represent the data from database
      * @return the User Account Settings
      */
@@ -252,23 +204,25 @@ public class FirebaseMethods {
         return sdf.format(new Date());
     }
 
-    public  void logOut(){
-        mAuth.signOut();
-        LoginManager.getInstance().logOut();
-        mGoogleSignInClient.signOut();
-    }
 
 
     public  boolean checkUserStateIfNull() {
-
         Log.d(TAG, "checkUserStateIfNull: is called");
         if (mAuth == null || mAuth.getCurrentUser() == null) {
-
             return true;
         }
         else return false;
-
     }
+
+    public  void logOut(){
+        if (checkUserStateIfNull()){
+        mAuth.signOut();
+        LoginManager.getInstance().logOut();
+        mGoogleSignInClient.signOut();
+        }
+    }
+
+
 
 
 }

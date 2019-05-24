@@ -110,10 +110,10 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        firebaseMethods = new FirebaseMethods(getActivity());
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseMethods =  FirebaseMethods.getInstance(getActivity());
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myRef = mFirebaseDatabase.getReference();
-        storage = FirebaseStorage.getInstance();
+        storage = FirebaseMethods.getFirebaseStorage();
         profilePicStorage = storage.getReference();
 
         initLayouts(view);

@@ -42,10 +42,10 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseMethods mFirebaseMethods;
+    private FirebaseMethods mFirebaseMethods ;
     private DatabaseReference mDatabasePostRef;
     private FirebaseDatabase firebasedatabase;
-    private Query postQuery;
+    private Query postQuery ;
 
 
     /**
@@ -56,9 +56,9 @@ public class HomeActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
-        mContext = getApplicationContext();
-        mFirebaseMethods = new FirebaseMethods(mContext);
-        mAuth = FirebaseAuth.getInstance();
+
+        mFirebaseMethods =  FirebaseMethods.getInstance(getApplicationContext());
+        mAuth = FirebaseMethods.getAuth() ;
         current_user = mAuth.getCurrentUser();
         firebasedatabase = FirebaseDatabase.getInstance();
         mDatabasePostRef = firebasedatabase.getReference(getString(R.string.dbname_posts)).getRef();
@@ -159,7 +159,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initImageLoader() {
-        UniversalImageLoader imageLoader = new UniversalImageLoader(mContext);
+        UniversalImageLoader imageLoader = new UniversalImageLoader(getApplicationContext());
         ImageLoader.getInstance().init(imageLoader.getConfig());
     }
 
@@ -169,7 +169,7 @@ public class HomeActivity extends AppCompatActivity {
     public void setupBottomNavigationView() {
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);

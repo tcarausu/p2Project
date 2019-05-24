@@ -28,7 +28,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class NextActivity extends AppCompatActivity implements View.OnClickListener {
@@ -41,6 +40,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mImageViewFood;
     private TextView mUploadTextView;
     private ImageView mBackImageView;
+    private FirebaseDatabase mFirebaseDatabase ;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef, postRef, userRef;
     private DatabaseReference mDatabaseReferenceUserInfo;
@@ -70,7 +70,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         userRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_users)).child(current_user.getUid());
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
 
-        mDatabaseReferenceUserInfo = FirebaseDatabase.getInstance().getReference(databasePathPic);
+        mDatabaseReferenceUserInfo = mFirebaseDatabase.getReference(databasePathPic);
 
         // getting the username and profile picture link for current user
         mDatabaseReferenceUserInfo.addValueEventListener(new ValueEventListener() {

@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
-        mFirebaseMethods = new FirebaseMethods(getContext());
+        mFirebaseMethods =  FirebaseMethods.getInstance(getContext());
         mUserId = current_user.getUid();
         firebasedatabase = FirebaseDatabase.getInstance();
         mDatabasePostRef = firebasedatabase.getReference(getString(R.string.dbname_posts));
@@ -135,6 +135,34 @@ public class HomeFragment extends Fragment {
                                 }
                                 post.setLikes(likeList);
 
+                                mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (mUserId.equals(postUserId)) {
+                                            final User user = dataSnapshot.getValue(User.class);
+                                            if (user.getUsername()== null){
+                                                mPosts.remove(post);
+                                                mDatabasePostRef.removeValue() ;
+                                            }
+
+                                            else
+                                                mUsername = user.getUsername();
+                                            mProfilePhoto = user.getProfile_photo();
+
+                                            mAdapter.setUserForPost(post, user);
+                                            mAdapter.notifyDataSetChanged();
+
+                                            Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+
                                 mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -164,14 +192,11 @@ public class HomeFragment extends Fragment {
 
                                     }
                                 });
-
                                 mPosts.add(post);
                                 mAdapter.setPostsList(mPosts);
                                 mAdapter.notifyDataSetChanged();
-
                             }
                         }
-                        mAdapter.notifyDataSetChanged();
                     }
 
                     @Override

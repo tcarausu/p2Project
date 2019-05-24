@@ -25,11 +25,21 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
+import com.example.myapplication.models.User;
+import com.example.myapplication.user_profile.UserProfileActivity;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.Permissions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 import java.util.Objects;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -42,6 +52,10 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     private static final int GALLERY_REQUEST = 22;
     private static final int PERMISSION = 123;
 
+    private FirebaseDatabase mFirebaseDatabase;
+    private FirebaseAuth mAuth;
+    private DatabaseReference myRef;
+
     private ImageView galleryImageView;
     private Button mSelectPicButton;
     private Uri mUri;
@@ -49,6 +63,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     private TextView nextText;
     private ImageView closePost;
     private Bundle savedState;
+    private CircleImageView circular_pic;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -69,6 +84,10 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
          * **/
         getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         intent = new Intent(getActivity(), NextActivity.class);
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
+        mAuth = FirebaseMethods.getAuth();
+        myRef = mFirebaseDatabase.getReference("users").child(mAuth.getCurrentUser().getUid());
+        setUserProfilePic();
         setLayout(view);
         return view;
     }
@@ -92,6 +111,25 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         super.onSaveInstanceState(outState);
         outState.putString("img", String.valueOf(mUri));
         getFragmentManager().getFragment(outState, "SelectPictureFragment");
+    }
+
+    private void setUserProfilePic() {
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    final User user = dataSnapshot.getValue(User.class);
+                    if (user.getProfile_photo() != null) {
+                      Glide.with(getActivity()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
+                    } else
+                        Glide.with(getActivity()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
+
+                }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -125,7 +163,10 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         mSelectPicButton = view.findViewById(R.id.choose_pic_button);
         closePost = view.findViewById(R.id.close_share);
         nextText = view.findViewById(R.id.textview_next);
+        circular_pic = view.findViewById(R.id.circular);
+
         closePost.setOnClickListener(this);
+        circular_pic.setOnClickListener(this);
         nextText.setOnClickListener(this);
         mSelectPicButton.setOnClickListener(this);
         galleryImageView.setOnClickListener(this);
@@ -273,8 +314,55 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.imageView_gallery:
+                dialogChoice();
+                break;
+            case R.id.circular:
+                startActivity(new Intent(getActivity(), UserProfileActivity.class));
+                getActivity().finish();
+                break;
+
                 checkPermissions();
                 break;
         }
     }
+
+    /**
+     * This method calls dialogChoice(); if permissions accepted
+     * if not accepted, it will request for permissions
+     */
+    @AfterPermissionGranted(PERMISSION)
+    private void checkPermissions() {
+        if (EasyPermissions.hasPermissions(getContext(), Permissions.PERMISSIONS)) {
+            dialogChoice();
+        } else {
+            EasyPermissions.requestPermissions(this,
+                    getString(R.string.permission_needed),
+                    PERMISSION, Permissions.PERMISSIONS);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to avoid leakage of intent receiver
+
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+
 }
