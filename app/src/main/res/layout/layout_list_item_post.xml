@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@drawable/input_fields_frame_grey"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/parentLayoutID"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/input_fields_frame_grey"
     android:padding="5dp">
 
     <LinearLayout
@@ -13,49 +12,49 @@
         android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:background="@drawable/input_fields_frame_orange"
             android:id="@+id/userProfilePicID"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:background="@drawable/input_fields_frame_orange"
             android:src="@drawable/my_avatar" />
 
         <TextView
 
             android:id="@+id/userNameID"
-            android:background="@drawable/input_fields_frame_orange"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:background="@drawable/input_fields_frame_orange"
             android:padding="5dp"
             android:text="Here is the user name"
-            android:textStyle="italic|bold"
             android:textColor="@color/darkOrange"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:textStyle="italic|bold" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_marginTop="2dp"
-        android:orientation="horizontal"
         android:id="@+id/layout_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/userProfilePicAndNameID">
+        android:layout_below="@+id/userProfilePicAndNameID"
+        android:layout_marginTop="2dp"
+        android:orientation="horizontal">
 
-    <RelativeLayout
-        android:layout_weight=".85"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/postDescriptionID"
-            android:background="@drawable/input_fields_frame_grey"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="Description..."
-            android:textStyle="bold|italic"
-            android:textColor="@color/black" />
-    </RelativeLayout>
+            android:layout_weight=".85">
+
+            <TextView
+                android:id="@+id/postDescriptionID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/input_fields_frame_grey"
+                android:padding="5dp"
+                android:text="Description..."
+                android:textColor="@color/black"
+                android:textStyle="bold|italic" />
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -75,31 +74,31 @@
 
 
     <com.example.myapplication.utility_classes.SquareImageView
-        android:background="@drawable/input_fields_frame_grey"
         android:id="@+id/foodImgID"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_below="@+id/layout_description"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
+        android:background="@drawable/input_fields_frame_grey"
         android:src="@drawable/bridge" />
 
     <LinearLayout
-        android:layout_marginTop="1dp"
-        android:background="@drawable/input_fields_frame_grey"
         android:id="@+id/food_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/foodImgID"
+        android:layout_marginTop="1dp"
         android:layout_marginBottom="10dp"
+        android:background="@drawable/input_fields_frame_grey"
         android:orientation="horizontal">
 
         <RelativeLayout
-            android:background="@drawable/input_fields_frame_grey"
             android:id="@+id/like_relative"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/input_fields_frame_grey">
 
             <ImageButton
                 android:id="@+id/likes_button"
@@ -117,19 +116,19 @@
                 android:layout_below="@id/likes_button"
                 android:layout_centerInParent="true"
                 android:text="Like"
-                android:textStyle="bold"
                 android:textColor="@color/orange"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
         </RelativeLayout>
 
         <RelativeLayout
-            android:background="@drawable/input_fields_frame_grey"
-
             android:id="@+id/comment_relative"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/input_fields_frame_grey">
 
             <ImageButton
                 android:id="@+id/commentsBtnID"
@@ -147,19 +146,19 @@
                 android:layout_below="@id/commentsBtnID"
                 android:layout_centerInParent="true"
                 android:text="Comment"
-                android:textStyle="bold"
                 android:textColor="@color/orange"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
         </RelativeLayout>
 
         <RelativeLayout
-            android:background="@drawable/input_fields_frame_grey"
-
             android:id="@+id/recipe_relative"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/input_fields_frame_grey">
 
             <ImageButton
                 android:id="@+id/recipeBtnID"
@@ -177,18 +176,18 @@
                 android:layout_below="@id/recipeBtnID"
                 android:layout_centerInParent="true"
                 android:text="Recipe"
-                android:textStyle="bold"
                 android:textColor="@color/orange"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
         </RelativeLayout>
 
         <RelativeLayout
-            android:background="@drawable/input_fields_frame_grey"
-
             android:id="@+id/ingredients_relative"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/input_fields_frame_grey">
 
             <ImageButton
                 android:id="@+id/ingredientsBtnID"
@@ -206,9 +205,9 @@
                 android:layout_below="@id/ingredientsBtnID"
                 android:layout_centerInParent="true"
                 android:text="Ingredients"
-                android:textStyle="bold"
                 android:textColor="@color/orange"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -216,7 +215,7 @@
         android:id="@+id/time_Stamp_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/food_linear">
+        android:layout_below="@+id/toolbarExpansionContainerID">
 
         <TextView
             android:id="@+id/post_TimeStamp"
@@ -225,26 +224,26 @@
             android:layout_centerInParent="true"
             android:layout_marginTop="15dp"
             android:text="3 days ago"
-            android:textStyle="bold|italic"
             android:textColor="@color/grey_500"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="bold|italic" />
     </RelativeLayout>
-
 
     <FrameLayout
         android:id="@+id/toolbarExpansionContainerID"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/time_Stamp_linear">
+        android:layout_below="@+id/food_linear">
+
         <TextView
 
             android:id="@+id/post_likes"
-            android:background="@drawable/input_fields_frame_grey"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/input_fields_frame_grey"
             android:textColor="@color/black"
-            android:textStyle="bold|italic"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="bold|italic" />
         <!--<TextView-->
         <!--android:id="@+id/toolbarExpansionTextID"-->
         <!--android:layout_width="match_parent"-->

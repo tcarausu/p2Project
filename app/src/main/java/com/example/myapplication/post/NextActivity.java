@@ -1,5 +1,6 @@
 package com.example.myapplication.post;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -37,7 +38,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private EditText mImageDesc;
     private EditText mImageIngredients;
     private EditText mImageRecipe;
-    private ImageView mImageViewfood;
+    private ImageView mImageViewFood;
     private TextView mUploadTextView;
     private ImageView mBackImageView;
     private StorageReference mStorageRef;
@@ -63,7 +64,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
         String databasePath = getString(R.string.dbname_posts) + "/" + mAuth.getUid() + "/";
-        String databasePathPic = "users/" + mAuth.getUid();
+        String databasePathPic = getString(R.string.dbname_users) + "/" + mAuth.getUid();
 
         postRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_posts)).child(current_user.getUid());
         userRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_users)).child(current_user.getUid());
@@ -96,12 +97,12 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         mImageDesc = findViewById(R.id.image_desc_edittext);
         mImageIngredients = findViewById(R.id.image_ingredients_edittext);
         mImageRecipe = findViewById(R.id.image_recipe_edittext);
-        mImageViewfood = findViewById(R.id.image_tobe_shared);
+        mImageViewFood = findViewById(R.id.image_tobe_shared);
         mUploadTextView = findViewById(R.id.textview_share);
         mBackImageView = findViewById(R.id.close_share);
 
         imageUri = getIntent().getStringExtra("imageUri");
-        Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewfood);
+        Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewFood);
         mUploadTextView.setOnClickListener(this);
         mBackImageView.setOnClickListener(this);
 
@@ -179,12 +180,35 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         ;
     }
 
+    /**
+     * Method which will show a AlertDialog if editTextFields are empty while uploading
+     * Will ask if user wants to upload the image despite empty fields
+     */
+    protected void dialogConfirm() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.confirm);
+        builder.setMessage(R.string.fill_or_not);
+        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+            uploadImage();
+            dialog.dismiss();
+        });
+        builder.setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss());
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
             case R.id.textview_share:
-                uploadImage();
+                if (mImageIngredients.getText().toString().equals("")
+                        || mImageDesc.getText().toString().equals("")
+                        || mImageRecipe.getText().toString().equals("")) {
+                    dialogConfirm();
+                } else {
+                    uploadImage();
+                }
 
                 break;
 

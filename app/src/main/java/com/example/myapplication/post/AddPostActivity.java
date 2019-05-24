@@ -11,12 +11,6 @@ import com.example.myapplication.utility_classes.SectionsPagerAdapter;
  * File created by tcarau18
  **/
 public class AddPostActivity extends AppCompatActivity {
-    private static final String TAG = "AddPostActivity";
-    private static final int ACTIVITY_NUM = 2;
-    private static final int PERMISSION_REQUEST = 1;
-//    private SelectPictureFragment selectPictureFragment ;
-
-    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +25,7 @@ public class AddPostActivity extends AppCompatActivity {
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new SelectPictureFragment());
 
-        mViewPager = findViewById(R.id.container);
+        ViewPager mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(adapter);
 
     }

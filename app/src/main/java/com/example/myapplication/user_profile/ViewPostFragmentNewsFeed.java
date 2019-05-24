@@ -127,6 +127,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         try {
 
             DatabaseReference currentPostRef = mPostsRef.child(current_user.getUid()).child(this.mPost.getPostId());
+            DatabaseReference currentUserRef = mUserRef.child(current_user.getUid());
 
             ProgressDialog progressDialog = new ProgressDialog(this.getContext());
             progressDialog.setTitle("Deleting");
@@ -139,6 +140,24 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             imageRef.delete().addOnSuccessListener(aVoid -> {
                 currentPostRef.removeValue();
+
+                currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            final User user = dataSnapshot.getValue(User.class);
+                            if (user.getNrOfPosts() != 0) {
+                                user.setNrPosts(user.getNrOfPosts() - 1);
+                                currentUserRef.setValue(user);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 progressDialog.dismiss();
                 ((UserProfileActivity) getActivity()).goTos(getContext(), UserProfileActivity.class);
                 Toast.makeText(getContext(), "Item deleted.", Toast.LENGTH_SHORT).show();
@@ -447,8 +466,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
      *
      * @param username which is the Username of an existing username in the databse,
      *                 being already checked by the getLikesString method
-     *
-     * Here we create a array of String which will be taking all the users,
+     *                 <p>
+     *                 Here we create a array of String which will be taking all the users,
      *                 Then based on the length it will display "Liked by" and number of them
      */
     private void setupUserLikedString(String username) {
@@ -496,7 +515,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     /**
      * This method add a new like directly the requests, current post.
-     *
      */
     public void addNewLike() {
         Log.d(TAG, "addNewLike: add new like");
