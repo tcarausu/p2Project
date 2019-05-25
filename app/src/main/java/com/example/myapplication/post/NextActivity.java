@@ -1,12 +1,16 @@
 package com.example.myapplication.post;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +32,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class NextActivity extends AppCompatActivity implements View.OnClickListener {
@@ -41,6 +44,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mImageViewFood;
     private TextView mUploadTextView;
     private ImageView mBackImageView;
+    private FirebaseDatabase mFirebaseDatabase;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef, postRef, userRef;
     private DatabaseReference mDatabaseReferenceUserInfo;
@@ -58,19 +62,20 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
         findWidgets();
-        mAuth = FirebaseAuth.getInstance();
+        firebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
+        mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
-        firebaseMethods = new FirebaseMethods(getApplicationContext());
-        mStorageRef = FirebaseStorage.getInstance().getReference();
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
+        mStorageRef = FirebaseMethods.getFirebaseStorage().getReference();
 
-        String databasePath = getString(R.string.dbname_posts) + "/" + mAuth.getUid() + "/";
-        String databasePathPic = getString(R.string.dbname_users) + "/" + mAuth.getUid();
+        String databasePath = "posts" + "/" + mAuth.getUid() + "/";
+        String databasePathPic = "users" + "/" + mAuth.getUid();
 
         postRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_posts)).child(current_user.getUid());
         userRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_users)).child(current_user.getUid());
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
+        mDatabaseRef = mFirebaseDatabase.getReference(databasePath);
 
-        mDatabaseReferenceUserInfo = FirebaseDatabase.getInstance().getReference(databasePathPic);
+        mDatabaseReferenceUserInfo = mFirebaseDatabase.getReference(databasePathPic);
 
         // getting the username and profile picture link for current user
         mDatabaseReferenceUserInfo.addValueEventListener(new ValueEventListener() {
@@ -197,6 +202,57 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         alert.show();
     }
 
+    /**
+     * created byMo.MSaad
+     **/
+    private void checkWifiState() {
+
+        boolean isWifiConnected;
+        boolean isMobileDataConnected;
+        ConnectivityManager connManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connManager.getActiveNetworkInfo();
+
+        if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+            isWifiConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            isMobileDataConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+
+            if (isWifiConnected) {
+                uploadImage();
+            } else if (isMobileDataConnected) {
+                openDialogChoice();
+            }
+        }
+    }
+
+    /**
+     * created byMo.MSaad
+     **/
+
+    private void openDialogChoice() {
+
+        final CharSequence[] options = {"Mobile data", "WIFI", "CANCEL"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select network to proceed");
+        builder.setIcon(R.drawable.chefood);
+        builder.setItems(options, (dialog, which) -> {
+
+            if (options[which].equals("Mobile data")) {
+                uploadImage();
+
+            } else if (options[which].equals("WIFI")) {
+                Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                startActivity(wifiIntent);
+
+            } else if (options[which].equals("CANCEL")) {
+                dialog.dismiss();
+            }
+
+        });
+        builder.show();
+
+    }
+
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -207,7 +263,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                         || mImageRecipe.getText().toString().equals("")) {
                     dialogConfirm();
                 } else {
-                    uploadImage();
+                    checkWifiState();
                 }
 
                 break;

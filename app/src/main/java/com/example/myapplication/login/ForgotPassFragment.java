@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 
 
@@ -25,14 +26,13 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
     private OnFragmentInteractionListener mListener;
 
     public ForgotPassFragment() {
-        // Required empty public constructor
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_forgot_pass, container, false);
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseMethods.getAuth() ;
         findWidgets(v);
         goBack.setOnClickListener(this);
         sendPassRequest.setOnClickListener(this);

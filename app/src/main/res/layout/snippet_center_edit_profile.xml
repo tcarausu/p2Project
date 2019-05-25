@@ -81,37 +81,13 @@
                     tools:ignore="Deprecated" />
             </RelativeLayout>
 
-            <!--display nameFromFB section-->
-            <RelativeLayout
-                android:id="@+id/relLayout2"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_below="@+id/relLayout1"
-                android:background="@drawable/grey_border_bottom">
-
-                <ImageView
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/simo_designed_check" />
-
-                <EditText
-                    android:id="@+id/displayName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="40dp"
-                    android:background="@null"
-                    android:hint="@string/display_name"
-                    android:inputType="textNoSuggestions" />
-            </RelativeLayout>
 
             <!--website section-->
             <RelativeLayout
                 android:id="@+id/relLayout3"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_below="@+id/relLayout2"
+                android:layout_below="@+id/relLayout1"
                 android:background="@drawable/grey_border_bottom">
 
                 <ImageView

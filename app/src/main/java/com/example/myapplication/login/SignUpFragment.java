@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -45,7 +46,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadingBar = new ProgressDialog(this.getContext());
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseMethods.getAuth();
 
     }
 

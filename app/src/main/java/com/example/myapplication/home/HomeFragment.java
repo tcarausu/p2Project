@@ -61,13 +61,15 @@ public class HomeFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
-        mFirebaseMethods = new FirebaseMethods(getContext());
+        mFirebaseMethods = FirebaseMethods.getInstance(getContext());
         mUserId = current_user.getUid();
         firebasedatabase = FirebaseDatabase.getInstance();
         mDatabasePostRef = firebasedatabase.getReference(getString(R.string.dbname_posts));
+
         mRecyclerView = view.findViewById(R.id.recyclerViewID);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         mPosts = new ArrayList<>();
         mUsers = new ArrayList<>();
         mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
@@ -81,7 +83,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        mFirebaseMethods.checkUserStateIfNull();
         GetData getData = new GetData();
         getData.execute();
 
@@ -90,13 +91,11 @@ public class HomeFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        mFirebaseMethods.checkUserStateIfNull();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull();
     }
 
     public class GetData extends AsyncTask<Void, Void, Void> {
@@ -112,11 +111,10 @@ public class HomeFragment extends Fragment {
                         mPosts.clear();
                         mUsers.clear();
 
-
                         for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                             String postUserId = userSnapshot.getKey();
-                            mDatabaseUserRef = firebasedatabase.getReference("users/" + mUserId);
-                            mDatabaseUserPostRef = firebasedatabase.getReference("users/" + postUserId);
+                            mDatabaseUserRef = firebasedatabase.getReference("users" + "/" + mUserId);
+                            mDatabaseUserPostRef = firebasedatabase.getReference("users" + "/" + postUserId);
 
                             Log.d(TAG, "onDataChange: mUserId :" + mUserId);
 
@@ -134,6 +132,36 @@ public class HomeFragment extends Fragment {
                                     likeList.add(like);
                                 }
                                 post.setLikes(likeList);
+
+                                mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (mUserId.equals(postUserId)) {
+                                            final User user = dataSnapshot.getValue(User.class);
+                                            try {
+                                                if (user.getUsername() == null) {
+                                                    mPosts.remove(post);
+                                                    mDatabasePostRef.removeValue();
+                                                } else
+                                                    mUsername = user.getUsername();
+                                                mProfilePhoto = user.getProfile_photo();
+
+                                                mAdapter.setUserForPost(post, user);
+                                                mAdapter.notifyDataSetChanged();
+
+                                            } catch (NullPointerException e) {
+                                                Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
+
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
 
                                 mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
                                     @Override
@@ -155,7 +183,6 @@ public class HomeFragment extends Fragment {
 
                                             }
 
-                                            Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
                                         }
                                     }
 
@@ -164,14 +191,11 @@ public class HomeFragment extends Fragment {
 
                                     }
                                 });
-
                                 mPosts.add(post);
                                 mAdapter.setPostsList(mPosts);
                                 mAdapter.notifyDataSetChanged();
-
                             }
                         }
-                        mAdapter.notifyDataSetChanged();
                     }
 
                     @Override

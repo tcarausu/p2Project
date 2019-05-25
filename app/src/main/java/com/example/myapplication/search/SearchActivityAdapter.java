@@ -80,7 +80,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
         }
 
         viewHolder.profile_photo.setOnClickListener(v ->
-                dialogChoice(currentUser.getUsername(), String.valueOf(currentUser.getNrOfPosts()), currentUser.getWebsite(),viewHolder.profile_photo.getDrawable())
+                dialogChoice(currentUser.getUsername(), String.valueOf(currentUser.getNrOfPosts()), currentUser.getWebsite(), viewHolder.profile_photo.getDrawable())
         );
 
         Animation animation = AnimationUtils.loadAnimation(context, (index > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
@@ -113,7 +113,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
         nrOfPosts = "Number of Posts: " + nrOfPosts;
         website = "Website: " + website;
 
-        final CharSequence[] options = {username, nrOfPosts, website, "Dismiss"};
+        final CharSequence[] options = {nrOfPosts, website, "Dismiss"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(username);
         builder.setIcon(drawable);
@@ -122,10 +122,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
         CharSequence finalWebsite = website;
         builder.setItems(options, (dialog, which) -> {
 
-            if (options[which].equals(username)) {
-                Log.d(TAG, "dialogChoice: username is: " + username);
-                dialog.dismiss();
-            } else if (options[which].equals(finalNrOfPosts)) {
+            if (options[which].equals(finalNrOfPosts)) {
                 dialog.dismiss();
             } else if (options[which].equals(finalWebsite)) {
                 dialog.dismiss();

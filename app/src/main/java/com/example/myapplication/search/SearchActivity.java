@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.facebook.login.LoginManager;
@@ -40,16 +41,14 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
 
         initLayout();
         buttonListeners();
         initImageLoader();
-
         setupFirebaseAuth();
         setupViewPager();
-
         setupBottomNavigationView();
     }
 

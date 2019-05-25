@@ -85,9 +85,11 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        mAuth = FirebaseAuth.getInstance();
+
+        firebaseMethods =  FirebaseMethods.getInstance(getContext());
+        mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myRef = mFirebaseDatabase.getReference();
         postsRef = mFirebaseDatabase.getReference(getString(R.string.dbname_posts));
         userPostCount = mFirebaseDatabase.getReference(getString(R.string.dbname_posts)).child(current_user.getUid());
@@ -104,8 +106,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private void initLayout(View view) {
 
-        firebaseMethods = new FirebaseMethods(getContext());
-        mDisplayName = view.findViewById(R.id.displayName);
         mUserName = view.findViewById(R.id.userName);
         mWebsite = view.findViewById(R.id.website);
         mAbout = view.findViewById(R.id.about);
@@ -196,7 +196,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: "
                 + user.toString());
 
-        mDisplayName.setText(user.getDisplay_name());
         mUserName.setText(user.getUsername());
         mWebsite.setText(user.getWebsite());
         mAbout.setText(user.getAbout());

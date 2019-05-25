@@ -9,17 +9,18 @@ import android.util.Log;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.Post;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 
 public class UserProfileActivity extends AppCompatActivity implements UserProfileFragment.OnGridImageSelectedListener {
 
     private static final String TAG = "UserProfileActivity";
+    private FirebaseMethods mFirebaseMethods ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        FirebaseAuth.getInstance();
+        mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
 
         init();
     }
