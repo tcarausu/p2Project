@@ -74,6 +74,7 @@ public class HomeActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
+
         mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
         checkDatabaseState();
 
@@ -113,6 +114,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         checkDatabaseState();
         mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
     }

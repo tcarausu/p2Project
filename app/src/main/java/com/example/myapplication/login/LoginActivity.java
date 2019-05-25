@@ -169,8 +169,8 @@ public class LoginActivity extends AppCompatActivity implements
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
         mFirebaseMethods.checkAuth(getApplicationContext(),mAuth);
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
 
 
 
@@ -179,8 +179,9 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        mFirebaseMethods.checkAuth(getApplicationContext(),mAuth);
         mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
-//        verifyDataBaseState();
+
     }
 
     @Override
@@ -189,13 +190,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     }
 
-    private void verifyDataBaseState() {
-        if (mAuth != null && currentUser != null ) {
-            goTosWithFlags(LoginActivity.this,HomeActivity.class);
-        }
-        else
-        mAuth.signOut();
-    }
+
 
     @Override
     public void onStop() {

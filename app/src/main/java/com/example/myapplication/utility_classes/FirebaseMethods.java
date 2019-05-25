@@ -2,6 +2,7 @@ package com.example.myapplication.utility_classes;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.myapplication.R;
@@ -221,6 +222,15 @@ public class FirebaseMethods {
         if (auth != null || mAuth.getCurrentUser() == null ){
             context.startActivity(new Intent(context, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
+    }
+
+    public void goToWhereverWithFlags(Context activityContext, Context c , Class <? extends AppCompatActivity> cl){
+        activityContext.startActivity(new Intent(c,cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+    }
+
+
+    public void goToWhereverWithOutFlags(Context activityContext, Context c , Class <? extends AppCompatActivity> cl){
+        activityContext.startActivity(new Intent(c,cl));
     }
 
 
