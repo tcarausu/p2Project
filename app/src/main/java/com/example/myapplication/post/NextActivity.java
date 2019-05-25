@@ -8,7 +8,9 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -43,7 +45,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mImageViewfood;
     private TextView mUploadTextView;
     private ImageView mBackImageView;
-    private FirebaseDatabase mFirebaseDatabase ;
+    private FirebaseDatabase mFirebaseDatabase;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef, postRef;
     private DatabaseReference mDatabaseReferenceUserInfo;
@@ -63,8 +65,8 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         findWidgets();
         mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
-        firebaseMethods =  FirebaseMethods.getInstance(getApplicationContext());
-        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase() ;
+        firebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         mStorageRef = FirebaseMethods.getFirebaseStorage().getReference();
         String databasePath = "posts/" + mAuth.getUid() + "/";
         String databasePathPic = "users/" + mAuth.getUid();
@@ -148,7 +150,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                             Post postInfo = new Post(description,
                                     URL, recipe, ingredients, mAuth.getUid(),
                                     uploadId, firebaseMethods.getTimestamp(), null);
-                            Log.d(TAG, "onComplete: upload uid: " +uploadId);
+                            Log.d(TAG, "onComplete: upload uid: " + uploadId);
 
                             mDatabaseRef.child(uploadId).setValue(postInfo);
 
@@ -175,7 +177,8 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
             progressDialog.setMessage("uploaded " + (int) progress + "%");
 
         }).addOnFailureListener(e ->
-                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());;
+                Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
+        ;
     }
 
     /**
@@ -193,13 +196,40 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
             isMobileDataConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
 
             if (isWifiConnected) {
-                uploadProfilePic(getUri());
-                updateUserInfo(getProf_pic_URL());
+                uploadImage();
             } else if (isMobileDataConnected) {
                 //TODO add shared prefs here to allow automatic
                 openDialogChoice();
             }
         }
+    }
+
+    /**
+     * created byMo.MSaad
+     **/
+
+    private void openDialogChoice() {
+
+        final CharSequence[] options = {"Mobile data", "WIFI", "CANCEL"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select network to proceed");
+        builder.setIcon(R.drawable.chefood);
+        builder.setItems(options, (dialog, which) -> {
+
+            if (options[which].equals("Mobile data")) {
+                uploadImage();
+
+            } else if (options[which].equals("WIFI")) {
+                Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                startActivity(wifiIntent);
+
+            } else if (options[which].equals("CANCEL")) {
+                dialog.dismiss();
+            }
+
+        });
+        builder.show();
+
     }
 
 
@@ -208,7 +238,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
 
             case R.id.textview_share:
-                uploadImage();
+                checkWifiState();
 
                 break;
 

@@ -125,7 +125,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     public void initLayouts(View view) {
 
-        mDisplayName = view.findViewById(R.id.displayName);
         smallProfilePic = view.findViewById(R.id.EditProfile_small_pic);
         mUserName = view.findViewById(R.id.username);
         mWebsite = view.findViewById(R.id.website);
@@ -213,7 +212,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: " + userSettings.toString());
         user = userSettings;
-        mDisplayName.setText(user.getDisplay_name());
         mUserName.setText(user.getUsername());
         mWebsite.setText(user.getWebsite());
         mAbout.setText(user.getAbout());

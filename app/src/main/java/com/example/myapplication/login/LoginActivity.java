@@ -262,7 +262,7 @@ public class LoginActivity extends AppCompatActivity implements
             isVerified = user.isEmailVerified(); // getting boolean true or false from database
 
             if (isVerified) {
-                verifyFirstEmailLogin(email,"Chose a user name", avatarURL);
+                verifyFirstEmailLogin(email,"random username", avatarURL);
 
                 addUserToDataBase();
                 goTosWithFlags(getApplicationContext(),HomeActivity.class); // if yes goto mainActivity
@@ -491,7 +491,6 @@ public class LoginActivity extends AppCompatActivity implements
         FirebaseUser currentUser = mAuth.getCurrentUser();
         User user = new User(
                 description,
-                "Chose a user name",
                 StringManipulation.condenseUserName(username),
                 email,
                 0,
@@ -550,14 +549,14 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    private void verifyFirstEmailLogin(String email, String displayName, String photoURL){
+    private void verifyFirstEmailLogin(String email, String username, String photoURL){
 
         SharedPreferences firstLogin = getSharedPreferences("logPrefs", MODE_PRIVATE);
         boolean googleFirstLogin = firstLogin.getBoolean("logPrefs", true);
 
         //if its the first run we change the boolean to false
         if (googleFirstLogin) {
-            addNewUser(email, displayName, "description", "website", photoURL);
+            addNewUser(email, username, "description", "website", photoURL);
             SharedPreferences.Editor editor = firstLogin.edit();
             editor.putBoolean("logPrefs", false);
             editor.apply();
