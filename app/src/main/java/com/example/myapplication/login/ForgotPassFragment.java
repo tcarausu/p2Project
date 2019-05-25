@@ -26,7 +26,6 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
     private OnFragmentInteractionListener mListener;
 
     public ForgotPassFragment() {
-        // Required empty public constructor
     }
 
 

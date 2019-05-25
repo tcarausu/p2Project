@@ -62,7 +62,6 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     private Intent intent;
     private TextView nextText;
     private ImageView closePost;
-    private Bundle savedState;
     private CircleImageView circular_pic;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -87,6 +86,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         mAuth = FirebaseMethods.getAuth();
         myRef = mFirebaseDatabase.getReference("users").child(mAuth.getCurrentUser().getUid());
+
         setUserProfilePic();
         setLayout(view);
         return view;
@@ -110,20 +110,19 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("img", String.valueOf(mUri));
-        getFragmentManager().getFragment(outState, "SelectPictureFragment");
     }
 
     private void setUserProfilePic() {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    final User user = dataSnapshot.getValue(User.class);
-                    if (user.getProfile_photo() != null) {
-                      Glide.with(getActivity()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
-                    } else
-                        Glide.with(getActivity()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
+                final User user = dataSnapshot.getValue(User.class);
+                if (user.getProfile_photo() != null) {
+                    Glide.with(requireContext()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
+                } else
+                    Glide.with(requireContext()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
 
-                }
+            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -156,6 +155,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to avoid leakage of intent receiver
 
     }
+
 
     private void setLayout(View view) {
 
@@ -257,31 +257,6 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
     }
 
-    /**
-     * This method calls dialogChoice(); if permissions accepted
-     * if not accepted, it will request for permissions
-     */
-    @AfterPermissionGranted(PERMISSION)
-    private void checkPermissions() {
-        if (EasyPermissions.hasPermissions(getContext(), Permissions.PERMISSIONS)) {
-            dialogChoice();
-        } else {
-            EasyPermissions.requestPermissions(this,
-                    getString(R.string.permission_needed),
-                    PERMISSION, Permissions.PERMISSIONS);
-        }
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -322,8 +297,6 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
                 getActivity().finish();
                 break;
 
-                checkPermissions();
-                break;
         }
     }
 
@@ -342,18 +315,6 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        getActivity().unregisterReceiver(broadcastReceiver);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to avoid leakage of intent receiver
-
-    }
 
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {

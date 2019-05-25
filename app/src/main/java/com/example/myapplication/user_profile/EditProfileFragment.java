@@ -110,7 +110,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        firebaseMethods =  FirebaseMethods.getInstance(getActivity());
+        firebaseMethods = FirebaseMethods.getInstance(getActivity());
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myRef = mFirebaseDatabase.getReference();
         storage = FirebaseMethods.getFirebaseStorage();
@@ -250,13 +250,14 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (dataSnapshot.exists()) {
-                    firebaseMethods.updateUsername(username, display_name, website, about, phone_number, imageUrl);
+                    firebaseMethods.updateUsername(mAuth.getCurrentUser().getUid(), username, website, about, phone_number, imageUrl);
                     Log.d(TAG, "onDataChange: datasnapshot exissts: " + dataSnapshot.exists());
                     Log.d(TAG, "onDataChange: user updated with:\n " + "name: " + username
                             + "\n" + "displayName: " + display_name + "\n" + "website: " + website + "\n"
                             + "about: " + about + "\n" + "phone: " + phone_number + "\n" + "URL: " + imageUrl);
                 } else {
-                    firebaseMethods.updateUsername(username, display_name, website, about, phone_number, "");
+                    firebaseMethods.updateUsername(mAuth.getCurrentUser().getUid(), username, website, about, phone_number, "");
+
                 }
             }
 
@@ -273,7 +274,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mAuth.addAuthStateListener(mAuthListener);
         if (mAuth == null || currentUser == null) {
             mAuth.removeAuthStateListener(mAuthListener);
-            firebaseMethods.logOut();
+            mAuth.signOut();
         }
     }
 

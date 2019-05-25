@@ -124,7 +124,7 @@ public class HistoryLogActivity extends AppCompatActivity {
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     HistoryLogPostItem post = postSnapshot.getValue(HistoryLogPostItem.class);
-                    mCurrentUserReference = firebaseDatabase.getReference("users/" + mCurrentUserId);
+                    mCurrentUserReference = firebaseDatabase.getReference(getString(R.string.dbname_users) + "/" + mCurrentUserId);
                     mCurrentUserReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -135,14 +135,15 @@ public class HistoryLogActivity extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Toast.makeText(getApplicationContext(),"Canceled",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Canceled", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getApplicationContext(),"Canceled",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Canceled", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -163,9 +164,9 @@ public class HistoryLogActivity extends AppCompatActivity {
         mAdapter = new HistoryLogRecyclerViewAdapter(mListOfPosts);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnRecyclerItemClickListener(HistoryLogActivity.this, position -> {
-                    highlightViewItem(position, true);
-                    alertDialogDelete(position);
-                });
+            highlightViewItem(position, true);
+            alertDialogDelete(position);
+        });
 
     }
 

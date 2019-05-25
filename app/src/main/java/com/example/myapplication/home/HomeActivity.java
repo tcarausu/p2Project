@@ -38,15 +38,12 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
     private static final int ACTIVITY_NUM = 0;
 
-    private Context mContext;
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseMethods mFirebaseMethods ;
     private DatabaseReference mDatabasePostRef;
     private FirebaseDatabase firebasedatabase;
-    private Query postQuery ;
-
 
     /**
      * @param savedInstanceState creates the app using the Bundle

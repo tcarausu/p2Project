@@ -62,17 +62,18 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
         findWidgets();
-        mAuth = FirebaseAuth.getInstance();
+        firebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
+        mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
-        firebaseMethods = new FirebaseMethods(getApplicationContext());
-        mStorageRef = FirebaseStorage.getInstance().getReference();
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
+        mStorageRef = FirebaseMethods.getFirebaseStorage().getReference();
 
-        String databasePath = getString(R.string.dbname_posts) + "/" + mAuth.getUid() + "/";
-        String databasePathPic = getString(R.string.dbname_users) + "/" + mAuth.getUid();
+        String databasePath = "posts" + "/" + mAuth.getUid() + "/";
+        String databasePathPic = "users" + "/" + mAuth.getUid();
 
         postRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_posts)).child(current_user.getUid());
         userRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_users)).child(current_user.getUid());
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference(databasePath);
+        mDatabaseRef = mFirebaseDatabase.getReference(databasePath);
 
         mDatabaseReferenceUserInfo = mFirebaseDatabase.getReference(databasePathPic);
 
@@ -208,8 +209,8 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
         boolean isWifiConnected;
         boolean isMobileDataConnected;
-        ConnectivityManager conMngr = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = conMngr.getActiveNetworkInfo();
+        ConnectivityManager connManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connManager.getActiveNetworkInfo();
 
         if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
             isWifiConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI;
@@ -218,7 +219,6 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
             if (isWifiConnected) {
                 uploadImage();
             } else if (isMobileDataConnected) {
-                //TODO add shared prefs here to allow automatic
                 openDialogChoice();
             }
         }
@@ -263,9 +263,8 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                         || mImageRecipe.getText().toString().equals("")) {
                     dialogConfirm();
                 } else {
-                    uploadImage();
+                    checkWifiState();
                 }
-                checkWifiState();
 
                 break;
 

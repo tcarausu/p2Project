@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -48,7 +47,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
-        mFirebaseMethods =  FirebaseMethods.getInstance(getApplicationContext());
+        mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
 
         initLayout();
@@ -80,8 +79,9 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     @Override
     public void onStart() {
         super.onStart();
-        if (mFirebaseMethods.checkUserStateIfNull()) {
-            mFirebaseMethods.logOut();
+        if (mAuth.getCurrentUser() == null) {
+            mAuth.signOut();
+
             goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
         }
 
@@ -90,8 +90,9 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     @Override
     protected void onResume() {
         super.onResume();
-        if (mFirebaseMethods.checkUserStateIfNull()) {
-            mFirebaseMethods.logOut();
+        if (mAuth.getCurrentUser() == null) {
+            mAuth.signOut();
+
             goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
         }
 
@@ -100,8 +101,9 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     @Override
     protected void onPause() {
         super.onPause();
-        if (mFirebaseMethods.checkUserStateIfNull()) {
-            mFirebaseMethods.logOut();
+        if (mAuth.getCurrentUser() == null) {
+            mAuth.signOut();
+
             goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
         }
     }
