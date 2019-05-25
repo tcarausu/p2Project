@@ -2,7 +2,10 @@ package com.example.myapplication.post;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -196,6 +199,31 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         AlertDialog alert = builder.create();
         alert.show();
     }
+
+    /**
+     * created byMo.MSaad
+     **/
+    private void checkWifiState() {
+
+        boolean isWifiConnected;
+        boolean isMobileDataConnected;
+        ConnectivityManager conMngr = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = conMngr.getActiveNetworkInfo();
+
+        if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+            isWifiConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            isMobileDataConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+
+            if (isWifiConnected) {
+                uploadProfilePic(getUri());
+                updateUserInfo(getProf_pic_URL());
+            } else if (isMobileDataConnected) {
+                //TODO add shared prefs here to allow automatic
+                openDialogChoice();
+            }
+        }
+    }
+
 
     @Override
     public void onClick(View v) {
