@@ -6,8 +6,6 @@ import android.util.AttributeSet;
 
 
 /**
- * This utility class is used for us to properly display an image, in mostly Grid View (User Profile)
- *
  * File created by tcarau18
  **/
 public class SquareImageView extends AppCompatImageView {

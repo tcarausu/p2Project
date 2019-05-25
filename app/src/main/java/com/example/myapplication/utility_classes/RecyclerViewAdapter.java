@@ -68,7 +68,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     .fitCenter()
                     .centerCrop()
                     .into(viewHolder.mProfilePic);
-            viewHolder.mUserName.setText(postUser.getUsername());
+            viewHolder.mUserName.setText(postUser.getDisplay_name());
 
         } else {
             Glide.with(mContext)
@@ -105,6 +105,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         viewHolder.mRecipe.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmRecipe()));
 
         viewHolder.mIngredients.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmIngredients()));
+        viewHolder.post_TimeStamp.setText(postCurrent.getDate_created());
 
     }
 
@@ -126,7 +127,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         FrameLayout mPostToolbarBtnsExpansionContainer;
         TextView mToolbarExpasionText, post_likes, post_TimeStamp;
 
-        ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             mParentLayout = itemView.findViewById(R.id.parentLayoutID);

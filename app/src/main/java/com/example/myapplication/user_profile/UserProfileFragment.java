@@ -65,7 +65,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference myRef, postsRef, userPostCount;
+    private DatabaseReference myRef , postsRef , userPostCount;
     private FirebaseMethods firebaseMethods;
     private FirebaseUser current_user;
 
@@ -91,9 +91,8 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         current_user = mAuth.getCurrentUser();
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myRef = mFirebaseDatabase.getReference();
-        postsRef = mFirebaseDatabase.getReference(getString(R.string.dbname_posts));
-        userPostCount = mFirebaseDatabase.getReference(getString(R.string.dbname_posts)).child(current_user.getUid());
-
+        postsRef = mFirebaseDatabase.getReference("users").child(current_user.getUid()).child("posts");
+        userPostCount = mFirebaseDatabase.getReference("posts").child(current_user.getUid());
         initLayout(view);
         setListeners(view);
         setupFirebaseAuth();
@@ -101,11 +100,13 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         setupBottomNavigationView();
         setPostCount();
 
+
         return view;
     }
 
     private void initLayout(View view) {
 
+        mDisplayName = view.findViewById(R.id.display_name);
         mUserName = view.findViewById(R.id.userName);
         mWebsite = view.findViewById(R.id.website);
         mAbout = view.findViewById(R.id.about);
@@ -196,22 +197,24 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: "
                 + user.toString());
 
-        mUserName.setText(user.getUsername());
+        mDisplayName.setText(user.getDisplay_name());
+        mUserName.setText(user.getDisplay_name());
         mWebsite.setText(user.getWebsite());
         mAbout.setText(user.getAbout());
         mFollowers.setText(String.valueOf(user.getFollowers()));
         mFollowing.setText(String.valueOf(user.getFollowing()));
 
         String profilePicURL = user.getProfile_photo();
-        Log.d(TAG, "setProfileWidgets, PhotoURL: " + profilePicURL);
+        Log.d(TAG, "setProfileWidgets, PhotoURL: "+profilePicURL);
 
         //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
         try {
-            Glide.with(getActivity()).load(profilePicURL).centerCrop().into(mProfilePhoto);
-            Log.d(TAG, "setProfileWidgets: mProfilePhoto.getDrawableState().length; " + mProfilePhoto.getDrawableState().length);
+                Glide.with(getActivity()).load(profilePicURL).centerCrop().into(mProfilePhoto);
+            Log.d(TAG, "setProfileWidgets: mProfilePhoto.getDrawableState().length; "+ mProfilePhoto.getDrawableState().length);
 
         } catch (Exception e) {
             Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
+            mProfilePhoto.setImageResource(R.drawable.my_avatar);
         }
 
     }
@@ -232,7 +235,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
 
-                ((UserProfileActivity) getActivity()).goTos(getActivity(), AccountSettingsActivity.class);
+                ((UserProfileActivity)getActivity()).gotos(getActivity(),AccountSettingsActivity.class);
 
                 break;
         }
@@ -240,17 +243,18 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
 
-    /**
-     * Represent the Number of Posts, the current user has.
-     */
-    private void setPostCount() {
-        // here i browse through the user to get post child count.
+
+
+
+    private void setPostCount(){
+
+        // here i browse throught the user to get post child count.
         userPostCount.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot postCountDataSnapshot) {
-                if (postCountDataSnapshot.exists()) {
+                if(postCountDataSnapshot.exists()) {
                     Log.d(TAG, "simo: dataSnapshotCount: " + postCountDataSnapshot.getChildrenCount());
-                    // here i browse through the user to get post ref count.
+                    // here i browse throught the user to get post ref count.
                     if (postCountDataSnapshot.exists()) {
                         mPosts.setText(String.valueOf(postCountDataSnapshot.getChildrenCount()));
 
@@ -259,11 +263,13 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 }
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
+
 
 
     }
@@ -281,7 +287,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         try {
             final ArrayList<Post> posts = new ArrayList<>();
-            Query query = postsRef
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+            Query query = reference
+                    .child(getString(R.string.dbname_posts))
                     .child(mAuth.getCurrentUser().getUid());
 
             query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -340,9 +349,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
                 }
             });
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), "Error: Nothing to display", Toast.LENGTH_SHORT).show();
-            ((HomeActivity) getActivity()).goTosWithFlags(getActivity(), AddPostActivity.class);
+        }catch (Exception e){
+            Toast.makeText(getActivity(),"Error: Nothing to display",Toast.LENGTH_SHORT).show();
+            ((HomeActivity)getActivity()).goTosWithFlags(getActivity(),AddPostActivity.class);
         }
     }
 

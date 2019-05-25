@@ -32,6 +32,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
+
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
@@ -43,10 +45,11 @@ public class HomeFragment extends Fragment {
     private FirebaseDatabase firebasedatabase;
     private DatabaseReference mDatabaseUserRef;
     private DatabaseReference mDatabaseUserPostRef;
-    private FirebaseMethods mFirebaseMethods;
+    private FirebaseMethods mFirebaseMethods ;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
-    private FirebaseUser current_user;
-    private FirebaseAuth mAuth;
+    private FirebaseUser current_user ;
+    private FirebaseAuth mAuth ;
     private List<Post> mPosts;
     private List<User> mUsers;
 
@@ -61,11 +64,10 @@ public class HomeFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
-        mFirebaseMethods = FirebaseMethods.getInstance(getContext());
+        mFirebaseMethods =  FirebaseMethods.getInstance(getContext());
         mUserId = current_user.getUid();
-        firebasedatabase = FirebaseDatabase.getInstance();
-        mDatabasePostRef = firebasedatabase.getReference(getString(R.string.dbname_posts));
-
+        firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
+        mDatabasePostRef = firebasedatabase.getReference("posts");
         mRecyclerView = view.findViewById(R.id.recyclerViewID);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -73,7 +75,9 @@ public class HomeFragment extends Fragment {
         mPosts = new ArrayList<>();
         mUsers = new ArrayList<>();
         mAdapter = new RecyclerViewAdapter(getContext(), mPosts);
+
         mRecyclerView.setAdapter(mAdapter);
+
         GetData getData = new GetData();
         getData.execute();
 
@@ -83,38 +87,38 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        GetData getData = new GetData();
-        getData.execute();
+
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
     }
 
-    public class GetData extends AsyncTask<Void, Void, Void> {
+    public class GetData extends AsyncTask<Void,Void,Void> {
 
-        private GetData() {
-        }
+        private GetData() {}
 
         private void getPostsInfo() {
-            try {
+            try{
                 mDatabasePostRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        mPosts.clear();
-                        mUsers.clear();
+                            mPosts.clear();
+                            mUsers.clear();
 
                         for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                             String postUserId = userSnapshot.getKey();
-                            mDatabaseUserRef = firebasedatabase.getReference("users" + "/" + mUserId);
-                            mDatabaseUserPostRef = firebasedatabase.getReference("users" + "/" + postUserId);
+                            mDatabaseUserRef = firebasedatabase.getReference("users/" + mUserId);
+                            mDatabaseUserPostRef = firebasedatabase.getReference("users/" + postUserId);
 
                             Log.d(TAG, "onDataChange: mUserId :" + mUserId);
 
@@ -124,9 +128,12 @@ public class HomeFragment extends Fragment {
                                 final Post post = postSnapshot.getValue(Post.class);
                                 Log.d(TAG, "onDataChange: uid for user from post : " + post.getUserId());
 
+                                Log.d(TAG, "onDataChange: username and profile pic : >>>> : " + mUsername + " " + mProfilePhoto);
+
                                 List<Like> likeList = new ArrayList<>();
 
                                 for (DataSnapshot ds : postSnapshot.child("mLikes").getChildren()) {
+                                    // TODO, likes if no like yet, it crushes,
                                     Like like = new Like();
                                     like.setUser_id(ds.getValue(Like.class).getUser_id());
                                     likeList.add(like);
@@ -138,21 +145,19 @@ public class HomeFragment extends Fragment {
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         if (mUserId.equals(postUserId)) {
                                             final User user = dataSnapshot.getValue(User.class);
-                                            try {
-                                                if (user.getUsername() == null) {
-                                                    mPosts.remove(post);
-                                                    mDatabasePostRef.removeValue();
-                                                } else
-                                                    mUsername = user.getUsername();
-                                                mProfilePhoto = user.getProfile_photo();
-
-                                                mAdapter.setUserForPost(post, user);
-                                                mAdapter.notifyDataSetChanged();
-
-                                            } catch (NullPointerException e) {
-                                                Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
-
+                                            if (user.getUsername()== null){
+                                                mPosts.remove(post);
+                                                mDatabasePostRef.removeValue() ;
                                             }
+
+                                            else
+                                                mUsername = user.getUsername();
+                                            mProfilePhoto = user.getProfile_photo();
+
+                                            mAdapter.setUserForPost(post, user);
+                                            mAdapter.notifyDataSetChanged();
+
+                                            Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
                                         }
                                     }
 
@@ -169,20 +174,22 @@ public class HomeFragment extends Fragment {
                                         if (!mUserId.equals(postUserId)) {
                                             final User user = dataSnapshot.getValue(User.class);
                                             try {
-                                                if (user.getUsername() == null) {
+                                                if (user.getUsername()== null){
                                                     mPosts.remove(post);
-                                                    mDatabasePostRef.removeValue();
-                                                } else
+                                                    mDatabasePostRef.removeValue() ;
+                                                }
+                                                else
                                                     mUsername = user.getUsername();
                                                 mProfilePhoto = user.getProfile_photo();
 
                                                 mAdapter.setUserForPost(post, user);
                                                 mAdapter.notifyDataSetChanged();
-                                            } catch (NullPointerException e) {
+                                            }catch (NullPointerException e){
                                                 Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
 
                                             }
 
+                                            Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
                                         }
                                     }
 
@@ -195,6 +202,7 @@ public class HomeFragment extends Fragment {
                                 mAdapter.setPostsList(mPosts);
                                 mAdapter.notifyDataSetChanged();
                             }
+                                mAdapter.notifyDataSetChanged();
                         }
                     }
 
@@ -205,8 +213,8 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-            } catch (Exception e) {
-                Toast.makeText(getContext(), "Nothing to display! create a Post", Toast.LENGTH_SHORT).show();
+            }catch (Exception e){
+                Toast.makeText(getContext(),"Nothing to display! create a Post",Toast.LENGTH_SHORT).show();
             }
         }
 
