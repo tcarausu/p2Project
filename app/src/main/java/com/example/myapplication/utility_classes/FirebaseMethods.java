@@ -1,9 +1,11 @@
 package com.example.myapplication.utility_classes;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.example.myapplication.R;
+import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.User;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -75,6 +77,7 @@ public class FirebaseMethods {
     }
 
 
+    //--------------------------------------------------------METHODS---------------------------------------------------------------------------------------------------
     public void updateUsername(String userUID,String username, String dispalyName, String website, String about, long phone, String profile_url) {
         Log.d(TAG, "updateUsername: updating username to:" + username);
         myRef.child(mContext.getString(R.string.dbname_users))
@@ -211,6 +214,12 @@ public class FirebaseMethods {
         Log.d(TAG, "checkUserStateIfNull: is called");
         if (auth == null || user == null) {
             auth.signOut();
+        }
+    }
+
+    public void checkAuth(Context context ,FirebaseAuth auth){
+        if (auth != null || mAuth.getCurrentUser() == null ){
+            context.startActivity(new Intent(context, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
     }
 

@@ -1,7 +1,6 @@
 package com.example.myapplication.user_profile;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +23,6 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
-import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SquareImageView;
@@ -127,6 +125,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         try {
 
             DatabaseReference currentPostRef = mPostsRef.child(mAuth.getCurrentUser().getUid()).child(this.mPost.getPostId());
+            DatabaseReference currentUserRef = mUserRef.child(mAuth.getCurrentUser().getUid());
+
 
             ProgressDialog progressDialog = new ProgressDialog(this.getContext());
             progressDialog.setTitle("Deleting");

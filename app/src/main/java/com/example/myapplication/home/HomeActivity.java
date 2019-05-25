@@ -96,7 +96,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    Toast.makeText(getApplicationContext(),"Canceled",Toast.LENGTH_SHORT).show();
                 }
             });
         } catch (Exception e) {

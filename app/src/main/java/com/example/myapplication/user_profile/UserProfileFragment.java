@@ -106,7 +106,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private void initLayout(View view) {
 
-        mDisplayName = view.findViewById(R.id.displayName);
+        mDisplayName = view.findViewById(R.id.display_name);
         mUserName = view.findViewById(R.id.userName);
         mWebsite = view.findViewById(R.id.website);
         mAbout = view.findViewById(R.id.about);
@@ -198,7 +198,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 + user.toString());
 
         mDisplayName.setText(user.getDisplay_name());
-        mUserName.setText(user.getUsername());
+        mUserName.setText(user.getDisplay_name());
         mWebsite.setText(user.getWebsite());
         mAbout.setText(user.getAbout());
         mFollowers.setText(String.valueOf(user.getFollowers()));
@@ -214,7 +214,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         } catch (Exception e) {
             Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
-//            mProfilePhoto.setImageResource(R.drawable.my_avatar);
+            mProfilePhoto.setImageResource(R.drawable.my_avatar);
         }
 
     }

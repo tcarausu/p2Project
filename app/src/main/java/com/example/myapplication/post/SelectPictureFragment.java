@@ -44,6 +44,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.app.Activity.RESULT_OK;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class SelectPictureFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks {
@@ -118,9 +119,9 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     final User user = dataSnapshot.getValue(User.class);
                     if (user.getProfile_photo() != null) {
-                      Glide.with(getActivity()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
+                      Glide.with(getApplicationContext()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
                     } else
-                        Glide.with(getActivity()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
+                        Glide.with(getApplicationContext()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
 
                 }
 

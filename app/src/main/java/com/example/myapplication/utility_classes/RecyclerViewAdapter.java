@@ -68,7 +68,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     .fitCenter()
                     .centerCrop()
                     .into(viewHolder.mProfilePic);
-            viewHolder.mUserName.setText(postUser.getUsername());
+            viewHolder.mUserName.setText(postUser.getDisplay_name());
 
         } else {
             Glide.with(mContext)

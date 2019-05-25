@@ -130,7 +130,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     public void initLayouts(View view) {
 
-        mDisplayName = view.findViewById(R.id.displayName);
+        mDisplayName = view.findViewById(R.id.display_name);
         smallProfilePic = view.findViewById(R.id.EditProfile_small_pic);
         mUserName = view.findViewById(R.id.username);
         mWebsite = view.findViewById(R.id.website);
