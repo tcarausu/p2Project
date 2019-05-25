@@ -1,6 +1,5 @@
 package com.example.myapplication.post;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +8,9 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -43,7 +44,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mImageViewFood;
     private TextView mUploadTextView;
     private ImageView mBackImageView;
-    private FirebaseDatabase mFirebaseDatabase ;
+    private FirebaseDatabase mFirebaseDatabase;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef, postRef, userRef;
     private DatabaseReference mDatabaseReferenceUserInfo;
@@ -215,13 +216,40 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
             isMobileDataConnected = activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
 
             if (isWifiConnected) {
-                uploadProfilePic(getUri());
-                updateUserInfo(getProf_pic_URL());
+                uploadImage();
             } else if (isMobileDataConnected) {
                 //TODO add shared prefs here to allow automatic
                 openDialogChoice();
             }
         }
+    }
+
+    /**
+     * created byMo.MSaad
+     **/
+
+    private void openDialogChoice() {
+
+        final CharSequence[] options = {"Mobile data", "WIFI", "CANCEL"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select network to proceed");
+        builder.setIcon(R.drawable.chefood);
+        builder.setItems(options, (dialog, which) -> {
+
+            if (options[which].equals("Mobile data")) {
+                uploadImage();
+
+            } else if (options[which].equals("WIFI")) {
+                Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                startActivity(wifiIntent);
+
+            } else if (options[which].equals("CANCEL")) {
+                dialog.dismiss();
+            }
+
+        });
+        builder.show();
+
     }
 
 
@@ -237,6 +265,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     uploadImage();
                 }
+                checkWifiState();
 
                 break;
 

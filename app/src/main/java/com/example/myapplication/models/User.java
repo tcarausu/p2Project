@@ -8,7 +8,6 @@ import com.google.firebase.database.Exclude;
 public class User implements Parcelable {
 
     private String about;
-    private String display_name;
     private String username;
     private long followers;
     private long following;
@@ -19,13 +18,12 @@ public class User implements Parcelable {
     private long phone_number;
     private String email;
 
-    public User(String about, String display_name, String username, String email, long phone_number,
+    public User(String about, String username, String email, long phone_number,
                 long followers, long following, long posts, String profile_photo, String website) {
 
 
         synchronized (User.class) {
             this.about = about;
-            this.display_name = display_name;
             this.username = username;
             this.followers = followers;
             this.following = following;
@@ -42,7 +40,6 @@ public class User implements Parcelable {
 
     protected User(Parcel in) {
         about = in.readString();
-        display_name = in.readString();
         username = in.readString();
         followers = in.readLong();
         following = in.readLong();
@@ -72,15 +69,6 @@ public class User implements Parcelable {
     @Exclude
     public void setAbout(String about) {
         this.about = about;
-    }
-
-    public String getDisplay_name() {
-        return display_name;
-    }
-
-    @Exclude
-    public void setDisplay_name(String display_name) {
-        this.display_name = display_name;
     }
 
     public String getUsername() {
@@ -123,6 +111,7 @@ public class User implements Parcelable {
         return profile_photo;
     }
 
+    @Exclude
     public void setProfile_photo(String profile_photo) {
         this.profile_photo = profile_photo;
     }
@@ -131,6 +120,7 @@ public class User implements Parcelable {
         return email;
     }
 
+    @Exclude
     public void setEmail(String email) {
         this.email = email;
     }
@@ -139,6 +129,7 @@ public class User implements Parcelable {
         return phone_number;
     }
 
+    @Exclude
     public void setPhone_number(long phone_number) {
         this.phone_number = phone_number;
     }
@@ -147,6 +138,7 @@ public class User implements Parcelable {
         return website;
     }
 
+    @Exclude
     public void setWebsite(String website) {
         this.website = website;
     }
@@ -157,7 +149,6 @@ public class User implements Parcelable {
                 "username='" + username + '\'' +
                 ", phone_number=" + phone_number +
                 ", email=" + email +
-                ", display_name='" + display_name + '\'' +
                 ", about='" + about + '\'' +
                 ", followers=" + followers +
                 ", following=" + following +
@@ -175,7 +166,6 @@ public class User implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(about);
-        dest.writeString(display_name);
         dest.writeString(username);
         dest.writeLong(followers);
         dest.writeLong(following);

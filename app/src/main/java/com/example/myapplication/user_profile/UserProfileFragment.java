@@ -106,7 +106,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private void initLayout(View view) {
 
-        mDisplayName = view.findViewById(R.id.displayName);
         mUserName = view.findViewById(R.id.userName);
         mWebsite = view.findViewById(R.id.website);
         mAbout = view.findViewById(R.id.about);
@@ -197,7 +196,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         Log.d(TAG, "setProfileWidgets: setting widgets with data, retrieving from database: "
                 + user.toString());
 
-        mDisplayName.setText(user.getDisplay_name());
         mUserName.setText(user.getUsername());
         mWebsite.setText(user.getWebsite());
         mAbout.setText(user.getAbout());

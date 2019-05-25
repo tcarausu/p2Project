@@ -133,13 +133,7 @@ public class FirebaseMethods  {
                                     .getUsername()
                     );
 
-                    user.setDisplay_name(
-                            ds.child(userID)
-                                    .getValue(User.class)
-                                    .getDisplay_name()
-                    );
-
-                    user.setAbout(
+                     user.setAbout(
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getAbout()
