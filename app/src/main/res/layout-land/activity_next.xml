@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/orangeMainTheme"
+    tools:context=".post.NextActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/relLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <include layout="@layout/snippet_share_post_toolbar" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@id/relLayout2"
+                android:layout_width="650dp"
+                android:layout_height="150dp"
+                android:layout_marginLeft="60dp"
+                android:layout_marginRight="60dp"
+                android:layout_marginTop="20dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/relLayout1"
+                android:background="@drawable/grey_border_bottom">
+
+                <ImageView
+                    android:id="@+id/image_tobe_shared"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:scaleType="centerCrop" />
+
+                <EditText
+                    android:id="@+id/image_desc_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="30dp"
+                    android:layout_toEndOf="@+id/image_tobe_shared"
+                    android:background="@null"
+                    android:hint="@string/image_description_share" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="650dp"
+                android:id="@id/relLayout3"
+                android:layout_height="50dp"
+                android:layout_marginLeft="60dp"
+                android:layout_marginRight="60dp"
+                android:layout_below="@id/relLayout2"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/grey_border_bottom">
+
+                <EditText
+                    android:id="@+id/image_ingredients_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginRight="20dp"
+                    android:background="@null"
+                    android:hint="@string/image_ingredients_share" />
+
+            </RelativeLayout>
+
+
+
+            <RelativeLayout
+                android:layout_width="650dp"
+                android:id="@id/relLayout4"
+                android:layout_height="50dp"
+                android:layout_marginLeft="60dp"
+                android:layout_marginRight="60dp"
+                android:layout_below="@id/relLayout3"
+                android:layout_marginTop="20dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/grey_border_bottom">
+
+                <EditText
+                    android:id="@+id/image_recipe_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginRight="20dp"
+                    android:background="@null"
+                    android:hint="@string/string_recipe" />
+
+            </RelativeLayout>
+
+
+
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>
