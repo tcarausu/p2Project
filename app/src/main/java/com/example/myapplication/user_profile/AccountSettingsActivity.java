@@ -21,6 +21,7 @@ import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SectionsStatePagerAdapter;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
@@ -36,7 +37,10 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
 
     //firebase
     private FirebaseAuth mAuth;
-    private FirebaseMethods mFirebaseMethods;
+    private FirebaseMethods mFirebaseMethods ;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
+
 
     private SectionsStatePagerAdapter pagerAdapter;
     private ViewPager mViewPager;
@@ -47,8 +51,9 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
-        mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
+        mFirebaseMethods =  FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
+
 
         initLayout();
         setupBottomNavigationView();
@@ -71,7 +76,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     public void onClick(View v) {
         if (v.getId() == R.id.backArrow) {
             Log.d(TAG, "onClick: navigating to account settings");
-            goTosWithFlags(getApplicationContext(), UserProfileActivity.class);
+            goTosWithFlags(getApplicationContext(),UserProfileActivity.class);
         }
 
     }
@@ -79,33 +84,23 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     @Override
     public void onStart() {
         super.onStart();
-        if (mAuth.getCurrentUser() == null) {
-            mAuth.signOut();
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
 
-            goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
-        }
+
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mAuth.getCurrentUser() == null) {
-            mAuth.signOut();
-
-            goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
-        }
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (mAuth.getCurrentUser() == null) {
-            mAuth.signOut();
 
-            goTosWithFlags(AccountSettingsActivity.this, LoginActivity.class);
-        }
     }
 
     private void setupViewPager(int fragmentNr) {
@@ -128,17 +123,15 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
 
     }
 
-    /**
-     * Set's up the Setting list, our case Sign Out.
-     */
     private void setupSettingsList() {
         Log.d(TAG, "setupSettingsList: initializing 'Account Settings' list");
         ListView listView = findViewById(R.id.listViewAccountSettings);
 
-        String signOut = "Sign Out";
+//        ArrayList<String> options = new ArrayList<>();
+//        options.add(getString(R.string.sign_out_fragment));
+         String signOut = "Sign Out";
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),
-                android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
+        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
@@ -150,9 +143,6 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         });
     }
 
-    /**
-     * Get the incoming intent to check which activity it is related to.
-     */
     private void getIncomingIntent() {
         Intent intent = getIntent();
 
@@ -176,12 +166,10 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
 
     }
 
-    /**
-     * Here we have the dialogue to Sign Out and Cancel
-     */
+    // Alert dialog
     private void dialogChoice() {
 
-        final CharSequence[] options = {"SIGN OUT", "CANCEL"};
+        final CharSequence[] options = {"SIGN-OUT", "CANCEL"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Are you sure you want to sign out?");
         builder.setIcon(R.drawable.chefood);
@@ -189,9 +177,11 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         builder.setItems(options, (dialog, which) -> {
             if (options[which].equals("SIGN-OUT")) {
                 Log.d(TAG, "dialogChoice: sign-out");
-                mAuth.signOut();
+                    mAuth.signOut();
+                LoginManager.getInstance().logOut();
 
-                goTosWithFlags(getApplicationContext(), LoginActivity.class);
+
+                goTosWithFlags(getApplicationContext(),LoginActivity.class);
                 Toast.makeText(getApplicationContext(), "Successful Sign Out", Toast.LENGTH_SHORT).show();
 
             } else if (options[which].equals("CANCEL")) {
@@ -205,8 +195,8 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     }
 
     public void goTosWithFlags(Context applicationContext, Class<? extends AppCompatActivity> cl) {
-        startActivity(new Intent(applicationContext, cl)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        startActivity(new Intent(applicationContext,cl)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
     }
 }

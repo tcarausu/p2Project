@@ -86,7 +86,6 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         mAuth = FirebaseMethods.getAuth();
         myRef = mFirebaseDatabase.getReference("users").child(mAuth.getCurrentUser().getUid());
-
         setUserProfilePic();
         setLayout(view);
         return view;
@@ -110,19 +109,20 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("img", String.valueOf(mUri));
+        getFragmentManager().getFragment(outState, "SelectPictureFragment");
     }
 
     private void setUserProfilePic() {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                final User user = dataSnapshot.getValue(User.class);
-                if (user.getProfile_photo() != null) {
-                    Glide.with(requireContext()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
-                } else
-                    Glide.with(requireContext()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
+                    final User user = dataSnapshot.getValue(User.class);
+                    if (user.getProfile_photo() != null) {
+                      Glide.with(getActivity()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
+                    } else
+                        Glide.with(getActivity()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
 
-            }
+                }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -140,19 +140,6 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     @Override
     public void onStop() {
         super.onStop();
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        getActivity().unregisterReceiver(broadcastReceiver);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to avoid leakage of intent receiver
 
     }
 
@@ -261,15 +248,15 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
 
-            /*
-             * ClickListener which will start the HomeActivity
+            /**
+             * ClickListener which will start the HomeAcivity
              */
             case R.id.close_share:
                 Intent toHomeActivity = new Intent(getActivity(), HomeActivity.class);
                 startActivity(toHomeActivity);
 
                 break;
-            /*
+            /**
              * ClickListener that will open AddPostActivity if
              * galleryImageView is not empty
              */
@@ -289,9 +276,8 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.imageView_gallery:
-                checkPermissions();
+                dialogChoice();
                 break;
-
             case R.id.circular:
                 startActivity(new Intent(getActivity(), UserProfileActivity.class));
                 getActivity().finish();
@@ -315,6 +301,18 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to avoid leakage of intent receiver
+
+    }
 
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {

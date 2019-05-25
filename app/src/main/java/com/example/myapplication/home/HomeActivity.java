@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
-import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
@@ -38,12 +37,15 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
     private static final int ACTIVITY_NUM = 0;
 
+    private Context mContext;
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseMethods mFirebaseMethods ;
+    private FirebaseMethods mFirebaseMethods;
     private DatabaseReference mDatabasePostRef;
     private FirebaseDatabase firebasedatabase;
+    private Query postQuery;
+
 
     /**
      * @param savedInstanceState creates the app using the Bundle
@@ -54,11 +56,11 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
-        mFirebaseMethods =  FirebaseMethods.getInstance(getApplicationContext());
-        mAuth = FirebaseMethods.getAuth() ;
+        mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
+        mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
-        firebasedatabase = FirebaseDatabase.getInstance();
-        mDatabasePostRef = firebasedatabase.getReference(getString(R.string.dbname_posts)).getRef();
+        firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
+        mDatabasePostRef = firebasedatabase.getReference("posts").getRef();
 
         checkDatabaseState();
         initImageLoader();
@@ -72,7 +74,10 @@ public class HomeActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
         checkDatabaseState();
+
+
     }
 
     @SuppressLint("RestrictedApi")
@@ -95,33 +100,21 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
         } catch (Exception e) {
-            Toast.makeText(this, "Nothing to display: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            goTosWithFlags(this, LoginActivity.class);
+            Log.d(TAG, "checkDatabaseState: error: "+e.getMessage());
         }
-
     }
 
 
     @Override
     protected void onPause() {
         super.onPause();
-        checkDatabaseState();
-
     }
-
 
     @Override
     protected void onResume() {
         super.onResume();
         checkDatabaseState();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
     }
 
     /**

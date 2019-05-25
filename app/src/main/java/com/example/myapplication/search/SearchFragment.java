@@ -52,6 +52,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     //user data strings
     private String username;
+    private String profile_photo_url;
+    private String nrOfPosts;
     private String user_id;
 
     //ListView
@@ -97,7 +99,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     public void getUserFromDatabase() {
         String keyword = mSearchParam.getText().toString();
-        adapter = new SearchActivityAdapter(requireContext(), userList);
 
         if (!TextUtils.isEmpty(keyword)) {
 
@@ -106,25 +107,29 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     userList.clear();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        if (dataSnapshot.hasChildren() && ds.exists()) {
+                        if (dataSnapshot.hasChildren()&& ds.exists()) {
                             final User user = ds.getValue(User.class);
                             username = user.getUsername();
 
                             if (username.toLowerCase().contains(keyword.toLowerCase())) {
 
+                                adapter = new SearchActivityAdapter(requireContext(), userList);
+
                                 userList.add(user);
                                 adapter.setUserList(userList);
                                 search_recycler_view.setAdapter(adapter);
-                                adapter.notifyDataSetChanged();
 
                             } else
                                 Toast.makeText(getApplicationContext(), "No match found", Toast.LENGTH_SHORT).show();
-                            search_recycler_view.removeAllViews();
-                            adapter.notifyDataSetChanged();
+                                search_recycler_view.removeAllViews();
 
                         }
 
                     }
+
+                    adapter.notifyDataSetChanged();
+                    search_recycler_view.removeAllViews();
+
                 }
 
                 @Override
@@ -134,7 +139,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             });
         } else if (mSearchButton.isPressed() && TextUtils.isEmpty(keyword))
             Toast.makeText(getApplicationContext(), "Please type a keyword", Toast.LENGTH_SHORT).show();
-        search_recycler_view.removeAllViews();
+              search_recycler_view.removeAllViews();
 
     }
 

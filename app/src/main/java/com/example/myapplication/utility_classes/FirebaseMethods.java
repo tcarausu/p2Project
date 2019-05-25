@@ -2,7 +2,6 @@ package com.example.myapplication.utility_classes;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
@@ -23,30 +22,23 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * File created by MO.Msaad
+ * File created by tcarau18
  **/
 public class FirebaseMethods {
 
     private static final String TAG = "FirebaseMethods";
-    private Context mContext;
 
-    private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private static FirebaseAuth mAuth;
     private static FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
     private static FirebaseStorage sFirebaseStorage = FirebaseStorage.getInstance();
-    private static DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
+    private static DatabaseReference myRef = mFirebaseDatabase.getReference();
+    private GoogleSignInClient mGoogleSignInClient;
+
 
     private GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
             .requestEmail()
             .build();
-
-    private GoogleSignInClient mGoogleSignInClient;
-
-    private static LoginManager mLoginManager = LoginManager.getInstance();
-
-    public static LoginManager getmLoginManager() {
-        return mLoginManager;
-    }
 
     public static FirebaseStorage getFirebaseStorage() {
         return sFirebaseStorage;
@@ -56,6 +48,9 @@ public class FirebaseMethods {
         return mFirebaseDatabase;
     }
 
+    private String userUID;
+    private Context mContext;
+    private LoginManager mLoginManager = LoginManager.getInstance();
 
     public static FirebaseAuth getAuth() {
         return mAuth;
@@ -64,9 +59,12 @@ public class FirebaseMethods {
     private FirebaseMethods(Context context) {
         // Mo.Msaad modification modification
         synchronized (FirebaseMethods.class) {
+            mAuth = FirebaseAuth.getInstance();
+            mFirebaseDatabase = FirebaseDatabase.getInstance();
+            myRef = mFirebaseDatabase.getReference();
+            mContext = context;
+            mLoginManager = LoginManager.getInstance();
             mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
-
-            this.mContext = context;
 
         }
     }
@@ -77,12 +75,17 @@ public class FirebaseMethods {
     }
 
 
-    public void updateUsername(String userUID, String username, String website, String about, long phone, String profile_url) {
+    public void updateUsername(String userUID,String username, String dispalyName, String website, String about, long phone, String profile_url) {
         Log.d(TAG, "updateUsername: updating username to:" + username);
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userUID)
                 .child(mContext.getString(R.string.field_username))
                 .setValue(username);
+
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(userUID)
+                .child(mContext.getString(R.string.field_display_name))
+                .setValue(dispalyName);
 
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userUID)
@@ -104,6 +107,7 @@ public class FirebaseMethods {
                 .child("profile_photo")
                 .setValue(profile_url);
     }
+
 
     /**
      * Retrieves the account settings for the User currently logged in
@@ -128,6 +132,12 @@ public class FirebaseMethods {
                             ds.child(userID)
                                     .getValue(User.class)
                                     .getUsername()
+                    );
+
+                    user.setDisplay_name(
+                            ds.child(userID)
+                                    .getValue(User.class)
+                                    .getDisplay_name()
                     );
 
                     user.setAbout(
@@ -189,30 +199,21 @@ public class FirebaseMethods {
     }
 
     public String getTimestamp() {
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd__HH:mm:ss", Locale.ENGLISH);
         sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
-
         return sdf.format(new Date());
     }
 
 
-    public void verifyDataBaseState(FirebaseAuth auth, FirebaseUser user, DatabaseReference ref, Context context) {
+    public void checkUserStateIfNull(Context context, FirebaseAuth auth, FirebaseUser user) {
 
-        try {
-            if (ref.getDatabase() == null)
-                ref.removeValue().addOnCompleteListener(task -> {
-                    if (task.isSuccessful())
-                        auth.signOut();
-                }).addOnFailureListener(e -> {
-                    Toast.makeText(context, "Error: " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                });
-
-
-        } catch (NullPointerException e) {
-            Toast.makeText(context, "Something went wrong, try again: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-
+        Log.d(TAG, "checkUserStateIfNull: is called");
+        if (auth == null || user == null) {
+            auth.signOut();
         }
     }
+
 
 
 }

@@ -25,7 +25,6 @@ public class OurAlertDialog extends android.support.v7.app.AlertDialog {
     public void setIcone(int drawable){
         mBuilder.setIcon(drawable);
     }
-
     public void show(){
         mBuilder.show();
     }

@@ -1,6 +1,7 @@
 package com.example.myapplication.user_profile;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +24,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
+import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SquareImageView;
@@ -51,9 +53,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * File created by tcarau18
- * <p>
- * The ViewPostFragmentNewsFeed.class is Displaying the User's selected post, he can display all the information
- * that the post contains, display or like (a post),comment etc.
  **/
 public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickListener {
 
@@ -106,9 +105,9 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         userId = current_user.getUid();
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myRef = mFirebaseDatabase.getReference();
-        mUserRef = mFirebaseDatabase.getReference(getString(R.string.dbname_users));
-        mPostsRef = mFirebaseDatabase.getReference(getString(R.string.dbname_posts));
-        mStorageRef = FirebaseStorage.getInstance();
+        mUserRef = mFirebaseDatabase.getReference("users");
+        mPostsRef = mFirebaseDatabase.getReference("posts");
+        mStorageRef = FirebaseMethods.getFirebaseStorage();
 
         setupFirebaseAuth();
         initLayout(view);
@@ -127,8 +126,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
         try {
 
-            DatabaseReference currentPostRef = mPostsRef.child(current_user.getUid()).child(this.mPost.getPostId());
-            DatabaseReference currentUserRef = mUserRef.child(current_user.getUid());
+            DatabaseReference currentPostRef = mPostsRef.child(mAuth.getCurrentUser().getUid()).child(this.mPost.getPostId());
 
             ProgressDialog progressDialog = new ProgressDialog(this.getContext());
             progressDialog.setTitle("Deleting");
@@ -160,7 +158,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                     }
                 });
                 progressDialog.dismiss();
-                ((UserProfileActivity) getActivity()).goTos(getContext(), UserProfileActivity.class);
+                ((UserProfileActivity) getActivity()).gotos(getContext(), UserProfileActivity.class);
                 Toast.makeText(getContext(), "Item deleted.", Toast.LENGTH_SHORT).show();
 
             });
@@ -217,7 +215,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-        getView().refreshDrawableState();
+
 
     }
 
@@ -232,6 +230,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
 
+        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
 
@@ -239,6 +239,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
             } else Log.d(TAG, "onAuthStateChanged: signed out");
         };
+
 
 
     }
@@ -249,14 +250,15 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
      * the requested ost's id then it should return the data for the user.
      */
     private void getPhotoDetails() {
-        Query query = mUserRef.child(current_user.getUid());
-
+        Query query = mUserRef.child(mAuth.getCurrentUser().getUid());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists() && Objects.equals(dataSnapshot.getKey(), mPost.getUserId())) {
+                if (dataSnapshot.exists() && dataSnapshot.getKey().equals(mPost.getUserId()) && !dataSnapshot.getValue().equals(null)) {
                     user = dataSnapshot.getValue(User.class);
+
                 } else {
+
                     Log.d(TAG, "onDataChange: There is no data: " + dataSnapshot.getValue(User.class).getProfile_photo());
                 }
 
@@ -284,6 +286,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         try {
             if (profilePicURL == null) {
                 mProfilePhoto.setImageResource(R.drawable.my_avatar);
+
             } else
                 Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
 
@@ -408,7 +411,9 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             final User currentUser = dataSnapshot.getValue(User.class);
                             if (dataSnapshot.exists()
-                                    && Objects.equals(dataSnapshot.getKey(), userLikeSnapshotID)) {
+                                    && dataSnapshot.getKey().equals(userLikeSnapshotID)) {
+                                Log.d(TAG, "onDataChange: found like" + dataSnapshot.getValue(User.class));
+
                                 Log.d(TAG, "onDataChange: the current User " + currentUser.getUsername());
 
                                 mUsers.append(currentUser.getUsername());
@@ -569,7 +574,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             case R.id.account_settings_options:
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
-                ((UserProfileActivity) getActivity()).goTos(getContext(), AccountSettingsActivity.class);
+                ((UserProfileActivity) getActivity()).gotos(getContext(), AccountSettingsActivity.class);
                 break;
 
             case R.id.personal_post_options_menu:
@@ -594,7 +599,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             case R.id.backArrow:
                 Log.d(TAG, "onClick: navigating back to " + getActivity());
-                ((UserProfileActivity) getActivity()).goTos(getActivity(), UserProfileActivity.class);// this is working and bug free
+                ((UserProfileActivity) getActivity()).gotos(getActivity(), UserProfileActivity.class);// this is working and bug free
                 break;
 
             case R.id.likes_button:

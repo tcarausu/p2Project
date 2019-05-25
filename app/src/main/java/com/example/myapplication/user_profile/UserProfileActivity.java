@@ -10,19 +10,31 @@ import android.util.Log;
 import com.example.myapplication.R;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.utility_classes.FirebaseMethods;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class UserProfileActivity extends AppCompatActivity implements UserProfileFragment.OnGridImageSelectedListener {
 
     private static final String TAG = "UserProfileActivity";
     private FirebaseMethods mFirebaseMethods ;
+    private FirebaseAuth mAuth ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
+        mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
 
         init();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
     }
 
     @Override
@@ -67,7 +79,7 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     }
 
 
-    public void goTos(Context context, Class<? extends AppCompatActivity> cl){
+    public void gotos(Context context, Class<? extends AppCompatActivity> cl){
         startActivity(new Intent(context,cl)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
 

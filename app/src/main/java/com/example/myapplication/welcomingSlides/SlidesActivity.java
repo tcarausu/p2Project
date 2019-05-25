@@ -35,7 +35,7 @@ public class SlidesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.slide_activity);
-        mIntent = new Intent(SlidesActivity.this, LoginActivity.class);
+        mIntent = new Intent(SlidesActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
         findWidgets();
         verifyFirstRun();
 
