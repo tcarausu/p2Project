@@ -182,9 +182,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         builder.setItems(options, (dialog, which) -> {
             if (options[which].equals("SIGN-OUT")) {
                 Log.d(TAG, "dialogChoice: sign-out");
-                mFirebaseMethods.logOut();
-                ProgressBar mProgressBar = new ProgressBar(this);
-                mProgressBar.setVisibility(View.VISIBLE);
+                mAuth.signOut();
 
                 goTosWithFlags(getApplicationContext(),LoginActivity.class);
                 Toast.makeText(getApplicationContext(), "Successful Sign Out", Toast.LENGTH_SHORT).show();

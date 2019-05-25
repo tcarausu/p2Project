@@ -276,8 +276,9 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.imageView_gallery:
-                dialogChoice();
+                checkPermissions();
                 break;
+
             case R.id.circular:
                 startActivity(new Intent(getActivity(), UserProfileActivity.class));
                 getActivity().finish();

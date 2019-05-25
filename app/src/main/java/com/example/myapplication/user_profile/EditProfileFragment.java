@@ -104,8 +104,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private int batteryLevel;
 
 
-
-
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         checkPermissions();
