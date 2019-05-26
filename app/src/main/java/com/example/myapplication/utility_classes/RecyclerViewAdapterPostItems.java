@@ -44,6 +44,9 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         this.mRecyclerView = recyclerView;
     }
 
+    public void setPostsList(List<Post> mPosts) {
+        this.mPosts = mPosts;
+    }
 
     public void setUserForPost(Post post, User user) {
         post.setUser(user);
@@ -99,19 +102,18 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         // Button Listeners ***************************************************
         viewHolder.mLikes.setOnClickListener(v -> {
 
-            int nrOfLikes =  currentPost.getLikeList().size();
-            if (nrOfLikes > 1){
-            viewHolder.likes_overview.setText(nrOfLikes+ " Likes");
-            }
-            else
-            viewHolder.likes_overview.setText(nrOfLikes+ " Like");
+            int nrOfLikes = currentPost.getLikeList().size();
+            if (nrOfLikes > 1) {
+                viewHolder.likes_overview.setText(nrOfLikes + " Likes");
+            } else
+                viewHolder.likes_overview.setText(nrOfLikes + " Like");
         });
 
         viewHolder.mComments.setOnClickListener(v -> {
             // implementation for displaying the comments for each post
             Intent intent = new Intent(mContext, CommentsActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putParcelable("currentPost",currentPost);
+            bundle.putParcelable("currentPost", currentPost);
             intent.putExtras(bundle);
             mContext.startActivity(intent);
         });
@@ -145,7 +147,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         TextView mUserName;
         TextView mDescription;
         ImageView mFoodImg;
-        ImageButton mLikes, mComments, mRecipe, mIngredients,mOptions;
+        ImageButton mLikes, mComments, mRecipe, mIngredients, mOptions;
         RelativeLayout mPostToolbarBtnsExpansionContainer, mOverviewLayout;
         TextView mToolbarExpasionText, likes_overview, post_TimeStamp;
 
@@ -173,8 +175,9 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
             post_TimeStamp = itemView.findViewById(R.id.post_TimeStamp);
 
         }
+
         // Used to scroll recycler view over the expandable layout
-        private void focusExpandable(ViewHolder viewHolder,int focusItem){
+        private void focusExpandable(ViewHolder viewHolder, int focusItem) {
             LinearLayoutManager lm = (LinearLayoutManager) mRecyclerView.getLayoutManager();
             lm.scrollToPositionWithOffset(viewHolder.getAdapterPosition(), focusItem);
         }

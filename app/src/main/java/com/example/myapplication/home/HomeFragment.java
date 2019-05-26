@@ -81,7 +81,6 @@ public class HomeFragment extends Fragment {
         mUsers = new ArrayList<>();
         mComments = new ArrayList<>();
 
-//        mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts, mRecyclerView);
         mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts, mRecyclerView);
 
         GetData getData = new GetData();
@@ -140,8 +139,6 @@ public class HomeFragment extends Fragment {
                                 // NOW JUST CREATE A USER IN THE DATABASE AND TEST
                                 final Post post = userSnapshot.getValue(Post.class);
                                 Log.d(TAG, "onDataChange: uid for user from post : " + post.getUserId());
-
-                                Log.d(TAG, "onDataChange: username and profile pic : >>>> : " + mUsername + " " + mProfilePhoto);
 
                                 List<Like> likeList = new ArrayList<>();
                                 List<Comment> commentList = new ArrayList<>();
@@ -222,6 +219,7 @@ public class HomeFragment extends Fragment {
                                 });
 
                                 mPosts.add(post);
+                                mAdapter.setPostsList(mPosts);
                                 mAdapter.notifyDataSetChanged();
 
                             }
