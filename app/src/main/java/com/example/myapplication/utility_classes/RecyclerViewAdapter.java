@@ -90,7 +90,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
         viewHolder.mLikes.setOnClickListener(v -> {
-            int nrOfLikes =  postCurrent.getLikes().size();
+            int nrOfLikes =  postCurrent.getLikeList().size();
             if (nrOfLikes > 1){
             viewHolder.post_likes.setText(nrOfLikes+ " Likes");
             }

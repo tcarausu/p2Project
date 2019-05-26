@@ -556,7 +556,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
                 break;
 
-            case R.id.likes_button:
+            case R.id.likesBtnID:
                 toggleLikes();
                 break;
         }
