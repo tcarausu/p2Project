@@ -38,10 +38,12 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
     // Constants
     private final int FOCUS_ANY = -350;
 
-    public RecyclerViewAdapterPostItems(Context context, List<Post> posts, RecyclerView recyclerView) {
+    public RecyclerViewAdapterPostItems(Context context, List<Post> posts
+//            , RecyclerView recyclerView
+    ) {
         this.mContext = context;
         this.mPosts = posts;
-        this.mRecyclerView = recyclerView;
+//        this.mRecyclerView = recyclerView;
     }
 
     public void setPostsList(List<Post> mPosts) {

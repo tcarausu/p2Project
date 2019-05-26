@@ -81,7 +81,9 @@ public class HomeFragment extends Fragment {
         mUsers = new ArrayList<>();
         mComments = new ArrayList<>();
 
-        mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts, mRecyclerView);
+        mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts
+//                , mRecyclerView
+        );
 
         GetData getData = new GetData();
         getData.execute();
