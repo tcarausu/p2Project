@@ -123,7 +123,7 @@ public class UserModelTests {
         String displayName = "User. My. Name. Is";
         String about = "About Me";
 
-        user = new User(about, displayName, userName, email, phoneNumber, followers, following, posts, profile_photo, website);
+        user = new User(about, displayName, userName, followers, following, posts, profile_photo, website, phoneNumber, email);
 
         assertNotEquals(incorrectUserName, user.getUsername());
         assertEquals(displayName, user.getDisplay_name());
