@@ -57,7 +57,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     OnGridImageSelectedListener onGridImageSelectedListener;
 
     private static final int ACTIVITY_NUM = 4;
-
     private static final int NUM_GRID_COLUMNS = 3;
 
     //firebase
@@ -68,7 +67,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseMethods firebaseMethods;
     private FirebaseUser current_user;
 
-
     private BottomNavigationViewEx bottomNavigationViewEx;
 
     private TextView mEditProfile, mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mAbout;
@@ -77,8 +75,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private ImageView profileMenu;
     private GridView gridView;
     private Toolbar toolbar;
-    private Uri avatarUri;
-    //avatarUri = Uri.parse("android.resource://com.example.myapplication/drawable/my_avatar");
 
     private User user;
 
@@ -92,6 +88,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         myRef = mFirebaseDatabase.getReference();
         postsRef = mFirebaseDatabase.getReference("users").child(current_user.getUid()).child("posts");
         userPostCount = mFirebaseDatabase.getReference("posts").child(current_user.getUid());
+
         initLayout(view);
         setListeners(view);
         setupFirebaseAuth();
@@ -99,12 +96,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         setupBottomNavigationView();
         setPostCount();
 
-
         return view;
     }
 
     private void initLayout(View view) {
-
         mDisplayName = view.findViewById(R.id.display_name);
         mUserName = view.findViewById(R.id.userName);
         mWebsite = view.findViewById(R.id.website);
@@ -121,7 +116,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     }
 
     private void setListeners(View view) {
-
         mEditProfile = view.findViewById(R.id.editProfile);
         profileMenu = view.findViewById(R.id.profileMenu);
         mEditProfile.setOnClickListener(this);
@@ -221,7 +215,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         switch (v.getId()) {
 
             case R.id.editProfile:
-
                 Intent intent = new Intent(getContext(), AccountSettingsActivity.class);
                 intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
                 startActivity(intent);
@@ -231,7 +224,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 Log.d(TAG, "onClick: navigating to account settings");
 
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
-                firebaseMethods.goToWhereverWithFlags(getActivity(),getActivity(),AccountSettingsActivity.class);
+                firebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), AccountSettingsActivity.class);
 
                 break;
         }
@@ -240,7 +233,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
 
     private void setPostCount() {
-
         // here i browse throught the user to get post child count.
         userPostCount.addValueEventListener(new ValueEventListener() {
             @Override
@@ -289,7 +281,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-
                         Post post = new Post();
                         Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
                         post.setmDescription(objectMap.get(getString(R.string.field_description)).toString());

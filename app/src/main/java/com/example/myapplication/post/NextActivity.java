@@ -38,24 +38,17 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final String TAG = "NextActivity";
 
-    private EditText mImageDesc;
-    private EditText mImageIngredients;
-    private EditText mImageRecipe;
-    private ImageView mImageViewFood;
+    private EditText mImageDesc,mImageIngredients,mImageRecipe;
     private TextView mUploadTextView;
-    private ImageView mBackImageView;
+    private ImageView mImageViewFood,mBackImageView;
     private FirebaseDatabase mFirebaseDatabase;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef, postRef, userRef;
     private DatabaseReference mDatabaseReferenceUserInfo;
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
-    private String imageUri;
-    private String URL;
-    private String username;
-    private String profilePicUrl;
+    private String imageUri, URL, uploadId;
     private FirebaseMethods firebaseMethods;
-    private String uploadId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,23 +70,6 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         mDatabaseRef = mFirebaseDatabase.getReference(databasePath);
 
         mDatabaseReferenceUserInfo = mFirebaseDatabase.getReference(databasePathPic);
-
-        // getting the username and profile picture link for current user
-        mDatabaseReferenceUserInfo.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                User user = dataSnapshot.getValue(User.class);
-                profilePicUrl = user.getProfile_photo();
-                username = user.getUsername();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
 
     }
 
@@ -117,7 +93,6 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
     // method for uploading image and image content to firebase storage and database
     private void uploadImage() {
-
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading, please wait...");
         progressDialog.setIcon(R.drawable.chefood);

@@ -51,8 +51,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         setContentView(R.layout.activity_account_settings);
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
-
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
 
         initLayout();
         setupBottomNavigationView();
@@ -62,7 +61,6 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     }
 
     private void initLayout() {
-
         listView = findViewById(R.id.listViewAccountSettings);
         findViewById(R.id.backArrow);
         Log.d(TAG, "onCreate: started account");
@@ -84,7 +82,6 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     public void onStart() {
         super.onStart();
         mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
-
 
     }
 
@@ -127,7 +124,8 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
 
         String signOut = "Sign Out";
 
-        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),
+                android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
