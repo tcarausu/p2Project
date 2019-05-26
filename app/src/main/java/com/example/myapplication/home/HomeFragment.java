@@ -143,7 +143,7 @@ public class HomeFragment extends Fragment {
                                     like.setUser_id(ds.getValue(Like.class).getUser_id());
                                     likeList.add(like);
                                 }
-                                post.setLikes(likeList);
+                                post.setLikeList(likeList);
 
                                 try {
                                     mDatabaseUserRef.addValueEventListener(new ValueEventListener() {

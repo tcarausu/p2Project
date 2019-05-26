@@ -63,7 +63,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUserRef;
     private DatabaseReference mPostsRef;
-    private FirebaseMethods mFirebaseMethods ;
+    private FirebaseMethods mFirebaseMethods;
 
     //fire-base storage
     private FirebaseStorage mStorageRef;
@@ -100,7 +100,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         View view = inflater.inflate(R.layout.fragment_view_post_news_feeed, container, false);
         mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
+        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
         current_user = mAuth.getCurrentUser();
         userId = current_user.getUid();
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
@@ -118,63 +118,12 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     }
 
 
-    /**
-     * @author: Mo.Msaad
-     * @use: deletes the current displayed post with all its data and deletes the item from database.
-     **/
-    private void deletePost() {
-
-        try {
-
-            DatabaseReference currentPostRef = mPostsRef.child(mAuth.getCurrentUser().getUid()).child(this.mPost.getPostId());
-            DatabaseReference currentUserRef = mUserRef.child(mAuth.getCurrentUser().getUid());
-            ProgressDialog progressDialog = new ProgressDialog(this.getContext());
-            progressDialog.setTitle("Deleting");
-            progressDialog.setMessage("Deleting post, please wait for task to finish");
-            progressDialog.setIcon(R.drawable.chefood);
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.show();
-            StorageReference imageRef = mStorageRef.getReferenceFromUrl(this.mPost.getmFoodImgUrl());
-            Log.d(TAG, "deletePost: currentPostRef: " + imageRef);
-
-            imageRef.delete().addOnSuccessListener(aVoid -> {
-                currentPostRef.removeValue();
-
-                currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            final User user = dataSnapshot.getValue(User.class);
-                            if (user.getNrOfPosts() != 0) {
-                                user.setNrPosts(user.getNrOfPosts() - 1);
-                                currentUserRef.setValue(user);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-                progressDialog.dismiss();
-
-                mFirebaseMethods.goToWhereverWithFlags(getActivity(),getActivity(),UserProfileActivity.class);
-                Toast.makeText(getContext(), "Item deleted.", Toast.LENGTH_SHORT).show();
-
-            });
-
-        } catch (Exception e) {
-            Log.d(TAG, "deletePost: error: " + e.getMessage());
-        }
-    }
-
     private void initLayout(View view) {
         mUserName = view.findViewById(R.id.userNameID);
         mProfilePhoto = view.findViewById(R.id.userProfilePicID);
         mFoodImg = view.findViewById(R.id.foodImgID);
         mPostDescription = view.findViewById(R.id.postDescriptionID);
-        mPostLikes = view.findViewById(R.id.post_likes);
+        mPostLikes = view.findViewById(R.id.expansionTextID);
         mPostTimeStamp = view.findViewById(R.id.post_TimeStamp);
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
 
@@ -196,7 +145,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         profileMenu = view.findViewById(R.id.account_settings_options);
         backArrow = view.findViewById(R.id.backArrow);
 
-        likesPost = view.findViewById(R.id.likes_button);
+        likesPost = view.findViewById(R.id.likesBtnID);
         commentPost = view.findViewById(R.id.commentsBtnID);
         recipePost = view.findViewById(R.id.recipeBtnID);
         ingredientsPost = view.findViewById(R.id.ingredientsBtnID);
@@ -217,13 +166,12 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
 
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
+        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
     }
 
     @Override
@@ -237,8 +185,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
 
-        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
-
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
 
@@ -246,7 +192,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
             } else Log.d(TAG, "onAuthStateChanged: signed out");
         };
-
 
 
     }
@@ -582,7 +527,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             case R.id.account_settings_options:
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
 
-                mFirebaseMethods.goToWhereverWithFlags(getActivity(),getActivity(),AccountSettingsActivity.class);
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), AccountSettingsActivity.class);
                 break;
 
             case R.id.personal_post_options_menu:
@@ -607,11 +552,11 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             case R.id.backArrow:
                 Log.d(TAG, "onClick: navigating back to " + getActivity());
-                mFirebaseMethods.goToWhereverWithFlags(getActivity(),getActivity(),UserProfileActivity.class);
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), UserProfileActivity.class);
 
                 break;
 
-            case R.id.likes_button:
+            case R.id.likesBtnID:
                 toggleLikes();
                 break;
         }
@@ -670,4 +615,56 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             }
         });
     }
+
+    /**
+     * @author: Mo.Msaad
+     * @use: deletes the current displayed post with all its data and deletes the item from database.
+     **/
+    private void deletePost() {
+
+        try {
+
+            DatabaseReference currentPostRef = mPostsRef.child(mAuth.getCurrentUser().getUid()).child(this.mPost.getPostId());
+            DatabaseReference currentUserRef = mUserRef.child(mAuth.getCurrentUser().getUid());
+            ProgressDialog progressDialog = new ProgressDialog(this.getContext());
+            progressDialog.setTitle("Deleting");
+            progressDialog.setMessage("Deleting post, please wait for task to finish");
+            progressDialog.setIcon(R.drawable.chefood);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+            StorageReference imageRef = mStorageRef.getReferenceFromUrl(this.mPost.getmFoodImgUrl());
+            Log.d(TAG, "deletePost: currentPostRef: " + imageRef);
+
+            imageRef.delete().addOnSuccessListener(aVoid -> {
+                currentPostRef.removeValue();
+
+                currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            final User user = dataSnapshot.getValue(User.class);
+                            if (user.getNrOfPosts() != 0) {
+                                user.setNrPosts(user.getNrOfPosts() - 1);
+                                currentUserRef.setValue(user);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                progressDialog.dismiss();
+
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), UserProfileActivity.class);
+                Toast.makeText(getContext(), "Item deleted.", Toast.LENGTH_SHORT).show();
+
+            });
+
+        } catch (Exception e) {
+            Log.d(TAG, "deletePost: error: " + e.getMessage());
+        }
+    }
+
 }

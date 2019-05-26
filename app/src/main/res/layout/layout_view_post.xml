@@ -140,7 +140,7 @@
                 android:padding="20dp">
 
                 <TextView
-                    android:id="@+id/post_likes"
+                    android:id="@+id/likesOverview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Liked by whoever, eve, and 30 others"
@@ -151,7 +151,7 @@
                     android:id="@+id/post_caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/post_likes"
+                    android:layout_below="@+id/likesOverview"
                     android:layout_marginTop="15dp"
                     android:text="username + caption #caption"
                     android:textColor="@color/black"
@@ -163,7 +163,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/post_caption"
                     android:layout_marginTop="15dp"
-                    android:text="View all 3 comments"
+                    android:text="View all 3 commentList"
                     android:textColor="@color/grey_500"
                     android:textSize="18sp" />
 

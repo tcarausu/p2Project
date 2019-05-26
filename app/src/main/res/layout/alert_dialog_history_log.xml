@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_alert_dialog"
     android:layout_margin="0dp"
+    android:id="@+id/alert_dialog_layout"
     >
 
         <TextView

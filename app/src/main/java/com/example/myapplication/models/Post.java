@@ -14,14 +14,18 @@ public class Post implements Parcelable {
     private String date_created;
     private String userId;
     private String postId;
-    private List<Like> likes;
+    private List<Like> likeList;
+    private List<Comment> commentList;
     private User user;
+    private boolean isCommentsBtnPressed;
 
     public Post() {
     }
 
     public Post(String mDescription, String mFoodImgUrl, String mRecipe,
-                String mIngredients, String userId, String postId, String date_created, List<Like> likes) {
+                String mIngredients, String userId, String postId,
+                String date_created,
+                List<Like> likeList, List<Comment> commentList) {
 
         synchronized (Post.class) {
             if (mDescription.trim().equals("")) {
@@ -35,9 +39,35 @@ public class Post implements Parcelable {
             this.mIngredients = mIngredients;
             this.userId = userId;
             this.postId = postId;
-            this.likes = likes;
+            this.likeList = likeList;
+            this.commentList = commentList;
         }
+
     }
+//    protected Post(Parcel in) {
+//        mDescription = in.readString();
+//        mFoodImgUrl = in.readString();
+//        mRecipe = in.readString();
+//        mIngredients = in.readString();
+//        userId = in.readString();
+//        postId = in.readString();
+//        date_created = in.readString();
+//        commentList = in.createTypedArrayList(Comment.CREATOR);
+////        in.readList(commentList, Post.class.getClassLoader());
+//        isCommentsBtnPressed = in.readByte() != 0;
+//    }
+//
+//    public static final Creator<Post> CREATOR = new Creator<Post>() {
+//        @Override
+//        public Post createFromParcel(Parcel in) {
+//            return new Post(in);
+//        }
+//
+//        @Override
+//        public Post[] newArray(int size) {
+//            return new Post[size];
+//        }
+//    };
 
     protected Post(Parcel in) {
         mDescription = in.readString();
@@ -48,6 +78,8 @@ public class Post implements Parcelable {
         userId = in.readString();
         postId = in.readString();
         user = in.readParcelable(User.class.getClassLoader());
+        commentList = in.createTypedArrayList(Comment.CREATOR);
+        isCommentsBtnPressed = in.readByte() != 0;
     }
 
     public static final Creator<Post> CREATOR = new Creator<Post>() {
@@ -102,12 +134,12 @@ public class Post implements Parcelable {
         this.mIngredients = mIngredients;
     }
 
-    public List<Like> getLikes() {
-        return likes;
+    public List<Like> getLikeList() {
+        return likeList;
     }
 
-    public void setLikes(List<Like> likes) {
-        this.likes = likes;
+    public void setLikeList(List<Like> likeList) {
+        this.likeList = likeList;
     }
 
     public String getDate_created() {
@@ -134,6 +166,27 @@ public class Post implements Parcelable {
         this.user = user;
     }
 
+    public void addComment(Comment comment){
+        commentList.add(comment);
+    }
+
+    public List<Comment> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(List<Comment> commentList) {
+        this.commentList = commentList;
+    }
+
+    public boolean isCommentsBtnPressed() {
+        return isCommentsBtnPressed;
+    }
+
+    public void setCommentsBtnPressed(boolean commentsBtnPressed) {
+        isCommentsBtnPressed = commentsBtnPressed;
+    }
+
+
     @Override
     public String toString() {
         return "Post{" +
@@ -144,7 +197,8 @@ public class Post implements Parcelable {
                 ", mIngredients='" + mIngredients + '\'' +
                 ", postId='" + postId + '\'' +
                 ", userId='" + userId + '\'' +
-                ", likes=" + likes +
+                ", likeList= " + likeList +
+                ", commentList= " + commentList +
                 '}';
     }
 
@@ -164,5 +218,26 @@ public class Post implements Parcelable {
         dest.writeString(userId);
         dest.writeString(postId);
         dest.writeParcelable(user, flags);
+        dest.writeTypedList(commentList);
+        dest.writeByte((byte) (isCommentsBtnPressed ? 1 : 0));
     }
+
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeString(mDescription);
+//        dest.writeString(mFoodImgUrl);
+//        dest.writeString(mRecipe);
+//        dest.writeString(mIngredients);
+//        dest.writeString(userId);
+//        dest.writeString(postId);
+//        dest.writeString(date_created);
+//        dest.writeList(commentList);
+//    }
+//
+
 }

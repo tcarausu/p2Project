@@ -62,6 +62,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
         findWidgets();
+
         firebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
@@ -138,7 +139,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
                             Post postInfo = new Post(description,
                                     URL, recipe, ingredients, mAuth.getUid(),
-                                    uploadId, firebaseMethods.getTimestamp(), null);
+                                    firebaseMethods.getTimestamp() + uploadId, firebaseMethods.getTimestamp(), null, null);
                             Log.d(TAG, "onComplete: upload uid: " + uploadId);
 
                             mDatabaseRef.child(uploadId).setValue(postInfo);

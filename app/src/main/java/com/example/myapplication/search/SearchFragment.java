@@ -49,7 +49,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private FirebaseDatabase firebaseDatabase;
     private FirebaseUser user;
     private DatabaseReference myDatabaseUserRef;
-    private FirebaseMethods mFirebaseMethods ;
+    private FirebaseMethods mFirebaseMethods;
 
     //user data strings
     private String username;
@@ -67,9 +67,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
+
+        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
         user = mAuth.getCurrentUser();
         user_id = user.getUid();
+
         firebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myDatabaseUserRef = firebaseDatabase.getReference("users");
 
@@ -83,7 +85,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
+        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
     }
 
     private void initLayout(View view) {
@@ -113,29 +115,24 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     userList.clear();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        if (dataSnapshot.hasChildren()&& ds.exists()) {
+                        if (dataSnapshot.hasChildren() && ds.exists()) {
                             final User user = ds.getValue(User.class);
                             username = user.getUsername();
 
                             if (username.toLowerCase().contains(keyword.toLowerCase())) {
-
                                 adapter = new SearchActivityAdapter(requireContext(), userList);
 
                                 userList.add(user);
                                 adapter.setUserList(userList);
                                 search_recycler_view.setAdapter(adapter);
+                                adapter.notifyDataSetChanged();
 
                             } else
                                 Toast.makeText(getApplicationContext(), "No match found", Toast.LENGTH_SHORT).show();
-                                search_recycler_view.removeAllViews();
-
+                            search_recycler_view.removeAllViews();
+                            adapter.notifyDataSetChanged();
                         }
-
                     }
-
-                    adapter.notifyDataSetChanged();
-                    search_recycler_view.removeAllViews();
-
                 }
 
                 @Override
@@ -145,7 +142,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             });
         } else if (mSearchButton.isPressed() && TextUtils.isEmpty(keyword))
             Toast.makeText(getApplicationContext(), "Please type a keyword", Toast.LENGTH_SHORT).show();
-              search_recycler_view.removeAllViews();
+        search_recycler_view.removeAllViews();
 
     }
 
@@ -167,7 +164,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         }
     }
-
 
 
 }

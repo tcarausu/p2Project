@@ -307,7 +307,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                             like.setUser_id(ds.getValue(Like.class).getUser_id());
                             likeList.add(like);
                         }
-                        post.setLikes(likeList);
+                        post.setLikeList(likeList);
                         posts.add(post);
                     }
 

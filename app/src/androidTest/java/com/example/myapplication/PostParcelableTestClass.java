@@ -6,7 +6,6 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
-import com.example.myapplication.models.User;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -69,7 +68,7 @@ public class PostParcelableTestClass {
         assertEquals(createdFromParcel.getUserId(),user_id);
         assertEquals(createdFromParcel.getPostId(), post_Id);
         assertEquals(createdFromParcel.getDate_created(),dateCreated);
-        assertEquals(createdFromParcel.getLikes(), likes);
+        assertEquals(createdFromParcel.getLikeList(), likes);
         assertNotEquals(createdFromParcel.getUserId(),incorrect_uid);
 
     }
