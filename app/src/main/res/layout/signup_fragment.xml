@@ -8,8 +8,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:clickable="true"
     android:background="@drawable/back3"
     android:orientation="vertical">
+
+
+    <TextView
+
+        android:id="@+id/ForfotPass_titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:clickable="false"
+        android:drawableBottom="@drawable/dash_icon_white"
+        android:focusable="false"
+        android:shadowColor="@color/black"
+        android:shadowDx="5"
+        android:shadowRadius="10"
+        android:layout_below="@+id/SignUpFragmnt_back_button"
+        android:layout_marginTop="50dp"
+        android:layout_centerHorizontal="true"
+        android:text="@string/signUp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="24sp" />
 
     <Button
         android:id="@+id/SignUpFragmnt_back_button"
@@ -26,8 +49,8 @@
         android:layout_marginTop="10dp"
         android:drawableStart="@drawable/orange_arrow_left"
         android:background="@drawable/input_fields_with_shadow"
-        android:fontFamily="@font/arbutus"
         android:textColor="@color/orange"
+        android:textStyle="bold"
         android:text="@string/go_back_signUpFragment" />
 
     <EditText
@@ -109,11 +132,11 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/input_fields_with_shadow"
         android:padding="10dp"
-        android:fontFamily="@font/arbutus"
         android:shadowColor="@color/black"
         android:shadowDx="5"
         android:shadowRadius="10"
         android:text="@string/signUp"
+        android:textStyle="bold"
         android:textColor="@color/orange" />
 
 

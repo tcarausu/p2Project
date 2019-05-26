@@ -118,7 +118,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private void uploadImage() {
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle("uploading, please wait...");
+        progressDialog.setMessage("Uploading, please wait...");
         progressDialog.setIcon(R.drawable.chefood);
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
@@ -142,7 +142,6 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                             Log.d(TAG, "onComplete: upload uid: " + uploadId);
 
                             mDatabaseRef.child(uploadId).setValue(postInfo);
-
                             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -163,6 +162,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                             handler.postDelayed(() -> {
                                 Intent intent = new Intent(NextActivity.this, HomeActivity.class);
                                 startActivity(intent);
+                                firebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), HomeActivity.class);
                             }, 500);
                         }).addOnFailureListener(e ->
                                 Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
@@ -190,16 +190,24 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
      * Will ask if user wants to upload the image despite empty fields
      */
     protected void dialogConfirm() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.confirm);
-        builder.setMessage(R.string.fill_or_not);
-        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
-            uploadImage();
-            dialog.dismiss();
+
+        final CharSequence[] options = {"Yeah", "Nope", "CANCEL"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("There is no descriptions for your post, continue?");
+        builder.setIcon(R.drawable.chefood);
+        builder.setItems(options, (dialog, which) -> {
+
+            if (options[which].equals("Yeah")) {
+                uploadImage();
+                dialog.dismiss();
+
+            } else if (options[which].equals("Nope")) {
+                dialog.dismiss();
+            }
+
         });
-        builder.setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss());
-        AlertDialog alert = builder.create();
-        alert.show();
+        builder.show();
+
     }
 
     /**

@@ -5,6 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
     android:background="@drawable/back3"
     android:animateLayoutChanges="true">
 
@@ -17,12 +19,12 @@
             android:text="@string/go_back_signUpFragment"
             android:shadowDx="5"
             android:shadowRadius="10"
+            android:textStyle="bold"
             android:shadowColor="@color/black"
             android:paddingEnd="15dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:textColor="@color/orange"
-            android:fontFamily="@font/arbutus"
             android:background="@drawable/input_fields_with_shadow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -39,7 +41,6 @@
             android:layout_marginTop="15dp"
             android:layout_centerHorizontal="true"
             android:drawableBottom="@drawable/dash_icon_white"
-            android:fontFamily="@font/almendra"
             android:shadowColor="@color/black"
             android:shadowDx="5"
             android:shadowRadius="10"

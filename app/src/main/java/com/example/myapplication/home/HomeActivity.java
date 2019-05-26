@@ -1,8 +1,6 @@
 package com.example.myapplication.home;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -14,22 +12,26 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.post.AddPostActivity;
+import com.example.myapplication.user_profile.UserProfileActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
@@ -37,14 +39,12 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
     private static final int ACTIVITY_NUM = 0;
 
-    private Context mContext;
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseMethods mFirebaseMethods;
-    private DatabaseReference mDatabasePostRef;
+    private DatabaseReference mDatabasePostRef, mDatabaseUserRef, current_userRef, usersRef;
     private FirebaseDatabase firebasedatabase;
-    private Query postQuery;
 
 
     /**
@@ -52,16 +52,14 @@ public class HomeActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
-
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
-        firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
-        mDatabasePostRef = firebasedatabase.getReference("posts").getRef();
 
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+        firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
         checkDatabaseState();
         initImageLoader();
         setupBottomNavigationView();
@@ -74,9 +72,7 @@ public class HomeActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
-        checkDatabaseState();
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
 
 
     }
@@ -85,24 +81,110 @@ public class HomeActivity extends AppCompatActivity {
     private void checkDatabaseState() {
 
         try {
+            mDatabasePostRef = firebasedatabase.getReference("posts").getRef();
             mDatabasePostRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Log.d(TAG, "Snapshot HomeActivity, Snapshot.has children: " + dataSnapshot.hasChildren());
                     if (!dataSnapshot.exists() || !dataSnapshot.hasChildren()) {
                         Toast.makeText(getApplicationContext(), "Nothing to display, Add a post to begin", Toast.LENGTH_SHORT).show();
-                        goTosWithFlags(HomeActivity.this, AddPostActivity.class);
+
+                        mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), AddPostActivity.class);
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(getApplicationContext(),"Canceled",Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "onCancelled: ");
                 }
             });
         } catch (Exception e) {
-            Log.d(TAG, "checkDatabaseState: error: "+e.getMessage());
+            Log.d(TAG, "checkDatabaseState: error: " + e.getMessage());
         }
+
+        try {
+            mDatabaseUserRef = firebasedatabase.getReference("users").getRef();
+            mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //i check if there is any users on the database
+                    Log.d(TAG, "Snapshot HomeActivity, Snapshot.has children: " + dataSnapshot.hasChildren());
+                    if (!dataSnapshot.exists() || !dataSnapshot.hasChildren()) {
+                        mAuth.signOut();
+                        LoginManager.getInstance().logOut();
+                        Toast.makeText(getApplicationContext(), "Error finding this user on the database. please login in again", Toast.LENGTH_SHORT).show();
+
+                        mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), LoginActivity.class);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        } catch (Exception e) {
+            Log.d(TAG, "checkDatabaseState: error: " + e.getMessage());
+        }
+
+        try {
+            mDatabaseUserRef = firebasedatabase.getReference("users");
+            mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    List<String> keyList = new ArrayList<>();
+                    boolean exists = false;
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        keyList.add(ds.getKey());
+                    }
+                    for (String userId : keyList) {
+                        if (userId.contains(current_user.getUid()))
+                            exists = true;
+                    }
+
+                    if (!exists) {
+
+                        mAuth.signOut();
+                        LoginManager.getInstance().logOut();
+                        System.exit(0);
+                    }
+                }
+
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        } catch (Exception e) {
+            Log.d(TAG, "checkDatabaseState: error: " + e.getMessage());
+        }
+        String s =  firebasedatabase.getReference("users").getKey();
+
+        if (s == null){
+            mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
+        }
+
+
+
+
+        current_userRef = firebasedatabase.getReference("users").child(current_user.getUid()).getRef();
+        current_userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+                String name  = current_userRef.child("display_name").getKey();
+                if (name.equals("Chose a user name")) {
+                    mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), UserProfileActivity.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -115,8 +197,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
         checkDatabaseState();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
     }
 
     /**
@@ -128,10 +210,8 @@ public class HomeActivity extends AppCompatActivity {
         adapter.addFragment(new HomeFragment()); //index 1
         ViewPager viewPager = findViewById(R.id.container);
         viewPager.setAdapter(adapter);
-
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.home);
     }
 
@@ -168,10 +248,5 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    public void goTosWithFlags(Context context, Class<? extends AppCompatActivity> cl) {
-        startActivity(new Intent(context, cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        finish();
-
-    }
 
 }

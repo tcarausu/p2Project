@@ -1,22 +1,32 @@
 package com.example.myapplication.user_profile;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.Post;
+import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class UserProfileActivity extends AppCompatActivity implements UserProfileFragment.OnGridImageSelectedListener {
 
     private static final String TAG = "UserProfileActivity";
     private FirebaseMethods mFirebaseMethods ;
     private FirebaseAuth mAuth ;
+    private DatabaseReference current_userRef;
+    private FirebaseDatabase firebasedatabase ;
+    private FirebaseUser current_user;
 
 
     @Override
@@ -26,7 +36,10 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
+        firebasedatabase = FirebaseMethods.getmFirebaseDatabase() ;
+        current_user = mAuth.getCurrentUser() ;
+        checkUserDetails();
 
         init();
     }
@@ -34,7 +47,42 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
+    }
+
+
+    private void checkUserDetails(){
+
+        try {
+
+            current_userRef = firebasedatabase.getReference("users").child(current_user.getUid()).getRef();
+            current_userRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    User user = dataSnapshot.getValue(User.class);
+                    if (user.getDisplay_name().equals("Chose a user name")) {
+
+                        EditProfileFragment fragment = new EditProfileFragment();
+                        FragmentTransaction transaction = UserProfileActivity.this.getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.container, fragment);
+                        transaction.addToBackStack(getString(R.string.edit_profile_fragment));
+                        transaction.commit();
+                        Toast.makeText(getApplicationContext(),"Please chose a user name to identify yourself",Toast.LENGTH_SHORT).show();
+
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+        catch (Exception e ){
+            Toast.makeText(getApplicationContext(), "Error finding this user on the database. please login in again", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -49,7 +97,6 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         UserProfileFragment fragment = new UserProfileFragment();
         FragmentTransaction transaction = UserProfileActivity.this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, fragment);
-
         transaction.addToBackStack(getString(R.string.profile_fragment));
         transaction.commit();
 
@@ -65,7 +112,6 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     @Override
     public void onGridImageSelected(Post post, int activityNr) {
         Log.d(TAG, "onGridImageSelected: selected an image gridView:" + post.toString());
-
         ViewPostFragmentNewsFeed fragment = new ViewPostFragmentNewsFeed();
         Bundle args = new Bundle();
         args.putParcelable(getString(R.string.post), post);
@@ -77,12 +123,4 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         transaction.commit();
 
     }
-
-
-    public void gotos(Context context, Class<? extends AppCompatActivity> cl){
-        startActivity(new Intent(context,cl)
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
-
-    }
-
 }

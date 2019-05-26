@@ -13,7 +13,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -30,12 +29,13 @@ import java.util.TimeZone;
 public class FirebaseMethods {
 
     private static final String TAG = "FirebaseMethods";
+    private Context mContext;
 
-    private static FirebaseAuth mAuth;
+    private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private static FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
     private static FirebaseStorage sFirebaseStorage = FirebaseStorage.getInstance();
     private static DatabaseReference myRef = mFirebaseDatabase.getReference();
-    private GoogleSignInClient mGoogleSignInClient;
+    private LoginManager mLoginManager = LoginManager.getInstance();
 
 
     private GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -43,6 +43,7 @@ public class FirebaseMethods {
             .requestEmail()
             .build();
 
+    private GoogleSignInClient mGoogleSignInClient;
     public static FirebaseStorage getFirebaseStorage() {
         return sFirebaseStorage;
     }
@@ -51,9 +52,12 @@ public class FirebaseMethods {
         return mFirebaseDatabase;
     }
 
-    private String userUID;
-    private Context mContext;
-    private LoginManager mLoginManager = LoginManager.getInstance();
+
+
+    public LoginManager getLoginManager() {
+        return mLoginManager;
+    }
+
 
     public static FirebaseAuth getAuth() {
         return mAuth;
@@ -62,11 +66,7 @@ public class FirebaseMethods {
     private FirebaseMethods(Context context) {
         // Mo.Msaad modification modification
         synchronized (FirebaseMethods.class) {
-            mAuth = FirebaseAuth.getInstance();
-            mFirebaseDatabase = FirebaseDatabase.getInstance();
-            myRef = mFirebaseDatabase.getReference();
             mContext = context;
-            mLoginManager = LoginManager.getInstance();
             mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
 
         }
@@ -210,21 +210,30 @@ public class FirebaseMethods {
     }
 
 
-    public void checkUserStateIfNull(Context context, FirebaseAuth auth, FirebaseUser user) {
+    public void checkUserStateIfNull(Context context, FirebaseAuth auth) {
 
         Log.d(TAG, "checkUserStateIfNull: is called");
-        if (auth == null || user == null) {
+        if (auth == null || auth.getCurrentUser() == null) {
+            mLoginManager.logOut();
             auth.signOut();
         }
     }
 
     public void checkAuth(Context context ,FirebaseAuth auth){
-        if (auth != null || mAuth.getCurrentUser() == null ){
+
+        if (mAuth == null || mAuth.getCurrentUser() == null){
+            auth.signOut();
+            mLoginManager.logOut();
+        }
+       else if (auth != null || mAuth.getCurrentUser() != null ){
             context.startActivity(new Intent(context, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
+
+
     }
 
     public void goToWhereverWithFlags(Context activityContext, Context c , Class <? extends AppCompatActivity> cl){
+
         activityContext.startActivity(new Intent(c,cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 

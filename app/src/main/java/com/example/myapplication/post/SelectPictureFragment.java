@@ -56,6 +56,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseAuth mAuth;
     private DatabaseReference myRef;
+    private FirebaseMethods mFirebaseMethods;
 
     private ImageView galleryImageView;
     private Button mSelectPicButton;
@@ -76,16 +77,19 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select_picture, container, false);
+        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+
 
         /**
          You should unregister the receivers in onPause() and register them in onResume().
          This way, when Android destroys and recreates the activity for the configuration change,
          or for any reason you will still have receivers set up.
          * **/
-        getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         intent = new Intent(getActivity(), NextActivity.class);
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
         myRef = mFirebaseDatabase.getReference("users").child(mAuth.getCurrentUser().getUid());
         setUserProfilePic();
         setLayout(view);
@@ -114,16 +118,18 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     }
 
     private void setUserProfilePic() {
+
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    final User user = dataSnapshot.getValue(User.class);
-                    if (user.getProfile_photo() != null) {
-                      Glide.with(getApplicationContext()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
-                    } else
-                        Glide.with(getApplicationContext()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
+                final User user = dataSnapshot.getValue(User.class);
+                if (user.getProfile_photo() == null) {
+                    Glide.with(getApplicationContext()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
 
-                }
+                } else
+                Glide.with(getApplicationContext()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
+
+            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -253,8 +259,8 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
              * ClickListener which will start the HomeAcivity
              */
             case R.id.close_share:
-                Intent toHomeActivity = new Intent(getActivity(), HomeActivity.class);
-                startActivity(toHomeActivity);
+
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), HomeActivity.class);
 
                 break;
             /**
@@ -277,11 +283,10 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.imageView_gallery:
-                dialogChoice();
+                checkPermissions();
                 break;
             case R.id.circular:
-                startActivity(new Intent(getActivity(), UserProfileActivity.class));
-                getActivity().finish();
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), UserProfileActivity.class);
                 break;
 
         }

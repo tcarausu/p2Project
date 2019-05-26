@@ -37,11 +37,9 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
 
     //firebase
     private FirebaseAuth mAuth;
-    private FirebaseMethods mFirebaseMethods ;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseMethods mFirebaseMethods;
 
-
-
+    //views
     private SectionsStatePagerAdapter pagerAdapter;
     private ViewPager mViewPager;
     private RelativeLayout mRelativeLayout;
@@ -51,8 +49,9 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
-        mFirebaseMethods =  FirebaseMethods.getInstance(getApplicationContext());
+        mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
 
 
         initLayout();
@@ -76,7 +75,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     public void onClick(View v) {
         if (v.getId() == R.id.backArrow) {
             Log.d(TAG, "onClick: navigating to account settings");
-            goTosWithFlags(getApplicationContext(),UserProfileActivity.class);
+            goTosWithFlags(getApplicationContext(), UserProfileActivity.class);
         }
 
     }
@@ -84,8 +83,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     @Override
     public void onStart() {
         super.onStart();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
-
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
 
 
     }
@@ -93,7 +91,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
 
     }
 
@@ -127,9 +125,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         Log.d(TAG, "setupSettingsList: initializing 'Account Settings' list");
         ListView listView = findViewById(R.id.listViewAccountSettings);
 
-//        ArrayList<String> options = new ArrayList<>();
-//        options.add(getString(R.string.sign_out_fragment));
-         String signOut = "Sign Out";
+        String signOut = "Sign Out";
 
         ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
         listView.setAdapter(adapter);
@@ -177,11 +173,11 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         builder.setItems(options, (dialog, which) -> {
             if (options[which].equals("SIGN-OUT")) {
                 Log.d(TAG, "dialogChoice: sign-out");
-                    mAuth.signOut();
+                mAuth.signOut();
                 LoginManager.getInstance().logOut();
 
 
-                goTosWithFlags(getApplicationContext(),LoginActivity.class);
+                goTosWithFlags(getApplicationContext(), LoginActivity.class);
                 Toast.makeText(getApplicationContext(), "Successful Sign Out", Toast.LENGTH_SHORT).show();
 
             } else if (options[which].equals("CANCEL")) {
@@ -195,8 +191,8 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     }
 
     public void goTosWithFlags(Context applicationContext, Class<? extends AppCompatActivity> cl) {
-        startActivity(new Intent(applicationContext,cl)
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        startActivity(new Intent(applicationContext, cl)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         finish();
     }
 }
