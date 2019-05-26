@@ -334,8 +334,10 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                         Glide.with(this).load(getProf_pic_URL()).centerCrop().into(mProfilePhoto);
                         goBack();
 //                        Picasso.get().load(getProf_pic_URL()).resize(mProfilePhoto.getWidth(), mProfilePhoto.getHeight()).centerCrop().into(mProfilePhoto);
-                    }).addOnFailureListener(e -> Toast.makeText(EditProfileFragment.this.getActivity(), "Failed, " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                } else
+                    }).addOnFailureListener(e ->
+                    Toast.makeText(EditProfileFragment.this.getActivity(), "Failed, " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                }
+                else
                     Toast.makeText(EditProfileFragment.this.getActivity(), "Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
 

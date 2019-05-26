@@ -66,6 +66,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private DatabaseReference myRef, postsRef, userPostCount;
     private FirebaseMethods firebaseMethods;
     private FirebaseUser current_user;
+    private String userId;
 
     private BottomNavigationViewEx bottomNavigationViewEx;
 
@@ -83,12 +84,15 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         firebaseMethods = FirebaseMethods.getInstance(getContext());
         mAuth = FirebaseMethods.getAuth();
+        firebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
+
         current_user = mAuth.getCurrentUser();
+        userId = current_user.getUid();
+
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myRef = mFirebaseDatabase.getReference();
-        postsRef = mFirebaseDatabase.getReference("users").child(current_user.getUid()).child("posts");
-        userPostCount = mFirebaseDatabase.getReference("posts").child(current_user.getUid());
-
+        postsRef = mFirebaseDatabase.getReference("users").child(userId).child("posts");
+        userPostCount = mFirebaseDatabase.getReference("posts").child(userId);
         initLayout(view);
         setListeners(view);
         setupFirebaseAuth();
@@ -151,7 +155,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
         mAuthListener = firebaseAuth -> {
-            FirebaseUser user = mAuth.getCurrentUser();
+            FirebaseUser user = firebaseAuth.getCurrentUser();
 
             if (user != null) {
                 Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
@@ -167,7 +171,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                String photoRef = myRef.child(current_user.getUid()).child("profile_photo").getRef().toString();
+                String photoRef = myRef.child(userId).child("profile_photo").getRef().toString();
                 //retrive user information from the database
                 if (photoRef.equals("photo")) {
                     mProfilePhoto.setImageResource(R.mipmap.simo_design_avatar);
