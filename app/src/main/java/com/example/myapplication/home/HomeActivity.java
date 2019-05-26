@@ -14,11 +14,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -42,7 +44,7 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseUser current_user;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseMethods mFirebaseMethods;
-    private DatabaseReference mDatabasePostRef;
+    private DatabaseReference mDatabasePostRef, mDatabaseUserRef;
     private FirebaseDatabase firebasedatabase;
     private Query postQuery;
 
@@ -52,15 +54,17 @@ public class HomeActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
         current_user = mAuth.getCurrentUser();
         firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
-        mDatabasePostRef = firebasedatabase.getReference("posts").getRef();
+
+
+
 
         checkDatabaseState();
         initImageLoader();
@@ -75,7 +79,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
 
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
         checkDatabaseState();
 
 
@@ -85,6 +89,7 @@ public class HomeActivity extends AppCompatActivity {
     private void checkDatabaseState() {
 
         try {
+            mDatabasePostRef = firebasedatabase.getReference("posts").getRef();
             mDatabasePostRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -103,6 +108,32 @@ public class HomeActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.d(TAG, "checkDatabaseState: error: "+e.getMessage());
         }
+
+        try
+        {
+            mDatabaseUserRef = firebasedatabase.getReference("users").getRef();
+            mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "Snapshot HomeActivity, Snapshot.has children: " + dataSnapshot.hasChildren());
+                    if (!dataSnapshot.exists() || !dataSnapshot.hasChildren()) {
+                        mAuth.signOut();
+                        LoginManager.getInstance().logOut();
+
+                        Toast.makeText(getApplicationContext(), "Error finding this user on the database. please login in again", Toast.LENGTH_SHORT).show();
+                        goTosWithFlags(HomeActivity.this, LoginActivity.class);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(getApplicationContext(),"Canceled",Toast.LENGTH_SHORT).show();
+                    goTosWithFlags(HomeActivity.this, LoginActivity.class);
+                }
+            });
+        } catch (Exception e) {
+            Log.d(TAG, "checkDatabaseState: error: "+e.getMessage());
+        }
     }
 
 
@@ -116,7 +147,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
 
         checkDatabaseState();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
     }
 
     /**

@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
+import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -60,7 +61,6 @@ public class HistoryLogActivity extends AppCompatActivity {
         initLayout();
         buttonListeners();
         setupBottomNavigationView();
-
         connectToDatabase();
         getCurrentUserPosts();
         buildRecyclerView();
@@ -102,7 +102,7 @@ public class HistoryLogActivity extends AppCompatActivity {
 
     // Connection to user's posts node
     private void connectToDatabase() {
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseMethods.getAuth();
         mCurrentUserId = mAuth.getCurrentUser().getUid();
         firebaseDatabase = FirebaseDatabase.getInstance();
 

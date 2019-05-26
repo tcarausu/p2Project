@@ -25,10 +25,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
+import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.models.User;
 import com.example.myapplication.user_profile.UserProfileActivity;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.Permissions;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -56,6 +58,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseAuth mAuth;
     private DatabaseReference myRef;
+    private FirebaseMethods mFirebaseMethods ;
 
     private ImageView galleryImageView;
     private Button mSelectPicButton;
@@ -76,6 +79,8 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select_picture, container, false);
+        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
+
 
         /**
          You should unregister the receivers in onPause() and register them in onResume().
@@ -86,6 +91,14 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         intent = new Intent(getActivity(), NextActivity.class);
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
+
+        if (mAuth.getCurrentUser() == null){
+            mAuth.signOut();
+            LoginManager.getInstance().logOut();
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+        }
+        assert mAuth.getCurrentUser().getUid() != null ;
         myRef = mFirebaseDatabase.getReference("users").child(mAuth.getCurrentUser().getUid());
         setUserProfilePic();
         setLayout(view);
@@ -114,6 +127,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     }
 
     private void setUserProfilePic() {
+
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

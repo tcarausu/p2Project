@@ -26,7 +26,7 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
 
         init();
     }
@@ -34,7 +34,7 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
     }
 
     @Override

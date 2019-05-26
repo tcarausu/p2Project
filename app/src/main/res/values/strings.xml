@@ -126,7 +126,7 @@
     <string name="dbname_photos">photos</string>
     <string name="dbname_posts">posts</string>
 
-    <string name="field_username">mUsername</string>
+    <string name="field_username">username</string>
     <string name="field_user_id">userId</string>
     <string name="field_post_id">postId</string>
     <string name="field_likes">mLikes</string>

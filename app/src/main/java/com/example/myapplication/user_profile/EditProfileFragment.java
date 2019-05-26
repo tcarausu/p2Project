@@ -302,7 +302,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
         Objects.requireNonNull(getActivity()).registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// we create it back in onResume
 
     }

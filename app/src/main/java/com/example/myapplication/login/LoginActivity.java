@@ -91,6 +91,14 @@ public class LoginActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        connectFirebase();
+        mFirebaseMethods.checkAuth(getApplicationContext(),mAuth);
+        initLayout();
+        buttonListeners();
+    }
+
+    private void connectFirebase() {
+
         mFirebaseMethods =  FirebaseMethods.getInstance(getApplicationContext());
         fragmentManager = getSupportFragmentManager();
         mAuth = FirebaseMethods.getAuth();
@@ -98,9 +106,7 @@ public class LoginActivity extends AppCompatActivity implements
         firebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         user_ref = firebaseDatabase.getReference("users");
         myRef = firebaseDatabase.getReference();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
-        initLayout();
-        buttonListeners();
+
     }
 
 
@@ -169,8 +175,6 @@ public class LoginActivity extends AppCompatActivity implements
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        mFirebaseMethods.checkAuth(getApplicationContext(),mAuth);
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
 
 
 
@@ -180,7 +184,7 @@ public class LoginActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         mFirebaseMethods.checkAuth(getApplicationContext(),mAuth);
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+
 
     }
 

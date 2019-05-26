@@ -62,10 +62,13 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mAuth = FirebaseAuth.getInstance();
-        current_user = mAuth.getCurrentUser();
         mFirebaseMethods =  FirebaseMethods.getInstance(getContext());
-        mUserId = current_user.getUid();
+        mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
+
+
+        current_user = mAuth.getCurrentUser();
+
         firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
         mDatabasePostRef = firebasedatabase.getReference("posts");
         mRecyclerView = view.findViewById(R.id.recyclerViewID);
@@ -100,7 +103,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
     }
 
     public class GetData extends AsyncTask<Void,Void,Void> {
@@ -117,10 +120,10 @@ public class HomeFragment extends Fragment {
 
                         for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                             String postUserId = userSnapshot.getKey();
-                            mDatabaseUserRef = firebasedatabase.getReference("users/" + mUserId);
+                            mDatabaseUserRef = firebasedatabase.getReference("users/" + current_user.getUid());
                             mDatabaseUserPostRef = firebasedatabase.getReference("users/" + postUserId);
 
-                            Log.d(TAG, "onDataChange: mUserId :" + mUserId);
+                            Log.d(TAG, "onDataChange: mUserId :" + current_user.getUid());
 
                             for (DataSnapshot postSnapshot : userSnapshot.getChildren()) {
 
@@ -143,7 +146,7 @@ public class HomeFragment extends Fragment {
                                 mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        if (mUserId.equals(postUserId)) {
+                                        if (current_user.getUid().equals(postUserId)) {
                                             final User user = dataSnapshot.getValue(User.class);
                                             if (user.getUsername()== null){
                                                 mPosts.remove(post);
@@ -171,7 +174,7 @@ public class HomeFragment extends Fragment {
                                 mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        if (!mUserId.equals(postUserId)) {
+                                        if (!current_user.getUid().equals(postUserId)) {
                                             final User user = dataSnapshot.getValue(User.class);
                                             try {
                                                 if (user.getUsername()== null){

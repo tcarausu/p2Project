@@ -84,7 +84,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     @Override
     public void onStart() {
         super.onStart();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
 
 
 
@@ -93,7 +93,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth,mAuth.getCurrentUser());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
 
     }
 

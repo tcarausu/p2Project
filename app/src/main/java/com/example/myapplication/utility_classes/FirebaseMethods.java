@@ -13,7 +13,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -66,7 +65,6 @@ public class FirebaseMethods {
             mFirebaseDatabase = FirebaseDatabase.getInstance();
             myRef = mFirebaseDatabase.getReference();
             mContext = context;
-            mLoginManager = LoginManager.getInstance();
             mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
 
         }
@@ -210,18 +208,26 @@ public class FirebaseMethods {
     }
 
 
-    public void checkUserStateIfNull(Context context, FirebaseAuth auth, FirebaseUser user) {
+    public void checkUserStateIfNull(Context context, FirebaseAuth auth) {
 
         Log.d(TAG, "checkUserStateIfNull: is called");
-        if (auth == null || user == null) {
+        if (auth == null || auth.getCurrentUser() == null) {
+            mLoginManager.logOut();
             auth.signOut();
         }
     }
 
     public void checkAuth(Context context ,FirebaseAuth auth){
-        if (auth != null || mAuth.getCurrentUser() == null ){
+
+        if (mAuth == null || mAuth.getCurrentUser() == null){
+            auth.signOut();
+            mLoginManager.logOut();
+        }
+       else if (auth != null || mAuth.getCurrentUser() != null ){
             context.startActivity(new Intent(context, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
+
+
     }
 
     public void goToWhereverWithFlags(Context activityContext, Context c , Class <? extends AppCompatActivity> cl){
