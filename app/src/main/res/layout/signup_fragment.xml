@@ -29,7 +29,8 @@
         android:layout_below="@+id/SignUpFragmnt_back_button"
         android:layout_marginTop="50dp"
         android:layout_centerHorizontal="true"
-        android:text="@string/forgot_password_text"
+        android:text="@string/signUp"
+        android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="24sp" />
 
@@ -48,8 +49,8 @@
         android:layout_marginTop="10dp"
         android:drawableStart="@drawable/orange_arrow_left"
         android:background="@drawable/input_fields_with_shadow"
-        android:fontFamily="@font/arbutus"
         android:textColor="@color/orange"
+        android:textStyle="bold"
         android:text="@string/go_back_signUpFragment" />
 
     <EditText
@@ -131,11 +132,11 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/input_fields_with_shadow"
         android:padding="10dp"
-        android:fontFamily="@font/arbutus"
         android:shadowColor="@color/black"
         android:shadowDx="5"
         android:shadowRadius="10"
         android:text="@string/signUp"
+        android:textStyle="bold"
         android:textColor="@color/orange" />
 
 
