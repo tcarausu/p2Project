@@ -102,9 +102,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             // implementation for displaying the comments for each post
         });
 
-        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmRecipe()));
+        viewHolder.mRecipe.setOnClickListener(v ->
+                viewHolder.post_likes.setText(postCurrent.getmRecipe()));
 
-        viewHolder.mIngredients.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmIngredients()));
+        viewHolder.mIngredients.setOnClickListener(v ->
+                viewHolder.post_likes.setText(postCurrent.getmIngredients()));
         viewHolder.post_TimeStamp.setText(postCurrent.getDate_created());
 
     }

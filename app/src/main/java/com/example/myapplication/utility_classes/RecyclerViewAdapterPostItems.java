@@ -120,17 +120,25 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
             mContext.startActivity(intent);
         });
 
-        viewHolder.mRecipe.setOnClickListener(v -> {
-            // implementation for displaying the recipe for each post
-            viewHolder.mToolbarExpasionText.setText(currentPost.getmRecipe());
-            viewHolder.focusExpandable(viewHolder, FOCUS_ANY);
-        });
+//        viewHolder.mRecipe.setOnClickListener(v -> {
+//            // implementation for displaying the recipe for each post
+//            viewHolder.mToolbarExpasionText.setText(currentPost.getmRecipe());
+//            viewHolder.focusExpandable(viewHolder, FOCUS_ANY);
+//        });
+//
+//        viewHolder.mIngredients.setOnClickListener(v -> {
+//            // implementation for displaying the ingredients for each post
+//            viewHolder.mToolbarExpasionText.setText(currentPost.getmIngredients());
+//            viewHolder.focusExpandable(viewHolder, FOCUS_ANY);
+//        });
 
-        viewHolder.mIngredients.setOnClickListener(v -> {
-            // implementation for displaying the ingredients for each post
-            viewHolder.mToolbarExpasionText.setText(currentPost.getmIngredients());
-            viewHolder.focusExpandable(viewHolder, FOCUS_ANY);
-        });
+        viewHolder.mRecipe.setOnClickListener(v ->
+                viewHolder.likes_overview.setText(currentPost.getmRecipe()));
+
+        viewHolder.mIngredients.setOnClickListener(v ->
+                viewHolder.likes_overview.setText(currentPost.getmIngredients()));
+
+        viewHolder.post_TimeStamp.setText(currentPost.getDate_created());
     }
 
     @Override
@@ -170,9 +178,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
             mIngredients = itemView.findViewById(R.id.ingredientsBtnID);
             // Expandable Toolbar and Contents
             mPostToolbarBtnsExpansionContainer = itemView.findViewById(R.id.toolbarExpansionContainerID);
-//            mToolbarExpasionText = itemView.findViewById(R.id.expansionTextID);
 
-//            mOverviewLayout = itemView.findViewById(R.id.OverviewLayoutID);
             likes_overview = itemView.findViewById(R.id.expansionTextID);
             post_TimeStamp = itemView.findViewById(R.id.post_TimeStamp);
 
