@@ -30,15 +30,6 @@
             <!--<include layout="@layout/layout_center_view_pager" />-->
             <include layout="@layout/layout_history_log"/>
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginBottom="64dp"
-                android:layout_marginEnd="24dp"
-                />
 
         </RelativeLayout>
 

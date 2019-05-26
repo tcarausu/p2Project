@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import com.example.myapplication.models.Comment;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
@@ -22,6 +23,7 @@ public class PostModelTests {
     private Post post;
     private User user;
     private List<Like> likes;
+    private List<Comment> comments;
 
     @Before
     public void createLogHistory() {
@@ -91,7 +93,7 @@ public class PostModelTests {
         String post_Id = "this_is_my_post_id";
         String ingredients = "Ingredients list of stuff";
 
-        post = new Post(description, foodImageUrl, recipe, ingredients, user_id, post_Id, dateCreated, likes);
+        post = new Post(description, foodImageUrl, recipe, ingredients, user_id, post_Id, dateCreated, likes, comments);
         post.setUser(user);
 
         assertNotEquals(incorrect_uid, post.getUserId());
@@ -119,7 +121,7 @@ public class PostModelTests {
         String noDescriptionAvailable = "No description available";
         post = new Post(emptyDescription, null, null,
                 null, null, null,
-                null, null);
+                null, null, null);
 
         assertNotEquals(emptyDescription, post.getmDescription());
         assertEquals(noDescriptionAvailable, post.getmDescription());

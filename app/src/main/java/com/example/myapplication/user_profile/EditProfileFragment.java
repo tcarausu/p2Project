@@ -57,8 +57,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private static final String TAG = "EditProfileFragment";
     private static final int REQUEST_CAMERA = 11;
     private static final int REQUEST_GALLERY = 22;
-    private static final int ACTION_WIFI_SETTINGS = 55;
-
 
     //firebase
     private FirebaseAuth mAuth;
@@ -66,14 +64,12 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
-    private FirebaseMethods firebaseMethods;
-    private String userID;
+    private FirebaseMethods mFirebaseMethods;
 
     // firebase storage
     private StorageReference profilePicStorage;
     private FirebaseStorage storage;
     private FirebaseDatabase database;
-    private FirebaseMethods mFirebaseMethods;
 
     //Edit Profile widgets
     private TextView mChangeProfilePhoto, mPrivateInformation;
@@ -113,9 +109,10 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
+
+        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
         currentUser = mAuth.getCurrentUser();
-        firebaseMethods = FirebaseMethods.getInstance(getActivity());
+
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myRef = mFirebaseDatabase.getReference();
         storage = FirebaseMethods.getFirebaseStorage();
@@ -187,7 +184,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
      **/
 
     private void openDialogChoice() {
-
         final CharSequence[] options = {"Mobile data", "WIFI", "CANCEL"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Select network to proceed");
@@ -257,13 +253,13 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (dataSnapshot.exists()) {
-                    firebaseMethods.updateUsername(currentUser.getUid(), username, display_name, website, about, phone_number, imageUrl);
+                    mFirebaseMethods.updateUsername(currentUser.getUid(), username, display_name, website, about, phone_number, imageUrl);
                     Log.d(TAG, "onDataChange: datasnapshot exissts: " + dataSnapshot.exists());
                     Log.d(TAG, "onDataChange: user updated with:\n " + "name: " + username
                             + "\n" + "displayName: " + display_name + "\n" + "website: " + website + "\n"
                             + "about: " + about + "\n" + "phone: " + phone_number + "\n" + "URL: " + imageUrl);
                 } else {
-                    firebaseMethods.updateUsername(currentUser.getUid(), username, display_name, website, about, phone_number, "");
+                    mFirebaseMethods.updateUsername(currentUser.getUid(), username, display_name, website, about, phone_number, "");
                     mProfilePhoto.setImageResource(R.drawable.my_avatar);
                     smallProfilePic.setImageResource(R.drawable.my_avatar);
                 }
@@ -472,6 +468,38 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     }
 
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
+            } else Log.d(TAG, "onAuthStateChanged: signed out");
+        };
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // retrive user information from the database
+                if (isAdded())
+                    setProfileWidgets(mFirebaseMethods.getUserSettings(dataSnapshot));
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                if (mAuth != null)
+                    try {
+                        Toast.makeText(getContext(), "Proccess canceled, " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Log.d(TAG, "onCancelled: exception: " + e.getMessage());
+                    }
+            }
+        });
+    }
+
     private void goBack() {
         startActivity(new Intent(getActivity(), UserProfileActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -503,37 +531,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    private void setupFirebaseAuth() {
-        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
-        mAuthListener = firebaseAuth -> {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-
-            if (user != null) {
-                Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
-            } else Log.d(TAG, "onAuthStateChanged: signed out");
-        };
-
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                // retrive user information from the database
-                if (isAdded())
-                    setProfileWidgets(firebaseMethods.getUserSettings(dataSnapshot));
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                if (mAuth != null)
-                    try {
-                        Toast.makeText(getContext(), "Proccess canceled, " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        Log.d(TAG, "onCancelled: exception: " + e.getMessage());
-                    }
-            }
-        });
-    }
 }
 
 //TODO this if we dont want to display the dialog everytime and save the user choice for next use.

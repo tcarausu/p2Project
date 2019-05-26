@@ -255,15 +255,15 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
 
-            /**
-             * ClickListener which will start the HomeAcivity
+            /*
+             * ClickListener which will start the HomeActivity
              */
             case R.id.close_share:
 
                 mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), HomeActivity.class);
 
                 break;
-            /**
+            /*
              * ClickListener that will open AddPostActivity if
              * galleryImageView is not empty
              */

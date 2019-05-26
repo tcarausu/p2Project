@@ -1,7 +1,10 @@
 package com.example.myapplication.utility_classes;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.home.CommentsActivity;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 
@@ -23,14 +27,27 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    private static final String TAG = "RecyclerViewAdapter";
+public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerViewAdapterPostItems.ViewHolder> {
+    private static final String TAG = "AdapterPostItems";
 
+    // Member variables
     private Context mContext;
+    // Get the recycler view that contains this adapter so that we are able to scroll automatically
+    private RecyclerView mRecyclerView;
     private List<Post> mPosts;
 
-    public RecyclerViewAdapter(Context mContext, List<Post> mPosts) {
-        this.mContext = mContext;
+    // Constants
+    private final int FOCUS_ANY = -350;
+
+    public RecyclerViewAdapterPostItems(Context context, List<Post> posts
+//            , RecyclerView recyclerView
+    ) {
+        this.mContext = context;
+        this.mPosts = posts;
+//        this.mRecyclerView = recyclerView;
+    }
+
+    public void setPostsList(List<Post> mPosts) {
         this.mPosts = mPosts;
     }
 
@@ -40,10 +57,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private User getUserForPost(Post post) {
         return post.getUser();
-    }
-
-    public void setPostsList(List<Post> mPosts) {
-        this.mPosts = mPosts;
     }
 
     @NonNull
@@ -59,8 +72,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         viewHolder.mOptions.setVisibility(View.INVISIBLE);
         Log.d(TAG, "onBindViewHolder: Called");
 
-        final Post postCurrent = mPosts.get(index);
-        User postUser = getUserForPost(postCurrent);
+        final Post currentPost = mPosts.get(index);
+        User postUser = getUserForPost(currentPost);
 
         if (postUser != null) {
             Glide.with(mContext)
@@ -80,44 +93,64 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         }
 
-        viewHolder.mDescription.setText(postCurrent.getmDescription());
+        viewHolder.mDescription.setText(currentPost.getmDescription());
 
         Glide.with(mContext)
-                .load(postCurrent.getmFoodImgUrl())
+                .load(currentPost.getmFoodImgUrl())
                 .fitCenter()
                 .centerCrop()
                 .into(viewHolder.mFoodImg);
 
 
+        // Button Listeners ***************************************************
         viewHolder.mLikes.setOnClickListener(v -> {
-            int nrOfLikes =  postCurrent.getLikeList().size();
-            if (nrOfLikes > 1){
-            viewHolder.post_likes.setText(nrOfLikes+ " Likes");
-            }
-            else
-            viewHolder.post_likes.setText(nrOfLikes+ " Like");
+
+            int nrOfLikes = currentPost.getLikeList().size();
+            if (nrOfLikes > 1) {
+                viewHolder.likes_overview.setText(nrOfLikes + " Likes");
+            } else
+                viewHolder.likes_overview.setText(nrOfLikes + " Like");
         });
 
         viewHolder.mComments.setOnClickListener(v -> {
             // implementation for displaying the comments for each post
+            Intent intent = new Intent(mContext, CommentsActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("currentPost", currentPost);
+            intent.putExtras(bundle);
+            mContext.startActivity(intent);
         });
 
+//        viewHolder.mRecipe.setOnClickListener(v -> {
+//            // implementation for displaying the recipe for each post
+//            viewHolder.mToolbarExpasionText.setText(currentPost.getmRecipe());
+//            viewHolder.focusExpandable(viewHolder, FOCUS_ANY);
+//        });
+//
+//        viewHolder.mIngredients.setOnClickListener(v -> {
+//            // implementation for displaying the ingredients for each post
+//            viewHolder.mToolbarExpasionText.setText(currentPost.getmIngredients());
+//            viewHolder.focusExpandable(viewHolder, FOCUS_ANY);
+//        });
+
         viewHolder.mRecipe.setOnClickListener(v ->
-                viewHolder.post_likes.setText(postCurrent.getmRecipe()));
+                viewHolder.likes_overview.setText(currentPost.getmRecipe()));
 
         viewHolder.mIngredients.setOnClickListener(v ->
-                viewHolder.post_likes.setText(postCurrent.getmIngredients()));
-        viewHolder.post_TimeStamp.setText(postCurrent.getDate_created());
+                viewHolder.likes_overview.setText(currentPost.getmIngredients()));
 
+        viewHolder.post_TimeStamp.setText(currentPost.getDate_created());
     }
-
-
 
     @Override
     public int getItemCount() {
         return mPosts.size();
     }
 
+
+    /**
+     * Creating custom ViewHolder class
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         RelativeLayout mParentLayout;
@@ -125,10 +158,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView mUserName;
         TextView mDescription;
         ImageView mFoodImg;
-        ImageButton mLikes, mComments, mRecipe, mIngredients , mOptions;
-        FrameLayout mPostToolbarBtnsExpansionContainer;
-        TextView mToolbarExpasionText, post_likes, post_TimeStamp;
+        ImageButton mLikes, mComments, mRecipe, mIngredients, mOptions;
+        RelativeLayout mPostToolbarBtnsExpansionContainer, mOverviewLayout;
+//        FrameLayout mPostToolbarBtnsExpansionContainer;
+        TextView mToolbarExpasionText, likes_overview, post_TimeStamp;
 
+
+        // ViewHolder item constructor
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -136,16 +172,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             mProfilePic = itemView.findViewById(R.id.userProfilePicID);
             mUserName = itemView.findViewById(R.id.userNameID);
             mDescription = itemView.findViewById(R.id.postDescriptionID);
+            mOptions = itemView.findViewById(R.id.personal_post_options_menu);
             mFoodImg = itemView.findViewById(R.id.foodImgID);
             mLikes = itemView.findViewById(R.id.likesBtnID);
-            mOptions = itemView.findViewById(R.id.personal_post_options_menu);
             mComments = itemView.findViewById(R.id.commentsBtnID);
             mRecipe = itemView.findViewById(R.id.recipeBtnID);
             mIngredients = itemView.findViewById(R.id.ingredientsBtnID);
+            // Expandable Toolbar and Contents
             mPostToolbarBtnsExpansionContainer = itemView.findViewById(R.id.toolbarExpansionContainerID);
-            post_likes = itemView.findViewById(R.id.expansionTextID);
+
+            likes_overview = itemView.findViewById(R.id.expansionTextID);
             post_TimeStamp = itemView.findViewById(R.id.post_TimeStamp);
 
+        }
+
+        // Used to scroll recycler view over the expandable layout
+        private void focusExpandable(ViewHolder viewHolder, int focusItem) {
+            LinearLayoutManager lm = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+            lm.scrollToPositionWithOffset(viewHolder.getAdapterPosition(), focusItem);
         }
     }
 }

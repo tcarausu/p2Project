@@ -38,7 +38,7 @@ import java.util.ArrayList;
  * To feed all your data to the list, you must extend the RecyclerView.Adapter class. This object creates views for items,
  * and replaces the content of some of the views with new data items when the original item is no longer visible.
  */
-public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryLogRecyclerViewAdapter.CustomViewHolder> {
+public class RecyclerViewAdapterHistoryLogItems extends RecyclerView.Adapter<RecyclerViewAdapterHistoryLogItems.CustomViewHolder> {
 
     private ArrayList<HistoryLogPostItem> mPostsList;
     private OnRecyclerItemClickListener mListener; // This listener is going to be in our main activity
@@ -49,12 +49,14 @@ public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryL
         this.mPostsList = items;
     }
 
-    public HistoryLogRecyclerViewAdapter(ArrayList<HistoryLogPostItem> postsList) {
+    public RecyclerViewAdapterHistoryLogItems(ArrayList<HistoryLogPostItem> postsList) {
         mPostsList = postsList;
 //        setHasStableIds(true);
     }
 
-    /** Listener Interface*/
+    /**
+     * Listener Interface
+     */
     public interface OnRecyclerItemClickListener {
         //        void onRecyclerCardviewClicked(int position);
         void onMoreDotsClicked(int position);

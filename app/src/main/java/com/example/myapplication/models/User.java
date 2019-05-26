@@ -19,9 +19,14 @@ public class User implements Parcelable {
     private long phone_number;
     private String email;
 
-    public User(String about, String display_name, String username, String email, long phone_number,
-                long followers, long following, long posts, String profile_photo, String website) {
 
+    public User() {
+    }
+
+    public User(String about, String display_name, String username,
+                long followers, long following, long nrOfPosts,
+                String profile_photo, String website,
+                long phone_number, String email) {
 
         synchronized (User.class) {
             this.about = about;
@@ -29,15 +34,12 @@ public class User implements Parcelable {
             this.username = username;
             this.followers = followers;
             this.following = following;
-            this.nrOfPosts = posts;
+            this.nrOfPosts = nrOfPosts;
             this.profile_photo = profile_photo;
             this.website = website;
             this.phone_number = phone_number;
             this.email = email;
         }
-    }
-
-    public User() {
     }
 
     protected User(Parcel in) {
@@ -154,16 +156,16 @@ public class User implements Parcelable {
     @Override
     public String toString() {
         return "User{" +
-                "username='" + username + '\'' +
-                ", phone_number=" + phone_number +
-                ", email=" + email +
+                "about='" + about + '\'' +
                 ", display_name='" + display_name + '\'' +
-                ", about='" + about + '\'' +
+                ", username='" + username + '\'' +
                 ", followers=" + followers +
                 ", following=" + following +
                 ", nrOfPosts=" + nrOfPosts +
                 ", profile_photo='" + profile_photo + '\'' +
                 ", website='" + website + '\'' +
+                ", phone_number=" + phone_number +
+                ", email='" + email + '\'' +
                 '}';
     }
 

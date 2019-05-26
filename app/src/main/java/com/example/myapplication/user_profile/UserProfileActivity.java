@@ -22,10 +22,10 @@ import com.google.firebase.database.ValueEventListener;
 public class UserProfileActivity extends AppCompatActivity implements UserProfileFragment.OnGridImageSelectedListener {
 
     private static final String TAG = "UserProfileActivity";
-    private FirebaseMethods mFirebaseMethods ;
-    private FirebaseAuth mAuth ;
+    private FirebaseMethods mFirebaseMethods;
+    private FirebaseAuth mAuth;
     private DatabaseReference current_userRef;
-    private FirebaseDatabase firebasedatabase ;
+    private FirebaseDatabase firebasedatabase;
     private FirebaseUser current_user;
 
 
@@ -36,9 +36,10 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
-        firebasedatabase = FirebaseMethods.getmFirebaseDatabase() ;
-        current_user = mAuth.getCurrentUser() ;
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+
+        firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
+        current_user = mAuth.getCurrentUser();
         checkUserDetails();
 
         init();
@@ -47,12 +48,11 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
     }
 
 
-    private void checkUserDetails(){
-
+    private void checkUserDetails() {
         try {
 
             current_userRef = firebasedatabase.getReference("users").child(current_user.getUid()).getRef();
@@ -68,7 +68,7 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
                         transaction.replace(R.id.container, fragment);
                         transaction.addToBackStack(getString(R.string.edit_profile_fragment));
                         transaction.commit();
-                        Toast.makeText(getApplicationContext(),"Please chose a user name to identify yourself",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Please chose a user name to identify yourself", Toast.LENGTH_SHORT).show();
 
                     }
 
@@ -79,8 +79,7 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
                 }
             });
-        }
-        catch (Exception e ){
+        } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error finding this user on the database. please login in again", Toast.LENGTH_SHORT).show();
         }
     }
@@ -106,7 +105,7 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
      * Here we setup the View Post News Fragment, which later utilizes it to display the data,
      * providing with options such as deleting the post or reporting.
      *
-     * @param post We have to Post which the User Profile Fragment and later, View Post does utilize.
+     * @param post       We have to Post which the User Profile Fragment and later, View Post does utilize.
      * @param activityNr the Activity Number which is displaying the post.
      */
     @Override

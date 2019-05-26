@@ -46,7 +46,6 @@ public class HomeActivity extends AppCompatActivity {
     private DatabaseReference mDatabasePostRef, mDatabaseUserRef, current_userRef, usersRef;
     private FirebaseDatabase firebasedatabase;
 
-
     /**
      * @param savedInstanceState creates the app using the Bundle
      */
@@ -73,8 +72,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
-
-
     }
 
     @SuppressLint("RestrictedApi")
@@ -160,13 +157,11 @@ public class HomeActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.d(TAG, "checkDatabaseState: error: " + e.getMessage());
         }
-        String s =  firebasedatabase.getReference("users").getKey();
+        String s = firebasedatabase.getReference("users").getKey();
 
-        if (s == null){
-            mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
+        if (s == null) {
+            mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
         }
-
-
 
 
         current_userRef = firebasedatabase.getReference("users").child(current_user.getUid()).getRef();
@@ -174,7 +169,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
-                String name  = current_userRef.child("display_name").getKey();
+                String name = current_userRef.child("display_name").getKey();
                 if (name.equals("Chose a user name")) {
                     mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), UserProfileActivity.class);
                 }
