@@ -4,6 +4,7 @@
     android:id="@+id/parentLayoutID"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="24dp"
     android:background="@drawable/input_fields_frame_grey"
     android:padding="5dp">
 
@@ -102,7 +103,7 @@
             android:background="@drawable/input_fields_frame_grey">
 
             <ImageButton
-                android:id="@+id/likes_button"
+                android:id="@+id/likesBtnID"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -114,7 +115,7 @@
                 android:id="@+id/likes_not_pressed_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/likes_button"
+                android:layout_below="@id/likesBtnID"
                 android:layout_centerInParent="true"
                 android:text="Like"
                 android:textColor="@color/orange"
@@ -177,6 +178,7 @@
                 android:layout_below="@id/recipeBtnID"
                 android:layout_centerInParent="true"
                 android:text="Recipe"
+
                 android:textColor="@color/orange"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -206,6 +208,7 @@
                 android:layout_below="@id/ingredientsBtnID"
                 android:layout_centerInParent="true"
                 android:text="Ingredients"
+
                 android:textColor="@color/orange"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -213,41 +216,50 @@
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/time_Stamp_linear"
+        android:id="@+id/overviewLayoutID"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbarExpansionContainerID">
+
+        <!--<TextView-->
+            <!--android:id="@+id/likesOverview"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="32dp"-->
+            <!--android:layout_marginEnd="32dp"-->
+            <!--android:text="Liked by whoever, eve, and 30 others"-->
+            <!--android:textColor="@color/black"-->
+            <!--android:textSize="18sp" />-->
 
         <TextView
             android:id="@+id/post_TimeStamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/likesOverview"
             android:layout_centerInParent="true"
             android:layout_marginTop="5dp"
             android:text="3 days ago"
             android:textColor="@color/grey_500"
+
             android:textSize="18sp"
             android:textStyle="bold|italic" />
     </RelativeLayout>
 
-    <FrameLayout
+<RelativeLayout
         android:id="@+id/toolbarExpansionContainerID"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/food_linear">
 
         <TextView
-
-            android:id="@+id/post_likes"
+            android:id="@+id/expansionTextID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/input_fields_frame_grey"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold|italic" />
-        <!--<TextView-->
-        <!--android:id="@+id/toolbarExpansionTextID"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
-    </FrameLayout>
+
+    </RelativeLayout>
+
 </RelativeLayout>

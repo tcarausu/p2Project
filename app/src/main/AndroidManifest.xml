@@ -72,6 +72,8 @@
 
         <activity android:name=".post.NextActivity"/>
 
+        <activity android:name=".home.CommentsActivity"/>
+
         <activity android:name=".welcomingSlides.SlidesActivity"
             android:screenOrientation="portrait">
 

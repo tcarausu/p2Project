@@ -35,6 +35,7 @@ import com.google.firebase.storage.StorageReference;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class HistoryLogActivity extends AppCompatActivity {
     private static final String TAG = "HistoryLogActivity";
@@ -43,7 +44,7 @@ public class HistoryLogActivity extends AppCompatActivity {
     private Context mContext;
 
     private RecyclerView mRecyclerView;
-    private HistoryLogRecyclerViewAdapter mAdapter; // Is the bridge between our recyclerview and our arraylist. Shows only the necessary data from the arraylist
+    private RecyclerViewAdapterHistoryLogItems mAdapter; // Is the bridge between our recyclerview and our arraylist. Shows only the necessary data from the arraylist
     private RecyclerView.LayoutManager mLayoutManager;
 
     private DatabaseReference mPostReference, mCurrentUserReference, mDatabaseUserPostRef;
@@ -66,7 +67,6 @@ public class HistoryLogActivity extends AppCompatActivity {
         setupBottomNavigationView();
         connectToDatabase();
         getCurrentUserPosts();
-        buildRecyclerView();
     }
 
 
@@ -78,11 +78,6 @@ public class HistoryLogActivity extends AppCompatActivity {
      * Setting up the buttons of the main view
      */
     public void buttonListeners() {
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(v -> {
-            Toast.makeText(getApplicationContext(), "" + mListOfPosts.size(), Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "//Button Clicked//List Size: " + mListOfPosts.size());
-        });
     }
 
 
@@ -117,6 +112,8 @@ public class HistoryLogActivity extends AppCompatActivity {
 
     private void getCurrentUserPosts() {
         mListOfPosts = new ArrayList<>();
+        // A temporary list to keep counting the datasnapshots.
+        ArrayList<DataSnapshot> tList = new ArrayList<>();
 
         // Getting the user ID branch inside posts main node
         Query query = mPostReference.child(mCurrentUserId);
@@ -133,8 +130,15 @@ public class HistoryLogActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             final User user = dataSnapshot.getValue(User.class);
-                            post.setUser(user);
                             mListOfPosts.add(post);
+
+                            // Checking if we got all the items from the database so we can
+                            // reverse the order of the postlist and pass it in the recycler view
+                            Log.d(TAG, "DataSnapshot Count  " + postSnapshot.getChildrenCount());
+                            if (mListOfPosts.size() == postSnapshot.getChildrenCount()) {
+                                Collections.reverse(mListOfPosts);
+                                buildRecyclerView(mListOfPosts);
+                            }
                         }
 
                         @Override
@@ -143,6 +147,7 @@ public class HistoryLogActivity extends AppCompatActivity {
                         }
                     });
                 }
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -154,7 +159,7 @@ public class HistoryLogActivity extends AppCompatActivity {
     /**
      * Setting up recycler view
      */
-    private void buildRecyclerView() {
+    private void buildRecyclerView(ArrayList<HistoryLogPostItem> list) {
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
 
@@ -164,12 +169,12 @@ public class HistoryLogActivity extends AppCompatActivity {
 
         // Create an adapter and pass it a list of data, from which
         // the ViewHolder objects will be created and managed by this adapter
-        mAdapter = new HistoryLogRecyclerViewAdapter(mListOfPosts);
+        mAdapter = new RecyclerViewAdapterHistoryLogItems(list);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnRecyclerItemClickListener(HistoryLogActivity.this, position -> {
-                    highlightViewItem(position, true);
-                    alertDialogDelete(position);
-                });
+            highlightViewItem(position, true);
+            alertDialogDelete(position);
+        });
 
     }
 
@@ -231,6 +236,7 @@ public class HistoryLogActivity extends AppCompatActivity {
         mListOfItems.add(position, new HistoryLogPostItem(R.drawable.ic_action_eye_open, "New item in position:", "" + position));
         mAdapter.notifyItemInserted(position);
     }*/
+
 
     private void deleteUserDatabasePost(int position) {
         // Delete selected post from the database

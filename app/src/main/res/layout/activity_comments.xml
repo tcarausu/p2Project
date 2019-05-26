@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".home.CommentsActivity">
+
+    <ListView
+        android:id="@+id/post_comments_list"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        >
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/writeCommentID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/post_comments_list"
+        >
+
+        <EditText
+            android:id="@+id/write_new_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Write a comment"
+            android:layout_weight="2"/>
+
+        <Button
+            android:id="@+id/add_new_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            style="@style/Widget.AppCompat.Button.Borderless" />
+
+    </LinearLayout>
+
+</RelativeLayout>
