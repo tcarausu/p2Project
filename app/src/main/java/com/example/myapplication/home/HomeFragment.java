@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.Comment;
@@ -83,8 +82,7 @@ public class HomeFragment extends Fragment {
         mComments = new ArrayList<>();
 
 //        mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts, mRecyclerView);
-
-//        mRecyclerView.setAdapter(mAdapter);
+        mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts, mRecyclerView);
 
         GetData getData = new GetData();
         getData.execute();
@@ -134,7 +132,6 @@ public class HomeFragment extends Fragment {
                             mDatabaseUserRef = firebasedatabase.getReference("users/" + current_user.getUid());
                             mDatabaseUserPostRef = firebasedatabase.getReference("users/" + postUserId);
 
-                            Log.d(TAG, "onDataChange: mUserId :" + current_user.getUid());
                             Log.d(TAG, "onDataChange: mCurrentUserId :" + mCurrentUserId);
 
                             // Getting each post for each user
@@ -170,18 +167,22 @@ public class HomeFragment extends Fragment {
                                 mDatabaseUserRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        if (mCurrentUserId.equals(postUserId)) {
-                                            final User user = dataSnapshot.getValue(User.class);
-                                            if (user.getUsername() == null) {
-                                                mPosts.remove(post);
-                                                mDatabasePostRef.removeValue();
-                                            } else
-                                                mUsername = user.getUsername();
-                                            mProfilePhoto = user.getProfile_photo();
+                                        try {
+                                            if (mCurrentUserId.equals(postUserId)) {
+                                                final User user = dataSnapshot.getValue(User.class);
+                                                if (user.getUsername() == null) {
+                                                    mPosts.remove(post);
+                                                    mDatabasePostRef.removeValue();
+                                                } else
+                                                    mUsername = user.getUsername();
+                                                mProfilePhoto = user.getProfile_photo();
 
-                                            mAdapter.setUserForPost(post, user);
-                                            mAdapter.notifyDataSetChanged();
-                                            Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
+                                                mAdapter.setUserForPost(post, user);
+                                                mAdapter.notifyDataSetChanged();
+                                                Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
+                                            }
+                                        } catch (NullPointerException e) {
+                                            Log.e(TAG, "onDataChange: NullPointerException", e.getCause());
                                         }
                                     }
 
@@ -194,9 +195,9 @@ public class HomeFragment extends Fragment {
                                 mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        if (!mCurrentUserId.equals(postUserId)) {
-                                            final User user = dataSnapshot.getValue(User.class);
-                                            try {
+                                        try {
+                                            if (!mCurrentUserId.equals(postUserId)) {
+                                                final User user = dataSnapshot.getValue(User.class);
                                                 if (user.getUsername() == null) {
                                                     mPosts.remove(post);
                                                     mDatabasePostRef.removeValue();
@@ -207,10 +208,10 @@ public class HomeFragment extends Fragment {
                                                 mAdapter.setUserForPost(post, user);
                                                 mAdapter.notifyDataSetChanged();
 
-                                            } catch (NullPointerException e) {
-                                                Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
-
                                             }
+                                        } catch (NullPointerException e) {
+                                            Log.d(TAG, "onDataChange: profilePic and username :" + mProfilePhoto + " " + mUsername);
+
                                         }
                                     }
 
@@ -221,7 +222,6 @@ public class HomeFragment extends Fragment {
                                 });
 
                                 mPosts.add(post);
-                                mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts, mRecyclerView);
                                 mAdapter.notifyDataSetChanged();
 
                             }
@@ -242,12 +242,12 @@ public class HomeFragment extends Fragment {
                 Log.d(TAG, "onDataChange: error: " + e.getMessage());
             }
 
-    }
+        }
 
-    @Override
-    protected Void doInBackground(Void... voids) {
-        getPostsInfo();
-        return null;
+        @Override
+        protected Void doInBackground(Void... voids) {
+            getPostsInfo();
+            return null;
+        }
     }
-}
 }
