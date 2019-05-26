@@ -19,19 +19,19 @@ import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-/**@author Mo.Msaad
+/**
+ * @author Mo.Msaad
  * @class SignUpFragment
  * @extends Fragment
  * @implements View.OnClickListener
  * create auth link to fire-base, with email verification.
- * **/
+ **/
 public class SignUpFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "SignUpFragment";
 
 //--------------- widgets---------------------
-
     private EditText mEmail;
-    private FirebaseMethods mFirebaseMethods ;
+    private FirebaseMethods mFirebaseMethods;
     private EditText mPassword;
     private EditText mConfirmPassword;
     private Button signUpButton, goBack;
@@ -98,7 +98,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
             mConfirmPassword.setError("");
             Toast.makeText(getContext(), "Error: Password must match confirm password. Try again", Toast.LENGTH_SHORT).show();
 
-        }  else {
+        } else {
             loadingBar.setTitle("Creating account...");
             loadingBar.setMessage("Please wait while your account is being created...");
             loadingBar.setIcon(R.drawable.chefood);
@@ -115,7 +115,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                     sendVerifyEmail();
 
                     mAuth.signOut();
-                    new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getActivity(),getActivity(), LoginActivity.class), Toast.LENGTH_SHORT);
+                    new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), LoginActivity.class), Toast.LENGTH_SHORT);
 
                 } else {
                     loadingBar.dismiss();
@@ -178,7 +178,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
 
             case R.id.SignUpFragmnt_back_button:
-                mFirebaseMethods.goToWhereverWithFlags(getActivity(),getActivity(), LoginActivity.class);
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), LoginActivity.class);
                 break;
 
             case R.id.SignUpFragmnt_sign_upButton:

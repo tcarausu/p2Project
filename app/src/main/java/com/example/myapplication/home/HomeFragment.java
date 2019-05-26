@@ -46,11 +46,9 @@ public class HomeFragment extends Fragment {
     private DatabaseReference mDatabaseUserRef;
     private DatabaseReference mDatabaseUserPostRef;
     private FirebaseMethods mFirebaseMethods;
-    private FirebaseAuth.AuthStateListener mAuthListener;
 
     private FirebaseUser current_user;
     private FirebaseAuth mAuth;
-    private DatabaseReference mDatabasePostComments;
 
     private List<Post> mPosts;
     private List<User> mUsers;
@@ -81,9 +79,7 @@ public class HomeFragment extends Fragment {
         mUsers = new ArrayList<>();
         mComments = new ArrayList<>();
 
-        mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts
-//                , mRecyclerView
-        );
+        mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts);
         mRecyclerView.setAdapter(mAdapter);
 
         GetData getData = new GetData();
@@ -95,14 +91,11 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
     }
 
     @Override
@@ -160,7 +153,6 @@ public class HomeFragment extends Fragment {
                                     // TODO, Transform the constructor of the Comment class to receive data from firebase
                                     Comment comment = commentSnapshot.getValue(Comment.class);
                                     commentList.add(comment);
-//                                    mDatabasePostComments = firebasedatabase.getReference("users/" + comment.getUserId());
                                 }
                                 post.setCommentList(commentList);
 

@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,7 +49,7 @@ public class HistoryLogActivity extends AppCompatActivity {
     private DatabaseReference mPostReference, mCurrentUserReference, mDatabaseUserPostRef;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth mAuth;
-    private FirebaseStorage mFirebaseStorage ;
+    private FirebaseStorage mFirebaseStorage;
 
     private ArrayList<HistoryLogPostItem> mListOfPosts;
     private ArrayList<User> mUsers;
@@ -143,15 +142,16 @@ public class HistoryLogActivity extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Toast.makeText(getApplicationContext(),"Canceled",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Canceled", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getApplicationContext(),"Canceled",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Canceled", Toast.LENGTH_SHORT).show();
             }
         });
     }

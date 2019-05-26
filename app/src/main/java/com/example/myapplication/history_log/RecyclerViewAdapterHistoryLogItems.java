@@ -54,7 +54,9 @@ public class RecyclerViewAdapterHistoryLogItems extends RecyclerView.Adapter<Rec
 //        setHasStableIds(true);
     }
 
-    /** Listener Interface*/
+    /**
+     * Listener Interface
+     */
     public interface OnRecyclerItemClickListener {
         //        void onRecyclerCardviewClicked(int position);
         void onMoreDotsClicked(int position);

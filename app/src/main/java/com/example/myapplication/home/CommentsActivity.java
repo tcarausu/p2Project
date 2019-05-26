@@ -1,9 +1,8 @@
 package com.example.myapplication.home;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -58,9 +57,9 @@ public class CommentsActivity extends AppCompatActivity {
         displayComments();
     }
 
-    private void displayComments(){
+    private void displayComments() {
 
-        if(currentPost.getCommentList() != null) {
+        if (currentPost.getCommentList() != null) {
             // Getting the current comment list and assign to it profile photo and user name of the commenter
             ArrayList<Comment> commentsList = (ArrayList<Comment>) currentPost.getCommentList();
             setAdapter(commentsList);
@@ -87,19 +86,18 @@ public class CommentsActivity extends AppCompatActivity {
     }
 
 
-    private void setButtonsListeners(){
+    private void setButtonsListeners() {
         addComment.setOnClickListener(v -> {
             if (!writeComment.getText().toString().trim().equals("")) {
                 uploadComment();
-            }
-            else {
+            } else {
                 Toast.makeText(getApplicationContext(), "Please insert a comment", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
 
-    private void uploadComment(){
+    private void uploadComment() {
         // Creating comment's content
         Comment newComment = new Comment();
         String comment = writeComment.getText().toString().trim();
@@ -122,7 +120,7 @@ public class CommentsActivity extends AppCompatActivity {
                 + "/" + currentPost.getPostId() + "/comments");
         mPostReference.child(Objects.requireNonNull(mPostReference.push().getKey())).setValue(newComment);
 
-        mUserReference = FirebaseDatabase.getInstance().getReference("users/" +currentUserId);
+        mUserReference = FirebaseDatabase.getInstance().getReference("users/" + currentUserId);
         // Getting username and profile photo
         mUserReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -140,8 +138,8 @@ public class CommentsActivity extends AppCompatActivity {
         });
     }
 
-    private void setAdapter(ArrayList<Comment> list){
-        mAdapter = new ListViewAdapter(getApplicationContext(),list);
+    private void setAdapter(ArrayList<Comment> list) {
+        mAdapter = new ListViewAdapter(getApplicationContext(), list);
         listView.setAdapter(mAdapter);
     }
 }

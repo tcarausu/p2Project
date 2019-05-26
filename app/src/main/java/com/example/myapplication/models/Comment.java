@@ -10,38 +10,13 @@ public class Comment implements Parcelable {
     private String username;
     private String userProfilePhoto;
 
-    public String getUsername() {
-        return username;
+    public Comment(String comment, String userId) {
+        this.comment = comment;
+        this.userId = userId;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public Comment() {
     }
-
-    public String getUserProfilePhoto() {
-        return userProfilePhoto;
-    }
-
-    public void setUserProfilePhoto(String userProfilePhoto) {
-        this.userProfilePhoto = userProfilePhoto;
-    }
-
-//    protected Comment(Parcel in) {
-//        comment = in.readString();
-//        userId = in.readString();
-//    }
-
-//    public static final Creator<Comment> CREATOR = new Creator<Comment>() {
-//        @Override
-//        public Comment createFromParcel(Parcel in) {
-//            return new Comment(in);
-//        }
-//
-//        @Override
-//        public Comment[] newArray(int size) {
-//            return new Comment[size];
-//        }
-//    };
 
     protected Comment(Parcel in) {
         comment = in.readString();
@@ -60,6 +35,22 @@ public class Comment implements Parcelable {
         }
     };
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUserProfilePhoto() {
+        return userProfilePhoto;
+    }
+
+    public void setUserProfilePhoto(String userProfilePhoto) {
+        this.userProfilePhoto = userProfilePhoto;
+    }
+
     public String getUserId() {
         return userId;
     }
@@ -76,14 +67,6 @@ public class Comment implements Parcelable {
         this.comment = comment;
     }
 
-
-    public Comment(String comment,String userId) {
-        this.comment = comment;
-        this.userId = userId;
-    }
-
-    public Comment(){ }
-
     @Override
     public int describeContents() {
         return 0;
@@ -95,15 +78,4 @@ public class Comment implements Parcelable {
         dest.writeString(userId);
     }
 
-//
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeString(comment);
-//        dest.writeString(userId);
-//    }
 }

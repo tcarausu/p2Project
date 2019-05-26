@@ -45,11 +45,9 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
     }
 
     private void findWidgets(View v){
-
         emailField = v.findViewById(R.id.ForgotPass_email_field);
         goBack = v.findViewById(R.id.ForgotPass_back_button);
         sendPassRequest = v.findViewById(R.id.Forgotpass_resetPass_button);
-
 
     }
 
