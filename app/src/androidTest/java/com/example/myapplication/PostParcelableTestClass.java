@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.example.myapplication.models.Comment;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 
@@ -24,6 +25,7 @@ import static org.junit.Assert.assertNotEquals;
 public class PostParcelableTestClass {
     private Post post;
     private List<Like> likes;
+    private List<Comment> comments;
 
     @Before
     public void createPostModel() {
@@ -50,7 +52,7 @@ public class PostParcelableTestClass {
 
         String incorrect_uid = "IncorrectUID";
 
-        post = new Post(description, foodImageUrl, recipe, ingredients, user_id, post_Id, dateCreated, likes);
+        post = new Post(description, foodImageUrl, recipe, ingredients, user_id, post_Id, dateCreated, likes,comments);
         // Write the data
         Parcel parcel = Parcel.obtain();
         post.writeToParcel(parcel, post.describeContents());
