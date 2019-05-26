@@ -63,6 +63,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUserRef;
     private DatabaseReference mPostsRef;
+    private FirebaseMethods mFirebaseMethods ;
 
     //fire-base storage
     private FirebaseStorage mStorageRef;
@@ -97,8 +98,9 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_post_news_feeed, container, false);
-
+        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
         current_user = mAuth.getCurrentUser();
         userId = current_user.getUid();
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
@@ -126,8 +128,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             DatabaseReference currentPostRef = mPostsRef.child(mAuth.getCurrentUser().getUid()).child(this.mPost.getPostId());
             DatabaseReference currentUserRef = mUserRef.child(mAuth.getCurrentUser().getUid());
-
-
             ProgressDialog progressDialog = new ProgressDialog(this.getContext());
             progressDialog.setTitle("Deleting");
             progressDialog.setMessage("Deleting post, please wait for task to finish");
@@ -158,7 +158,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                     }
                 });
                 progressDialog.dismiss();
-                ((UserProfileActivity) getActivity()).gotos(getContext(), UserProfileActivity.class);
+
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(),getActivity(),UserProfileActivity.class);
                 Toast.makeText(getContext(), "Item deleted.", Toast.LENGTH_SHORT).show();
 
             });
@@ -217,6 +218,12 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         mAuth.addAuthStateListener(mAuthListener);
 
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
     }
 
     @Override
@@ -574,7 +581,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             case R.id.account_settings_options:
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
-                ((UserProfileActivity) getActivity()).gotos(getContext(), AccountSettingsActivity.class);
+
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(),getActivity(),AccountSettingsActivity.class);
                 break;
 
             case R.id.personal_post_options_menu:
@@ -599,7 +607,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             case R.id.backArrow:
                 Log.d(TAG, "onClick: navigating back to " + getActivity());
-                ((UserProfileActivity) getActivity()).gotos(getActivity(), UserProfileActivity.class);// this is working and bug free
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(),getActivity(),UserProfileActivity.class);
+
                 break;
 
             case R.id.likes_button:

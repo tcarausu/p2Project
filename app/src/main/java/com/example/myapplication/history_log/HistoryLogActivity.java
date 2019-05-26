@@ -30,6 +30,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
@@ -47,6 +49,7 @@ public class HistoryLogActivity extends AppCompatActivity {
     private DatabaseReference mPostReference, mCurrentUserReference, mDatabaseUserPostRef;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth mAuth;
+    private FirebaseStorage mFirebaseStorage ;
 
     private ArrayList<HistoryLogPostItem> mListOfPosts;
     private ArrayList<User> mUsers;
@@ -105,6 +108,7 @@ public class HistoryLogActivity extends AppCompatActivity {
         mAuth = FirebaseMethods.getAuth();
         mCurrentUserId = mAuth.getCurrentUser().getUid();
         firebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseStorage = FirebaseMethods.getFirebaseStorage();
 
         // Setting the reference to posts branch
         mPostReference = firebaseDatabase.getReference("posts");
@@ -230,18 +234,30 @@ public class HistoryLogActivity extends AppCompatActivity {
 
     private void deleteUserDatabasePost(int position) {
         // Delete selected post from the database
-        mPostReference.child(mCurrentUserId).child(mListOfPosts.get(position).getPostId())
-                .removeValue()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "Post successfully deleted", Toast.LENGTH_SHORT).show();
-                        mListOfPosts.remove(position);
-                        // Updating the recycler view with animation
-                        mAdapter.notifyItemRemoved(position);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Failed to delete post", Toast.LENGTH_SHORT).show();
+
+        StorageReference imageRef = mFirebaseStorage.getReferenceFromUrl(mListOfPosts.get(position).getmFoodImgUrl());
+        imageRef.delete().addOnSuccessListener(aVoid -> {
+            mPostReference.removeValue();
+
+            mPostReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        final User user = dataSnapshot.getValue(User.class);
+                        if (user.getNrOfPosts() != 0) {
+                            user.setNrPosts(user.getNrOfPosts() - 1);
+                            mPostReference.setValue(user);
+                        }
                     }
-                });
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        });
+
     }
 
 }

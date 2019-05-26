@@ -49,6 +49,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private FirebaseDatabase firebaseDatabase;
     private FirebaseUser user;
     private DatabaseReference myDatabaseUserRef;
+    private FirebaseMethods mFirebaseMethods ;
 
     //user data strings
     private String username;
@@ -64,20 +65,25 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-
+        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
         user = mAuth.getCurrentUser();
         user_id = user.getUid();
-
         firebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myDatabaseUserRef = firebaseDatabase.getReference("users");
 
         initLayout(view);
         buttonListeners();
-
         getUserFromDatabase();
-
         return view;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
     }
 
     private void initLayout(View view) {
@@ -161,5 +167,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         }
     }
+
+
 
 }

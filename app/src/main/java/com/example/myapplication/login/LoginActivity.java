@@ -81,16 +81,17 @@ public class LoginActivity extends AppCompatActivity implements
     private EditText mEmailField, mPasswordField;
     private FragmentManager fragmentManager;
     private boolean isVerified;
+    private Context mContext;
 
 
     // this is set to create an email_signed_in_user with default avatar. We store the picture on database an download it later.
     private String avatarURL = "https://firebasestorage.googleapis.com/v0/b/p2project-2a81d.appspot.com/o/avatar_chefood%2FGroup%205.png?alt=media&token=87e74817-a27d-4a04-afa3-e7cfa1adca68";
-    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mContext = LoginActivity.this;
         connectFirebase();
         mFirebaseMethods.checkAuth(getApplicationContext(),mAuth);
         initLayout();
@@ -98,7 +99,6 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     private void connectFirebase() {
-
         mFirebaseMethods =  FirebaseMethods.getInstance(getApplicationContext());
         fragmentManager = getSupportFragmentManager();
         mAuth = FirebaseMethods.getAuth();
@@ -106,20 +106,16 @@ public class LoginActivity extends AppCompatActivity implements
         firebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         user_ref = firebaseDatabase.getReference("users");
         myRef = firebaseDatabase.getReference();
-
     }
 
 
     public void initLayout() {
-        mContext = LoginActivity.this;
-
         mEmailField = findViewById(R.id.email_id_logIn);
         mPasswordField = findViewById(R.id.password_id_logIn);
         loginLayout = findViewById(R.id.login_activity);
         signUp = findViewById(R.id.sign_up);
         orView = findViewById(R.id.orView);
         loginButton = findViewById(R.id.facebookLoginButton);
-
     }
 
     public void buttonListeners() {
@@ -135,10 +131,6 @@ public class LoginActivity extends AppCompatActivity implements
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
-
         // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
 
@@ -259,7 +251,7 @@ public class LoginActivity extends AppCompatActivity implements
                 verifyFirstEmailLogin(email,"Chose a user name", avatarURL);
 
                 addUserToDataBase();
-                goTosWithFlags(getApplicationContext(),HomeActivity.class); // if yes goto mainActivity
+                mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(),getApplicationContext(),HomeActivity.class); // if yes goto mainActivity
             } else {
                 // else we first sign out the user, until he checks his email then he can connect
                 mAuth.signOut();
@@ -311,7 +303,7 @@ public class LoginActivity extends AppCompatActivity implements
                         addUserToDataBase();
                         Log.d(Google_Tag, "signInWithCredential:success");
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
-                        new Handler().postDelayed(() -> goTosWithFlags(getApplicationContext(),HomeActivity.class), Toast.LENGTH_SHORT);
+                        new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(),getApplicationContext(),HomeActivity.class), Toast.LENGTH_SHORT);
 
                     } else {
                         // If sign in fails, display a message to the user.
@@ -331,11 +323,11 @@ public class LoginActivity extends AppCompatActivity implements
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(FacebookTag, "handleFacebookAccessToken:" + token);
 
+
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-
                         // Sign in success, update UI with the signed-in user's information
                         Toast.makeText(LoginActivity.this, "Authentication successful.", Toast.LENGTH_SHORT).show();
 
@@ -351,9 +343,10 @@ public class LoginActivity extends AppCompatActivity implements
                         loginButton.setEnabled(false);
                         loginButton.setVisibility(View.GONE);
 
-                        new Handler().postDelayed(() -> goTosWithFlags(getApplicationContext(),HomeActivity.class), 0);
+                        new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(),getApplicationContext(),HomeActivity.class), 0);
 
                     } else {
+
                         // If sign in fails, display a message to the user.
                         Log.w(FacebookTag, "signInWithCredential:failure", task.getException());
                         Toast.makeText(LoginActivity.this, "Authentication failed, " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -370,17 +363,8 @@ public class LoginActivity extends AppCompatActivity implements
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    // send user to main activity without allowing to go back to login again
-    /**responsible to send user to needed activities or fragment
-     * @param context context of the actual actviity or fragment
-     * @param cl is the destination class to load with flags to not allow go back with onBackPressed
-     * The point is we can use this method in all the fragments nested in the activity, by calling it using (()).goTosWithFlags(context,cl);
-     * **/
-    public void goTosWithFlags(Context context, Class<? extends AppCompatActivity> cl){
-        startActivity(new Intent(context,cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        finish();
 
-    }
+
 
     @Override
     public void onClick(View v) {

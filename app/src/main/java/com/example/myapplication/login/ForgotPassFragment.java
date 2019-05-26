@@ -15,11 +15,14 @@ import com.example.myapplication.R;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
+
 
 public class ForgotPassFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "ForgotPassFragment";
 
     private FirebaseAuth mAuth;
+    private FirebaseMethods mFirebaseMethods ;
     private EditText emailField;
     private Button sendPassRequest, goBack;
 
@@ -32,6 +35,7 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_forgot_pass, container, false);
+        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         mAuth = FirebaseMethods.getAuth() ;
         findWidgets(v);
         goBack.setOnClickListener(this);
@@ -60,7 +64,7 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
             mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(getContext(), "Please check your inbox, we sent you a change password link", Toast.LENGTH_SHORT).show();
-                    ((LoginActivity)getActivity()).goTosWithFlags(getActivity(),LoginActivity.class);
+                    mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(),getActivity(), LoginActivity.class);
                 } else
                     Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
             });
@@ -91,7 +95,7 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
         switch (v.getId()) {
 
             case R.id.ForgotPass_back_button:
-                ((LoginActivity)getActivity()).goTosWithFlags(getContext(),LoginActivity.class);
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(),getApplicationContext(), LoginActivity.class);
                 break;
 
             case R.id.Forgotpass_resetPass_button:

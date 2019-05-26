@@ -1,6 +1,5 @@
 package com.example.myapplication.search;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -8,15 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.myapplication.R;
-import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.SectionsPagerAdapter;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
-import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -27,12 +23,12 @@ public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
     private static final int ACTIVITY_NUM = 1;
 
-    private Context mContext;
 
     private String userUID;
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseMethods mFirebaseMethods ;
 
     /**
      * @param savedInstanceState creates the app using the Bundle
@@ -41,13 +37,15 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
 
+        setupFirebaseAuth();
         initLayout();
         buttonListeners();
         initImageLoader();
-        setupFirebaseAuth();
         setupViewPager();
         setupBottomNavigationView();
     }
@@ -57,13 +55,9 @@ public class SearchActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         mAuth.addAuthStateListener(mAuthListener);
-        checkCurrentUser();
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
 
-        if (current_user == null) {
-            mAuth.signOut();
-            LoginManager.getInstance().logOut();
-            sendUserToLogin();
-        }
+
     }
 
     @Override
@@ -74,9 +68,13 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    public void initLayout() {
-        mContext = SearchActivity.this;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
+    }
 
+    public void initLayout() {
         mAuth = FirebaseAuth.getInstance();
         Intent getLoginIntent = getIntent();
         userUID = getLoginIntent.getStringExtra("userUid");
@@ -84,18 +82,6 @@ public class SearchActivity extends AppCompatActivity {
 
     public void buttonListeners() {
 
-    }
-
-    private void sendUserToLogin() {
-
-        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(i);
-        finish();
-
-        mAuth.addAuthStateListener(mAuthListener);
-
-        checkCurrentUser();
     }
 
     /**
@@ -114,17 +100,7 @@ public class SearchActivity extends AppCompatActivity {
     /**
      * checks to see if @param 'user'  is logged in
      */
-    private void checkCurrentUser() {
-        Log.d(TAG, "checkCurrentUser: checking if user is logged in");
 
-        if (current_user == null) {
-            Toast.makeText(mContext, "Your have to Authenticate first before proceeding", Toast.LENGTH_SHORT).show();
-            mAuth.signOut();
-            LoginManager.getInstance().logOut();
-            sendUserToLogin();
-        }
-
-    }
 
     private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
@@ -133,7 +109,7 @@ public class SearchActivity extends AppCompatActivity {
 
         mAuthListener = firebaseAuth -> {
 
-            checkCurrentUser();
+            mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
 
             if (current_user != null) {
                 Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
@@ -143,7 +119,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void initImageLoader() {
-        UniversalImageLoader imageLoader = new UniversalImageLoader(mContext);
+        UniversalImageLoader imageLoader = new UniversalImageLoader(getApplicationContext());
         ImageLoader.getInstance().init(imageLoader.getConfig());
     }
 
@@ -153,7 +129,7 @@ public class SearchActivity extends AppCompatActivity {
     public void setupBottomNavigationView() {
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);

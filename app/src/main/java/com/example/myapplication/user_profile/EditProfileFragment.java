@@ -73,7 +73,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private StorageReference profilePicStorage;
     private FirebaseStorage storage;
     private FirebaseDatabase database;
-    private FirebaseMethods mFirebaseMethods ;
+    private FirebaseMethods mFirebaseMethods;
 
     //Edit Profile widgets
     private TextView mChangeProfilePhoto, mPrivateInformation;
@@ -106,8 +106,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private int batteryLevel;
 
 
-
-
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         checkPermissions();
@@ -115,8 +113,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
         currentUser = mAuth.getCurrentUser();
-        firebaseMethods =  FirebaseMethods.getInstance(getActivity());
+        firebaseMethods = FirebaseMethods.getInstance(getActivity());
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myRef = mFirebaseDatabase.getReference();
         storage = FirebaseMethods.getFirebaseStorage();
@@ -149,7 +148,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mChangeProfilePhoto.setOnClickListener(this);
 
     }
-
 
 
     private String getProf_pic_URL() {
@@ -201,7 +199,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 updateUserInfo(getProf_pic_URL());
 
             } else if (options[which].equals("WIFI")) {
-               Intent wifiIntent =  new Intent(Settings.ACTION_WIFI_SETTINGS);
+                Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                 startActivity(wifiIntent);
 
 
@@ -233,7 +231,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 smallProfilePic.setImageResource(R.drawable.my_avatar);
             } else
                 Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
-                Glide.with(this).load(profilePicURL).centerCrop().into(smallProfilePic);
+            Glide.with(this).load(profilePicURL).centerCrop().into(smallProfilePic);
 
         } catch (IllegalArgumentException e) {
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
@@ -259,13 +257,13 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (dataSnapshot.exists()) {
-                    firebaseMethods.updateUsername(currentUser.getUid(),username, display_name, website, about, phone_number, imageUrl);
+                    firebaseMethods.updateUsername(currentUser.getUid(), username, display_name, website, about, phone_number, imageUrl);
                     Log.d(TAG, "onDataChange: datasnapshot exissts: " + dataSnapshot.exists());
                     Log.d(TAG, "onDataChange: user updated with:\n " + "name: " + username
                             + "\n" + "displayName: " + display_name + "\n" + "website: " + website + "\n"
                             + "about: " + about + "\n" + "phone: " + phone_number + "\n" + "URL: " + imageUrl);
                 } else {
-                    firebaseMethods.updateUsername(currentUser.getUid(),username, display_name, website, about, phone_number, "");
+                    firebaseMethods.updateUsername(currentUser.getUid(), username, display_name, website, about, phone_number, "");
                     mProfilePhoto.setImageResource(R.drawable.my_avatar);
                     smallProfilePic.setImageResource(R.drawable.my_avatar);
                 }
@@ -302,35 +300,37 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
         Objects.requireNonNull(getActivity()).registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// we create it back in onResume
 
     }
 
     /**
      * method  created by Mo.Msaad
+     *
      * @param uri: this is the received uri from the onActivity result, via setters and getters to avoid getting null if the user
-     *           presses the upload button without chosing a photo
+     *             presses the upload button without chosing a photo
      **/
     private void uploadProfilePic(Uri uri) {
 
-         if (getUri() == null){
-            Toast.makeText(getActivity(), "No image is selected " , Toast.LENGTH_SHORT).show();// this to handle in case uri or bitmap is null
+        if (getUri() == null) {
+            Toast.makeText(getActivity(), "No image is selected ", Toast.LENGTH_SHORT).show();// this to handle in case uri or bitmap is null
             Glide.with(this).load(user.getProfile_photo()).centerInside().into(mProfilePhoto);
 
-        }
-         else if (getUri() != null) {
+        } else {
 
+            Glide.with(this).load(uri).centerInside().into(mProfilePhoto);
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-             progressDialog.setMessage("uploading, please wait...");
-             progressDialog.setIcon(R.drawable.chefood);
-             progressDialog.setCanceledOnTouchOutside(false);
-             progressDialog.show();
+            progressDialog.setMessage("uploading, please wait...");
+            progressDialog.setIcon(R.drawable.chefood);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
 
             profilePicStorage = storage.getReference().child("profile_pic/" + currentUser.getUid()).child("profile picture");
             profilePicStorage.putFile(uri).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     progressDialog.dismiss();
+
                     profilePicStorage.getDownloadUrl().addOnCompleteListener(task1 -> {
                         setProf_pic_URL(task1.getResult().toString()); //prof_pic_URL = task1.getResult().toString();
                         Log.d(TAG, "uploadProfilePic: URL= " + prof_pic_URL);
@@ -338,10 +338,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                         Glide.with(this).load(getProf_pic_URL()).centerCrop().into(mProfilePhoto);
                         goBack();
 //                        Picasso.get().load(getProf_pic_URL()).resize(mProfilePhoto.getWidth(), mProfilePhoto.getHeight()).centerCrop().into(mProfilePhoto);
-                    }).addOnFailureListener(e ->
-                    Toast.makeText(EditProfileFragment.this.getActivity(), "Failed, " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                }
-                else
+                    }).addOnFailureListener(e -> Toast.makeText(EditProfileFragment.this.getActivity(), "Failed, " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                } else
                     Toast.makeText(EditProfileFragment.this.getActivity(), "Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
 

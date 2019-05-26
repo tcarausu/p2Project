@@ -31,6 +31,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
 //--------------- widgets---------------------
 
     private EditText mEmail;
+    private FirebaseMethods mFirebaseMethods ;
     private EditText mPassword;
     private EditText mConfirmPassword;
     private Button signUpButton, goBack;
@@ -45,6 +46,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         loadingBar = new ProgressDialog(this.getContext());
         mAuth = FirebaseMethods.getAuth();
 
@@ -113,7 +115,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                     sendVerifyEmail();
 
                     mAuth.signOut();
-                    new Handler().postDelayed(() -> ((LoginActivity)getActivity()).goTosWithFlags(getActivity(),LoginActivity.class), Toast.LENGTH_SHORT);
+                    new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getActivity(),getActivity(), LoginActivity.class), Toast.LENGTH_SHORT);
 
                 } else {
                     loadingBar.dismiss();
@@ -176,7 +178,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
 
             case R.id.SignUpFragmnt_back_button:
-                ((LoginActivity)getActivity()).goTosWithFlags(getActivity(),LoginActivity.class);
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(),getActivity(), LoginActivity.class);
                 break;
 
             case R.id.SignUpFragmnt_sign_upButton:

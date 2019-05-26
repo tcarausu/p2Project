@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
-import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -92,19 +91,6 @@ public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryL
 
             mMoreDotsImage = itemView.findViewById(R.id.onMoreDotsImage);
 
-            // Passing the position of the item clicked
-            /*itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) { // Checking if the position of the adapter item is valid
-                            listener.onRecyclerCardviewClicked(position);
-                        }
-                    }
-                }
-            });*/
-
             mMoreDotsImage.setOnClickListener(v -> {
                 if (listener != null) {
                     int position = getAdapterPosition();
@@ -137,8 +123,7 @@ public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryL
 
         // Setting profile image and username
         if (user != null) {
-            // Setting profile image
-//            Glide.with(mContext).load(postUser.getProfile_photo()).fitCenter().centerCrop().into(customViewHolder.mProfileImage);
+
             Glide.with(mContext)
                     .load(user.getProfile_photo())
                     .fitCenter()
@@ -174,7 +159,6 @@ public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryL
         // Setting on more dots visibility
         customViewHolder.mMoreDotsImage.setVisibility(currentItem.getMoreDotsVisibility());
 
-//        customViewHolder.itemView.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.zoom_in));
 
     }
 
@@ -184,11 +168,4 @@ public class HistoryLogRecyclerViewAdapter extends RecyclerView.Adapter<HistoryL
         return mPostsList.size();
     }
 
-    public void setUserForPost(Post post, User user) {
-        post.setUser(user);
-    }
-
-    private User getUserForPost(Post post) {
-        return post.getUser();
-    }
 }
