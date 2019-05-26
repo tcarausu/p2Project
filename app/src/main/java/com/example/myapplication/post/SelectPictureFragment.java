@@ -123,10 +123,11 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 final User user = dataSnapshot.getValue(User.class);
-                if (user.getProfile_photo() != null) {
-                    Glide.with(getApplicationContext()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
-                } else
+                if (user.getProfile_photo() == null) {
                     Glide.with(getApplicationContext()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
+
+                } else
+                Glide.with(getApplicationContext()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
 
             }
 

@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
-import com.example.myapplication.models.User;
 import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.user_profile.UserProfileActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
@@ -44,9 +43,8 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseUser current_user;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseMethods mFirebaseMethods;
-    private DatabaseReference mDatabasePostRef, mDatabaseUserRef, current_userRef;
+    private DatabaseReference mDatabasePostRef, mDatabaseUserRef, current_userRef, usersRef;
     private FirebaseDatabase firebasedatabase;
-
 
 
     /**
@@ -91,7 +89,7 @@ public class HomeActivity extends AppCompatActivity {
                     if (!dataSnapshot.exists() || !dataSnapshot.hasChildren()) {
                         Toast.makeText(getApplicationContext(), "Nothing to display, Add a post to begin", Toast.LENGTH_SHORT).show();
 
-                        mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(),getApplicationContext(), AddPostActivity.class);
+                        mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), AddPostActivity.class);
                     }
                 }
 
@@ -116,7 +114,7 @@ public class HomeActivity extends AppCompatActivity {
                         LoginManager.getInstance().logOut();
                         Toast.makeText(getApplicationContext(), "Error finding this user on the database. please login in again", Toast.LENGTH_SHORT).show();
 
-                        mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(),getApplicationContext(), LoginActivity.class);
+                        mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), LoginActivity.class);
                     }
                 }
 
@@ -135,22 +133,22 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    List<String > keyList = new ArrayList<>();
-                    boolean exists = false ;
+                    List<String> keyList = new ArrayList<>();
+                    boolean exists = false;
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         keyList.add(ds.getKey());
                     }
-                        for (String  userId : keyList){
-                            if (userId.contains(current_user.getUid()))
-                                exists =true ;
-                        }
+                    for (String userId : keyList) {
+                        if (userId.contains(current_user.getUid()))
+                            exists = true;
+                    }
 
-                        if (!exists){
+                    if (!exists) {
 
-                            mAuth.signOut();
-                            LoginManager.getInstance().logOut();
-                            System.exit(0);
-                        }
+                        mAuth.signOut();
+                        LoginManager.getInstance().logOut();
+                        System.exit(0);
+                    }
                 }
 
 
@@ -162,14 +160,23 @@ public class HomeActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.d(TAG, "checkDatabaseState: error: " + e.getMessage());
         }
+        String s =  firebasedatabase.getReference("users").getKey();
+
+        if (s == null){
+            mFirebaseMethods.checkUserStateIfNull(getApplicationContext(),mAuth);
+        }
+
+
+
+
         current_userRef = firebasedatabase.getReference("users").child(current_user.getUid()).getRef();
         current_userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                User user = dataSnapshot.getValue(User.class);
-                if (user.getDisplay_name().equals("Chose a user name")) {
-                    mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(),getApplicationContext(), UserProfileActivity.class);
+                mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+                String name  = current_userRef.child("display_name").getKey();
+                if (name.equals("Chose a user name")) {
+                    mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), UserProfileActivity.class);
                 }
             }
 
