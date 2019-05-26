@@ -99,12 +99,13 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_post_news_feeed, container, false);
         mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
+
+        mFirebaseMethods = FirebaseMethods.getInstance(getContext());
         mAuth = FirebaseMethods.getAuth();
         mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
         current_user = mAuth.getCurrentUser();
-        userId = current_user.getUid();
+
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
-        myRef = mFirebaseDatabase.getReference();
         mUserRef = mFirebaseDatabase.getReference("users");
         mPostsRef = mFirebaseDatabase.getReference("posts");
         mStorageRef = FirebaseMethods.getFirebaseStorage();
@@ -117,47 +118,59 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         return view;
     }
 
-
     private void initLayout(View view) {
-        mUserName = view.findViewById(R.id.userNameID);
-        mProfilePhoto = view.findViewById(R.id.userProfilePicID);
-        mFoodImg = view.findViewById(R.id.foodImgID);
-        mPostDescription = view.findViewById(R.id.postDescriptionID);
-        mPostLikes = view.findViewById(R.id.expansionTextID);
-        mPostTimeStamp = view.findViewById(R.id.post_TimeStamp);
-        bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
-
         try {
-            mPost = getPhotoFromBundle();
-            UniversalImageLoader.setImage(mPost.getmFoodImgUrl(), mFoodImg, null, "");
-            mActivityNumber = getActivityNumberBundle();
+            userId = current_user.getUid();
 
-            getPhotoDetails();
-            getLikesString();
+            mUserName = view.findViewById(R.id.userNameID);
+            mProfilePhoto = view.findViewById(R.id.userProfilePicID);
+            mFoodImg = view.findViewById(R.id.foodImgID);
+            mPostDescription = view.findViewById(R.id.postDescriptionID);
+            mPostLikes = view.findViewById(R.id.expansionTextID);
+            mPostTimeStamp = view.findViewById(R.id.post_TimeStamp);
+            bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
 
+            try {
+                mPost = getPhotoFromBundle();
+                UniversalImageLoader.setImage(mPost.getmFoodImgUrl(), mFoodImg, null, "");
+                mActivityNumber = getActivityNumberBundle();
+
+                getPhotoDetails(mUserRef, mPost);
+                getLikesString(mPostsRef, mUserRef, mPost.getUserId(), mPost.getPostId());
+
+            } catch (NullPointerException e) {
+                Log.e(TAG, "initLayout: NullPointerException " + e.getMessage());
+            }
         } catch (NullPointerException e) {
-            Log.e(TAG, "initLayout: NullPointerException " + e.getMessage());
+            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
         }
     }
 
     private void setListeners(View view) {
-        optionsMenu = view.findViewById(R.id.personal_post_options_menu);
-        profileMenu = view.findViewById(R.id.account_settings_options);
-        backArrow = view.findViewById(R.id.backArrow);
+        try {
 
-        likesPost = view.findViewById(R.id.likesBtnID);
-        commentPost = view.findViewById(R.id.commentsBtnID);
-        recipePost = view.findViewById(R.id.recipeBtnID);
-        ingredientsPost = view.findViewById(R.id.ingredientsBtnID);
+            optionsMenu = view.findViewById(R.id.personal_post_options_menu);
+            profileMenu = view.findViewById(R.id.account_settings_options);
+            backArrow = view.findViewById(R.id.backArrow);
 
-        optionsMenu.setOnClickListener(this);
-        profileMenu.setOnClickListener(this);
-        backArrow.setOnClickListener(this);
+            likesPost = view.findViewById(R.id.likesBtnID);
+            commentPost = view.findViewById(R.id.commentsBtnID);
+            recipePost = view.findViewById(R.id.recipeBtnID);
+            ingredientsPost = view.findViewById(R.id.ingredientsBtnID);
 
-        likesPost.setOnClickListener(this);
-        commentPost.setOnClickListener(this);
-        recipePost.setOnClickListener(this);
-        ingredientsPost.setOnClickListener(this);
+            optionsMenu.setOnClickListener(this);
+            profileMenu.setOnClickListener(this);
+            backArrow.setOnClickListener(this);
+
+            likesPost.setOnClickListener(this);
+            commentPost.setOnClickListener(this);
+            recipePost.setOnClickListener(this);
+            ingredientsPost.setOnClickListener(this);
+
+        } catch (
+                NullPointerException e) {
+            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
+        }
 
     }
 
@@ -183,240 +196,147 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     }
 
     private void setupFirebaseAuth() {
-        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+        try {
+            Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
 
-        mAuthListener = firebaseAuth -> {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
+            mAuthListener = firebaseAuth -> {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
 
-            if (user != null) {
-                Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
-            } else Log.d(TAG, "onAuthStateChanged: signed out");
-        };
-
+                if (user != null) {
+                    Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
+                } else Log.d(TAG, "onAuthStateChanged: signed out");
+            };
+        } catch (NullPointerException e) {
+            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
+        }
 
     }
-
-    /**
-     * The method gets the Photo details for a specific user
-     * If there is an user with this id, in our case the current user exists and the User's id is equal to
-     * the requested ost's id then it should return the data for the user.
-     */
-    private void getPhotoDetails() {
-        Query query = mUserRef.child(mAuth.getCurrentUser().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists() && dataSnapshot.getKey().equals(mPost.getUserId()) && !dataSnapshot.getValue().equals(null)) {
-                    user = dataSnapshot.getValue(User.class);
-
-                } else {
-
-                    Log.d(TAG, "onDataChange: There is no data: " + dataSnapshot.getValue(User.class).getProfile_photo());
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "onCancelled: Query Cancelled");
-
-            }
-        });
-    }
-
 
     private void setupWidgets() {
-        String timeStampDiff = getTimeStampDifference();
-        if (!timeStampDiff.equals(String.valueOf(0))) {
-            mPostTimeStamp.setText(String.format("%s Days Ago", timeStampDiff));
-        } else {
-            mPostTimeStamp.setText("Today");
-        }
-        String profilePicURL = user.getProfile_photo();
-
-        //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
         try {
-            if (profilePicURL == null) {
-                mProfilePhoto.setImageResource(R.drawable.my_avatar);
+            String timeStampDiff = getTimeStampDifference();
+            if (!timeStampDiff.equals(String.valueOf(0))) {
+                mPostTimeStamp.setText(String.format("%s Days Ago", timeStampDiff));
+            } else {
+                mPostTimeStamp.setText("Today");
+            }
+            String profilePicURL = user.getProfile_photo();
 
-            } else
-                Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
+            //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
+            try {
+                if (profilePicURL == null) {
+                    mProfilePhoto.setImageResource(R.drawable.my_avatar);
 
-        } catch (Exception e) {
-            Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
+                } else
+                    Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
 
+            } catch (Exception e) {
+                Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
+
+            }
+
+            mUserName.setText(user.getUsername());
+            mPostLikes.setText(mLikesString);
+            mPostDescription.setText(mPost.getmDescription());
+
+            if (mLikedByCurrentUser) {
+                likesPost.setImageResource(R.drawable.post_like_pressed);
+            } else {
+                likesPost.setImageResource(R.drawable.post_like_not_pressed);
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
         }
-
-        mUserName.setText(user.getUsername());
-        mPostLikes.setText(mLikesString);
-        mPostDescription.setText(mPost.getmDescription());
-
-        if (mLikedByCurrentUser) {
-            likesPost.setImageResource(R.drawable.post_like_pressed);
-        } else {
-            likesPost.setImageResource(R.drawable.post_like_not_pressed);
-        }
-
-    }
-
-    /**
-     * The method gets the proper timestamp of the post creation and make the difference between
-     * current time and the time created
-     *
-     * @return the difference
-     */
-    private String getTimeStampDifference() {
-        Log.d(TAG, "getTimeStampDifference: getting TimeStamp Difference");
-
-        String diff;
-
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
-        sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
-        Date today = c.getTime();
-        sdf.format(today);
-        Date timeStamp;
-
-        final String photoTimeStamp = mPost.getDate_created();
-        try {
-            timeStamp = sdf.parse(photoTimeStamp);
-            diff = String.valueOf(Math.round((today.getTime() - timeStamp.getTime()) / 1000 / 60 / 60 / 24));
-        } catch (ParseException e) {
-            Log.e(TAG, "getTimeStampDifference: ParseException " + e.getMessage());
-            diff = "0";
-        }
-
-        return diff;
-    }
-
-    /**
-     * retrieves the Post from the incoming bundle from ProfileActivity interface
-     *
-     * @return photo
-     */
-    private Post getPhotoFromBundle() {
-        Log.d(TAG, "getPhotoFromBundle: arguments: " + getArguments());
-
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            return bundle.getParcelable(getString(R.string.post));
-        } else {
-            return null;
-        }
-
-    }
-
-    /**
-     * retrieves the activity number from the incoming bundle from ProfileActivity interface
-     *
-     * @return the activity number
-     */
-    private int getActivityNumberBundle() {
-        Log.d(TAG, "getPhotoFromBundle: arguments: " + getArguments());
-
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            return bundle.getInt(getString(R.string.activity_number));
-        } else {
-            return 0;
-        }
-
-    }
-
-
-    /**
-     * Bottom Navigation View setup
-     */
-    public void setupBottomNavigationView() {
-        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(getActivity(), bottomNavigationViewEx);
-        Menu menu = bottomNavigationViewEx.getMenu();
-        MenuItem menuItem = menu.getItem(mActivityNumber);
-        menuItem.setChecked(true);
-
     }
 
     /**
      * This method displays retrieves the Likes from the user's post
      * and displaying the likes in the setupUserLikedString method
      */
-    public void getLikesString() {
+    public void getLikesString(DatabaseReference mPostsRef, DatabaseReference mUserRef, String userId, String postId) {
+        try {
+            Query query = mPostsRef
+                    .child(userId)
+                    .child(postId)
+                    .child("mLikes")
+                    .getRef();
 
-        Query query = mPostsRef
-                .child(userId)
-                .child(mPost.getPostId())
-                .child(getString(R.string.field_likes))
-                .getRef();
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    mUsers = new StringBuilder();
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers = new StringBuilder();
+                    for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                        String userLikeSnapshotID = singleSnapshot.getValue(Like.class).getUser_id();
+                        Query query = mUserRef
+                                .child(userId).getRef();
 
-                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    String userLikeSnapshotID = singleSnapshot.getValue(Like.class).getUser_id();
-                    Query query = mUserRef
-                            .child(userId).getRef();
+                        query.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                final User currentUser = dataSnapshot.getValue(User.class);
+                                if (dataSnapshot.exists()
+                                        && dataSnapshot.getKey().equals(userLikeSnapshotID)) {
+                                    Log.d(TAG, "onDataChange: the current User " + currentUser.getUsername());
 
-                    query.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            final User currentUser = dataSnapshot.getValue(User.class);
-                            if (dataSnapshot.exists()
-                                    && dataSnapshot.getKey().equals(userLikeSnapshotID)) {
-                                Log.d(TAG, "onDataChange: found like" + dataSnapshot.getValue(User.class));
+                                    mUsers.append(currentUser.getUsername());
+                                    mUsers.append(",");
 
-                                Log.d(TAG, "onDataChange: the current User " + currentUser.getUsername());
+                                    user = currentUser;
 
-                                mUsers.append(currentUser.getUsername());
-                                mUsers.append(",");
-                                setupUserLikedString(currentUser.getUsername());
+                                    setupUserLikedString(currentUser.getUsername(), user);
 
-                            } else if (dataSnapshot.exists()
-                                    && !dataSnapshot.getKey().equals(userLikeSnapshotID)) {
-                                Query differentUserQuery = mUserRef
-                                        .child(userLikeSnapshotID).getRef();
-                                differentUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshotForDifferentUser) {
-                                        final User differentUser = dataSnapshotForDifferentUser.getValue(User.class);
-                                        Log.d(TAG, "onDataChange: One of the linking Users " + differentUser.getUsername());
+                                } else if (dataSnapshot.exists()
+                                        && !dataSnapshot.getKey().equals(userLikeSnapshotID)) {
+                                    Query differentUserQuery = mUserRef
+                                            .child(userLikeSnapshotID).getRef();
+                                    differentUserQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshotForDifferentUser) {
+                                            final User differentUser = dataSnapshotForDifferentUser.getValue(User.class);
+                                            Log.d(TAG, "onDataChange: One of the linking Users " + differentUser.getUsername());
 
-                                        mUsers.append(differentUser.getUsername());
-                                        mUsers.append(",");
-                                        setupUserLikedString(differentUser.getUsername());
-                                    }
+                                            mUsers.append(differentUser.getUsername());
+                                            mUsers.append(",");
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            user = differentUser;
 
-                                    }
-                                });
+                                            setupUserLikedString(differentUser.getUsername(), user);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.d(TAG, "onCancelled: Query Cancelled");
 
                             }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.d(TAG, "onCancelled: Query Cancelled");
-
-                        }
-                    });
+                        });
+                    }
+                    if (!dataSnapshot.exists()) {
+                        mLikesString = "";
+                        mLikedByCurrentUser = false;
+                        setupWidgets();
+                    }
                 }
-                if (!dataSnapshot.exists()) {
-                    mLikesString = "";
-                    mLikedByCurrentUser = false;
-                    setupWidgets();
+
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d(TAG, "onCancelled: Query Cancelled");
+
                 }
-            }
-
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "onCancelled: Query Cancelled");
-
-            }
-        });
+            });
+        } catch (NullPointerException e) {
+            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
+        }
     }
 
     /**
@@ -428,7 +348,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
      *                 Here we create a array of String which will be taking all the users,
      *                 Then based on the length it will display "Liked by" and number of them
      */
-    private void setupUserLikedString(String username) {
+    private void setupUserLikedString(String username, User user) {
 
         String[] splitUsers = mUsers.toString().split(",");
         boolean checkCurrentUserState = mUsers.toString().contains(user.getUsername());
@@ -442,53 +362,85 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             mLikedByCurrentUser = true;
         } else if (!checkCurrentUserState && checkDesiredUserState) {
             mLikedByCurrentUser = false;
-
         }
 
         int length = splitUsers.length;
         if (length == 1) {
             mLikesString = "Liked by " + splitUsers[0];
+            setmLikesString(mLikesString);
         } else if (length == 2) {
             mLikesString = "Liked by " + splitUsers[0]
                     + " and " + splitUsers[1];
+            setmLikesString(mLikesString);
 
         } else if (length == 3) {
             mLikesString = "Liked by " + splitUsers[0]
                     + " , " + splitUsers[1]
                     + " and " + splitUsers[2];
+            setmLikesString(mLikesString);
 
         } else if (length == 4) {
             mLikesString = "Liked by " + splitUsers[0]
                     + " , " + splitUsers[1]
                     + " , " + splitUsers[2]
                     + " and " + splitUsers[3];
+            setmLikesString(mLikesString);
+
         } else if (length > 4) {
             mLikesString = "Liked by " + splitUsers[0]
                     + " , " + splitUsers[1]
                     + " , " + splitUsers[2]
                     + " and " + (splitUsers.length - 3) + " others";
+            setmLikesString(mLikesString);
+
         }
         setupWidgets();
+    }
+
+    public String getmLikesString() {
+        return mLikesString;
+    }
+
+    public void setmLikesString(String mLikesString) {
+        this.mLikesString = mLikesString;
     }
 
     /**
      * This method add a new like directly the requests, current post.
      */
-    public void addNewLike() {
-        Log.d(TAG, "addNewLike: add new like");
+    public void addNewLike(DatabaseReference mPostsRef, DatabaseReference mUserRef,
+                           String userId, String postId,
+                           String currentUserId
+    ) {
+        try {
+            Log.d(TAG, "addNewLike: add new like");
 
-        String newLikeId = mPostsRef.child(mPost.getPostId()).push().getKey();
-        Like like = new Like();
-        like.setUser_id(userId);
+            String newLikeId = mPostsRef.child(postId).push().getKey();
+            Like like = new Like();
+            like.setUser_id(userId);
 
-        mPostsRef
-                .child(userId)
-                .child(mPost.getPostId())
-                .child(getString(R.string.field_likes))
-                .child(newLikeId)
-                .setValue(like);
+            if (userId.equals(currentUserId)) {
+                mPostsRef
+                        .child(currentUserId)
+                        .child(postId)
+                        .child("mLikes")
+                        .child(newLikeId)
+                        .setValue(like);
+                getLikesString(mPostsRef, mUserRef, currentUserId, postId);
+            } else {
+                mPostsRef
+                        .child(userId)
+                        .child(postId)
+                        .child("mLikes")
+                        .child(newLikeId)
+                        .setValue(like);
+                getLikesString(mPostsRef, mUserRef, userId, postId);
 
-        getLikesString();
+            }
+
+        } catch (NullPointerException e) {
+            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
+        }
     }
 
     /**
@@ -543,11 +495,13 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             case R.id.ingredientsBtnID:
                 String ingredients = mPost.getmIngredients();
                 mPostLikes.setText(ingredients);
+
                 break;
 
             case R.id.recipeBtnID:
                 String recipe = mPost.getmRecipe();
                 mPostLikes.setText(recipe);
+
                 break;
 
             case R.id.backArrow:
@@ -557,7 +511,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 break;
 
             case R.id.likesBtnID:
-                toggleLikes();
+                toggleLikes(mPostsRef, mUserRef, mPost.getUserId(), mPost.getPostId(), current_user.getUid(), likesPost);
+
                 break;
         }
 
@@ -568,52 +523,179 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
      * If the user has already liked it will display one answer;
      * If he didn't add a like, or there is no like then it will add one.
      */
-    public void toggleLikes() {
-        Query query = mPostsRef
-                .child(userId)
-                .child(mPost.getPostId())
-                .child(getString(R.string.field_likes))
-                .orderByChild(Objects.requireNonNull(mPostsRef
-                        .child(mPost.getPostId())
-                        .child(getString(R.string.field_likes))
-                        .child(userId).getKey()));
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                    if (mLikedByCurrentUser && Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
-                            .equals(userId)) {
-                        mPostsRef
-                                .child(userId)
-                                .child(mPost.getPostId())
-                                .child(getString(R.string.field_likes))
-                                .child(Objects.requireNonNull(singleSnapshot.getKey()))
-                                .removeValue();
-                        likesPost.setImageResource(R.drawable.post_like_not_pressed);
-                        getLikesString();
-                    } else if (!mLikedByCurrentUser) {
-                        addNewLike();
+    public void toggleLikes(DatabaseReference mPostsRef, DatabaseReference mUserRef,
+                            String userId, String postId,
+                            String currentUserId,
+                            ImageButton likesPost
+    ) {
+        try {
+            Query query = mPostsRef
+                    .child(userId)
+                    .child(postId)
+                    .child("mLikes")
+                    .orderByChild(Objects.requireNonNull(mPostsRef
+                            .child(postId)
+                            .child("mLikes")
+                            .child(userId).getKey()));
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                        if (mLikedByCurrentUser && Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
+                                .equals(userId)) {
+                            mPostsRef
+                                    .child(userId)
+                                    .child(postId)
+                                    .child("mLikes")
+                                    .child(Objects.requireNonNull(singleSnapshot.getKey()))
+                                    .removeValue();
+                            likesPost.setImageResource(R.drawable.post_like_not_pressed);
+                            getLikesString(mPostsRef, mUserRef, userId, postId);
+                        } else if (!mLikedByCurrentUser) {
+                            addNewLike(mPostsRef, mUserRef, userId, postId, currentUserId);
+
+                            mLikedByCurrentUser = true;
+                            likesPost.setImageResource(R.drawable.post_like_pressed);
+                            break;
+                        }
+                    }
+                    if (!dataSnapshot.exists() && currentUserId.equals(userId)) {
+                        addNewLike(mPostsRef, mUserRef, userId, postId, currentUserId);
+
                         mLikedByCurrentUser = true;
                         likesPost.setImageResource(R.drawable.post_like_pressed);
-                        break;
+
+                    } else if (!dataSnapshot.exists() && !currentUserId.equals(userId)) {
+                        addNewLike(mPostsRef, mUserRef, userId, postId, currentUserId);
+
+                        mLikedByCurrentUser = true;
+                        likesPost.setImageResource(R.drawable.post_like_pressed);
 
                     }
                 }
-                if (!dataSnapshot.exists()) {
-                    addNewLike();
-                    mLikedByCurrentUser = true;
-                    likesPost.setImageResource(R.drawable.post_like_pressed);
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    Log.d(TAG, "onCancelled: Query Cancelled");
+
+                }
+            });
+        } catch (NullPointerException e) {
+            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
+        }
+    }
+
+    /**
+     * The method gets the proper timestamp of the post creation and make the difference between
+     * current time and the time created
+     *
+     * @return the difference
+     */
+    private String getTimeStampDifference() {
+        Log.d(TAG, "getTimeStampDifference: getting TimeStamp Difference");
+
+        String diff;
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
+        sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
+        Date today = c.getTime();
+        sdf.format(today);
+        Date timeStamp;
+
+        final String photoTimeStamp = mPost.getDate_created();
+        try {
+            timeStamp = sdf.parse(photoTimeStamp);
+            diff = String.valueOf(Math.round((today.getTime() - timeStamp.getTime()) / 1000 / 60 / 60 / 24));
+        } catch (ParseException e) {
+            Log.e(TAG, "getTimeStampDifference: ParseException " + e.getMessage());
+            diff = "0";
+        }
+
+        return diff;
+    }
+
+    /**
+     * retrieves the Post from the incoming bundle from ProfileActivity interface
+     *
+     * @return photo
+     */
+    public Post getPhotoFromBundle() {
+        Log.d(TAG, "getPhotoFromBundle: arguments: " + getArguments());
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            return bundle.getParcelable(getString(R.string.post));
+        } else {
+            return null;
+        }
+
+    }
+
+    /**
+     * retrieves the activity number from the incoming bundle from ProfileActivity interface
+     *
+     * @return the activity number
+     */
+    private int getActivityNumberBundle() {
+        Log.d(TAG, "getPhotoFromBundle: arguments: " + getArguments());
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            return bundle.getInt(getString(R.string.activity_number));
+        } else {
+            return 0;
+        }
+
+    }
+
+    /**
+     * Bottom Navigation View setup
+     */
+    public void setupBottomNavigationView() {
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getActivity(), bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(mActivityNumber);
+        menuItem.setChecked(true);
+
+    }
+
+
+    /**
+     * The method gets the Photo details for a specific user
+     * If there is an user with this id, in our case the current user exists and the User's id is equal to
+     * the requested ost's id then it should return the data for the user.
+     */
+    public void getPhotoDetails(DatabaseReference mUserRef, Post mPost) {
+        try {
+            userId = current_user.getUid();
+
+            Query query = mUserRef.child(userId);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists() && dataSnapshot.getKey().equals(mPost.getUserId())) {
+                        user = dataSnapshot.getValue(User.class);
+
+                    } else {
+
+                        Log.d(TAG, "onDataChange: There is no data: " + dataSnapshot.getValue(User.class).getProfile_photo());
+                    }
+
                 }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d(TAG, "onCancelled: Query Cancelled");
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                Log.d(TAG, "onCancelled: Query Cancelled");
-
-            }
-        });
+                }
+            });
+        } catch (NullPointerException e) {
+            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
+        }
     }
 
     /**
@@ -621,7 +703,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
      * @use: deletes the current displayed post with all its data and deletes the item from database.
      **/
     private void deletePost() {
-
         try {
 
             DatabaseReference currentPostRef = mPostsRef.child(mAuth.getCurrentUser().getUid()).child(this.mPost.getPostId());

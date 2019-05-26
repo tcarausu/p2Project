@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -21,6 +20,10 @@ import com.example.myapplication.R;
 import com.example.myapplication.home.CommentsActivity;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
+import com.example.myapplication.user_profile.ViewPostFragmentNewsFeed;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -35,6 +38,12 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
     // Get the recycler view that contains this adapter so that we are able to scroll automatically
     private RecyclerView mRecyclerView;
     private List<Post> mPosts;
+
+    private ViewPostFragmentNewsFeed viewPost = new ViewPostFragmentNewsFeed();
+    private FirebaseAuth mAuth = FirebaseMethods.getAuth();
+    private FirebaseDatabase mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
+    private DatabaseReference mPostsRef, mUserRef;
+
 
     // Constants
     private final int FOCUS_ANY = -350;
@@ -74,6 +83,9 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
 
         final Post currentPost = mPosts.get(index);
         User postUser = getUserForPost(currentPost);
+        mUserRef = mFirebaseDatabase.getReference("users");
+        mPostsRef = mFirebaseDatabase.getReference("posts");
+
 
         if (postUser != null) {
             Glide.with(mContext)
@@ -104,12 +116,36 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
 
         // Button Listeners ***************************************************
         viewHolder.mLikes.setOnClickListener(v -> {
-
-            int nrOfLikes = currentPost.getLikeList().size();
-            if (nrOfLikes > 1) {
-                viewHolder.likes_overview.setText(nrOfLikes + " Likes");
-            } else
-                viewHolder.likes_overview.setText(nrOfLikes + " Like");
+            if (currentPost.getUserId().equals(mAuth.getCurrentUser().getUid())) {
+                viewPost.toggleLikes(mPostsRef,
+                        mUserRef,
+                        mAuth.getCurrentUser().getUid(),
+                        currentPost.getPostId(),
+                        mAuth.getCurrentUser().getUid(),
+                        viewHolder.mLikes
+                );
+            } else {
+                viewPost.toggleLikes(mPostsRef,
+                        mUserRef,
+                        currentPost.getUserId(),
+                        currentPost.getPostId(),
+                        mAuth.getCurrentUser().getUid(),
+                        viewHolder.mLikes
+                );
+            }
+            if (viewHolder.mLikedByCurrentUser) {
+                int nrOfLikes = currentPost.getLikeList().size();
+                if (nrOfLikes > 1) {
+                    viewHolder.likes_overview.setText(nrOfLikes + " Likes");
+                } else
+                    viewHolder.likes_overview.setText(nrOfLikes + " Like");
+            } else {
+                int nrOfLikes = currentPost.getLikeList().size();
+                if (nrOfLikes > 1) {
+                    viewHolder.likes_overview.setText(nrOfLikes + " Likes");
+                } else
+                    viewHolder.likes_overview.setText(nrOfLikes + " Like");
+            }
         });
 
         viewHolder.mComments.setOnClickListener(v -> {
@@ -153,6 +189,8 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
      */
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        boolean mLikedByCurrentUser;
+
         RelativeLayout mParentLayout;
         CircleImageView mProfilePic;
         TextView mUserName;
@@ -160,7 +198,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         ImageView mFoodImg;
         ImageButton mLikes, mComments, mRecipe, mIngredients, mOptions;
         RelativeLayout mPostToolbarBtnsExpansionContainer, mOverviewLayout;
-//        FrameLayout mPostToolbarBtnsExpansionContainer;
+        //        FrameLayout mPostToolbarBtnsExpansionContainer;
         TextView mToolbarExpasionText, likes_overview, post_TimeStamp;
 
 
@@ -184,6 +222,11 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
             likes_overview = itemView.findViewById(R.id.expansionTextID);
             post_TimeStamp = itemView.findViewById(R.id.post_TimeStamp);
 
+            if (mLikedByCurrentUser) {
+                mLikes.setImageResource(R.drawable.post_like_pressed);
+            } else {
+                mLikes.setImageResource(R.drawable.post_like_not_pressed);
+            }
         }
 
         // Used to scroll recycler view over the expandable layout

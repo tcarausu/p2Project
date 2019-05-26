@@ -130,7 +130,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                             } else
                                 Toast.makeText(getApplicationContext(), "No match found", Toast.LENGTH_SHORT).show();
                             search_recycler_view.removeAllViews();
-                            adapter.notifyDataSetChanged();
+//                            adapter.notifyDataSetChanged();
                         }
                     }
                 }
