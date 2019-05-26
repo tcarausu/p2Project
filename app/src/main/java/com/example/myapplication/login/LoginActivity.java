@@ -467,13 +467,14 @@ public class LoginActivity extends AppCompatActivity implements
                 description,
                 "Chose a user name",
                 StringManipulation.condenseUserName(username),
-                email,
-                0,
                 0,
                 0,
                 0,
                 profile_photo,
-                website);
+                website,
+                0,
+                email
+        );
 
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(currentUser.getUid())

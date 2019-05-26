@@ -124,7 +124,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
 
-        uploadId = mDatabaseRef.push().getKey();
+        uploadId = firebaseMethods.getTimestamp() + mDatabaseRef.push().getKey();
         StorageReference storageReference = mStorageRef.child("post_pic/users/" + mAuth.getUid() + "/" + uploadId + ".jpg");
 
         storageReference.putFile(Uri.parse(imageUri)).addOnCompleteListener(task -> {
@@ -139,7 +139,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
                             Post postInfo = new Post(description,
                                     URL, recipe, ingredients, mAuth.getUid(),
-                                    firebaseMethods.getTimestamp() + uploadId, firebaseMethods.getTimestamp(), null, null);
+                                    uploadId, firebaseMethods.getTimestamp(), null, null);
                             Log.d(TAG, "onComplete: upload uid: " + uploadId);
 
                             mDatabaseRef.child(uploadId).setValue(postInfo);

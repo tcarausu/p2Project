@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class CommentsActivity extends AppCompatActivity {
 
@@ -103,6 +104,7 @@ public class CommentsActivity extends AppCompatActivity {
         Comment newComment = new Comment();
         String comment = writeComment.getText().toString().trim();
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         newComment.setComment(comment);
         newComment.setUserId(currentUserId);
 
@@ -116,9 +118,11 @@ public class CommentsActivity extends AppCompatActivity {
             currentPost.addComment(newComment);
         }
 
-        mPostReference = FirebaseDatabase.getInstance().getReference("posts/" + currentPost.getUserId() + "/" + currentPost.getPostId() + "/comments");
-        mPostReference.child(mPostReference.push().getKey()).setValue(newComment);
+        mPostReference = FirebaseDatabase.getInstance().getReference("posts/" + currentPost.getUserId()
+                + "/" + currentPost.getPostId() + "/comments");
+        mPostReference.child(Objects.requireNonNull(mPostReference.push().getKey())).setValue(newComment);
 
+        mUserReference = FirebaseDatabase.getInstance().getReference("users/" +currentUserId);
         // Getting username and profile photo
         mUserReference.addValueEventListener(new ValueEventListener() {
             @Override

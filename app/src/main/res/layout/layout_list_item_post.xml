@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/parentLayoutID"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -215,25 +214,25 @@
         </RelativeLayout>
     </LinearLayout>
 
+    <!--<RelativeLayout-->
+    <!--android:id="@+id/overviewLayoutID"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@+id/toolbarExpansionContainerID">-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/likesOverview"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginStart="32dp"-->
+    <!--android:layout_marginEnd="32dp"-->
+    <!--android:text="Liked by whoever, eve, and 30 others"-->
+    <!--android:textColor="@color/black"-->
+    <!--android:textSize="18sp" />-->
+
+    <!--</RelativeLayout>-->
+
     <RelativeLayout
-        android:id="@+id/time_Stamp_linear"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbarExpansionContainerID">
-
-        <TextView
-            android:id="@+id/post_TimeStamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="5dp"
-            android:text="3 days ago"
-            android:textColor="@color/grey_500"
-            android:textSize="18sp"
-            android:textStyle="bold|italic" />
-    </RelativeLayout>
-
-    <FrameLayout
         android:id="@+id/toolbarExpansionContainerID"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -251,5 +250,19 @@
         <!--android:id="@+id/toolbarExpansionTextID"-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="wrap_content" />-->
-    </FrameLayout>
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/post_TimeStamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbarExpansionContainerID"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="5dp"
+        android:text="3 days ago"
+        android:textColor="@color/grey_500"
+
+        android:textSize="18sp"
+        android:textStyle="bold|italic" />
 </RelativeLayout>

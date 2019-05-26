@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -159,6 +160,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         ImageView mFoodImg;
         ImageButton mLikes, mComments, mRecipe, mIngredients, mOptions;
         RelativeLayout mPostToolbarBtnsExpansionContainer, mOverviewLayout;
+//        FrameLayout mPostToolbarBtnsExpansionContainer;
         TextView mToolbarExpasionText, likes_overview, post_TimeStamp;
 
 

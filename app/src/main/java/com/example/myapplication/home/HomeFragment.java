@@ -75,7 +75,7 @@ public class HomeFragment extends Fragment {
 
         mRecyclerView = view.findViewById(R.id.recyclerViewID);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mPosts = new ArrayList<>();
         mUsers = new ArrayList<>();
@@ -84,6 +84,7 @@ public class HomeFragment extends Fragment {
         mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts
 //                , mRecyclerView
         );
+        mRecyclerView.setAdapter(mAdapter);
 
         GetData getData = new GetData();
         getData.execute();
