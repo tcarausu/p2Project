@@ -4,6 +4,7 @@
     android:id="@+id/parentLayoutID"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="24dp"
     android:background="@drawable/input_fields_frame_grey"
     android:padding="5dp">
 
@@ -177,6 +178,7 @@
                 android:layout_below="@id/recipeBtnID"
                 android:layout_centerInParent="true"
                 android:text="Recipe"
+
                 android:textColor="@color/orange"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -206,6 +208,7 @@
                 android:layout_below="@id/ingredientsBtnID"
                 android:layout_centerInParent="true"
                 android:text="Ingredients"
+
                 android:textColor="@color/orange"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -237,7 +240,6 @@
         android:layout_below="@+id/food_linear">
 
         <TextView
-
             android:id="@+id/expansionTextID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
