@@ -93,9 +93,6 @@ public class HistoryLogActivity extends AppCompatActivity {
 
     private void getCurrentUserPosts() {
         mListOfPosts = new ArrayList<>();
-        // A temporary list to keep counting the datasnapshots.
-//        ArrayList<DataSnapshot> tList = new ArrayList<>();
-
         // Getting the user ID branch inside posts main node
         Query query = mPostReference.child(mCurrentUserId);
 
