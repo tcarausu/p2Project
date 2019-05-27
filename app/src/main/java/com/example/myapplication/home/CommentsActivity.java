@@ -3,6 +3,7 @@ package com.example.myapplication.home;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -26,14 +27,15 @@ public class CommentsActivity extends AppCompatActivity {
 
     private final String TAG = "CommentsActivity";
 
+    //firebase
     private DatabaseReference mPostReference;
     private DatabaseReference mUserReference;
 
+    //view
     private ListViewAdapter mAdapter;
     private ListView listView;
     private EditText writeComment;
     private Button addComment;
-
     private ArrayList<Comment> cl;
 
     // Model data
@@ -43,8 +45,6 @@ public class CommentsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
-
-
         listView = findViewById(R.id.post_comments_list);
         writeComment = findViewById(R.id.write_new_comment);
         addComment = findViewById(R.id.add_new_comment);
@@ -52,7 +52,6 @@ public class CommentsActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         assert bundle != null;
         currentPost = bundle.getParcelable("currentPost");
-
         setButtonsListeners();
         displayComments();
     }
@@ -69,6 +68,7 @@ public class CommentsActivity extends AppCompatActivity {
                 mUserReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        commentsList.clear();
                         String username = (String) dataSnapshot.child("username").getValue();
                         String userProfileImage = (String) dataSnapshot.child("profile_photo").getValue();
                         comment.setUsername(username);
@@ -85,10 +85,10 @@ public class CommentsActivity extends AppCompatActivity {
         }
     }
 
-
     private void setButtonsListeners() {
         addComment.setOnClickListener(v -> {
-            if (!writeComment.getText().toString().trim().equals("")) {
+            String comment = writeComment.getText().toString();
+            if (!TextUtils.isEmpty(comment)) {
                 uploadComment();
             } else {
                 Toast.makeText(getApplicationContext(), "Please insert a comment", Toast.LENGTH_SHORT).show();
@@ -102,7 +102,6 @@ public class CommentsActivity extends AppCompatActivity {
         Comment newComment = new Comment();
         String comment = writeComment.getText().toString().trim();
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
         newComment.setComment(comment);
         newComment.setUserId(currentUserId);
 

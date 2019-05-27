@@ -1,5 +1,7 @@
 package com.example.myapplication.models;
 
+import com.google.firebase.database.Exclude;
+
 /**
  * File created by tcarau18
  **/
@@ -17,7 +19,7 @@ public class Like {
     public String getUser_id() {
         return user_id;
     }
-
+    @Exclude
     public void setUser_id(String user_id) {
         this.user_id = user_id;
     }

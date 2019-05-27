@@ -1,5 +1,4 @@
 package com.example.myapplication.welcomingSlides;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,7 +15,6 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
-
 /**
  * by M.MSAAD
  **/
@@ -30,7 +28,6 @@ public class SlidesActivity extends AppCompatActivity {
     private int mCurrentSlide;
     private Intent mIntent;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,31 +35,27 @@ public class SlidesActivity extends AppCompatActivity {
         mIntent = new Intent(SlidesActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
         findWidgets();
         verifyFirstRun();
-
         sliderAdapter = new SliderAdapter(this);
         slideViewPager.setAdapter(sliderAdapter);
         addDots(0);
         slideViewPager.addOnPageChangeListener(vl);
-
+        clickListeners();
+    }
+    private void clickListeners() {
         mPrevious.setOnClickListener(v -> slideViewPager.setCurrentItem(mCurrentSlide - 1));
-
-        mNext.setOnClickListener(v -> {
-            slideViewPager.setCurrentItem(mCurrentSlide + 1);
+        mNext.setOnClickListener(v -> { slideViewPager.setCurrentItem(mCurrentSlide + 1);
             if (mNext.getText().equals("FINISH")) {
                 new Handler().postDelayed(() -> startActivity(mIntent), Toast.LENGTH_SHORT);
             }
         });
-
         mSkip.setOnClickListener(v -> new Handler().postDelayed(() -> startActivity(mIntent), 500));
     }
-
     /**
      * created by Mo.Msaad
      */
     private void verifyFirstRun() {
         SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
         boolean firstRun = prefs.getBoolean("prefs", true);
-
         if (firstRun) {//if its the first run we change the boolean to false
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("prefs", false);
@@ -72,23 +65,19 @@ public class SlidesActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Welcome", Toast.LENGTH_LONG).show();
         }
     }
-
     private void findWidgets() {
         slideViewPager = findViewById(R.id.slides_viewPager);
         dotsLayout = findViewById(R.id.dots_layout);
         mPrevious = findViewById(R.id.previousButton_id);
         mNext = findViewById(R.id.nextButton_id);
         mSkip = findViewById(R.id.skipButton);
-
         sliderAdapter = new SliderAdapter(this);
         slideViewPager.setAdapter(sliderAdapter);
         addDots(0);
         slideViewPager.addOnPageChangeListener(vl);
-
         mIntent = new Intent(SlidesActivity.this, LoginActivity.class);
 
     }
-
 
     @SuppressLint("ResourceAsColor")
     public void addDots(int position) {
@@ -108,35 +97,29 @@ public class SlidesActivity extends AppCompatActivity {
             dots[position].setTextColor(getResources().getColor(R.color.white));
         }
     }
-
     ViewPager.OnPageChangeListener vl = new ViewPager.OnPageChangeListener() {
         @Override
-        public void onPageScrolled(int i, float v, int i1) {
-
-        }
-
+        public void onPageScrolled(int i, float v, int i1) {}
         @Override
         public void onPageSelected(final int i) {
             addDots(i);
             mCurrentSlide = i;
-
             if (mCurrentSlide == 0) {
-
                 mPrevious.setEnabled(false);
                 mNext.setEnabled(true);
                 mSkip.setEnabled(true);
                 mPrevious.setVisibility(View.INVISIBLE);
                 mSkip.setVisibility(View.VISIBLE);
-
-            } else if (mCurrentSlide == dots.length - 1) {
+            }
+            else if (mCurrentSlide == dots.length - 1) {
                 mNext.setEnabled(true);
                 mPrevious.setEnabled(true);
                 mSkip.setEnabled(true);
                 mPrevious.setVisibility(View.VISIBLE);
                 mNext.setText("FINISH");
                 mSkip.setVisibility(View.INVISIBLE);
-
-            } else {
+            }
+            else {
                 mNext.setEnabled(true);
                 mPrevious.setEnabled(true);
                 mSkip.setEnabled(true);
@@ -145,10 +128,7 @@ public class SlidesActivity extends AppCompatActivity {
                 mNext.setText(getString(R.string.next));
                 mPrevious.setText(getString(R.string.back));
             }
-
-
         }
-
         @Override
         public void onPageScrollStateChanged(int i) {
         }

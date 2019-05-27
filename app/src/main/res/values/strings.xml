@@ -175,5 +175,8 @@
     <string name="no">NO</string>
     <string name="todo">TODO</string>
     <string name="post_added">Post added successfully.</string>
+    <string name="liked_by_whoever_eve_and_30_others">Liked by whoever, eve, and 30 others</string>
+    <string name="username_caption_caption">username + caption #caption</string>
+    <string name="view_all_3_commentlist">View all 3 commentList</string>
 
 </resources>
