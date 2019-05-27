@@ -19,12 +19,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
+import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
+import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
@@ -32,13 +34,13 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class LoginForgetPasswordTest {
+public class LoginForgetPasswordTestDone {
 
     @Rule
     public ActivityTestRule<LoginActivity> mActivityTestRule = new ActivityTestRule<>(LoginActivity.class);
 
     @Test
-    public void loginForgetPasswordTest() {
+    public void loginForgetPasswordTestDone() {
         // Added a sleep statement to match the app's execution delay.
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
@@ -58,65 +60,6 @@ public class LoginForgetPasswordTest {
                         isDisplayed()));
         appCompatTextView.perform(click());
 
-        ViewInteraction relativeLayout = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.useThisFragmentID),
-                                childAtPosition(
-                                        withId(R.id.login_layout),
-                                        0)),
-                        1),
-                        isDisplayed()));
-        relativeLayout.perform(click());
-
-        ViewInteraction relativeLayout2 = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.useThisFragmentID),
-                                childAtPosition(
-                                        withId(R.id.login_layout),
-                                        0)),
-                        1),
-                        isDisplayed()));
-        relativeLayout2.perform(click());
-
-        ViewInteraction relativeLayout3 = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.useThisFragmentID),
-                                childAtPosition(
-                                        withId(R.id.login_layout),
-                                        0)),
-                        1),
-                        isDisplayed()));
-        relativeLayout3.perform(click());
-
-        ViewInteraction relativeLayout4 = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.useThisFragmentID),
-                                childAtPosition(
-                                        withId(R.id.login_layout),
-                                        0)),
-                        1),
-                        isDisplayed()));
-        relativeLayout4.perform(click());
-
-        ViewInteraction relativeLayout5 = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.useThisFragmentID),
-                                childAtPosition(
-                                        withId(R.id.login_layout),
-                                        0)),
-                        1),
-                        isDisplayed()));
-        relativeLayout5.perform(click());
-
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(7000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.ForgotPass_email_field),
                         childAtPosition(
@@ -127,36 +70,6 @@ public class LoginForgetPasswordTest {
                         isDisplayed()));
         appCompatEditText.perform(replaceText("t@g.com"), closeSoftKeyboard());
 
-        ViewInteraction relativeLayout6 = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.useThisFragmentID),
-                                childAtPosition(
-                                        withId(R.id.login_layout),
-                                        0)),
-                        1),
-                        isDisplayed()));
-        relativeLayout6.perform(click());
-
-        ViewInteraction relativeLayout7 = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.useThisFragmentID),
-                                childAtPosition(
-                                        withId(R.id.login_layout),
-                                        0)),
-                        1),
-                        isDisplayed()));
-        relativeLayout7.perform(click());
-
-        ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.ForgotPass_email_field), withText("t@g.com"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.RelativeLayout")),
-                                        2),
-                                0),
-                        isDisplayed()));
-        appCompatEditText2.perform(pressImeActionButton());
-
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.Forgotpass_resetPass_button), withText("Send Mail"),
                         childAtPosition(
@@ -166,6 +79,97 @@ public class LoginForgetPasswordTest {
                                 1),
                         isDisplayed()));
         appCompatButton.perform(click());
+
+        ViewInteraction appCompatEditText2 = onView(
+                allOf(withId(R.id.ForgotPass_email_field), withText("t@g.com"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.RelativeLayout")),
+                                        2),
+                                0),
+                        isDisplayed()));
+        appCompatEditText2.perform(replaceText("t@g.co"));
+
+        ViewInteraction appCompatEditText3 = onView(
+                allOf(withId(R.id.ForgotPass_email_field), withText("t@g.co"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.RelativeLayout")),
+                                        2),
+                                0),
+                        isDisplayed()));
+        appCompatEditText3.perform(closeSoftKeyboard());
+
+        ViewInteraction appCompatEditText4 = onView(
+                allOf(withId(R.id.ForgotPass_email_field), withText("t@g.co"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.RelativeLayout")),
+                                        2),
+                                0),
+                        isDisplayed()));
+        appCompatEditText4.perform(click());
+
+        ViewInteraction appCompatEditText5 = onView(
+                allOf(withId(R.id.ForgotPass_email_field), withText("t@g.co"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.RelativeLayout")),
+                                        2),
+                                0),
+                        isDisplayed()));
+        appCompatEditText5.perform(replaceText(""));
+
+        ViewInteraction appCompatEditText6 = onView(
+                allOf(withId(R.id.ForgotPass_email_field),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.RelativeLayout")),
+                                        2),
+                                0),
+                        isDisplayed()));
+        appCompatEditText6.perform(closeSoftKeyboard());
+
+        ViewInteraction appCompatEditText7 = onView(
+                allOf(withId(R.id.ForgotPass_email_field),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.RelativeLayout")),
+                                        2),
+                                0),
+                        isDisplayed()));
+        appCompatEditText7.perform(longClick());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction appCompatEditText8 = onView(
+                allOf(withId(R.id.ForgotPass_email_field),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.RelativeLayout")),
+                                        2),
+                                0),
+                        isDisplayed()));
+        appCompatEditText8.perform(replaceText("tkaraushu@ymail.com"), closeSoftKeyboard());
+
+        pressBack();
+
+        ViewInteraction appCompatButton2 = onView(
+                allOf(withId(R.id.Forgotpass_resetPass_button), withText("Send Mail"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.RelativeLayout")),
+                                        2),
+                                1),
+                        isDisplayed()));
+        appCompatButton2.perform(click());
     }
 
     private static Matcher<View> childAtPosition(
