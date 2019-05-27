@@ -158,7 +158,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
         }).addOnFailureListener(e ->
                 Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
-        ;
+
     }
 
     /**
