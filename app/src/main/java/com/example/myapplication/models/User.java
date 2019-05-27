@@ -124,7 +124,7 @@ public class User implements Parcelable {
     public String getProfile_photo() {
         return profile_photo;
     }
-
+    @Exclude
     public void setProfile_photo(String profile_photo) {
         this.profile_photo = profile_photo;
     }
@@ -132,7 +132,7 @@ public class User implements Parcelable {
     public String getEmail() {
         return email;
     }
-
+    @Exclude
     public void setEmail(String email) {
         this.email = email;
     }
@@ -140,7 +140,7 @@ public class User implements Parcelable {
     public long getPhone_number() {
         return phone_number;
     }
-
+    @Exclude
     public void setPhone_number(long phone_number) {
         this.phone_number = phone_number;
     }
@@ -148,7 +148,7 @@ public class User implements Parcelable {
     public String getWebsite() {
         return website;
     }
-
+    @Exclude
     public void setWebsite(String website) {
         this.website = website;
     }

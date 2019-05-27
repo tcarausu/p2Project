@@ -176,8 +176,6 @@ public class LoginActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         mFirebaseMethods.checkAuth(getApplicationContext(), mAuth);
-
-
     }
 
     @Override
@@ -225,14 +223,12 @@ public class LoginActivity extends AppCompatActivity implements
                 if (task.isSuccessful()) {
                     progressDialog.dismiss();
                     verifyAccount(email); // check if user is verified by email
-
                 }
             }).addOnFailureListener(e -> {
                 progressDialog.dismiss();
                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 mAuth.signOut();
             });
-
         }
     }
 
@@ -247,10 +243,8 @@ public class LoginActivity extends AppCompatActivity implements
         try {
             FirebaseUser user = mAuth.getCurrentUser();
             isVerified = user.isEmailVerified(); // getting boolean true or false from database
-
             if (isVerified) {
                 verifyFirstEmailLogin(email, "Chose a user name", avatarURL);
-
                 addUserToDataBase();
                 mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), HomeActivity.class); // if yes goto mainActivity
             } else {
@@ -267,7 +261,6 @@ public class LoginActivity extends AppCompatActivity implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
-
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -384,7 +377,6 @@ public class LoginActivity extends AppCompatActivity implements
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.add(R.id.useThisFragmentID, fragmentForgotPass).commit();
                 }
-
 
                 break;
 
@@ -507,9 +499,9 @@ public class LoginActivity extends AppCompatActivity implements
 
 
     /**
-     * @param displayName: email fetched from the provider, used to add user email
-     * @param email:       name fetched from the provider, used to add user name
-     * @param photoURL:    phot fetched from the provider, used to add profile pic
+     * @param displayName: email fetched from google provider, used to add user email
+     * @param email:       name fetched from google provider, used to add user name
+     * @param photoURL:    phot fetched from google provider, used to add profile pic
      * @author Mo.Msaad
      **/
     private void verifyFirstGoogleLogin(String email, String displayName, String photoURL) {
@@ -526,19 +518,24 @@ public class LoginActivity extends AppCompatActivity implements
             Log.d(TAG, "verifyFirstRun: boolean first run is: " + googleFirstLogin);
         }
     }
-
+    /**
+     * @param  email: email fetched   used to login
+     * @param displayName: display name provider
+     * @param photoURL: photo url fetched from google provider
+     *
+     * */
     private void verifyFirstEmailLogin(String email, String displayName, String photoURL) {
 
         SharedPreferences firstLogin = getSharedPreferences("logPrefs", MODE_PRIVATE);
-        boolean googleFirstLogin = firstLogin.getBoolean("logPrefs", true);
+        boolean FirstLogin = firstLogin.getBoolean("logPrefs", true);
 
         //if its the first run we change the boolean to false
-        if (googleFirstLogin) {
+        if (FirstLogin) {
             addNewUser(email, displayName, "description", "website", photoURL);
             SharedPreferences.Editor editor = firstLogin.edit();
             editor.putBoolean("logPrefs", false);
             editor.apply();
-            Log.d(TAG, "verifyFirstRun: boolean first run is: " + googleFirstLogin);
+            Log.d(TAG, "verifyFirstRun: boolean first run is: " + FirstLogin);
         }
     }
 

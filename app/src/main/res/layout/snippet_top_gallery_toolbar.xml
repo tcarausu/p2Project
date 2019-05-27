@@ -36,14 +36,15 @@
 
 
                 <TextView
-                    android:background="@drawable/input_fields_with_shadow"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/input_fields_with_shadow"
                     android:text="@string/next"
                     android:layout_alignParentEnd="true"
-                    android:padding="5dp"
+                    android:padding="10dp"
                     android:layout_marginEnd="15dp"
-                    android:textSize="16dp"
+                    android:textSize="16sp"
                     android:textColor="@color/orange"
                     android:layout_centerVertical="true"
                     android:id="@+id/textview_next"/>
