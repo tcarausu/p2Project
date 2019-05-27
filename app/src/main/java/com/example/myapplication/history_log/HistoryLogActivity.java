@@ -1,6 +1,5 @@
 package com.example.myapplication.history_log;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -34,19 +33,17 @@ import com.google.firebase.storage.StorageReference;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class HistoryLogActivity extends AppCompatActivity {
     private static final String TAG = "HistoryLogActivity";
     private static final int ACTIVITY_NUM = 3;
 
-    private Context mContext;
 
     private RecyclerView mRecyclerView;
     private RecyclerViewAdapterHistoryLogItems mAdapter; // Is the bridge between our recyclerview and our arraylist. Shows only the necessary data from the arraylist
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private DatabaseReference mPostReference, mCurrentUserReference, mDatabaseUserPostRef;
+    private DatabaseReference mPostReference, mCurrentUserReference;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth mAuth;
     private FirebaseStorage mFirebaseStorage;
@@ -60,33 +57,20 @@ public class HistoryLogActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history_log);
-
-        initLayout();
-        buttonListeners();
-        setupBottomNavigationView();
         connectToDatabase();
+        setupBottomNavigationView();
         getCurrentUserPosts();
-    }
-
-
-    public void initLayout() {
-        mContext = HistoryLogActivity.this;
-    }
-
-    /**
-     * Setting up the buttons of the main view
-     */
-    public void buttonListeners() {
+        buildRecyclerView();
     }
 
 
     /**
      * Bottom Navigation View setup
      */
-    public void setupBottomNavigationView() {
+    private void setupBottomNavigationView() {
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
         BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
@@ -103,16 +87,14 @@ public class HistoryLogActivity extends AppCompatActivity {
         mCurrentUserId = mAuth.getCurrentUser().getUid();
         firebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseStorage = FirebaseMethods.getFirebaseStorage();
-
         // Setting the reference to posts branch
         mPostReference = firebaseDatabase.getReference("posts");
-
     }
 
     private void getCurrentUserPosts() {
         mListOfPosts = new ArrayList<>();
         // A temporary list to keep counting the datasnapshots.
-        ArrayList<DataSnapshot> tList = new ArrayList<>();
+//        ArrayList<DataSnapshot> tList = new ArrayList<>();
 
         // Getting the user ID branch inside posts main node
         Query query = mPostReference.child(mCurrentUserId);
@@ -121,23 +103,22 @@ public class HistoryLogActivity extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                mListOfPosts.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     HistoryLogPostItem post = postSnapshot.getValue(HistoryLogPostItem.class);
                     mCurrentUserReference = firebaseDatabase.getReference("users/" + mCurrentUserId);
                     mCurrentUserReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                             final User user = dataSnapshot.getValue(User.class);
+                            post.setUser(user);
                             mListOfPosts.add(post);
 
                             // Checking if we got all the items from the database so we can
                             // reverse the order of the postlist and pass it in the recycler view
                             Log.d(TAG, "DataSnapshot Count  " + postSnapshot.getChildrenCount());
-                            if (mListOfPosts.size() == postSnapshot.getChildrenCount()) {
-                                Collections.reverse(mListOfPosts);
-                                buildRecyclerView(mListOfPosts);
-                            }
+
                         }
 
                         @Override
@@ -154,12 +135,14 @@ public class HistoryLogActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Canceled", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     /**
      * Setting up recycler view
      */
-    private void buildRecyclerView(ArrayList<HistoryLogPostItem> list) {
+    private void buildRecyclerView() {
+
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
 
@@ -169,7 +152,7 @@ public class HistoryLogActivity extends AppCompatActivity {
 
         // Create an adapter and pass it a list of data, from which
         // the ViewHolder objects will be created and managed by this adapter
-        mAdapter = new RecyclerViewAdapterHistoryLogItems(list);
+        mAdapter = new RecyclerViewAdapterHistoryLogItems(mListOfPosts);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnRecyclerItemClickListener(HistoryLogActivity.this, position -> {
             highlightViewItem(position, true);
@@ -231,20 +214,12 @@ public class HistoryLogActivity extends AppCompatActivity {
         deleteUserDatabasePost(position);
     }
 
-
-   /* private void onClickAddItem(int position) {
-        mListOfItems.add(position, new HistoryLogPostItem(R.drawable.ic_action_eye_open, "New item in position:", "" + position));
-        mAdapter.notifyItemInserted(position);
-    }*/
-
-
     private void deleteUserDatabasePost(int position) {
         // Delete selected post from the database
 
         StorageReference imageRef = mFirebaseStorage.getReferenceFromUrl(mListOfPosts.get(position).getmFoodImgUrl());
         imageRef.delete().addOnSuccessListener(aVoid -> {
             mPostReference.removeValue();
-
             mPostReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

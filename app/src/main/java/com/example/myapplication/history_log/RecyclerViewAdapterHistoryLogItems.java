@@ -45,9 +45,9 @@ public class RecyclerViewAdapterHistoryLogItems extends RecyclerView.Adapter<Rec
     private Context mContext;
 
 
-    public void setPostsList(ArrayList<HistoryLogPostItem> items) {
-        this.mPostsList = items;
-    }
+//    public void setPostsList(ArrayList<HistoryLogPostItem> items) {
+//        this.mPostsList = items;
+//    }
 
     public RecyclerViewAdapterHistoryLogItems(ArrayList<HistoryLogPostItem> postsList) {
         mPostsList = postsList;
@@ -152,15 +152,12 @@ public class RecyclerViewAdapterHistoryLogItems extends RecyclerView.Adapter<Rec
                 .into(customViewHolder.mPostedImage);
 
         customViewHolder.mUserAction.setHintTextColor(currentItem.getHintColor());
-
         customViewHolder.mDescription.setText(currentItem.getmDescription());
         customViewHolder.mDescription.setTextColor(currentItem.getTextColor());
-
         customViewHolder.mBackgroundCardview.setSelected(currentItem.isHighlighted());
 
         // Setting on more dots visibility
         customViewHolder.mMoreDotsImage.setVisibility(currentItem.getMoreDotsVisibility());
-
 
     }
 
