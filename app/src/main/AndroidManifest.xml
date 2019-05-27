@@ -34,8 +34,8 @@
 
         <activity
             android:name="com.facebook.FacebookActivity"
-            android:icon="@drawable/chefood"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:icon="@drawable/chefood"
             android:label="@string/app_name" />
         <activity
             android:name="com.facebook.CustomTabActivity"
@@ -51,30 +51,36 @@
         </activity>
         <!-- END facebook login -->
 
-        <activity android:name=".search.SearchActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".search.SearchActivity"
+            android:screenOrientation="portrait" />
 
         <activity android:name=".post.AddPostActivity" />
 
-        <activity android:name=".home.HomeActivity"
+        <activity
+            android:name=".home.HomeActivity"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".user_profile.UserProfileActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".user_profile.UserProfileActivity"
+            android:screenOrientation="portrait" />
 
         <activity android:name=".history_log.HistoryLogActivity" />
 
-        <activity android:name=".user_profile.AccountSettingsActivity"
+        <activity
+            android:name=".user_profile.AccountSettingsActivity"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".login.LoginActivity"
+        <activity android:name=".post.NextActivity" />
+
+        <activity android:name=".home.CommentsActivity" />
+
+        <activity
+            android:name=".welcomingSlides.SlidesActivity"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".post.NextActivity"/>
-
-        <activity android:name=".home.CommentsActivity"/>
-
-        <activity android:name=".welcomingSlides.SlidesActivity"
+        <activity
+            android:name=".login.LoginActivity"
             android:screenOrientation="portrait">
 
             <intent-filter>

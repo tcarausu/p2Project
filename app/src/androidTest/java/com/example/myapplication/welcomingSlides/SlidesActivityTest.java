@@ -35,25 +35,6 @@ public class SlidesActivityTest {
 
     @Test
     public void slidesActivityTest() {
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(7000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.nextButton_id), withText("Next"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                4),
-                        isDisplayed()));
-        appCompatButton.perform(click());
-
         ViewInteraction viewPager = onView(
                 allOf(withId(R.id.slides_viewPager),
                         childAtPosition(
@@ -64,7 +45,16 @@ public class SlidesActivityTest {
                         isDisplayed()));
         viewPager.perform(swipeLeft());
 
-        ViewInteraction appCompatButton2 = onView(
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.skipButton), withText("Skip"),
                         childAtPosition(
                                 childAtPosition(
@@ -72,7 +62,7 @@ public class SlidesActivityTest {
                                         0),
                                 3),
                         isDisplayed()));
-        appCompatButton2.perform(click());
+        appCompatButton.perform(click());
     }
 
     private static Matcher<View> childAtPosition(
