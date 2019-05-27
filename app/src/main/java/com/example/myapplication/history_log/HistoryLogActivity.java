@@ -129,6 +129,7 @@ public class HistoryLogActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             final User user = dataSnapshot.getValue(User.class);
+                            post.setUser(user);
                             mListOfPosts.add(post);
 
                             // Checking if we got all the items from the database so we can
