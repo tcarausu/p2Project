@@ -68,12 +68,10 @@ public class FirebaseMethods {
         synchronized (FirebaseMethods.class) {
             mContext = context;
             mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
-
         }
     }
 
     public static FirebaseMethods getInstance(Context context) {
-
         return new FirebaseMethods(context);
     }
 

@@ -13,7 +13,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:textAlignment="center"
-            android:text="Would you like to delete the post?"
+            android:text="@string/would_you_like_to_delete_the_post"
             android:textSize="16sp"
             android:textColor="@android:color/white"
             />
@@ -37,8 +37,8 @@
                     android:textSize="14sp"
                     android:textAllCaps="true"
                     android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@android:color/holo_orange_light"
+                    android:background="@drawable/input_fields_with_shadow"
                     />
 
                 <Button
@@ -53,8 +53,8 @@
                     android:textSize="14sp"
                     android:textAllCaps="true"
                     android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@android:color/holo_orange_light"
+                    android:background="@drawable/input_fields_with_shadow"
                     />
 
         </LinearLayout>

@@ -98,18 +98,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_post_news_feeed, container, false);
-        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
 
-        mFirebaseMethods = FirebaseMethods.getInstance(getContext());
-        mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
-        current_user = mAuth.getCurrentUser();
-
-        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
-        mUserRef = mFirebaseDatabase.getReference("users");
-        mPostsRef = mFirebaseDatabase.getReference("posts");
-        mStorageRef = FirebaseMethods.getFirebaseStorage();
-
+        connectToDatabase();
         setupFirebaseAuth();
         initLayout(view);
         setListeners(view);
@@ -118,10 +108,21 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         return view;
     }
 
+    private void connectToDatabase() {
+        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
+        mFirebaseMethods = FirebaseMethods.getInstance(getContext());
+        mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
+        current_user = mAuth.getCurrentUser();
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
+        mUserRef = mFirebaseDatabase.getReference("users");
+        mPostsRef = mFirebaseDatabase.getReference("posts");
+        mStorageRef = FirebaseMethods.getFirebaseStorage();
+    }
+
     private void initLayout(View view) {
         try {
             userId = current_user.getUid();
-
             mUserName = view.findViewById(R.id.userNameID);
             mProfilePhoto = view.findViewById(R.id.userProfilePicID);
             mFoodImg = view.findViewById(R.id.foodImgID);
@@ -542,8 +543,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                        if (mLikedByCurrentUser && Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id()
-                                .equals(userId)) {
+                        if (mLikedByCurrentUser && Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id().equals(userId)) {
                             mPostsRef
                                     .child(userId)
                                     .child(postId)

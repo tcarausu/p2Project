@@ -1,40 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".home.CommentsActivity">
 
-    <ListView
-        android:id="@+id/post_comments_list"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-        >
-    </ListView>
-
     <LinearLayout
+        android:background="@drawable/input_fields_frame_grey"
+        android:id="@+id/linesadc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ListView
+            android:id="@+id/post_comments_list"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:drawSelectorOnTop="true"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+
+            >
+        </ListView>
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_marginTop="5dp"
+        android:background="@drawable/input_fields_frame_grey"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_below="@id/linesadc"
         android:id="@+id/writeCommentID"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@id/post_comments_list"
         >
 
         <EditText
             android:id="@+id/write_new_comment"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Write a comment"
-            android:layout_weight="2"/>
+            android:hint="@string/write_a_comment"
+            />
 
         <Button
+            android:background="@drawable/input_fields_with_shadow"
             android:id="@+id/add_new_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add"
+            android:text="@string/add"
+            android:textColor="@color/orange"
+            android:layout_alignEnd="@id/write_new_comment"
             style="@style/Widget.AppCompat.Button.Borderless" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

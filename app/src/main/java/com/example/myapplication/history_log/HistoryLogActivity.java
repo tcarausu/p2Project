@@ -58,9 +58,12 @@ public class HistoryLogActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history_log);
         connectToDatabase();
-        setupBottomNavigationView();
         getCurrentUserPosts();
+        setupBottomNavigationView();
+        mListOfPosts = new ArrayList<>();
+        mAdapter = new RecyclerViewAdapterHistoryLogItems(mListOfPosts);
         buildRecyclerView();
+        mRecyclerView.setAdapter(mAdapter);
     }
 
 
@@ -92,7 +95,7 @@ public class HistoryLogActivity extends AppCompatActivity {
     }
 
     private void getCurrentUserPosts() {
-        mListOfPosts = new ArrayList<>();
+
         // Getting the user ID branch inside posts main node
         Query query = mPostReference.child(mCurrentUserId);
 
@@ -100,31 +103,29 @@ public class HistoryLogActivity extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mListOfPosts.clear();
+
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     HistoryLogPostItem post = postSnapshot.getValue(HistoryLogPostItem.class);
                     mCurrentUserReference = firebaseDatabase.getReference("users/" + mCurrentUserId);
                     mCurrentUserReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                            mListOfPosts.clear();
                             final User user = dataSnapshot.getValue(User.class);
                             post.setUser(user);
                             mListOfPosts.add(post);
+                            mAdapter.notifyDataSetChanged();
 
                             // Checking if we got all the items from the database so we can
                             // reverse the order of the postlist and pass it in the recycler view
                             Log.d(TAG, "DataSnapshot Count  " + postSnapshot.getChildrenCount());
-
                         }
-
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                             Toast.makeText(getApplicationContext(), "Canceled", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
-
             }
 
             @Override
@@ -132,7 +133,6 @@ public class HistoryLogActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Canceled", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     /**
@@ -142,15 +142,11 @@ public class HistoryLogActivity extends AppCompatActivity {
 
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
-
         // Declare how ViewHolder objects are going to be displayed inside adapter
         mLayoutManager = new LinearLayoutManager(HistoryLogActivity.this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
         // Create an adapter and pass it a list of data, from which
         // the ViewHolder objects will be created and managed by this adapter
-        mAdapter = new RecyclerViewAdapterHistoryLogItems(mListOfPosts);
-        mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnRecyclerItemClickListener(HistoryLogActivity.this, position -> {
             highlightViewItem(position, true);
             alertDialogDelete(position);
@@ -160,14 +156,12 @@ public class HistoryLogActivity extends AppCompatActivity {
 
     /**
      * Alert Dialog:
-     * Asking the user if he wants to delete an activity from his history log
+     * Asking the user if he wants to delete an item from his history log
      */
     private void alertDialogDelete(final int position) {
         View layoutView = getLayoutInflater().inflate(R.layout.alert_dialog_history_log, null);
-
         Button cancelButton = layoutView.findViewById(R.id.alertButtonCancel);
         Button deleteButton = layoutView.findViewById(R.id.alertButtonDelete);
-
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setView(layoutView);
 
@@ -182,7 +176,6 @@ public class HistoryLogActivity extends AppCompatActivity {
         // Setting transparent the background (layout) of alert dialog
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         alertDialog.show();
-
 
         deleteButton.setOnClickListener(v -> {
             alertDialog.dismiss();
@@ -231,7 +224,7 @@ public class HistoryLogActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    Log.d(TAG, "onCancelled: ");
                 }
             });
         });

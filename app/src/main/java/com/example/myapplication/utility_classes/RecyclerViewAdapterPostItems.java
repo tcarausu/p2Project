@@ -162,7 +162,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
 //            viewHolder.mToolbarExpasionText.setText(currentPost.getmRecipe());
 //            viewHolder.focusExpandable(viewHolder, FOCUS_ANY);
 //        });
-//
+////
 //        viewHolder.mIngredients.setOnClickListener(v -> {
 //            // implementation for displaying the ingredients for each post
 //            viewHolder.mToolbarExpasionText.setText(currentPost.getmIngredients());
@@ -198,7 +198,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         ImageView mFoodImg;
         ImageButton mLikes, mComments, mRecipe, mIngredients, mOptions;
         RelativeLayout mPostToolbarBtnsExpansionContainer, mOverviewLayout;
-        //        FrameLayout mPostToolbarBtnsExpansionContainer;
+        // FrameLayout mPostToolbarBtnsExpansionContainer;
         TextView mToolbarExpasionText, likes_overview, post_TimeStamp;
 
 

@@ -147,6 +147,7 @@ public class Post implements Parcelable {
     }
 
     public List<Comment> getCommentList() {
+
         return commentList;
     }
 
