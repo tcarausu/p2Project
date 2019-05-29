@@ -72,6 +72,7 @@ public class LoginActivity extends AppCompatActivity implements
     private FirebaseMethods mFirebaseMethods;
     private DatabaseReference user_ref;
     private DatabaseReference myRef;
+    private GoogleSignInOptions gso ;
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
 
@@ -83,24 +84,22 @@ public class LoginActivity extends AppCompatActivity implements
     private FragmentManager fragmentManager;
     private boolean isVerified;
     private Context mContext;
-
-
-    // this is set to create an email_signed_in_user with default avatar. We store the picture on database an download it later.
+    //this is set to create an email_signed_in_user with default avatar. We store the picture on database an download it later.
     private String avatarURL = "https://firebasestorage.googleapis.com/v0/b/p2project-2a81d.appspot.com/o/avatar_chefood%2FGroup%205.png?alt=media&token=87e74817-a27d-4a04-afa3-e7cfa1adca68";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mContext = LoginActivity.this;
-        connectFirebase();
-        mFirebaseMethods.checkAuth(getApplicationContext(), mAuth);
+
         initLayout();
+        connectFirebase();
+        mFirebaseMethods.checkAuthInLogin(mContext, mAuth);
         buttonListeners();
     }
 
     private void connectFirebase() {
-        mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
+        mFirebaseMethods = FirebaseMethods.getInstance(mContext);
         fragmentManager = getSupportFragmentManager();
         mAuth = FirebaseMethods.getAuth();
         currentUser = mAuth.getCurrentUser();
@@ -109,8 +108,14 @@ public class LoginActivity extends AppCompatActivity implements
         myRef = firebaseDatabase.getReference();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 
     public void initLayout() {
+        mContext = LoginActivity.this;
         mEmailField = findViewById(R.id.email_id_logIn);
         mPasswordField = findViewById(R.id.password_id_logIn);
         loginLayout = findViewById(R.id.login_activity);
@@ -126,7 +131,7 @@ public class LoginActivity extends AppCompatActivity implements
         findViewById(R.id.textView_id_forgotPass_logIn).setOnClickListener(this);
 
         // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
@@ -169,13 +174,12 @@ public class LoginActivity extends AppCompatActivity implements
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
 
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.checkAuth(getApplicationContext(), mAuth);
+        mFirebaseMethods.checkAuthInLogin(mContext, mAuth);
     }
 
     @Override

@@ -38,59 +38,66 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
 
-    private RecyclerView mRecyclerView;
-    private RecyclerViewAdapterPostItems mAdapter;
-
+    //firebase
     private FirebaseDatabase firebasedatabase;
     private DatabaseReference mDatabasePostRef;
     private DatabaseReference mDatabaseUserRef;
     private DatabaseReference mDatabaseUserPostRef;
     private FirebaseMethods mFirebaseMethods;
-
     private FirebaseUser current_user;
     private FirebaseAuth mAuth;
 
+    //view display engines
+    private RecyclerView mRecyclerView;
+    private RecyclerViewAdapterPostItems mAdapter;
+
+    //models
     private List<Post> mPosts;
     private List<User> mUsers;
     private List<Comment> mComments;
 
+    //vars
     private String mUsername;
     private String mProfilePhoto;
     private String mCurrentUserId;
+    GetData getData = new GetData();
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mFirebaseMethods = FirebaseMethods.getInstance(getContext());
-        mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
-
-
-        current_user = mAuth.getCurrentUser();
-        firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
-
-        mRecyclerView = view.findViewById(R.id.recyclerViewID);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        mPosts = new ArrayList<>();
-        mUsers = new ArrayList<>();
-        mComments = new ArrayList<>();
-
-        mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts);
-        mRecyclerView.setAdapter(mAdapter);
-
-        GetData getData = new GetData();
+        setupFirebase();
+        setupRecyclerView(view);
         getData.execute();
 
         return view;
     }
 
+    private void setupFirebase() {
+        mFirebaseMethods = FirebaseMethods.getInstance(getContext());
+        mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
+        current_user = mAuth.getCurrentUser();
+        firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
+    }
+
+    private void setupRecyclerView(View view) {
+        mRecyclerView = view.findViewById(R.id.recyclerViewID);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mPosts = new ArrayList<>();
+        mUsers = new ArrayList<>();
+        mComments = new ArrayList<>();
+        mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts);
+        mRecyclerView.setAdapter(mAdapter);
+
+    }
+
     @Override
     public void onStart() {
         super.onStart();
+
     }
 
     @Override
@@ -106,19 +113,19 @@ public class HomeFragment extends Fragment {
 
     public class GetData extends AsyncTask<Void, Void, Void> {
 
-        private GetData() {
-        }
+        private GetData() {}
 
         private void getPostsInfo() {
 
             try {
+
                 mDatabasePostRef = firebasedatabase.getReference("posts");
                 mDatabasePostRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                         mPosts.clear();
                         mUsers.clear();
-
                         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                             mCurrentUserId = current_user.getUid();
                             // Getting the users that posted
@@ -183,7 +190,6 @@ public class HomeFragment extends Fragment {
 
                                     }
                                 });
-
                                 mDatabaseUserPostRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -212,13 +218,13 @@ public class HomeFragment extends Fragment {
                                     }
 
                                 });
-
                                 mPosts.add(post);
                                 mAdapter.setPostsList(mPosts);
                                 mAdapter.notifyDataSetChanged();
 
                             }
                             mAdapter.notifyDataSetChanged();
+
                         }
                     }
 
@@ -231,7 +237,7 @@ public class HomeFragment extends Fragment {
 
             } catch (
                     NullPointerException e) {
-                mDatabasePostRef.removeValue();
+
                 Log.d(TAG, "onDataChange: error: " + e.getMessage());
             }
 

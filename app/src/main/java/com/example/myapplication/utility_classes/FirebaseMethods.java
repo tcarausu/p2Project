@@ -217,7 +217,7 @@ public class FirebaseMethods {
         }
     }
 
-    public void checkAuth(Context context ,FirebaseAuth auth){
+    public void checkAuthInLogin(Context context , FirebaseAuth auth){
 
         if (mAuth == null || mAuth.getCurrentUser() == null){
             auth.signOut();
@@ -226,20 +226,11 @@ public class FirebaseMethods {
        else if (auth != null || mAuth.getCurrentUser() != null ){
             context.startActivity(new Intent(context, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
-
-
     }
 
     public void goToWhereverWithFlags(Context activityContext, Context c , Class <? extends AppCompatActivity> cl){
-
         activityContext.startActivity(new Intent(c,cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
-
-
-    public void goToWhereverWithOutFlags(Context activityContext, Context c , Class <? extends AppCompatActivity> cl){
-        activityContext.startActivity(new Intent(c,cl));
-    }
-
 
 
 }

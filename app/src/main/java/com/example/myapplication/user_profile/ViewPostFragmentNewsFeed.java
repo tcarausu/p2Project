@@ -1,6 +1,7 @@
 package com.example.myapplication.user_profile;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,12 +21,12 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.comment_activity.CommentsActivity;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
-import com.example.myapplication.utility_classes.SquareImageView;
 import com.example.myapplication.utility_classes.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -70,10 +71,11 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     private String userId;
 
     //widgets
-    private SquareImageView mFoodImg;
+    private ImageView mFoodImg;
     private CircleImageView mProfilePhoto;
-    private ImageView optionsMenu, profileMenu, backArrow;
+    private ImageView  profileMenu, backArrow;
     private TextView mUserName, mPostLikes, mPostDescription, mPostTimeStamp;
+    private ImageButton optionsMenu ;
     private ImageButton likesPost, recipePost, commentPost, ingredientsPost;
     private Toolbar toolbar;
 
@@ -153,7 +155,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             optionsMenu = view.findViewById(R.id.personal_post_options_menu);
             profileMenu = view.findViewById(R.id.account_settings_options);
             backArrow = view.findViewById(R.id.backArrow);
-
             likesPost = view.findViewById(R.id.likesBtnID);
             commentPost = view.findViewById(R.id.commentsBtnID);
             recipePost = view.findViewById(R.id.recipeBtnID);
@@ -162,7 +163,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             optionsMenu.setOnClickListener(this);
             profileMenu.setOnClickListener(this);
             backArrow.setOnClickListener(this);
-
             likesPost.setOnClickListener(this);
             commentPost.setOnClickListener(this);
             recipePost.setOnClickListener(this);
@@ -479,7 +479,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
             case R.id.account_settings_options:
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
-
                 mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), AccountSettingsActivity.class);
                 break;
 
@@ -489,7 +488,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 break;
 
             case R.id.commentsBtnID:
-                Toast.makeText(getActivity(), "comment", Toast.LENGTH_SHORT).show();
+                goToComment();
 
                 break;
 
@@ -517,6 +516,15 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 break;
         }
 
+    }
+
+    private void goToComment() {
+        Intent intent = new Intent(getActivity(),CommentsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("currentPost",mPost);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        Objects.requireNonNull(getActivity()).overridePendingTransition(R.anim.alert_dialog_slide_enter,R.anim.alert_dialog_slide_exit);
     }
 
     /**

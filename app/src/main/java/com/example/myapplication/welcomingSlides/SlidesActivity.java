@@ -18,7 +18,7 @@ import com.example.myapplication.login.LoginActivity;
 /**
  * by M.MSAAD
  **/
-public class SlidesActivity extends AppCompatActivity {
+public class SlidesActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "SlidesActivity";
     private ViewPager slideViewPager;
     private LinearLayout dotsLayout;
@@ -32,7 +32,7 @@ public class SlidesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.slide_activity);
-        mIntent = new Intent(SlidesActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
         findWidgets();
         verifyFirstRun();
         sliderAdapter = new SliderAdapter(this);
@@ -42,13 +42,9 @@ public class SlidesActivity extends AppCompatActivity {
         clickListeners();
     }
     private void clickListeners() {
-        mPrevious.setOnClickListener(v -> slideViewPager.setCurrentItem(mCurrentSlide - 1));
-        mNext.setOnClickListener(v -> { slideViewPager.setCurrentItem(mCurrentSlide + 1);
-            if (mNext.getText().equals("FINISH")) {
-                new Handler().postDelayed(() -> startActivity(mIntent), Toast.LENGTH_SHORT);
-            }
-        });
-        mSkip.setOnClickListener(v -> new Handler().postDelayed(() -> startActivity(mIntent), 500));
+        mPrevious.setOnClickListener(this);
+        mNext.setOnClickListener(this);
+        mSkip.setOnClickListener(this);
     }
     /**
      * created by Mo.Msaad
@@ -57,6 +53,7 @@ public class SlidesActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
         boolean firstRun = prefs.getBoolean("prefs", true);
         if (firstRun) {//if its the first run we change the boolean to false
+            overridePendingTransition(R.anim.right_enter,R.anim.right_out);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("prefs", false);
             editor.apply();
@@ -75,8 +72,7 @@ public class SlidesActivity extends AppCompatActivity {
         slideViewPager.setAdapter(sliderAdapter);
         addDots(0);
         slideViewPager.addOnPageChangeListener(vl);
-        mIntent = new Intent(SlidesActivity.this, LoginActivity.class);
-
+        mIntent = new Intent(SlidesActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
     }
 
     @SuppressLint("ResourceAsColor")
@@ -135,5 +131,32 @@ public class SlidesActivity extends AppCompatActivity {
     };
 
 
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()){
+
+            case R.id.previousButton_id:
+                slideViewPager.setCurrentItem(mCurrentSlide - 1);
+                break;
+
+            case R.id.nextButton_id:
+
+                slideViewPager.setCurrentItem(mCurrentSlide + 1);
+                if (mNext.getText().equals("FINISH")) {
+                    new Handler().postDelayed(() -> startActivity(mIntent), Toast.LENGTH_SHORT);
+                }
+                break;
+
+            case R.id.skipButton:
+                new Handler().postDelayed(() -> startActivity(mIntent), 500);
+
+                        finish();
+                break;
+
+
+        }
+
+    }
 }
 

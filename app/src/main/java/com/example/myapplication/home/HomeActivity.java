@@ -56,7 +56,6 @@ public class HomeActivity extends AppCompatActivity {
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
-
         mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
         firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
         checkDatabaseState();
@@ -157,11 +156,11 @@ public class HomeActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.d(TAG, "checkDatabaseState: error: " + e.getMessage());
         }
-        String s = firebasedatabase.getReference("users").getKey();
+//        String s = firebasedatabase.getReference("users").getKey();
 
-        if (s == null) {
-            mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
-        }
+//        if (s == null) {
+//            mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+//        }
 
 
         current_userRef = firebasedatabase.getReference("users").child(current_user.getUid()).getRef();
@@ -205,6 +204,7 @@ public class HomeActivity extends AppCompatActivity {
         adapter.addFragment(new HomeFragment()); //index 1
         ViewPager viewPager = findViewById(R.id.container);
         viewPager.setAdapter(adapter);
+
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.home);
@@ -242,6 +242,8 @@ public class HomeActivity extends AppCompatActivity {
         menuItem.setChecked(true);
 
     }
+
+
 
 
 }
