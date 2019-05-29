@@ -48,7 +48,7 @@
         android:shadowColor="@color/black"
         android:layout_marginTop="10dp"
         android:drawableStart="@drawable/orange_arrow_left"
-        android:background="@drawable/input_fields_with_shadow"
+        android:background="@drawable/input_fields_frame_grey_round"
         android:textColor="@color/orange"
         android:textStyle="bold"
         android:text="@string/go_back_signUpFragment" />
@@ -128,7 +128,7 @@
         android:layout_below="@id/confirm_pass"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:background="@drawable/input_fields_with_shadow"
+        android:background="@drawable/input_fields_frame_grey_round"
         android:padding="10dp"
         android:shadowColor="@color/black"
         android:shadowDx="5"

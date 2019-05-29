@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:orientation="vertical"
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context=".comment_activity.CommentsActivity"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical"
+    tools:context=".comment_activity.CommentsActivity">
 
     <RelativeLayout
-        android:layout_weight=".8"
-        android:background="@drawable/input_fields_frame_grey"
         android:id="@+id/linesadc"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_weight=".8"
+        android:background="@drawable/input_fields_frame_grey">
 
         <com.melnykov.fab.FloatingActionButton
-            android:layout_margin="@dimen/fab_scroll_threshold"
             android:id="@+id/floatingBar"
-            app:showMotionSpec="@anim/left_out"
-            app:fab_colorNormal="@color/grey"
-            app:fab_colorPressed="@color/orange"
-            android:scrollbarAlwaysDrawVerticalTrack="true"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/arrow_left"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="@dimen/fab_scroll_threshold"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:src="@drawable/arrow_left"
+            app:fab_colorNormal="@color/grey"
+            app:fab_colorPressed="@color/orange"
+            app:showMotionSpec="@anim/left_out" />
 
         <ListView
             android:id="@+id/post_comments_list"
@@ -34,46 +35,48 @@
             android:layout_height="500dp"
             android:drawSelectorOnTop="true"
             android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:requiresFadingEdge="vertical"
 
-            >
-        </ListView>
+            />
+
+
     </RelativeLayout>
 
 
     <RelativeLayout
 
-        android:layout_weight=".2"
-        android:layout_marginTop="2dp"
-        android:background="@drawable/input_fields_frame_grey"
-        android:focusable="true"
-        android:clickable="true"
-        android:layout_below="@id/linesadc"
         android:id="@+id/writeCommentID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_below="@id/linesadc"
+        android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
-        >
+        android:layout_weight=".2"
+        android:background="@drawable/input_fields_frame_grey"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/write_new_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/write_a_comment"
-            />
+            android:hint="@string/write_a_comment" />
 
         <Button
-            android:background="@drawable/input_fields_with_shadow"
             android:id="@+id/add_new_comment"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add"
-            android:textColor="@color/orange"
+            android:layout_alignEnd="@id/write_new_comment"
             android:layout_marginTop="1px"
             android:layout_marginBottom="1dp"
-            android:layout_alignEnd="@id/write_new_comment"
-            style="@style/Widget.AppCompat.Button.Borderless" />
+            android:background="@drawable/input_fields_frame_grey_round"
+            android:text="@string/add"
+            android:textColor="@color/orange" />
 
     </RelativeLayout>
+
+    <include layout="@layout/layout_bottom_navigation" />
 
 </LinearLayout>

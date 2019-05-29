@@ -189,5 +189,6 @@
     <string name="_3_days_ago">3 days ago</string>
     <string name="epsum_lorem">epsum lorem</string>
     <string name="creation_date">creation_date</string>
+    <string name="finito">FINISH</string>
 
 </resources>

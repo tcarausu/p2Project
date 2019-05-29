@@ -23,7 +23,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,16 +42,17 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * File created by tcarau18
+ * Functionalism by Mo.Msaad
  **/
 public class EditProfileFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "EditProfileFragment";
@@ -73,7 +73,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseDatabase database;
 
     //Edit Profile widgets
-    private TextView mChangeProfilePhoto, mPrivateInformation;
+    private TextView  mPrivateInformation;
+    private FloatingActionButton mChangeProfilePhoto ;
     private EditText mDisplayName, mWebsite, mAbout, mPhoneNumber;
     private TextView mEmail, mUserName;
     private CircleImageView mProfilePhoto, smallProfilePic;
@@ -105,25 +106,24 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         checkPermissions();
-        Objects.requireNonNull(getActivity()).registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to get the batteryLevel
-
-        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
-        mAuth = FirebaseMethods.getAuth();
-
-        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
-        currentUser = mAuth.getCurrentUser();
-
-        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
-        myRef = mFirebaseDatabase.getReference();
-        storage = FirebaseMethods.getFirebaseStorage();
-        profilePicStorage = storage.getReference();
-
+        Objects.requireNonNull(getActivity()).
+                registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to get the batteryLevel
+        connectDatabase();
         initLayouts(view);
         setupFirebaseAuth();
 
         return view;
+    }
+
+    private void connectDatabase() {
+        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
+        mAuth = FirebaseMethods.getAuth();
+        currentUser = mAuth.getCurrentUser();
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
+        myRef = mFirebaseDatabase.getReference();
+        storage = FirebaseMethods.getFirebaseStorage();
+        profilePicStorage = storage.getReference();
     }
 
     public void initLayouts(View view) {
@@ -228,8 +228,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 mProfilePhoto.setImageResource(R.drawable.my_avatar);
                 smallProfilePic.setImageResource(R.drawable.my_avatar);
             } else
-                Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
-            Glide.with(this).load(profilePicURL).centerCrop().into(smallProfilePic);
+                Glide.with(getActivity().getApplicationContext()).load(profilePicURL).centerCrop().into(mProfilePhoto);
+            Glide.with(getActivity().getApplicationContext()).load(profilePicURL).centerCrop().into(smallProfilePic);
 
         } catch (IllegalArgumentException e) {
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
@@ -298,7 +298,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+
         Objects.requireNonNull(getActivity()).registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// we create it back in onResume
 
     }
@@ -506,6 +506,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private void goBack() {
         startActivity(new Intent(getActivity(), UserProfileActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        getActivity().overridePendingTransition(R.anim.right_enter, R.anim.right_out);
         getActivity().finish();
     }
 

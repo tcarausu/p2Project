@@ -24,22 +24,22 @@
                 app:civ_border_color="@color/black"
                 app:civ_border_width="2dp" />
 
-            <TextView
+            <com.melnykov.fab.FloatingActionButton
                 android:id="@+id/change_profile_photo"
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/profile_photo"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/input_fields_with_shadow"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="5dp"
-                android:text="@string/change_photo"
-                android:textAlignment="center"
-                android:textColor="@color/orange"
-                android:textSize="16sp" />
+                android:background="@drawable/input_fields_frame_grey_round"
+                app:fab_colorPressed="@color/orange"
+                app:fab_colorNormal="@color/grey"
+                app:fab_shadow="true"
+                app:fab_colorRipple="@color/red"
+                android:src="@drawable/white_camera"
+
+
+                />
 
             <TextView
                 android:id="@+id/hint_text"
