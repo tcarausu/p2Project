@@ -9,8 +9,9 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -20,8 +21,10 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
+import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.models.Comment;
 import com.example.myapplication.models.Post;
+import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.ListViewAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,17 +32,22 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class CommentsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final String TAG = "CommentsActivity";
+    private final int ACTIVITY_NUM1 = 1, ACTIVITY_NUM2 = 2, ACTIVITY_NUM3 = 3, ACTIVITY_NUM4 = 4;
+
+    private final List<Integer> act = new ArrayList<>();//
 
     //firebase
-    private DatabaseReference mPostReference , commentRef;
+    private DatabaseReference mPostReference, commentRef;
     private DatabaseReference mUserReference;
     private FirebaseAuth mAuth;
     private FirebaseMethods mFirebaseMethods;
@@ -59,13 +67,16 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
+
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
+        checkAuth();
         findWidgets();
         Bundle bundle = getIntent().getExtras();
         assert bundle != null;
         currentPost = bundle.getParcelable("currentPost");
         setButtonsListeners();
+        setupBottomNavigationView();
 
         try {
             commentsList = (ArrayList<Comment>) currentPost.getCommentList();
@@ -78,12 +89,28 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         optionsButton();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkAuth();
+    }
+
     private void hideKeyboard() {
         View v = this.getCurrentFocus();
         if (v != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
+    }
+
+    private void checkAuth() {
+
+        if (mFirebaseMethods.isAuthNull(mAuth, mAuth.getCurrentUser())) {
+            mFirebaseMethods.signOut();
+            mFirebaseMethods.removeAuthLisntener();
+            mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), LoginActivity.class);
+            overridePendingTransition(R.anim.left_enter, R.anim.left_out);
+        } else mFirebaseMethods.addAuthLisntener();
     }
 
     private void findWidgets() {
@@ -93,8 +120,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         addComment = findViewById(R.id.add_new_comment);
         fab = findViewById(R.id.floatingBar);
         fab.attachToListView(listView);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
     }
 
     private void displayComments() {
@@ -123,13 +149,12 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(getApplicationContext(), "No comments, ad one", Toast.LENGTH_LONG).show();
     }
 
-
     private void setButtonsListeners() {
         addComment.setOnClickListener(this);
         fab.setOnClickListener(this);
     }
 
-    private void addNewCommet() {
+    private void addNewComment() {
         String comment = writeComment.getText().toString();
         if (!TextUtils.isEmpty(comment)) {
             uploadComment();
@@ -137,7 +162,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(getApplicationContext(), "Please type a comment", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     private void uploadComment() {
         // Creating comment's content
@@ -181,7 +205,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
-
     private void optionsButton() {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -194,18 +217,15 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                 final CharSequence[] options = {"Delete", "CANCEL"};
                 final AlertDialog.Builder builder = new AlertDialog.Builder(CommentsActivity.this);
                 builder.setTitle("Add Image");
-
                 builder.setIcon(R.drawable.chefood);
                 builder.setItems(options, (dialog, which) -> {
-
                     if (options[which].equals("Delete")) {
                         //TODO make the delete void for the selected item
-
 
                         mPostReference.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                               Comment comment = dataSnapshot.getValue(Comment.class);
+                                Comment comment = dataSnapshot.getValue(Comment.class);
                                 if (comment.getUserId().equals(currentPost.getCommentList().get(position)))
                                     dataSnapshot.getRef().removeValue();
                             }
@@ -216,20 +236,13 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                             }
                         });
 
-
-
-
-
-
                     } else if (options[which].equals("CANCEL")) {
                         dialog.dismiss();
-
                     }
 
                 });
                 builder.create();
                 builder.show();
-
 
             }
         });
@@ -277,6 +290,49 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         listView.setAdapter(mAdapter);
     }
 
+
+    private void setupBottomNavigationView() {
+        //Mo.Msaad.Modifications
+        BottomNavigationViewHelper bnvh = new BottomNavigationViewHelper(getApplicationContext());
+        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
+        bnvh.setupBottomNavigationView(bottomNavigationViewEx);
+        bnvh.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        //Mo.Msaad.Modifications
+        MenuItem menuItem1, menuItem2, menuItem3, menuItem4;
+        act.add(ACTIVITY_NUM1);
+        act.add(ACTIVITY_NUM2);
+        act.add(ACTIVITY_NUM3);
+        act.add(ACTIVITY_NUM4);
+
+
+        switch (act.iterator().next()) {
+            case 0:
+                menuItem1 = menu.getItem(act.get(0));
+                bnvh.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                menuItem1.setChecked(true);
+                break;
+
+            case 1:
+                menuItem2 = menu.getItem(act.get(1));
+                bnvh.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                menuItem2.setChecked(true);
+                break;
+            case 2:
+                menuItem3 = menu.getItem(act.get(2));
+                bnvh.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                menuItem3.setChecked(true);
+                break;
+            case 3:
+                menuItem4 = menu.getItem(act.get(3));
+                bnvh.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                menuItem4.setChecked(true);
+                break;
+        }
+
+
+    }
+
     @Override
     public void onClick(View v) {
 
@@ -288,7 +344,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.add_new_comment:
-                addNewCommet();
+                addNewComment();
                 hideKeyboard();
                 writeComment.getText().clear();
                 break;
