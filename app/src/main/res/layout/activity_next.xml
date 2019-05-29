@@ -41,6 +41,7 @@
                     android:scaleType="centerCrop" />
 
                 <EditText
+                    android:maxLength="40"
                     android:id="@+id/image_desc_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="100sp"

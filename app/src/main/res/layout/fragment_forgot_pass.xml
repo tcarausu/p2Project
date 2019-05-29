@@ -52,7 +52,6 @@
 
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:background="@color/grey"
             android:layout_centerInParent="true"
             android:orientation="vertical">
 
@@ -62,20 +61,20 @@
                 android:paddingStart="15dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/input_fields_orange_borders"
+                android:background="@drawable/input_fields_white_borders"
                 android:hint="@string/hint_forgot_password_email"
                 android:inputType="textEmailAddress"
                 android:padding="10dp"
                 android:layout_centerInParent="true"
                 android:layout_marginTop="10dp"
-                android:textColorHint="@color/orange" />
+                android:textColorHint="@color/darkOrange" />
 
                 <Button
                     android:id="@+id/Forgotpass_resetPass_button"
                     android:drawableStart="@drawable/email_icone"
                     android:layout_marginTop="10dp"
                     android:padding="10dp"
-                    android:background="@drawable/input_fields_orange_borders"
+                    android:background="@drawable/input_fields_with_shadow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"

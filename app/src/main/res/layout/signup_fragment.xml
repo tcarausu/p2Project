@@ -70,7 +70,7 @@
         android:hint="@string/email_hint"
         android:inputType="textEmailAddress"
         android:padding="10dp"
-        android:textColorHint="@color/black_transparent"
+        android:textColorHint="@color/darkOrange"
         tools:ignore="autofill" />
 
     <EditText
@@ -89,12 +89,10 @@
         android:drawableStart="@drawable/lock_icone"
         android:ems="10"
         android:focusable="true"
-        android:shadowColor="@color/darkOrange"
-        android:shadowDx="10"
         android:hint="@string/password_hint"
         android:inputType="textPassword"
         android:padding="10dp"
-        android:textColorHint="@color/black_transparent"
+        android:textColorHint="@color/darkOrange"
         tools:counterColor="@color"
         tools:counterEnabled="true"
         tools:counterMinLenght="6"
@@ -119,7 +117,7 @@
         android:textCursorDrawable="@color/black"
         android:inputType="textPassword"
         android:padding="10dp"
-        android:textColorHint="@color/black_transparent"
+        android:textColorHint="@color/darkOrange"
         tools:ignore="TextFields,autofill" />
 
     <Button
