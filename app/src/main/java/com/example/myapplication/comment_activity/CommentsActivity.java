@@ -1,0 +1,299 @@
+package com.example.myapplication.comment_activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.example.myapplication.R;
+import com.example.myapplication.home.HomeActivity;
+import com.example.myapplication.models.Comment;
+import com.example.myapplication.models.Post;
+import com.example.myapplication.utility_classes.FirebaseMethods;
+import com.example.myapplication.utility_classes.ListViewAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+import com.melnykov.fab.FloatingActionButton;
+
+import java.util.ArrayList;
+import java.util.Objects;
+
+public class CommentsActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private final String TAG = "CommentsActivity";
+
+    //firebase
+    private DatabaseReference mPostReference , commentRef;
+    private DatabaseReference mUserReference;
+    private FirebaseAuth mAuth;
+    private FirebaseMethods mFirebaseMethods;
+    //view
+    private ListViewAdapter mAdapter;
+    private ListView listView;
+    private EditText writeComment;
+    private Button addComment;
+    private ArrayList<Comment> commentsList;
+    private FloatingActionButton fab;
+
+    // Model data
+    private Post currentPost;
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_comments);
+        mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
+        mAuth = FirebaseMethods.getAuth();
+        findWidgets();
+        Bundle bundle = getIntent().getExtras();
+        assert bundle != null;
+        currentPost = bundle.getParcelable("currentPost");
+        setButtonsListeners();
+
+        try {
+            commentsList = (ArrayList<Comment>) currentPost.getCommentList();
+            setAdapter(commentsList);
+        } catch (NullPointerException e) {
+            Toast.makeText(getApplicationContext(), "No comments yet, Add one.", Toast.LENGTH_LONG).show();
+        }
+
+        displayComments();
+        optionsButton();
+    }
+
+    private void hideKeyboard() {
+        View v = this.getCurrentFocus();
+        if (v != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+    }
+
+    private void findWidgets() {
+
+        listView = findViewById(R.id.post_comments_list);
+        writeComment = findViewById(R.id.write_new_comment);
+        addComment = findViewById(R.id.add_new_comment);
+        fab = findViewById(R.id.floatingBar);
+        fab.attachToListView(listView);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    }
+
+    private void displayComments() {
+
+        if (currentPost.getCommentList() != null) {
+            // Getting the current comment list and assign to it profile photo and user name of the commenter
+            for (Comment comment : commentsList) {
+                mUserReference = FirebaseMethods.getmFirebaseDatabase().getReference("users/" + comment.getUserId());
+                mUserReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String username = (String) dataSnapshot.child("username").getValue();
+                        String userProfileImage = (String) dataSnapshot.child("profile_photo").getValue();
+                        comment.setUsername(username);
+                        comment.setUserProfilePhoto(userProfileImage);
+                        mAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Toast.makeText(CommentsActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        } else
+            Toast.makeText(getApplicationContext(), "No comments, ad one", Toast.LENGTH_LONG).show();
+    }
+
+
+    private void setButtonsListeners() {
+        addComment.setOnClickListener(this);
+        fab.setOnClickListener(this);
+    }
+
+    private void addNewCommet() {
+        String comment = writeComment.getText().toString();
+        if (!TextUtils.isEmpty(comment)) {
+            uploadComment();
+        } else {
+            Toast.makeText(getApplicationContext(), "Please type a comment", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void uploadComment() {
+        // Creating comment's content
+        Comment newComment = new Comment();
+        String comment = writeComment.getText().toString().trim();
+        String currentUserId = mAuth.getCurrentUser().getUid();
+        newComment.setComment(comment);
+        newComment.setUserId(currentUserId);
+
+        // ADD HERE TO THE ARRAYLIST AND RETRIEVE DATA IN HOMEFRAGMENT
+        if (currentPost.getCommentList().size() == 0) {
+            commentsList.add(newComment);
+            currentPost.setCommentList(commentsList);
+            mAdapter.notifyDataSetChanged();
+
+
+        } else {
+            currentPost.getCommentList();
+            currentPost.addComment(newComment);
+        }
+
+        mPostReference = FirebaseMethods.getmFirebaseDatabase().getReference("posts/" + currentPost.getUserId() + "/" + currentPost.getPostId() + "/comments");
+        mPostReference.child(Objects.requireNonNull(mPostReference.push().getKey())).setValue(newComment);
+
+        mUserReference = FirebaseMethods.getmFirebaseDatabase().getReference("users/" + currentUserId);
+        // Getting username and profile photo
+        mUserReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                newComment.setUsername(dataSnapshot.child("username").getValue().toString());
+                newComment.setUserProfilePhoto(dataSnapshot.child("profile_photo").getValue().toString());
+                mAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    private void optionsButton() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                openDialog(position);
+            }
+
+            void openDialog(int position) {
+
+                final CharSequence[] options = {"Delete", "CANCEL"};
+                final AlertDialog.Builder builder = new AlertDialog.Builder(CommentsActivity.this);
+                builder.setTitle("Add Image");
+
+                builder.setIcon(R.drawable.chefood);
+                builder.setItems(options, (dialog, which) -> {
+
+                    if (options[which].equals("Delete")) {
+                        //TODO make the delete void for the selected item
+
+
+                        mPostReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                               Comment comment = dataSnapshot.getValue(Comment.class);
+                                if (comment.getUserId().equals(currentPost.getCommentList().get(position)))
+                                    dataSnapshot.getRef().removeValue();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+
+
+
+
+                    } else if (options[which].equals("CANCEL")) {
+                        dialog.dismiss();
+
+                    }
+
+                });
+                builder.create();
+                builder.show();
+
+
+            }
+        });
+
+    }
+//
+//    private void openDialog() {
+//
+//        String [] options = {"Delete","Cancel"};
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//        builder.setAdapter(mAdapter, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//
+//                builder.setTitle("Delete");
+//                builder.setMessage("are you sure you want to delete?");
+//            }
+//        });
+//
+//        builder.show();
+//
+//    }
+    // this if we wanna display the
+//    private void openDialog() {
+//
+//        String [] options = {"Delete","Cancel"};
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//        builder.setAdapter(mAdapter, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//
+//                builder.setTitle("Delete");
+//                builder.setMessage("are you sure you want to delete?");
+//            }
+//        });
+//
+//        builder.show();
+//
+//    }
+
+    private void setAdapter(ArrayList<Comment> list) {
+        mAdapter = new ListViewAdapter(getApplicationContext(), list);
+        listView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.floatingBar:
+                startActivity(new Intent(CommentsActivity.this, HomeActivity.class));
+                overridePendingTransition(R.anim.right_enter, R.anim.right_enter);
+                break;
+
+            case R.id.add_new_comment:
+                addNewCommet();
+                hideKeyboard();
+                writeComment.getText().clear();
+                break;
+
+        }
+
+    }
+}
