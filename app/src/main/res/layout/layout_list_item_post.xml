@@ -19,7 +19,6 @@
             android:id="@+id/userProfilePicID"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/input_fields_frame_orange"
             android:src="@drawable/my_avatar" />
 
         <TextView
@@ -28,7 +27,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/input_fields_frame_orange"
             android:padding="5dp"
             android:text="@string/user_name"
             android:textColor="@color/darkOrange"
@@ -51,6 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:src="@drawable/orange_show_more"
+            android:rotation="90"
             />
 
         <TextView
@@ -59,6 +58,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
+            android:maxLength="30"
+            android:maxHeight="30dp"
             android:background="@drawable/input_fields_frame_grey"
             android:padding="5dp"
             android:text="@string/description"
@@ -68,8 +69,8 @@
         <com.example.myapplication.utility_classes.SquareImageView
             android:id="@+id/foodImgID"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/input_fields_frame_grey"
+            android:requiresFadingEdge="vertical|horizontal"
+            android:layout_height="wrap_content"
             android:src="@drawable/bridge" />
 
 

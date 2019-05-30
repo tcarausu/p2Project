@@ -2,81 +2,106 @@
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RelativeLayout
+    <LinearLayout
         android:animateLayoutChanges="true"
+        android:orientation="vertical"
+        android:weightSum="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:padding="20dp">
 
-        <TextView
-            android:id="@+id/textSettings"
+        <RelativeLayout
+            android:layout_margin="2dp"
+            android:layout_weight=".1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/account_settings"
-            android:textColor="@color/darkOrange"
-            android:textSize="35sp" />
+            android:layout_height="0dp">
 
-        <ImageView
-            android:id="@+id/fst_dash"
-            android:src="@drawable/dash_icon"
-            android:layout_below="@id/textSettings"
+            <TextView
+                android:id="@+id/textSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/account_settings"
+                android:textColor="@color/darkOrange"
+                android:textSize="35sp" />
+
+            <ImageView
+                android:id="@+id/fst_dash"
+                android:src="@drawable/dash_icon"
+                android:layout_below="@id/textSettings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:src="@drawable/dash_icon"
+                android:layout_alignEnd="@id/fst_dash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:src="@drawable/dash_icon"
+                android:layout_alignParentEnd="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:src="@drawable/dash_icon"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:src="@drawable/dash_icon"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/textSettings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+
+                android:src="@drawable/dash_icon"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/textSettings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:padding="2dp"
+            android:layout_margin="2dp"
+            android:layout_weight=".2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="0dp">
 
-        <ImageView
-            android:src="@drawable/dash_icon"
-            android:layout_alignEnd="@id/fst_dash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <ListView
+                android:layout_margin="10dp"
+                android:background="@drawable/input_fields_rec_with_shadow"
+                android:id="@+id/listViewAccountSettings"
+                android:clickable="true"
+                android:focusable="true"
+                android:backgroundTint="@color/orange"
+                android:outlineSpotShadowColor="@color/white"
+                android:outlineAmbientShadowColor="@color/white"
+                android:cacheColorHint="@color/black"
+                android:clipToPadding="true"
+                android:clipChildren="true"
+                android:touchscreenBlocksFocus="true"
+                android:animateLayoutChanges="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+            </ListView>
+        </RelativeLayout>
 
-        <ImageView
-            android:src="@drawable/dash_icon"
-            android:layout_alignParentEnd="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-<!---->
-        <ImageView
-            android:src="@drawable/dash_icon"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ImageView
-            android:src="@drawable/dash_icon"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/textSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-
-        <ImageView
-
-            android:src="@drawable/dash_icon"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/textSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ListView
-
-            android:background="@drawable/input_fields_with_shadow"
-            android:layout_marginTop="10dp"
-            android:id="@+id/listViewAccountSettings"
-            android:clickable="true"
-            android:focusable="true"
-            android:backgroundTint="@color/orange"
-            android:cacheColorHint="@color/white"
-            android:clipToPadding="true"
-            android:clipChildren="true"
-            android:touchscreenBlocksFocus="true"
-            android:animateLayoutChanges="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textSettings">
+        <RelativeLayout
+            android:layout_weight=".7"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+        </RelativeLayout>
 
 
-        </ListView>
-    </RelativeLayout>
+    </LinearLayout>
 
 </merge>

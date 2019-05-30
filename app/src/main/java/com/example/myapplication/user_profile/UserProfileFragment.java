@@ -2,7 +2,6 @@ package com.example.myapplication.user_profile;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,6 +37,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,9 +69,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private String userId;
 
     private BottomNavigationViewEx bottomNavigationViewEx;
-
-    private TextView mEditProfile, mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mAbout;
+    private TextView mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mAbout;
     private ProgressBar mProgressBar;
+    private FloatingActionButton mEditProfile;
     private CircleImageView mProfilePhoto;
     private ImageView profileMenu;
     private GridView gridView;
@@ -84,7 +84,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         firebaseMethods = FirebaseMethods.getInstance(getContext());
         mAuth = FirebaseMethods.getAuth();
-        firebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
+
 
         current_user = mAuth.getCurrentUser();
         userId = current_user.getUid();
@@ -222,13 +222,16 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 Intent intent = new Intent(getContext(), AccountSettingsActivity.class);
                 intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
                 startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+//
 
                 break;
             case R.id.profileMenu:
                 Log.d(TAG, "onClick: navigating to account settings");
 
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
-                firebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), AccountSettingsActivity.class);
+                firebaseMethods.goToWhereverWithFlags(getActivity(), AccountSettingsActivity.class);
+                getActivity().overridePendingTransition(R.anim.left_enter, R.anim.left_out);
 
                 break;
         }
@@ -336,7 +339,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Error: Nothing to display", Toast.LENGTH_SHORT).show();
 
-            firebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), AddPostActivity.class);
+            firebaseMethods.goToWhereverWithFlags(getActivity(), AddPostActivity.class);
         }
     }
 
@@ -344,8 +347,10 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
      * Bottom Navigation View setup
      */
     public void setupBottomNavigationView() {
-        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(getContext(), bottomNavigationViewEx);
+        BottomNavigationViewHelper bnvh = new BottomNavigationViewHelper(getActivity());
+
+        bnvh.setupBottomNavigationView(bottomNavigationViewEx);
+        bnvh.enableNavigation(getContext(), bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);

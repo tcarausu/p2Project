@@ -16,7 +16,6 @@
 
                 <ImageView
                     android:id="@+id/backArrow"
-                    android:background="@drawable/input_fields_with_shadow"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:onClick="onClick"
