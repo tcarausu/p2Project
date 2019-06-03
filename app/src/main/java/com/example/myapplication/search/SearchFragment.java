@@ -65,27 +65,28 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
-        mAuth = FirebaseMethods.getAuth();
-
-        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
-        user = mAuth.getCurrentUser();
-        user_id = user.getUid();
-
-        firebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
-        myDatabaseUserRef = firebaseDatabase.getReference("users");
-
+         connectFiorebase();
         initLayout(view);
         buttonListeners();
         getUserFromDatabase();
         return view;
     }
 
+    private void connectFiorebase() {
+        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
+        mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.autoDisctonnec(getActivity());
+        user = mAuth.getCurrentUser();
+        user_id = user.getUid();
+        firebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
+        myDatabaseUserRef = firebaseDatabase.getReference("users");
+    }
+
 
     @Override
     public void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
+        mFirebaseMethods.autoDisctonnec(getActivity());
     }
 
     private void initLayout(View view) {
@@ -95,8 +96,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         search_recycler_view = view.findViewById(R.id.search_recycler_view_id);
         search_recycler_view.setHasFixedSize(true);
         search_recycler_view.setLayoutManager(new LinearLayoutManager(getContext()));
-
-
     }
 
     private void buttonListeners() {
@@ -132,7 +131,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                             } else
                                 Toast.makeText(getApplicationContext(), "No match found", Toast.LENGTH_SHORT).show();
-                            search_recycler_view.removeAllViews();
+
                         }
                     }
                 }

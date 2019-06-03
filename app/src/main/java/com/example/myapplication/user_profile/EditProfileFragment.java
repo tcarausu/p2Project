@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -20,10 +22,15 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,19 +38,25 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
+import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
+import com.example.myapplication.utility_classes.OurAlertDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.melnykov.fab.FloatingActionButton;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -73,13 +86,12 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private FirebaseDatabase database;
 
     //Edit Profile widgets
-    private TextView  mPrivateInformation;
-    private FloatingActionButton mChangeProfilePhoto ;
+    private TextView mPrivateInformation;
+    private FloatingActionButton mChangeProfilePhoto;
     private EditText mDisplayName, mWebsite, mAbout, mPhoneNumber;
     private TextView mEmail, mUserName;
     private CircleImageView mProfilePhoto, smallProfilePic;
     private ImageView backArrow, saveChanges;
-
     private User user;
     private Uri uri;
 
@@ -87,33 +99,42 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         return uri;
     }
 
+    @Exclude
     public void setUri(Uri uri) {
         this.uri = uri;
     }
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            batteryLevel = (intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1));
-        }
-    };
-
-
     private String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private String prof_pic_URL;
     private int batteryLevel;
+    private final int ACTIVITY_NUM1 = 1, ACTIVITY_NUM2 = 2, ACTIVITY_NUM3 = 3, ACTIVITY_NUM4 = 4;
+    private final List<Integer> act = new ArrayList<>();
+    private BroadcastReceiver broadcastReceiver;
 
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        setupBroadcastReceiver();
+        setupBottomNavigationView(view);
         checkPermissions();
-        Objects.requireNonNull(getActivity()).
-                registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to get the batteryLevel
         connectDatabase();
         initLayouts(view);
-        setupFirebaseAuth();
+        buttonListneres();
+        getUserInfo();
+
 
         return view;
+    }
+
+    private void setupBroadcastReceiver() {
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                batteryLevel = (intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1));
+            }
+        };
+        Objects.requireNonNull(getActivity()).registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to get the batteryLevel
     }
 
     private void connectDatabase() {
@@ -127,7 +148,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     }
 
     public void initLayouts(View view) {
-
         mDisplayName = view.findViewById(R.id.display_name);
         smallProfilePic = view.findViewById(R.id.EditProfile_small_pic);
         mUserName = view.findViewById(R.id.username);
@@ -141,10 +161,56 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         mChangeProfilePhoto = view.findViewById(R.id.change_profile_photo);
         mPrivateInformation = view.findViewById(R.id.privateInformation);
 
+    }
+
+    private void buttonListneres() {
         backArrow.setOnClickListener(this);
         saveChanges.setOnClickListener(this);
         mProfilePhoto.setOnClickListener(this);
         mChangeProfilePhoto.setOnClickListener(this);
+    }
+
+    /**
+     * @param view root view that will be used to inflate the dialog layout
+     * @author Mo.Msaad
+     **/
+    private void setupBottomNavigationView(View view) {
+
+        BottomNavigationViewHelper bnvh = new BottomNavigationViewHelper(getActivity());
+        BottomNavigationViewEx bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
+        bnvh.setupBottomNavigationView(bottomNavigationViewEx);
+        bnvh.enableNavigation(getActivity(), bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+
+        //Mo.Msaad.Modifications
+        MenuItem menuItem1, menuItem2, menuItem3, menuItem4;
+        act.add(ACTIVITY_NUM1);
+        act.add(ACTIVITY_NUM2);
+        act.add(ACTIVITY_NUM3);
+        act.add(ACTIVITY_NUM4);
+
+        switch (act.iterator().next()) {
+            case 0:
+                menuItem1 = menu.getItem(act.get(0));
+                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                menuItem1.setChecked(true);
+                break;
+            case 1:
+                menuItem2 = menu.getItem(act.get(1));
+                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                menuItem2.setChecked(true);
+                break;
+            case 2:
+                menuItem3 = menu.getItem(act.get(2));
+                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                menuItem3.setChecked(true);
+                break;
+            case 3:
+                menuItem4 = menu.getItem(act.get(3));
+                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                menuItem4.setChecked(true);
+                break;
+        }
 
     }
 
@@ -153,6 +219,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         return prof_pic_URL;
     }
 
+    @Exclude
     private void setProf_pic_URL(String prof_pic_URL) {
         this.prof_pic_URL = prof_pic_URL;
     }
@@ -186,27 +253,64 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
      **/
 
     private void openDialogChoice() {
-        final CharSequence[] options = {"Mobile data", "WIFI", "CANCEL"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Select network to proceed");
-        builder.setIcon(R.drawable.chefood);
-        builder.setItems(options, (dialog, which) -> {
 
-            if (options[which].equals("Mobile data")) {
-                uploadProfilePic(getUri());
-                updateUserInfo(getProf_pic_URL());
+        View layoutView = getLayoutInflater().inflate(R.layout.dialog_wifi_check, null);
+        ImageButton wifiButton = layoutView.findViewById(R.id.WIFI);
+        ImageButton mobileDataButton = layoutView.findViewById(R.id.DATA);
+        ImageButton cancelButton = layoutView.findViewById(R.id.CANCEL);
 
-            } else if (options[which].equals("WIFI")) {
-                Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                startActivity(wifiIntent);
+        OurAlertDialog.Builder myDialogBuilder = new OurAlertDialog.Builder(getActivity());
+        myDialogBuilder.setView(layoutView);
+        myDialogBuilder.setIcon(R.mipmap.chefood_icones);
+        final AlertDialog alertDialog = myDialogBuilder.create();
+        WindowManager.LayoutParams wlp = alertDialog.getWindow().getAttributes();
+        wlp.windowAnimations = R.style.AlertDialogAnimation;
+        wlp.gravity = Gravity.CENTER;
+        wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
 
+        alertDialog.getWindow().setAttributes(wlp);
+        alertDialog.setCanceledOnTouchOutside(true);
+        // Setting transparent the background (layout) of alert dialog
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
 
-            } else if (options[which].equals("CANCEL")) {
-                dialog.dismiss();
-            }
-
+        wifiButton.setOnClickListener(v -> {
+            Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+            startActivity(wifiIntent);
+            alertDialog.dismiss();
         });
-        builder.show();
+        mobileDataButton.setOnClickListener(v -> {
+            uploadProfilePic(getUri());
+            updateUserInfo(getProf_pic_URL());
+            alertDialog.dismiss();
+        });
+        cancelButton.setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+
+//        View layoutView = getLayoutInflater().inflate(R.layout.dialog_layout, null);
+//        final CharSequence[] options = {"Mobile data", "WIFI", "CANCEL"};
+//        final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+//        builder.setTitle("Select network to proceed");
+//        builder.setIcon(R.drawable.chefood);
+//
+//        builder.setView(layoutView);
+//        builder.setItems(options, (dialog, which) -> {
+//
+//            if (options[which].equals("Mobile data")) {
+//                uploadProfilePic(getUri());
+//                updateUserInfo(getProf_pic_URL());
+//
+//            } else if (options[which].equals("WIFI")) {
+//                Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                startActivity(wifiIntent);
+//
+//            } else if (options[which].equals("CANCEL")) {
+//                dialog.dismiss();
+//            }
+//
+//        });
+//        builder.show();
 
     }
 
@@ -231,13 +335,18 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 Glide.with(getActivity().getApplicationContext()).load(profilePicURL).centerCrop().into(mProfilePhoto);
             Glide.with(getActivity().getApplicationContext()).load(profilePicURL).centerCrop().into(smallProfilePic);
 
-        } catch (IllegalArgumentException e) {
+        } catch (NullPointerException e) {
+            Log.d(TAG, "setProfileWidgets: error " + e.getMessage());
             mProfilePhoto.setImageResource(R.drawable.my_avatar);
             smallProfilePic.setImageResource(R.drawable.my_avatar);
         }
 
     }
 
+    /**
+     * @param imageUrl: new produced url from the storage database.
+     *                  changes the existing url in the database.
+     **/
     private void updateUserInfo(String imageUrl) {
         final String about = mAbout.getText().toString();
         final String display_name = mDisplayName.getText().toString();
@@ -279,7 +388,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     @Override
@@ -298,7 +406,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-
         Objects.requireNonNull(getActivity()).registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// we create it back in onResume
 
     }
@@ -343,9 +450,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 progressDialog.dismiss();
 
             }).addOnFailureListener(e -> {
-
                 progressDialog.dismiss();
-
                 Toast.makeText(getActivity(), "upload failed, " + e.getMessage(), Toast.LENGTH_SHORT).show();
 
             }).addOnCanceledListener(() -> {
@@ -354,6 +459,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             }).addOnProgressListener(taskSnapshot -> {
                 double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
                 progressDialog.setMessage("uploaded " + (int) progress + "%");
+                progressDialog.setProgressDrawable(getResources().getDrawable(R.drawable.simo_progress_bar));
 
             });
         }
@@ -386,31 +492,44 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
      **/
     private void dialogChoice() {
 
-        final CharSequence[] options = {"CAMERA", "GALLERY", "CANCEL"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View layoutView = getLayoutInflater().inflate(R.layout.dialog_layout, null);
+        ImageButton cameraButton = layoutView.findViewById(R.id.simo_dialog_camera_button);
+        ImageButton galleryButton = layoutView.findViewById(R.id.simo_dialog_gallery_button);
+        ImageButton cancelButton = layoutView.findViewById(R.id.simo_dialog_cancel_button);
 
-        builder.setTitle("Add Image");
-        builder.setIcon(R.drawable.chefood);
-        builder.setItems(options, (dialog, which) -> {
-            if (options[which].equals("CAMERA")) {
-                takePicture();
+        OurAlertDialog.Builder myDialogBuilder = new OurAlertDialog.Builder(getActivity());
+        myDialogBuilder.setView(layoutView);
+        myDialogBuilder.setIcon(R.mipmap.chefood_icones);
+        final AlertDialog alertDialog = myDialogBuilder.create();
+        WindowManager.LayoutParams wlp = alertDialog.getWindow().getAttributes();
+        wlp.windowAnimations = R.style.AlertDialogAnimation;
+        wlp.gravity = Gravity.CENTER;
+        wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
 
-            } else if (options[which].equals("GALLERY")) {
-                selectPicture();
+        alertDialog.getWindow().setAttributes(wlp);
+        alertDialog.setCanceledOnTouchOutside(true);
+        // Setting transparent the background (layout) of alert dialog
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
 
-            } else if (options[which].equals("CANCEL")) {
-                dialog.dismiss();
-            }
-
+        cameraButton.setOnClickListener(v -> {
+            takePicture();
+            alertDialog.dismiss();
         });
-        builder.show();
+        galleryButton.setOnClickListener(v -> {
+            selectPicture();
+            alertDialog.dismiss();
+        });
+        cancelButton.setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+
     }
 
     /**
      * method  created by Mo.Msaad
      **/
     private void checkPermissions() {
-
         if (Build.VERSION.SDK_INT >= 23) {
             ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), permissions, REQUEST_GALLERY);
             ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), permissions, REQUEST_CAMERA);
@@ -420,8 +539,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private void takePicture() {
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        if (batteryLevel > 100) {
+        if (batteryLevel > 10) {
             Toast.makeText(getActivity(), "Battery is low...", Toast.LENGTH_SHORT).show();
         } else if (cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
             Log.d(TAG, "takePicture: battery level: " + batteryLevel);
@@ -434,7 +552,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
      * method  created by Mo.Msaad
      **/
     private void selectPicture() {
-
         Intent galleryIntent = new Intent();
         galleryIntent.setType("image/*");
         galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
@@ -446,7 +563,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        assert data != null;
         boolean besoins = resultCode == RESULT_OK && requestCode == REQUEST_CAMERA && data.getData() != null;
         boolean besoins1 = resultCode == RESULT_OK && requestCode == REQUEST_GALLERY && data.getData() != null;
 
@@ -454,16 +570,12 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             if (besoins) {
                 setUri(data.getData());
                 Glide.with(this).load(this.getUri()).centerCrop().into(mProfilePhoto);
-
                 mProfilePhoto.refreshDrawableState();
-
             } else if (besoins1) {
 
                 setUri(data.getData());
                 Glide.with(this).load(this.getUri()).centerCrop().into(mProfilePhoto);
                 mProfilePhoto.refreshDrawableState();
-
-
             }
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -471,20 +583,11 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
     }
 
-    private void setupFirebaseAuth() {
-        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
-        mAuthListener = firebaseAuth -> {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-
-            if (user != null) {
-                Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
-            } else Log.d(TAG, "onAuthStateChanged: signed out");
-        };
+    private void getUserInfo() {
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 // retrive user information from the database
                 if (isAdded())
                     setProfileWidgets(mFirebaseMethods.getUserSettings(dataSnapshot));
@@ -493,19 +596,13 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                if (mAuth != null)
-                    try {
-                        Toast.makeText(getContext(), "Proccess canceled, " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        Log.d(TAG, "onCancelled: exception: " + e.getMessage());
-                    }
+                Log.d(TAG, "onCancelled: ");
             }
         });
     }
 
     private void goBack() {
-        startActivity(new Intent(getActivity(), UserProfileActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        mFirebaseMethods.goToWhereverWithFlags(getActivity(), UserProfileActivity.class);
         getActivity().overridePendingTransition(R.anim.right_enter, R.anim.right_out);
         getActivity().finish();
     }

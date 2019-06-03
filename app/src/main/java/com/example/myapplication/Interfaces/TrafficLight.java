@@ -1,4 +1,4 @@
-package com.example.myapplication.utility_classes;
+package com.example.myapplication.Interfaces;
 
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;

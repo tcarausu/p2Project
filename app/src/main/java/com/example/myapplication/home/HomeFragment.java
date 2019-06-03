@@ -32,8 +32,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
@@ -66,7 +64,6 @@ public class HomeFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
         setupFirebase();
         setupRecyclerView(view);
         getData.execute();
@@ -77,7 +74,6 @@ public class HomeFragment extends Fragment {
     private void setupFirebase() {
         mFirebaseMethods = FirebaseMethods.getInstance(getContext());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
         current_user = mAuth.getCurrentUser();
         firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
     }
@@ -108,12 +104,13 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+
     }
 
     public class GetData extends AsyncTask<Void, Void, Void> {
 
-        private GetData() {}
+        private GetData() {
+        }
 
         private void getPostsInfo() {
 

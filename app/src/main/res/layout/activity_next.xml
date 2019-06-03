@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/orangeMainTheme"
     android:orientation="vertical"
-    tools:context=".post.NextActivity">
+    tools:context=".postActivity.NextActivity">
 
     <ScrollView
         android:layout_width="match_parent"

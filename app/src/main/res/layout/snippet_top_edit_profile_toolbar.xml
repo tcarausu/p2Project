@@ -3,7 +3,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/border_color_top">
+        android:background="@drawable/back3">
 
         <Toolbar
             android:id="@+id/profileToolBar"
@@ -22,7 +22,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
-                    android:src="@drawable/orange_arrow_left" />
+                    android:src="@drawable/arrow_left" />
 
                 <TextView
                     android:id="@+id/userName"
@@ -33,7 +33,7 @@
                     android:layout_marginStart="15dp"
                     android:layout_toEndOf="@+id/backArrow"
                     android:text="@string/edit_your_profile_fragment"
-                    android:textColor="@color/darkOrange"
+                    android:textColor="@color/white"
                     android:textSize="20sp" />
 
 
@@ -46,7 +46,7 @@
                     android:padding="5dp"
                     android:onClick="onClick"
                     android:layout_marginStart="10dp"
-                    android:src="@drawable/simo_designed_check" />
+                    android:src="@drawable/white_check" />
 
             </RelativeLayout>
 

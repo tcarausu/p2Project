@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.comment_activity.CommentsActivity;
+import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.user_profile.ViewPostFragmentNewsFeed;
@@ -49,13 +50,12 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
     private RecyclerView mRecyclerView;
     private List<Post> mPosts;
 
-    private ProgressBar mProgressBar ;
+    private ProgressBar mProgressBar;
 
     // Constants
-    private final int FOCUS_ANY = -350;
 
-    public RecyclerViewAdapterPostItems(Context context, List<Post> posts
-    ) {
+
+    public RecyclerViewAdapterPostItems(Context context, List<Post> posts) {
         this.mContext = context;
         this.mPosts = posts;
     }
@@ -76,7 +76,9 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_list_item_post, viewGroup, false);
-//        mProgressBar = view.findViewById(R.id.pr)
+
+
+        mProgressBar = view.findViewById(R.id.progressBar);
 
         return new ViewHolder(view);
     }
@@ -91,7 +93,6 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         User postUser = getUserForPost(currentPost);
         mUserRef = mFirebaseDatabase.getReference("users");
         mPostsRef = mFirebaseDatabase.getReference("posts");
-
 
         if (postUser != null) {
             Glide.with(mContext)
@@ -118,35 +119,35 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
 
         // Button Listeners ***************************************************
         viewHolder.mLikes.setOnClickListener(v -> {
-            if (currentPost.getUserId().equals(mAuth.getCurrentUser().getUid())) {
-                viewPost.toggleLikes(mPostsRef,
-                        mUserRef,
-                        mAuth.getCurrentUser().getUid(),
-                        currentPost.getPostId(),
-                        mAuth.getCurrentUser().getUid(),
-                        viewHolder.mLikes
-                );
-            } else {
-                viewPost.toggleLikes(mPostsRef,
-                        mUserRef,
-                        currentPost.getUserId(),
-                        currentPost.getPostId(),
-                        mAuth.getCurrentUser().getUid(),
-                        viewHolder.mLikes
-                );
-            }
+            List<Like> likeList = currentPost.getLikeList();
+            for (Like lk : likeList)
+                if (lk.getUser_id().equals(currentPost.getUserId()))
+                    viewHolder.mLikes.setImageResource(R.drawable.post_like_pressed);
+            else
+                    viewHolder.mLikes.setImageResource(R.drawable.post_like_not_pressed);
+//            if (currentPost.gel().equals(mAuth.getCurrentUser().getUid())) {
+//                viewPost.toggleLikes(mPostsRef,
+//                        mUserRef,
+//                        mAuth.getCurrentUser().getUid(),
+//                        currentPost.getPostId(),
+//                        mAuth.getCurrentUser().getUid(),
+//                        viewHolder.mLikes);
+//            } else {
+//                viewPost.toggleLikes(mPostsRef,
+//                        mUserRef,
+//                        currentPost.getUserId(),
+//                        currentPost.getPostId(),
+//                        mAuth.getCurrentUser().getUid(),
+//                        viewHolder.mLikes
+//                );
+//            }
             if (viewHolder.mLikedByCurrentUser) {
                 int nrOfLikes = currentPost.getLikeList().size();
                 if (nrOfLikes > 1) {
-                    viewHolder.likes_overview.setText(nrOfLikes + " Likes");
+
+                    viewHolder.likes_overview.setText(String.format( nrOfLikes+ " Likes" ));
                 } else
-                    viewHolder.likes_overview.setText(nrOfLikes + " Like");
-            } else {
-                int nrOfLikes = currentPost.getLikeList().size();
-                if (nrOfLikes > 1) {
-                    viewHolder.likes_overview.setText(nrOfLikes + " Likes");
-                } else
-                    viewHolder.likes_overview.setText(nrOfLikes + " Like");
+                    viewHolder.likes_overview.setText(String.format(nrOfLikes + " Like"));
             }
         });
 
@@ -158,10 +159,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
             intent.putExtras(bundle);
             mContext.startActivity(intent);
 
-
-
         });
-
 //        viewHolder.mRecipe.setOnClickListener(v -> {
 //            // implementation for displaying the recipe for each post
 //            viewHolder.mToolbarExpasionText.setText(currentPost.getmRecipe());
@@ -173,7 +171,6 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
 //            viewHolder.mToolbarExpasionText.setText(currentPost.getmIngredients());
 //            viewHolder.focusExpandable(viewHolder, FOCUS_ANY);
 //        });
-
         viewHolder.mRecipe.setOnClickListener(v ->
                 viewHolder.likes_overview.setText(currentPost.getmRecipe()));
 
@@ -181,8 +178,8 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
                 viewHolder.likes_overview.setText(currentPost.getmIngredients()));
 
         viewHolder.post_TimeStamp.setText(currentPost.getDate_created());
-        viewHolder.mParentLayout.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) ->
 
+        viewHolder.mParentLayout.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) ->
                 viewHolder.mPostToolbarBtnsExpansionContainer.refreshDrawableState());
     }
 
@@ -206,7 +203,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         ImageButton mLikes, mComments, mRecipe, mIngredients;
         ImageButton mOptions;
         RelativeLayout mPostToolbarBtnsExpansionContainer;
-        TextView  likes_overview, post_TimeStamp;
+        TextView likes_overview, post_TimeStamp;
 
         // ViewHolder item constructor
         private ViewHolder(@NonNull View itemView) {
@@ -241,7 +238,6 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
             lm.scrollToPositionWithOffset(viewHolder.getAdapterPosition(), focusItem);
             lm.setSmoothScrollbarEnabled(true);
         }
-
 
 
     }

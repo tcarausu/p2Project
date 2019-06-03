@@ -2,10 +2,15 @@
 <android.support.design.widget.CoordinatorLayout
 
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+
+
+
 
     <FrameLayout
         android:id="@+id/useThisFragmentID"
@@ -13,10 +18,27 @@
         android:layout_height="match_parent">
 
 
+
+
         <RelativeLayout
+
+
             android:id="@+id/login_activity"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/login_progressBar"
+                android:visibility="invisible"
+                android:clickable="false"
+                android:focusable="false"
+                android:background="@color/grey"
+                style="?android:progressBarStyleHorizontal"
+                android:progress="80"
+                android:progressDrawable="@drawable/simo_progress_bar"
+                android:layout_centerInParent="true"
+                android:layout_width="150dp"
+                android:layout_height="150dp" />
 
             <RelativeLayout
                 android:id="@+id/top"

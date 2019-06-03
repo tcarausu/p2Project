@@ -1,6 +1,5 @@
 package com.example.myapplication.utility_classes;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -10,12 +9,9 @@ import android.widget.ListView;
 
 public class OurAlertDialog extends android.support.v7.app.AlertDialog {
 
-    private AlertDialog.Builder  mBuilder ;
-
-    public OurAlertDialog(@NonNull Context context, AlertDialog.Builder builder) {
-
+    public OurAlertDialog(@NonNull Context context) {
         super(context);
-        mBuilder = builder;
+
     }
 
     @Override

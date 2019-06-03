@@ -24,7 +24,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
-import com.example.myapplication.post.AddPostActivity;
+import com.example.myapplication.postActivity.AddPostActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.GridImageAdapter;

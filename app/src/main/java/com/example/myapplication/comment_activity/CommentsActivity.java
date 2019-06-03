@@ -9,6 +9,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +22,6 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
-import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.models.Comment;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
@@ -43,8 +43,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
     private final String TAG = "CommentsActivity";
     private final int ACTIVITY_NUM1 = 1, ACTIVITY_NUM2 = 2, ACTIVITY_NUM3 = 3, ACTIVITY_NUM4 = 4;
-
-    private final List<Integer> act = new ArrayList<>();//
+    private final List<Integer> act = new ArrayList<>();
 
     //firebase
     private DatabaseReference mPostReference, commentRef;
@@ -70,29 +69,37 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
-        checkAuth();
+        mFirebaseMethods.autoDisctonnec(getApplicationContext());
         findWidgets();
-        Bundle bundle = getIntent().getExtras();
-        assert bundle != null;
-        currentPost = bundle.getParcelable("currentPost");
+
+        try {
+            Bundle bundle = getIntent().getExtras();
+            currentPost = bundle.getParcelable("currentPost");
+            Log.d(TAG, "onCreate: currentPost: "+ currentPost + "  "+ "currentPost.getcommentLIst(): "+ currentPost.getCommentList());
+        } catch (NullPointerException e) {
+            Toast.makeText(getApplicationContext(), "nothing attached", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "onCreate: error: " + e.getMessage());
+        }
+//       
+
         setButtonsListeners();
         setupBottomNavigationView();
 
         try {
             commentsList = (ArrayList<Comment>) currentPost.getCommentList();
             setAdapter(commentsList);
+            displayComments();
+            optionsButton();
         } catch (NullPointerException e) {
             Toast.makeText(getApplicationContext(), "No comments yet, Add one.", Toast.LENGTH_LONG).show();
         }
 
-        displayComments();
-        optionsButton();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        checkAuth();
+        mFirebaseMethods.autoDisctonnec(getApplicationContext());
     }
 
     private void hideKeyboard() {
@@ -103,15 +110,6 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void checkAuth() {
-
-        if (mFirebaseMethods.isAuthNull(mAuth, mAuth.getCurrentUser())) {
-            mFirebaseMethods.signOut();
-            mFirebaseMethods.removeAuthLisntener();
-            mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), LoginActivity.class);
-            overridePendingTransition(R.anim.left_enter, R.anim.left_out);
-        } else mFirebaseMethods.addAuthLisntener();
-    }
 
     private void findWidgets() {
 
@@ -125,7 +123,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
     private void displayComments() {
 
-        if (currentPost.getCommentList() != null) {
+        if (currentPost.getCommentList().size() != 0) {
             // Getting the current comment list and assign to it profile photo and user name of the commenter
             for (Comment comment : commentsList) {
                 mUserReference = FirebaseMethods.getmFirebaseDatabase().getReference("users/" + comment.getUserId());
@@ -340,7 +338,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.floatingBar:
                 startActivity(new Intent(CommentsActivity.this, HomeActivity.class));
-                overridePendingTransition(R.anim.right_enter, R.anim.right_enter);
+                overridePendingTransition(R.anim.right_enter, R.anim.left_out);
                 break;
 
             case R.id.add_new_comment:

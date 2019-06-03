@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,8 +57,8 @@ import java.util.Objects;
 /**
  * Mo.Msaad
  **/
-public class LoginActivity extends AppCompatActivity implements
-        View.OnClickListener, SignUpFragment.OnFragmentInteractionListener, ForgotPassFragment.OnFragmentInteractionListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener, SignUpFragment.OnFragmentInteractionListener,
+        ForgotPassFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "LoginActivity";
 
@@ -67,17 +68,17 @@ public class LoginActivity extends AppCompatActivity implements
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseMethods mFirebaseMethods;
     private DatabaseReference user_ref;
     private DatabaseReference myRef;
-    private GoogleSignInOptions gso ;
+    private GoogleSignInOptions gso;
     private GoogleSignInClient mGoogleSignInClient;
     private CallbackManager mCallbackManager;
 
     // widgets
     private LoginButton loginButton;
+    private ProgressBar mProgressBar;
     private TextView signUp, orView;
     private RelativeLayout loginLayout;
     private EditText mEmailField, mPasswordField;
@@ -92,11 +93,13 @@ public class LoginActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
         initLayout();
         connectFirebase();
-        mFirebaseMethods.checkAuthInLogin(mContext, mAuth);
+        mFirebaseMethods.loginChecker(getApplicationContext());
         buttonListeners();
     }
+
 
     private void connectFirebase() {
         mFirebaseMethods = FirebaseMethods.getInstance(mContext);
@@ -121,30 +124,28 @@ public class LoginActivity extends AppCompatActivity implements
         loginLayout = findViewById(R.id.login_activity);
         signUp = findViewById(R.id.sign_up);
         orView = findViewById(R.id.orView);
+        mProgressBar = findViewById(R.id.login_progressBar);
         loginButton = findViewById(R.id.facebookLoginButton);
     }
 
     public void buttonListeners() {
-
         findViewById(R.id.button_id_log_in).setOnClickListener(this);
         findViewById(R.id.googleSignInButton).setOnClickListener(this);
         findViewById(R.id.textView_id_forgotPass_logIn).setOnClickListener(this);
-
         // Configure Google Sign In
-         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
-
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
-
         loginButton.setReadPermissions("email", "public_profile");
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(FacebookTag, "facebook:onSuccess:" + loginResult);
+                mProgressBar.setVisibility(View.VISIBLE);
                 loginButton.setEnabled(false);
                 loginButton.setVisibility(View.GONE);
                 handleFacebookAccessToken(loginResult.getAccessToken());
@@ -152,6 +153,7 @@ public class LoginActivity extends AppCompatActivity implements
 
             @Override
             public void onCancel() {
+                mProgressBar.setVisibility(View.GONE);
                 loginButton.setVisibility(View.VISIBLE);
                 loginButton.setEnabled(true);
                 Log.d(FacebookTag, "facebook:onCancel");
@@ -159,6 +161,7 @@ public class LoginActivity extends AppCompatActivity implements
 
             @Override
             public void onError(FacebookException error) {
+                mProgressBar.setVisibility(View.GONE);
                 loginButton.setVisibility(View.VISIBLE);
                 loginButton.setEnabled(true);
                 Toast.makeText(getApplicationContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
@@ -179,7 +182,7 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.checkAuthInLogin(mContext, mAuth);
+        mFirebaseMethods.loginChecker(getApplicationContext());
     }
 
     @Override
@@ -250,7 +253,8 @@ public class LoginActivity extends AppCompatActivity implements
             if (isVerified) {
                 verifyFirstEmailLogin(email, "Chose a user name", avatarURL);
                 addUserToDataBase();
-                mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), HomeActivity.class); // if yes goto mainActivity
+                mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), HomeActivity.class); // if yes goto mainActivity
+                overridePendingTransition(R.anim.right_enter, R.anim.left_out);
             } else {
                 // else we first sign out the user, until he checks his email then he can connect
                 mAuth.signOut();
@@ -279,13 +283,11 @@ public class LoginActivity extends AppCompatActivity implements
             }
         }
     }
-
-
     // [START auth_with_google]
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(Google_Tag, "firebaseAuthWithGoogle:" + acct.getId());
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mProgressBar.setVisibility(View.VISIBLE);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
@@ -296,20 +298,23 @@ public class LoginActivity extends AppCompatActivity implements
 
                         Log.d(TAG, "google sign in result: " + "\n" + "displayName: " + displayName + "\n" + "email: " + email
                                 + "\n" + "PictureURL: " + photoURL);
-
                         verifyFirstGoogleLogin(email, displayName, photoURL);
                         addUserToDataBase();
                         Log.d(Google_Tag, "signInWithCredential:success");
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication successful.", Snackbar.LENGTH_SHORT).show();
-                        new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), HomeActivity.class), Toast.LENGTH_SHORT);
+                        mProgressBar.setVisibility(View.GONE);
+                        new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), HomeActivity.class), 0);
+                        overridePendingTransition(R.anim.right_enter, R.anim.left_out);
 
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(Google_Tag, "signInWithCredential:failure", task.getException());
+                        mProgressBar.setVisibility(View.GONE);
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                     }
 
                     if (!task.isSuccessful()) {
+                        mProgressBar.setVisibility(View.GONE);
                         Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -320,12 +325,12 @@ public class LoginActivity extends AppCompatActivity implements
 
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(FacebookTag, "handleFacebookAccessToken:" + token);
-
-
+        mProgressBar.setVisibility(View.VISIBLE);
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+
                         // Sign in success, update UI with the signed-in user's information
                         Toast.makeText(LoginActivity.this, "Authentication successful.", Toast.LENGTH_SHORT).show();
 
@@ -340,11 +345,12 @@ public class LoginActivity extends AppCompatActivity implements
                         addUserToDataBase();
                         loginButton.setEnabled(false);
                         loginButton.setVisibility(View.GONE);
-
-                        new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), HomeActivity.class), 0);
+                        mProgressBar.setVisibility(View.GONE);
+                        new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), HomeActivity.class), 0);
+                        overridePendingTransition(R.anim.right_enter, R.anim.left_out);
 
                     } else {
-
+                        mProgressBar.setVisibility(View.GONE);
                         // If sign in fails, display a message to the user.
                         Log.w(FacebookTag, "signInWithCredential:failure", task.getException());
                         Toast.makeText(LoginActivity.this, "Authentication failed, " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -359,6 +365,7 @@ public class LoginActivity extends AppCompatActivity implements
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+        overridePendingTransition(R.anim.right_enter, R.anim.left_out);
     }
 
 
@@ -380,6 +387,7 @@ public class LoginActivity extends AppCompatActivity implements
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.add(R.id.useThisFragmentID, fragmentForgotPass).commit();
+
                 }
 
                 break;
@@ -390,8 +398,8 @@ public class LoginActivity extends AppCompatActivity implements
                     fragmentRegister = new SignUpFragment();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.addToBackStack(null);
-
                     fragmentTransaction.add(R.id.useThisFragmentID, fragmentRegister).commit();
+
                 }
 
                 break;
@@ -522,12 +530,12 @@ public class LoginActivity extends AppCompatActivity implements
             Log.d(TAG, "verifyFirstRun: boolean first run is: " + googleFirstLogin);
         }
     }
+
     /**
-     * @param  email: email fetched   used to login
+     * @param email:       email fetched   used to login
      * @param displayName: display name provider
-     * @param photoURL: photo url fetched from google provider
-     *
-     * */
+     * @param photoURL:    photo url fetched from google provider
+     */
     private void verifyFirstEmailLogin(String email, String displayName, String photoURL) {
 
         SharedPreferences firstLogin = getSharedPreferences("logPrefs", MODE_PRIVATE);
@@ -543,7 +551,8 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-
     public void onFragmentInteraction(Uri uri) {
     }
 }
+
+

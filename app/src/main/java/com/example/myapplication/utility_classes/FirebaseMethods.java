@@ -1,18 +1,23 @@
 package com.example.myapplication.utility_classes;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.example.myapplication.Interfaces.TrafficLight;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
+import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.models.User;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -26,17 +31,17 @@ import java.util.TimeZone;
 /**
  * File created by tcarau18
  **/
-public class FirebaseMethods {
+public class FirebaseMethods extends Activity implements TrafficLight, FirebaseAuth.AuthStateListener {
 
     private static final String TAG = "FirebaseMethods";
     private Context mContext;
-
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private static FirebaseAuth.AuthStateListener mAuthListener = firebaseAuth -> {
+    };
     private static FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
     private static FirebaseStorage sFirebaseStorage = FirebaseStorage.getInstance();
     private static DatabaseReference myRef = mFirebaseDatabase.getReference();
     private LoginManager mLoginManager = LoginManager.getInstance();
-
 
     private GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
@@ -44,26 +49,38 @@ public class FirebaseMethods {
             .build();
 
     private GoogleSignInClient mGoogleSignInClient;
+
     public static FirebaseStorage getFirebaseStorage() {
-        return sFirebaseStorage;
+        if (mAuth != null) {
+            return sFirebaseStorage;
+        }
+        else return null;
     }
 
     public static FirebaseDatabase getmFirebaseDatabase() {
-        return mFirebaseDatabase;
+        if (mAuth!= null) {
+            return mFirebaseDatabase;
+        }
+        else return null;
     }
-
-
 
     public LoginManager getLoginManager() {
-        return mLoginManager;
+        if (mAuth!= null) {
+            return mLoginManager;
+        }
+        else return null;
     }
-
 
     public static FirebaseAuth getAuth() {
-        return mAuth;
+        if (mAuth != null) {
+            return mAuth;
+        }
+        else return null;
     }
 
+
     private FirebaseMethods(Context context) {
+
         // Mo.Msaad modification modification
         synchronized (FirebaseMethods.class) {
             mContext = context;
@@ -71,13 +88,24 @@ public class FirebaseMethods {
         }
     }
 
-    public static FirebaseMethods getInstance(Context context) {
-        return new FirebaseMethods(context);
+    private FirebaseMethods(Context context, LoginManager loginManager, GoogleSignInOptions gso, GoogleSignInClient googleSignInClient) {
+
+        synchronized (FirebaseMethods.class) {
+            mContext = context;
+            mLoginManager = loginManager;
+            this.gso = gso;
+            mGoogleSignInClient = googleSignInClient;
+        }
     }
 
+    public static FirebaseMethods getInstance(Context context) {
+        synchronized (FirebaseMethods.class) {
+            return new FirebaseMethods(context);
+        }
+    }
 
     //--------------------------------------------------------METHODS---------------------------------------------------------------------------------------------------
-    public void updateUsername(String userUID,String username, String dispalyName, String website, String about, long phone, String profile_url) {
+    public void updateUsername(String userUID, String username, String dispalyName, String website, String about, long phone, String profile_url) {
         Log.d(TAG, "updateUsername: updating username to:" + username);
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userUID)
@@ -109,7 +137,6 @@ public class FirebaseMethods {
                 .child("profile_photo")
                 .setValue(profile_url);
     }
-
 
     /**
      * Retrieves the account settings for the User currently logged in
@@ -207,30 +234,68 @@ public class FirebaseMethods {
         return sdf.format(new Date());
     }
 
+    @Override
+    public void goToWhereverWithFlags(Context currentContext, Class<? extends AppCompatActivity> targetClass) {
+        currentContext.startActivity(new Intent(currentContext, targetClass).addFlags(
+                Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+    }
 
-    public void checkUserStateIfNull(Context context, FirebaseAuth auth) {
+    @Override
+    public boolean isAuthNull(FirebaseAuth auth, FirebaseUser user) {
+        if (mAuth == null || mAuth.getCurrentUser() == null)
+            return true;
+        else return false;
+    }
 
-        Log.d(TAG, "checkUserStateIfNull: is called");
-        if (auth == null || auth.getCurrentUser() == null) {
+    @Override
+    public void checkDatabase(DatabaseReference ref) {
+        if (ref == null)
+            ref.removeValue((databaseError, databaseReference) -> databaseReference.removeValue());
+    }
+
+    @Override
+    public void addAuthLisntener() {
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void removeAuthLisntener() {
+        mAuth.removeAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void autoDisctonnec(Context context) {
+        if (isAuthNull(mAuth, mAuth.getCurrentUser())) {
+            signOut();
+            goToWhereverWithFlags(context, LoginActivity.class);
+            overridePendingTransition(R.anim.left_enter, R.anim.left_out);
+        }
+        addAuthLisntener();
+    }
+
+    @Override
+    public void loginChecker(Context context) {
+        if (isAuthNull(mAuth, mAuth.getCurrentUser())) {
+            signOut();
+        } else goToWhereverWithFlags(context, HomeActivity.class);
+    }
+
+    @Override
+    public void signOut() {
+        {
+            removeAuthLisntener();
+            mAuth.signOut();
+            mGoogleSignInClient.signOut();
             mLoginManager.logOut();
-            auth.signOut();
         }
     }
 
-    public void checkAuthInLogin(Context context , FirebaseAuth auth){
 
-        if (mAuth == null || mAuth.getCurrentUser() == null){
-            auth.signOut();
-            mLoginManager.logOut();
-        }
-       else if (auth != null || mAuth.getCurrentUser() != null ){
-            context.startActivity(new Intent(context, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        }
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        if (isAuthNull(mAuth, mAuth.getCurrentUser())) {
+            removeAuthLisntener();
+        } else addAuthLisntener();
     }
-
-    public void goToWhereverWithFlags(Context activityContext, Context c , Class <? extends AppCompatActivity> cl){
-        activityContext.startActivity(new Intent(c,cl).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
-    }
-
 
 }

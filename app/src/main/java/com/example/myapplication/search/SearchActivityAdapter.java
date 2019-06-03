@@ -79,7 +79,7 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
                 dialogChoice(currentUser.getUsername(), String.valueOf(currentUser.getNrOfPosts()), currentUser.getWebsite(), viewHolder.profile_photo.getDrawable())
         );
 
-        Animation animation = AnimationUtils.loadAnimation(context, (index > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
+        Animation animation = AnimationUtils.loadAnimation(context, (index > lastPosition) ? R.anim.slide_up : R.anim.down_from_top);
         viewHolder.itemView.startAnimation(animation);
         lastPosition = index;
     }
