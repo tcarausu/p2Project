@@ -2,6 +2,8 @@ package com.example.myapplication.user_profile;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -10,11 +12,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,6 +33,7 @@ import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
+import com.example.myapplication.utility_classes.OurAlertDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -100,10 +106,11 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_post_news_feeed, container, false);
+
         connectToDatabase();
         initLayout(view);
-        setListeners(view);
-
+        findWidgets(view);
+        buttonListeners();
         setupBottomNavigationView();
 
         return view;
@@ -146,9 +153,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         }
     }
 
-    private void setListeners(View view) {
-        try {
-
+    private void findWidgets(View view) {
             optionsMenu = view.findViewById(R.id.personal_post_options_menu);
             profileMenu = view.findViewById(R.id.account_settings_options);
             backArrow = view.findViewById(R.id.backArrow);
@@ -156,20 +161,16 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             commentPost = view.findViewById(R.id.commentsBtnID);
             recipePost = view.findViewById(R.id.recipeBtnID);
             ingredientsPost = view.findViewById(R.id.ingredientsBtnID);
+    }
 
-            optionsMenu.setOnClickListener(this);
-            profileMenu.setOnClickListener(this);
-            backArrow.setOnClickListener(this);
-            likesPost.setOnClickListener(this);
-            commentPost.setOnClickListener(this);
-            recipePost.setOnClickListener(this);
-            ingredientsPost.setOnClickListener(this);
-
-        } catch (
-                NullPointerException e) {
-            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
-        }
-
+    private void buttonListeners(){
+        optionsMenu.setOnClickListener(this);
+        profileMenu.setOnClickListener(this);
+        backArrow.setOnClickListener(this);
+        likesPost.setOnClickListener(this);
+        commentPost.setOnClickListener(this);
+        recipePost.setOnClickListener(this);
+        ingredientsPost.setOnClickListener(this);
     }
 
     @Override
@@ -426,24 +427,40 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
      */
     private void dialogChoice() {
 
-        final CharSequence[] options = {"Delete", "Report", "Cancel"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Chose an action: ");
-        builder.setIcon(R.drawable.chefood);
-        builder.setItems(options, (dialog, which) -> {
-            if (options[which].equals("Delete")) {
-                deletePost();
+        //TODO: replace the current dialog with customised one
 
-            } else if (options[which].equals("Report")) {
-                reportPost();
+        View layoutView = getLayoutInflater().inflate(R.layout.dialog_deletepost_layout, null);
+        Button deletePostButton = layoutView.findViewById(R.id.deletePostButton);
+        Button reportButton = layoutView.findViewById(R.id.reportPostButton);
+        ImageButton cancelButton = layoutView.findViewById(R.id.cencelDeletePost);
 
-            } else if (options[which].equals("CANCEL")) {
-                Toast.makeText(getContext(), "CANCEL is clicked", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            }
+        OurAlertDialog.Builder myDialogBuilder = new OurAlertDialog.Builder(getActivity());
+        myDialogBuilder.setView(layoutView);
+        myDialogBuilder.setIcon(R.mipmap.chefood_icones);
+        final AlertDialog alertDialog = myDialogBuilder.create();
+        WindowManager.LayoutParams wlp = alertDialog.getWindow().getAttributes();
+        wlp.windowAnimations = R.style.AlertDialogAnimation;
+        wlp.gravity = Gravity.CENTER;
+        wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
+
+        alertDialog.getWindow().setAttributes(wlp);
+        alertDialog.setCanceledOnTouchOutside(true);
+        // Setting transparent the background (layout) of alert dialog
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
+
+        deletePostButton.setOnClickListener(v -> {
+            deletePost();
+            alertDialog.dismiss();
+        });
+        reportButton.setOnClickListener(v -> {
+            reportPost();
+            alertDialog.dismiss();
+        });
+        cancelButton.setOnClickListener(v -> {
+            alertDialog.dismiss();
         });
 
-        builder.show();
 
     }
 
@@ -457,33 +474,35 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             case R.id.account_settings_options:
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
                 mFirebaseMethods.goToWhereverWithFlags(getActivity(), AccountSettingsActivity.class);
+                getActivity().overridePendingTransition(R.anim.left_enter, R.anim.right_out);
+                getActivity().finish();
                 break;
 
             case R.id.personal_post_options_menu:
                 dialogChoice();
-
                 break;
 
             case R.id.commentsBtnID:
                 goToCommentActivity();
-
+                getActivity().overridePendingTransition(R.anim.left_enter, R.anim.right_out);
+                getActivity().finish();
                 break;
 
             case R.id.ingredientsBtnID:
                 String ingredients = mPost.getmIngredients();
                 mPostLikes.setText(ingredients);
-
                 break;
 
             case R.id.recipeBtnID:
                 String recipe = mPost.getmRecipe();
                 mPostLikes.setText(recipe);
-
                 break;
 
             case R.id.backArrow:
                 Log.d(TAG, "onClick: navigating back to " + getActivity());
                 mFirebaseMethods.goToWhereverWithFlags(getActivity(), UserProfileActivity.class);
+                getActivity().overridePendingTransition(R.anim.right_out, R.anim.left_enter);
+                getActivity().finish();
 
                 break;
 
@@ -512,7 +531,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
      * This method Toggles likes based on the the current user, meaning,
      * If the user has already liked it will display one answer;
      * If he didn't add a like, or there is no like then it will add one.
-     *
      * @param mPostsRef
      * @param mUserRef
      * @param userId
@@ -522,7 +540,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
      */
     public void toggleLikes(DatabaseReference mPostsRef, DatabaseReference mUserRef, String userId,
                             String postId, String currentUserId, ImageButton likesPost) {
-
 
         try {
             Query query = mPostsRef

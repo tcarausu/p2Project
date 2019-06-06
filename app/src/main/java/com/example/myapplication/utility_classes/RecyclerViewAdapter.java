@@ -20,6 +20,7 @@ import com.example.myapplication.models.User;
 import com.example.myapplication.user_profile.ViewPostFragmentNewsFeed;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.mPosts = mPosts;
     }
 
+    @Exclude
     public void setUserForPost(Post post, User user) {
         post.setUser(user);
     }
@@ -50,6 +52,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return post.getUser();
     }
 
+    @Exclude
     public void setPostsList(List<Post> mPosts) {
         this.mPosts = mPosts;
     }
@@ -139,7 +142,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         viewHolder.mIngredients.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmIngredients()));
 //        viewHolder.mComments.setOnClickListener(v-> viewHolder.post_likes.setText(postCurrent.getCommentList()));
-
 
     }
 

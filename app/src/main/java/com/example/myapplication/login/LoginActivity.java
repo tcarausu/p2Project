@@ -79,6 +79,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     // widgets
     private LoginButton loginButton;
     private ProgressBar mProgressBar;
+    private View progresslayout;
     private TextView signUp, orView;
     private RelativeLayout loginLayout;
     private EditText mEmailField, mPasswordField;
@@ -124,7 +125,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginLayout = findViewById(R.id.login_activity);
         signUp = findViewById(R.id.sign_up);
         orView = findViewById(R.id.orView);
-        mProgressBar = findViewById(R.id.login_progressBar);
+        mProgressBar = findViewById(R.id.simo_progressBar);
+        progresslayout = findViewById(R.id.simoProgressBar_layout);
         loginButton = findViewById(R.id.facebookLoginButton);
     }
 
@@ -146,6 +148,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onSuccess(LoginResult loginResult) {
                 Log.d(FacebookTag, "facebook:onSuccess:" + loginResult);
                 mProgressBar.setVisibility(View.VISIBLE);
+                progresslayout.setVisibility(View.VISIBLE);
                 loginButton.setEnabled(false);
                 loginButton.setVisibility(View.GONE);
                 handleFacebookAccessToken(loginResult.getAccessToken());
@@ -153,7 +156,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onCancel() {
+
                 mProgressBar.setVisibility(View.GONE);
+                progresslayout.setVisibility(View.GONE);
                 loginButton.setVisibility(View.VISIBLE);
                 loginButton.setEnabled(true);
                 Log.d(FacebookTag, "facebook:onCancel");
@@ -161,7 +166,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onError(FacebookException error) {
+
                 mProgressBar.setVisibility(View.GONE);
+                progresslayout.setVisibility(View.GONE);
                 loginButton.setVisibility(View.VISIBLE);
                 loginButton.setEnabled(true);
                 Toast.makeText(getApplicationContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
@@ -288,6 +295,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Log.d(Google_Tag, "firebaseAuthWithGoogle:" + acct.getId());
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mProgressBar.setVisibility(View.VISIBLE);
+        progresslayout.setVisibility(View.VISIBLE);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
@@ -310,11 +318,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         // If sign in fails, display a message to the user.
                         Log.w(Google_Tag, "signInWithCredential:failure", task.getException());
                         mProgressBar.setVisibility(View.GONE);
+                        progresslayout.setVisibility(View.GONE);
                         Snackbar.make(findViewById(R.id.login_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                     }
 
                     if (!task.isSuccessful()) {
                         mProgressBar.setVisibility(View.GONE);
+                        progresslayout.setVisibility(View.GONE);
                         Toast.makeText(mContext, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -326,6 +336,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(FacebookTag, "handleFacebookAccessToken:" + token);
         mProgressBar.setVisibility(View.VISIBLE);
+        progresslayout.setVisibility(View.VISIBLE);
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
@@ -346,11 +357,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         loginButton.setEnabled(false);
                         loginButton.setVisibility(View.GONE);
                         mProgressBar.setVisibility(View.GONE);
+                        progresslayout.setVisibility(View.GONE);
                         new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), HomeActivity.class), 0);
                         overridePendingTransition(R.anim.right_enter, R.anim.left_out);
 
                     } else {
                         mProgressBar.setVisibility(View.GONE);
+                        progresslayout.setVisibility(View.GONE);
                         // If sign in fails, display a message to the user.
                         Log.w(FacebookTag, "signInWithCredential:failure", task.getException());
                         Toast.makeText(LoginActivity.this, "Authentication failed, " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();

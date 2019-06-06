@@ -33,16 +33,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
-
     private static final String TAG = "HomeActivity";
-
-
     private final int ACTIVITY_NUM1 = 1, ACTIVITY_NUM2 = 2, ACTIVITY_NUM3 = 3, ACTIVITY_NUM4 = 4;
     private final List<Integer> act = new ArrayList<>();
 
+    //firebase
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseMethods mFirebaseMethods;
     private DatabaseReference mDatabasePostRef, mDatabaseUserRef, current_userRef;
     private FirebaseDatabase firebasedatabase;
@@ -54,16 +51,20 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
+
+        connectDatabase();
+        checkDatabaseState();
+        initImageLoader();
+        setupBottomNavigationView();
+        setupViewPager();
+    }
+
+    private void connectDatabase() {
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
         mFirebaseMethods.autoDisctonnec(getApplicationContext());
         firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
-        checkDatabaseState();
-        initImageLoader();
-        setupBottomNavigationView();
-        setupFirebaseAuth();
-        setupViewPager();
     }
 
 
@@ -215,16 +216,6 @@ public class HomeActivity extends AppCompatActivity {
      * checks to see if @param 'user'  is logged in
      */
 
-    private void setupFirebaseAuth() {
-        Log.d(TAG, "setupFire-base-Auth: setting up fire-base auth");
-        mAuthListener = firebaseAuth -> {
-
-            if (current_user != null) {
-                Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
-            } else Log.d(TAG, "onAuthStateChanged: signed out");
-        };
-
-    }
 
     private void initImageLoader() {
         UniversalImageLoader imageLoader = new UniversalImageLoader(getApplicationContext());

@@ -201,5 +201,6 @@
     <string name="sign_out_anyway">sign out anyway</string>
     <string name="do_you_really_want_to_sign_out">DO you really want to sign out?</string>
     <string name="there_is_no_description_for_your_post_continue">There is no description for your post, Continue?</string>
+    <string name="report">Report</string>
 
 </resources>

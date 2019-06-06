@@ -41,6 +41,7 @@
     <color name="white_transparent">#9CFFFFFF</color>
 
     <color name="orangeMainTheme">#FF9047</color>
+    <color name="orangeMainTheme_transp">#80FF9047</color>
     <color name="website_color">#3d5e98</color>
 
     <!--end of user colors-->

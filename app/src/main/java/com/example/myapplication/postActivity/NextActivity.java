@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -63,7 +64,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_next);
         findWidgets();
         connectFirebase();
-        firebaseMethods.autoDisctonnec(getApplicationContext());
+
+        mUploadTextView.setOnClickListener(this);
+        mBackImageView.setOnClickListener(this);
     }
 
 
@@ -76,6 +79,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     private void connectFirebase() {
         firebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
+        firebaseMethods.autoDisctonnec(getApplicationContext());
         current_user = mAuth.getCurrentUser();
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         mStorageRef = FirebaseMethods.getFirebaseStorage().getReference();
@@ -95,12 +99,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         mImageRecipe = findViewById(R.id.image_recipe_edittext);
         mImageViewFood = findViewById(R.id.image_tobe_shared);
         mUploadTextView = findViewById(R.id.textview_share);
-        mBackImageView = findViewById(R.id.close_share);
+        mBackImageView = findViewById(R.id.close_share_nextActivity);
         imageUri = getIntent().getStringExtra("imageUri");
         Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewFood);
-        mUploadTextView.setOnClickListener(this);
-        mBackImageView.setOnClickListener(this);
-
     }
 
 
@@ -185,7 +186,6 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         View layoutView = getLayoutInflater().inflate(R.layout.dialog_addpost_layout, null);
         ImageButton cameraButton = layoutView.findViewById(R.id.SENDANYWAY);
         ImageButton cancelButton = layoutView.findViewById(R.id.CANCEL_SENDANYWAY);
-
         OurAlertDialog.Builder myDialogBuilder = new OurAlertDialog.Builder(this);
         myDialogBuilder.setView(layoutView);
         myDialogBuilder.setIcon(R.mipmap.chefood_icones);
@@ -207,6 +207,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         cancelButton.setOnClickListener(v -> {
+            hideKeyboard();
             alertDialog.dismiss();
         });
     }
@@ -275,28 +276,39 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void hideKeyboard() {
+
+        View v = this.getCurrentFocus();
+        if (v != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+    }
 
     @Override
     public void onClick(View v) {
+
         String ingredients = mImageIngredients.getText().toString();
         String descriptions = mImageDesc.getText().toString();
         String recipe = mImageRecipe.getText().toString();
 
         switch (v.getId()) {
             case R.id.textview_share:
+                hideKeyboard();
                 if (TextUtils.isEmpty(ingredients) || TextUtils.isEmpty(descriptions) || TextUtils.isEmpty(recipe))
                     dialogConfirm();
 
                 else {
+                    hideKeyboard();
                     checkWifiState();
                 }
                 break;
 
-            case R.id.close_share:
+            case R.id.close_share_nextActivity:
+                hideKeyboard();
                 Log.d(TAG, "onClick: back button working");
                 overridePendingTransition(R.anim.left_out, R.anim.right_enter);
                 finish();
-
                 break;
         }
 

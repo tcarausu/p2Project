@@ -9,36 +9,16 @@
     android:orientation="vertical">
 
 
-
-
-
     <FrameLayout
         android:id="@+id/useThisFragmentID"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-
-
         <RelativeLayout
-
-
             android:id="@+id/login_activity"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ProgressBar
-                android:id="@+id/login_progressBar"
-                android:visibility="invisible"
-                android:clickable="false"
-                android:focusable="false"
-                android:background="@color/grey"
-                style="?android:progressBarStyleHorizontal"
-                android:progress="80"
-                android:progressDrawable="@drawable/simo_progress_bar"
-                android:layout_centerInParent="true"
-                android:layout_width="150dp"
-                android:layout_height="150dp" />
 
             <RelativeLayout
                 android:id="@+id/top"
@@ -60,6 +40,7 @@
             </RelativeLayout>
 
         </RelativeLayout>
+        <include layout="@layout/progress_bar_layout"/>
 
     </FrameLayout>
 

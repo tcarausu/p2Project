@@ -7,7 +7,7 @@
         android:background="@drawable/border_color_top">
 
         <Toolbar
-            android:background="@drawable/back3"
+            android:background="@color/transp"
             android:id="@+id/profileToolBar"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

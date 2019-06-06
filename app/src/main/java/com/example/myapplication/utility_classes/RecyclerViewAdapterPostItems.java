@@ -27,6 +27,7 @@ import com.example.myapplication.models.User;
 import com.example.myapplication.user_profile.ViewPostFragmentNewsFeed;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerViewAdapterPostItems.ViewHolder> {
+public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerViewAdapterPostItems.ViewHolder> implements View.OnClickListener, Runnable {
     private static final String TAG = "AdapterPostItems";
 
     // Member variables
@@ -52,7 +53,21 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
 
     private ProgressBar mProgressBar;
 
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public void run() {
+
+    }
+
     // Constants
+
+    public interface onItemClickListener{
+        void onItemClick(int position);
+    }
 
 
     public RecyclerViewAdapterPostItems(Context context, List<Post> posts) {
@@ -60,10 +75,12 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         this.mPosts = posts;
     }
 
+    @Exclude
     public void setPostsList(List<Post> mPosts) {
         this.mPosts = mPosts;
     }
 
+    @Exclude
     public void setUserForPost(Post post, User user) {
         post.setUser(user);
     }
@@ -76,8 +93,6 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_list_item_post, viewGroup, false);
-
-
         mProgressBar = view.findViewById(R.id.progressBar);
 
         return new ViewHolder(view);
@@ -114,7 +129,8 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
 
         Glide.with(mContext)
                 .load(currentPost.getmFoodImgUrl())
-                .centerInside()
+                .fitCenter()
+                .centerCrop()
                 .into(viewHolder.mFoodImg);
 
         // Button Listeners ***************************************************
@@ -123,7 +139,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
             for (Like lk : likeList)
                 if (lk.getUser_id().equals(currentPost.getUserId()))
                     viewHolder.mLikes.setImageResource(R.drawable.post_like_pressed);
-            else
+                else
                     viewHolder.mLikes.setImageResource(R.drawable.post_like_not_pressed);
 //            if (currentPost.gel().equals(mAuth.getCurrentUser().getUid())) {
 //                viewPost.toggleLikes(mPostsRef,
@@ -145,7 +161,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
                 int nrOfLikes = currentPost.getLikeList().size();
                 if (nrOfLikes > 1) {
 
-                    viewHolder.likes_overview.setText(String.format( nrOfLikes+ " Likes" ));
+                    viewHolder.likes_overview.setText(String.format(nrOfLikes + " Likes"));
                 } else
                     viewHolder.likes_overview.setText(String.format(nrOfLikes + " Like"));
             }
