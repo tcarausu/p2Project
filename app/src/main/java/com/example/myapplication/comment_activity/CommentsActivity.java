@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -105,26 +104,26 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         }
 
 
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-//                ProgressBar progressBar = findViewById(R.id.simo_progressBar);
-//                View progreesssLayout = findViewById(R.id.simoProgressBar_layout);
-//                progressBar.setVisibility(View.VISIBLE);
-//                progreesssLayout.setVisibility(View.VISIBLE);
-//                listView.removeAllViews();
-//                listView.setAdapter(mAdapter);
-//                mAdapter.notifyDataSetChanged();
-//                progressBar.setVisibility(View.GONE);
-//                progreesssLayout.setVisibility(View.GONE);
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
-            }
-        });
+//        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(AbsListView view, int scrollState) {
+////                ProgressBar progressBar = findViewById(R.id.simo_progressBar);
+////                View progreesssLayout = findViewById(R.id.simoProgressBar_layout);
+////                progressBar.setVisibility(View.VISIBLE);
+////                progreesssLayout.setVisibility(View.VISIBLE);
+////                listView.removeAllViews();
+////                listView.setAdapter(mAdapter);
+////                mAdapter.notifyDataSetChanged();
+////                progressBar.setVisibility(View.GONE);
+////                progreesssLayout.setVisibility(View.GONE);
+//
+//            }
+//
+//            @Override
+//            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//
+//            }
+//        });
 
     }
 
@@ -264,7 +263,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
             mAdapter.notifyDataSetChanged();
 
             deletePostButton.setOnClickListener(v -> {
-                deleteComment(snapList,position,comment);
+                deleteComment(snapList, position, comment);
                 alertDialog.dismiss();
             });
             reportButton.setOnClickListener(v -> {
@@ -337,12 +336,11 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void reportPost() {
-        Toast.makeText(getApplicationContext(),"report pressed",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "report pressed", Toast.LENGTH_SHORT).show();
     }
 
     private void deleteComment(List<DataSnapshot> snapList, int position, Comment comment) {
         commentRef.addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onItemClick DatasnapshotCount: " + dataSnapshot.getChildrenCount());
@@ -354,6 +352,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
 
                 for (DataSnapshot dsss : snapList) {
                     selectedCommentRef = snapList.get(position).getRef();
+
                     Log.d(TAG, "onItemClick refList.get(position): " + selectedCommentRef);
                 }
 
@@ -361,9 +360,15 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
                     selectedCommentRef.removeValue((databaseError, databaseReference) -> {
                         databaseReference.removeValue();
                         Toast.makeText(getApplicationContext(), "Comment deleted", Toast.LENGTH_SHORT).show();
+                        try {
+                            commentsList.remove(comment);
+                            mAdapter.notifyDataSetChanged();
+                        } catch (IndexOutOfBoundsException e) {
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
                     });
-                }
-                else
+                } else
                     Toast.makeText(getApplicationContext(), "Can not delete other users's comment", Toast.LENGTH_SHORT).show();
             }
 
