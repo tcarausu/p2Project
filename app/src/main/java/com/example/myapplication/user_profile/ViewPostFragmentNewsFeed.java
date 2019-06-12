@@ -50,6 +50,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -66,10 +67,8 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mUserRef;
-    private DatabaseReference mPostsRef;
+    private DatabaseReference mUserRef, mPostsRef, currentPostRef;
     private FirebaseMethods mFirebaseMethods;
 
     //fire-base storage
@@ -92,11 +91,11 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     //vars for Query
     private User user;
-    private boolean mLikedByCurrentUser;
+    private boolean mLikedByCurrentUser, isLiked;
     private StringBuilder mUsers;
+    private List<Like> likeList;
 
     public String mLikesString = "Likes string";
-    private DatabaseReference myRef;
 
     public ViewPostFragmentNewsFeed() {
         setArguments(new Bundle());
@@ -106,10 +105,9 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_post_news_feeed, container, false);
-
+        findWidgets(view);
         connectToDatabase();
         initLayout(view);
-        findWidgets(view);
         buttonListeners();
         setupBottomNavigationView();
 
@@ -118,7 +116,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     private void connectToDatabase() {
         mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
-        mFirebaseMethods = FirebaseMethods.getInstance(getContext());
         mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
@@ -153,17 +150,31 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         }
     }
 
-    private void findWidgets(View view) {
-            optionsMenu = view.findViewById(R.id.personal_post_options_menu);
-            profileMenu = view.findViewById(R.id.account_settings_options);
-            backArrow = view.findViewById(R.id.backArrow);
-            likesPost = view.findViewById(R.id.likesBtnID);
-            commentPost = view.findViewById(R.id.commentsBtnID);
-            recipePost = view.findViewById(R.id.recipeBtnID);
-            ingredientsPost = view.findViewById(R.id.ingredientsBtnID);
+    private void initializeLikeList(@NonNull Post post) {
+        likeList = post.getLikeList();
+        for (Like lk : likeList) {
+            if (lk.getUser_id().equals(current_user.getUid()))
+
+//                likesPost.setImageResource(R.drawable.post_like_pressed);
+                likesPost.setPressed(true);
+            else
+                likesPost.setPressed(false);
+//                likesPost.setImageResource(R.drawable.post_like_not_pressed);
+        }
+
     }
 
-    private void buttonListeners(){
+    private void findWidgets(View view) {
+        optionsMenu = view.findViewById(R.id.personal_post_options_menu);
+        profileMenu = view.findViewById(R.id.account_settings_options);
+        backArrow = view.findViewById(R.id.backArrow);
+        likesPost = view.findViewById(R.id.likesBtnID);
+        commentPost = view.findViewById(R.id.commentsBtnID);
+        recipePost = view.findViewById(R.id.recipeBtnID);
+        ingredientsPost = view.findViewById(R.id.ingredientsBtnID);
+    }
+
+    private void buttonListeners() {
         optionsMenu.setOnClickListener(this);
         profileMenu.setOnClickListener(this);
         backArrow.setOnClickListener(this);
@@ -239,7 +250,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             Query query = mPostsRef
                     .child(userId)
                     .child(postId)
-                    .child("mLikes")
+                    .child("Likes")
                     .getRef();
 
             query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -386,41 +397,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         this.mLikesString = mLikesString;
     }
 
-    /**
-     * This method add a new like directly the requests, current post.
-     */
-    public void addNewLike(DatabaseReference mPostsRef, DatabaseReference mUserRef, String userId, String postId, String currentUserId) {
-        try {
-            Log.d(TAG, "addNewLike: add new like");
-
-
-            String newLikeId = mPostsRef.child(postId).push().getKey();
-            Like like = new Like();
-            like.setUser_id(userId);
-
-            if (userId.equals(currentUserId)) {
-                mPostsRef
-                        .child(currentUserId)
-                        .child(postId)
-                        .child("mLikes")
-                        .child(newLikeId)
-                        .setValue(like);
-                getLikesString(mPostsRef, mUserRef, currentUserId, postId);
-            } else {
-                mPostsRef
-                        .child(userId)
-                        .child(postId)
-                        .child("mLikes")
-                        .child(newLikeId)
-                        .setValue(like);
-                getLikesString(mPostsRef, mUserRef, userId, postId);
-
-            }
-
-        } catch (NullPointerException e) {
-            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
-        }
-    }
 
     /**
      * Here we have the dialogue to delete, report a post
@@ -507,8 +483,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 break;
 
             case R.id.likesBtnID:
-                toggleLikes(mPostsRef, mUserRef, mPost.getUserId(), mPost.getPostId(), current_user.getUid(), likesPost);
-
+                toggleLikes();
                 break;
         }
 
@@ -524,81 +499,126 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 //        Parcelable parcelable = bundle;
         intent.putExtras(myBundle);
         startActivity(intent);
-        Objects.requireNonNull(getActivity()).overridePendingTransition(R.anim.right_out, R.anim.left_out);
+       getActivity().overridePendingTransition(R.anim.right_out, R.anim.left_out);
     }
 
     /**
-     * This method Toggles likes based on the the current user, meaning,
-     * If the user has already liked it will display one answer;
-     * If he didn't add a like, or there is no like then it will add one.
-     * @param mPostsRef
-     * @param mUserRef
-     * @param userId
-     * @param postId
-     * @param currentUserId
-     * @param likesPost
+     * This method add a new like directly the requests, current post.
      */
-    public void toggleLikes(DatabaseReference mPostsRef, DatabaseReference mUserRef, String userId,
-                            String postId, String currentUserId, ImageButton likesPost) {
+    private void addNewLikeForOwnPost(DatabaseReference mPostsRef) {
+        try {
+            Log.d(TAG, "addNewLikeForOwnPost: add new like");
+
+            String postId = mPost.getPostId();
+            String currentUserId = current_user.getUid();
+            String newLikeId = mPostsRef.child(postId).push().getKey();
+            Like like = new Like();
+            like.setUser_id(currentUserId);
+
+            mPostsRef
+                    .child(currentUserId)
+                    .child(postId)
+                    .child("Likes")
+                    .child(newLikeId)
+                    .setValue(like);
+
+            likeList.add(like);
+
+
+        } catch (NullPointerException e) {
+            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
+        }
+    }
+
+    private void toggleLikes() {
 
         try {
-            Query query = mPostsRef
-                    .child(userId)
-                    .child(postId)
-                    .child("mLikes")
-                    .orderByChild(Objects.requireNonNull(mPostsRef
-                            .child(postId)
-                            .child("mLikes")
-                            .child(userId).getKey()));
+            String currentUserId = current_user.getUid();
+            String postId = mPost.getPostId();
+            String newLikeId = mPostsRef.child(postId).push().getKey();
+            Like newLike = new Like();
+            newLike.setUser_id(currentUserId);
 
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
+            currentPostRef = mPostsRef.child(currentUserId).child(postId).child("Likes").getRef();
+            currentPostRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists())
-                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                            if ((mLikedByCurrentUser && Objects.requireNonNull(singleSnapshot.getValue(Like.class)).getUser_id().equals(userId))
-                                    && likesPost.isPressed()) {
+                    if (dataSnapshot.exists()) {
+                        Log.d(TAG, "likeTest: dataSnapshot.gkey " + dataSnapshot.getKey());
+                        for (DataSnapshot dss : dataSnapshot.getChildren())
+                            if (!dss.getValue(Like.class).getUser_id().equals(currentUserId)) {
                                 mPostsRef
-                                        .child(userId)
+                                        .child(currentUserId)
                                         .child(postId)
-                                        .child("mLikes")
-                                        .child(Objects.requireNonNull(singleSnapshot.getKey()))
-                                        .removeValue();
-                                likesPost.setImageResource(R.drawable.post_like_not_pressed);
-                                getLikesString(mPostsRef, mUserRef, userId, postId);
-                            } else if (!mLikedByCurrentUser && likesPost.isPressed()) {
-                                mLikedByCurrentUser = true;
-                                addNewLike(mPostsRef, mUserRef, userId, postId, currentUserId);
-                                likesPost.setImageResource(R.drawable.post_like_pressed);
-                                break;
+                                        .child("Likes")
+                                        .child(newLikeId)
+                                        .setValue(newLike);
+                                getLikesString(mPostsRef, mUserRef, currentUserId, postId);
+                                initializeLikeList(mPost);
+
+
+                            } else {
+                                dss.getRef().removeValue();
+                                initializeLikeList(mPost);
                             }
-                        }
-                    //TODO . if data doesnt exist
-                    if (likesPost.isPressed() && (!dataSnapshot.exists() && currentUserId.equals(userId))) {
-                        addNewLike(mPostsRef, mUserRef, userId, postId, currentUserId);
-                        mLikedByCurrentUser = true;
-                        likesPost.setImageResource(R.drawable.post_like_pressed);
-
-                    } else if (likesPost.isPressed() && (!dataSnapshot.exists() && !currentUserId.equals(userId))) {
-                        addNewLike(mPostsRef, mUserRef, userId, postId, currentUserId);
-                        mLikedByCurrentUser = true;
-                        likesPost.setImageResource(R.drawable.post_like_pressed);
-
-                    } else if (likesPost.isPressed() && (dataSnapshot.exists() && query.getRef().getKey().contains(userId))) {
-                        likesPost.setImageResource(R.drawable.post_like_not_pressed);
-                    }
+                    } else
+                        mPostsRef
+                                .child(currentUserId)
+                                .child(postId)
+                                .child("Likes")
+                                .child(newLikeId)
+                                .setValue(newLike);
+                    getLikesString(mPostsRef, mUserRef, currentUserId, postId);
+                    initializeLikeList(mPost);
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    Log.d(TAG, "onCancelled: Query Cancelled");
-
                 }
             });
-        } catch (NullPointerException e) {
-            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
+
+
+        } catch (NullPointerException nuller) {
+            Log.d(TAG, "toggleLikes: error: " + nuller.getMessage());
         }
+//        try {
+//            Query query = mPostsRef
+//                    .child(currentUserId)
+//                    .child(postId)
+//                    .child("Likes")
+//                    .orderByChild(Objects.requireNonNull(mPostsRef
+//                            .child(postId)
+//                            .child("Likes")
+//                            .getRef().getKey()));
+//
+//
+//            query.addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    if (dataSnapshot.exists()) {
+//                        if (!dataSnapshot.getKey().contains(currentUserId)) {
+//                            String newLikeId = mPostsRef.child(postId).push().getKey();
+//                            Like like = new Like();
+//                            like.setUser_id(currentUserId);
+//                            query.getRef().setValue(like);
+//                            addNewLikeForOwnPost(mPostsRef);
+//                            likesPost.setImageResource(R.drawable.post_like_pressed);
+//                        } else dataSnapshot.getRef().removeValue();
+//                        likesPost.setImageResource(R.drawable.post_like_not_pressed);
+//                    } else query.getRef().setValue("Likes");
+//
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                }
+//            });
+//        } catch (
+//                NullPointerException e) {
+//            Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
+//        }
     }
 
     /**
