@@ -202,5 +202,12 @@
     <string name="do_you_really_want_to_sign_out">DO you really want to sign out?</string>
     <string name="there_is_no_description_for_your_post_continue">There is no description for your post, Continue?</string>
     <string name="report">Report</string>
+    <string name="nr_likes">%d Likes</string>
+    <string name="nr_like">%d Like</string>
+    <string name="comment_nr">%d Comment</string>
+    <string name="comments_nr">%d Comments</string>
+    <string name="no_des_av">No description available</string>
+    <string name="no_ing_av">No ingredients available</string>
+    <string name="no_rec_av">No recipe available</string>
 
 </resources>

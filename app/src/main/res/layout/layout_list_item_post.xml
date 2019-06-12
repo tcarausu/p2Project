@@ -75,10 +75,10 @@
         android:paddingTop="1dp">
 
 
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <com.example.myapplication.utility_classes.SquareImageView
                 android:id="@+id/foodImgID"
                 android:layout_width="match_parent"
@@ -123,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/likesBtnID"
                 android:layout_centerInParent="true"
-                android:text="Like"
+                android:text="@string/like"
                 android:textColor="@color/orange"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -132,7 +132,6 @@
 
         <RelativeLayout
             android:id="@+id/comment_relative"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -153,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/commentsBtnID"
                 android:layout_centerInParent="true"
-                android:text="Comment"
+                android:text="@string/comment"
                 android:textColor="@color/orange"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -183,7 +182,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/recipeBtnID"
                 android:layout_centerInParent="true"
-                android:text="Recipe"
+                android:text="@string/recipe"
 
                 android:textColor="@color/orange"
                 android:textSize="14sp"
@@ -213,8 +212,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/ingredientsBtnID"
                 android:layout_centerInParent="true"
-                android:text="Ingredients"
-
+                android:text="@string/ingredients"
                 android:textColor="@color/orange"
                 android:textSize="14sp"
                 android:textStyle="bold" />
