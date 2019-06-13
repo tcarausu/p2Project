@@ -18,6 +18,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -75,7 +77,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
     private FirebaseMethods mFirebaseMethods;
@@ -112,6 +113,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private BroadcastReceiver broadcastReceiver;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -137,9 +139,11 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         Objects.requireNonNull(getActivity()).registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to get the batteryLevel
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void connectDatabase() {
         mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         mAuth = FirebaseMethods.getAuth();
+        mFirebaseMethods.autoDisconnect(getActivity());
         currentUser = mAuth.getCurrentUser();
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         myRef = mFirebaseDatabase.getReference();
@@ -255,13 +259,12 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private void openDialogChoice() {
 
         View layoutView = getLayoutInflater().inflate(R.layout.dialog_wifi_check, null);
-        ImageButton wifiButton = layoutView.findViewById(R.id.WIFI);
-        ImageButton mobileDataButton = layoutView.findViewById(R.id.DATA);
+        Button wifiButton = layoutView.findViewById(R.id.WIFI);
+        Button mobileDataButton = layoutView.findViewById(R.id.DATA);
         ImageButton cancelButton = layoutView.findViewById(R.id.CANCEL);
 
         OurAlertDialog.Builder myDialogBuilder = new OurAlertDialog.Builder(getActivity());
         myDialogBuilder.setView(layoutView);
-        myDialogBuilder.setIcon(R.mipmap.chefood_icones);
         final AlertDialog alertDialog = myDialogBuilder.create();
         WindowManager.LayoutParams wlp = alertDialog.getWindow().getAttributes();
         wlp.windowAnimations = R.style.AlertDialogAnimation;
@@ -288,30 +291,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             alertDialog.dismiss();
         });
 
-//        View layoutView = getLayoutInflater().inflate(R.layout.dialog_layout, null);
-//        final CharSequence[] options = {"Mobile data", "WIFI", "CANCEL"};
-//        final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-//        builder.setTitle("Select network to proceed");
-//        builder.setIcon(R.drawable.chefood);
-//
-//        builder.setView(layoutView);
-//        builder.setItems(options, (dialog, which) -> {
-//
-//            if (options[which].equals("Mobile data")) {
-//                uploadProfilePic(getUri());
-//                updateUserInfo(getProf_pic_URL());
-//
-//            } else if (options[which].equals("WIFI")) {
-//                Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-//                startActivity(wifiIntent);
-//
-//            } else if (options[which].equals("CANCEL")) {
-//                dialog.dismiss();
-//            }
-//
-//        });
-//        builder.show();
-
     }
 
     private void setProfileWidgets(User userSettings) {
@@ -333,7 +312,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 smallProfilePic.setImageResource(R.drawable.my_avatar);
             } else
                 Glide.with(getActivity().getApplicationContext()).load(profilePicURL).centerCrop().into(mProfilePhoto);
-            Glide.with(getActivity().getApplicationContext()).load(profilePicURL).centerCrop().into(smallProfilePic);
+                Glide.with(getActivity().getApplicationContext()).load(profilePicURL).centerCrop().into(smallProfilePic);
 
         } catch (NullPointerException e) {
             Log.d(TAG, "setProfileWidgets: error " + e.getMessage());
@@ -350,7 +329,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     private void updateUserInfo(String imageUrl) {
         final String about = mAbout.getText().toString();
         final String display_name = mDisplayName.getText().toString();
-        long phone_number = Long.valueOf(mPhoneNumber.getText().toString());
+        long phone_number = Long.valueOf(mPhoneNumber.getText().toString().trim());
         final String username = mUserName.getText().toString();
         final String website = mWebsite.getText().toString();
 

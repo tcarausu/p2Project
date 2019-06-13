@@ -128,14 +128,17 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     private void setUserProfilePic() {
         myRef.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                final User user = dataSnapshot.getValue(User.class);
-                if (user.getProfile_photo() == null) {
-                    Glide.with(getApplicationContext()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
+                if (dataSnapshot.exists()) {
+                    final User user = dataSnapshot.getValue(User.class);
+                    if (mAuth.getCurrentUser().getPhotoUrl().equals("")|| mAuth.getCurrentUser().getPhotoUrl().equals("photo") ) {
+                        Glide.with(getApplicationContext()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
 
-                } else
-                    Glide.with(getApplicationContext()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
+                    } else
+                        Glide.with(getApplicationContext()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
+                }
             }
 
             @Override

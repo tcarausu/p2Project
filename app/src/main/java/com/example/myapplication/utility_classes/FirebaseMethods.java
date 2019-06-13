@@ -3,7 +3,9 @@ package com.example.myapplication.utility_classes;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -34,48 +36,44 @@ import java.util.TimeZone;
 public class FirebaseMethods extends Activity implements TrafficLight, FirebaseAuth.AuthStateListener {
 
     private static final String TAG = "FirebaseMethods";
-    private Context mContext;
+    private  Context mContext;
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private static FirebaseAuth.AuthStateListener mAuthListener = firebaseAuth -> {
-    };
-    private static FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+
+    private static  FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
     private static FirebaseStorage sFirebaseStorage = FirebaseStorage.getInstance();
     private static DatabaseReference myRef = mFirebaseDatabase.getReference();
-    private LoginManager mLoginManager = LoginManager.getInstance();
+    private  LoginManager mLoginManager = LoginManager.getInstance();
+    private  FirebaseUser currentUser = mAuth.getCurrentUser();
 
-    private GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+    private  GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
             .requestEmail()
             .build();
 
     private GoogleSignInClient mGoogleSignInClient;
 
-    public static FirebaseStorage getFirebaseStorage() {
+    public synchronized static FirebaseStorage getFirebaseStorage() {
         if (mAuth != null) {
             return sFirebaseStorage;
-        }
-        else return null;
+        } else return null;
     }
 
-    public static FirebaseDatabase getmFirebaseDatabase() {
-        if (mAuth!= null) {
+    public synchronized static FirebaseDatabase getmFirebaseDatabase() {
+        if (mAuth != null) {
             return mFirebaseDatabase;
-        }
-        else return null;
+        } else return null;
     }
 
-    public LoginManager getLoginManager() {
-        if (mAuth!= null) {
+    public synchronized LoginManager getLoginManager() {
+        if (mAuth != null) {
             return mLoginManager;
-        }
-        else return null;
+        } else return null;
     }
 
-    public static FirebaseAuth getAuth() {
+    public synchronized static FirebaseAuth getAuth() {
         if (mAuth != null) {
             return mAuth;
-        }
-        else return null;
+        } else return null;
     }
 
 
@@ -145,7 +143,7 @@ public class FirebaseMethods extends Activity implements TrafficLight, FirebaseA
      * @param dataSnapshot represent the data from database
      * @return the User Account Settings
      */
-    public User getUserSettings(DataSnapshot dataSnapshot) {
+    public synchronized User getUserSettings(DataSnapshot dataSnapshot) {
         Log.d(TAG, "getUserAccountSettings: retrieving user account settings from database");
 
         User user = new User();
@@ -227,7 +225,7 @@ public class FirebaseMethods extends Activity implements TrafficLight, FirebaseA
         return user;
     }
 
-    public String getTimestamp() {
+    public synchronized String getTimestamp() {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd__HH:mm:ss", Locale.ENGLISH);
         sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
@@ -241,49 +239,72 @@ public class FirebaseMethods extends Activity implements TrafficLight, FirebaseA
     }
 
     @Override
-    public boolean isAuthNull(FirebaseAuth auth, FirebaseUser user) {
+    public synchronized boolean isAuthNull(FirebaseAuth auth, FirebaseUser user) {
         if (mAuth == null || mAuth.getCurrentUser() == null)
             return true;
         else return false;
     }
 
     @Override
-    public void checkDatabase(DatabaseReference ref) {
+    public synchronized void checkDatabase(DatabaseReference ref) {
         if (ref == null)
             ref.removeValue((databaseError, databaseReference) -> databaseReference.removeValue());
     }
 
     @Override
-    public void addAuthLisntener() {
-        mAuth.addAuthStateListener(mAuthListener);
+    public synchronized void addAuthLisntener() {
+        mAuth.addAuthStateListener(firebaseAuth ->
+                firebaseAuth.getApp().addLifecycleEventListener((s, firebaseOptions) -> {
+                    firebaseAuth.getCurrentUser();
+                }));
     }
 
     @Override
-    public void removeAuthLisntener() {
-        mAuth.removeAuthStateListener(mAuthListener);
+    public synchronized void removeAuthLisntener() {
+        mAuth.removeAuthStateListener(firebaseAuth ->
+                firebaseAuth.getApp().removeLifecycleEventListener((s, firebaseOptions) -> {
+                    signOut();
+                    goToWhereverWithFlags(mContext, LoginActivity.class);
+                }));
+
     }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void autoDisctonnec(Context context) {
+    public synchronized void autoDisconnect(Context context) {
+       DatabaseReference postRef = myRef.child("posts").child(currentUser.getUid()).getRef();
+       DatabaseReference userRef = myRef.child("users").child(currentUser.getUid()).getRef();
+
         if (isAuthNull(mAuth, mAuth.getCurrentUser())) {
-            signOut();
-            goToWhereverWithFlags(context, LoginActivity.class);
             overridePendingTransition(R.anim.left_enter, R.anim.left_out);
-        }
-        addAuthLisntener();
+            context.deleteSharedPreferences("fbPrefs");
+            context.deleteSharedPreferences("ggPrefs");
+
+            postRef.removeValue((databaseError, databaseReference) -> {
+                databaseReference.removeValue();
+                userRef.removeValue((databaseError1, databaseReference1) -> {
+                    databaseReference1.removeValue();
+                    removeAuthLisntener();
+                    goToWhereverWithFlags(context, LoginActivity.class);
+                    Log.d(TAG, "autoDisconnect: context" + context.getPackageName());
+                });
+            });
+        } else
+            addAuthLisntener();
     }
 
     @Override
-    public void loginChecker(Context context) {
+    public synchronized void loginChecker(Context context) {
         if (isAuthNull(mAuth, mAuth.getCurrentUser())) {
             signOut();
         } else goToWhereverWithFlags(context, HomeActivity.class);
+
     }
 
     @Override
-    public void signOut() {
+    public synchronized void signOut() {
         {
-            removeAuthLisntener();
             mAuth.signOut();
             mGoogleSignInClient.signOut();
             mLoginManager.logOut();
@@ -292,9 +313,11 @@ public class FirebaseMethods extends Activity implements TrafficLight, FirebaseA
 
 
     @Override
-    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+    public synchronized void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
         if (isAuthNull(mAuth, mAuth.getCurrentUser())) {
             removeAuthLisntener();
+            firebaseAuth.signOut();
         } else addAuthLisntener();
     }
 

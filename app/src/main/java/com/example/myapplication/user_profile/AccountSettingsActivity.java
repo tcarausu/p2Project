@@ -55,7 +55,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         setContentView(R.layout.activity_account_settings);
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
 
         initLayout();
         setupBottomNavigationView();
@@ -95,7 +95,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
 
     }
 

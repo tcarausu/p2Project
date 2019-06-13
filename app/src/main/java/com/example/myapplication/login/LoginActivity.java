@@ -156,9 +156,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onCancel() {
-
-                mProgressBar.setVisibility(View.GONE);
-                progresslayout.setVisibility(View.GONE);
+//
+//                mProgressBar.setVisibility(View.GONE);
+//                progresslayout.setVisibility(View.GONE);
                 loginButton.setVisibility(View.VISIBLE);
                 loginButton.setEnabled(true);
                 Log.d(FacebookTag, "facebook:onCancel");
@@ -167,8 +167,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onError(FacebookException error) {
 
-                mProgressBar.setVisibility(View.GONE);
-                progresslayout.setVisibility(View.GONE);
+//                mProgressBar.setVisibility(View.GONE);
+//                progresslayout.setVisibility(View.GONE);
                 loginButton.setVisibility(View.VISIBLE);
                 loginButton.setEnabled(true);
                 Toast.makeText(getApplicationContext(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
@@ -335,8 +335,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(FacebookTag, "handleFacebookAccessToken:" + token);
-        mProgressBar.setVisibility(View.VISIBLE);
-        progresslayout.setVisibility(View.VISIBLE);
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
@@ -355,9 +353,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         verifyFirstFBLogin(email, username, url);
                         addUserToDataBase();
                         loginButton.setEnabled(false);
-                        loginButton.setVisibility(View.GONE);
-                        mProgressBar.setVisibility(View.GONE);
-                        progresslayout.setVisibility(View.GONE);
+//                        loginButton.setVisibility(View.GONE);
+//                        mProgressBar.setVisibility(View.GONE);
+//                        progresslayout.setVisibility(View.GONE);
                         new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), HomeActivity.class), 0);
                         overridePendingTransition(R.anim.right_enter, R.anim.left_out);
 

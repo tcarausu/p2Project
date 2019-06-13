@@ -36,7 +36,7 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
         firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
         current_user = mAuth.getCurrentUser();
         checkUserDetails();
@@ -47,7 +47,7 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
     }
 
 

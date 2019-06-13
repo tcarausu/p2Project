@@ -73,13 +73,13 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        firebaseMethods.autoDisctonnec(getApplicationContext());
+        firebaseMethods.autoDisconnect(getApplicationContext());
     }
 
     private void connectFirebase() {
         firebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
-        firebaseMethods.autoDisctonnec(getApplicationContext());
+        firebaseMethods.autoDisconnect(getApplicationContext());
         current_user = mAuth.getCurrentUser();
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         mStorageRef = FirebaseMethods.getFirebaseStorage().getReference();

@@ -63,7 +63,7 @@ public class HomeActivity extends AppCompatActivity {
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
         firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
     }
 
@@ -72,7 +72,7 @@ public class HomeActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
     }
 
     @SuppressLint("RestrictedApi")
@@ -164,7 +164,7 @@ public class HomeActivity extends AppCompatActivity {
             current_userRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    mFirebaseMethods.autoDisctonnec(getApplicationContext());
+                    mFirebaseMethods.autoDisconnect(getApplicationContext());
                     String name = current_userRef.child("display_name").getKey();
                     if (name.equals("Chose a user name")) {
                         mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), UserProfileActivity.class);
@@ -179,7 +179,7 @@ public class HomeActivity extends AppCompatActivity {
 
         } catch (NullPointerException e) {
             Toast.makeText(getApplicationContext(), "what the fuck is happening?", Toast.LENGTH_LONG).show();
-//            mFirebaseMethods.autoDisctonnec(getApplicationContext());
+//            mFirebaseMethods.autoDisconnect(getApplicationContext());
         }
 
 
@@ -195,7 +195,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
         checkDatabaseState();
     }
 

@@ -51,7 +51,7 @@ public class HomeFragment extends Fragment {
     private RecyclerViewAdapterPostItems mAdapter;
     private ProgressBar mProgressBar;
     private View progresslayout;
-    private RecyclerView.LayoutManager mLayoutManager ;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     //models
     private List<Post> mPosts;
@@ -63,8 +63,8 @@ public class HomeFragment extends Fragment {
     private String mProfilePhoto;
     private String mCurrentUserId;
     private GetData getData;
-    private boolean isScrolling = false ;
-    private int currentItems, totalItems, scrolledOutItems ;
+    private boolean isScrolling = false;
+    private int currentItems, totalItems, scrolledOutItems;
 
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -85,8 +85,6 @@ public class HomeFragment extends Fragment {
     private void setupRecyclerView(View view) {
         mProgressBar = view.findViewById(R.id.simo_progressBar);
         progresslayout = view.findViewById(R.id.simoProgressBar_layout);
-//        mProgressBar.setVisibility(View.VISIBLE);
-//        progresslayout.setVisibility(View.VISIBLE);
         mRecyclerView = view.findViewById(R.id.recyclerViewID);
         mRecyclerView.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -103,8 +101,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
-                    isScrolling = true ;
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    isScrolling = true;
                 }
 
             }
@@ -112,20 +110,9 @@ public class HomeFragment extends Fragment {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
-
                 if (isScrolling) {
-
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-                            mProgressBar.setVisibility(View.VISIBLE);
-//                        }
-//                    },Toast.LENGTH_SHORT);
-//                    mProgressBar.setVisibility(View.GONE);
-                }
-
-                else
+                    mProgressBar.setVisibility(View.VISIBLE);
+                } else
                     mProgressBar.setVisibility(View.GONE);
             }
 
@@ -151,14 +138,13 @@ public class HomeFragment extends Fragment {
 
 
     protected class GetData extends AsyncTask<Void, Void, Void> {
-        private Context mContext ;
+        private Context mContext;
 
         public GetData(Context context) {
-            synchronized (GetData.class){
-            mContext = context;
+            synchronized (GetData.class) {
+                mContext = context;
             }
         }
-
 
 
         private void getPostsInfo() {
@@ -212,7 +198,7 @@ public class HomeFragment extends Fragment {
                                             try {
                                                 if (mCurrentUserId.equals(postUserId)) {
                                                     final User user = dataSnapshot.getValue(User.class);
-                                                    if (user.getUsername() == null) {
+                                                    if (user.getUsername().equals("")) {
                                                         mPosts.remove(post);
                                                         mDatabasePostRef.removeValue();
                                                     } else

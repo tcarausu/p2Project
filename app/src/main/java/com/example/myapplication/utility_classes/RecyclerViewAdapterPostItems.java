@@ -14,21 +14,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.comment_activity.CommentsActivity;
+import com.example.myapplication.models.Comment;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.user_profile.ViewPostFragmentNewsFeed;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -45,27 +48,23 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
     //firebase
     private FirebaseAuth mAuth = FirebaseMethods.getAuth();
     private FirebaseDatabase mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
-    private DatabaseReference mPostsRef, mUserRef;
+    private DatabaseReference mPostsRef, mUserRef, currentPostRef, currentPostLikeRef;
 
     private ViewPostFragmentNewsFeed viewPost = new ViewPostFragmentNewsFeed();
     private RecyclerView mRecyclerView;
     private List<Post> mPosts;
 
-    private ProgressBar mProgressBar;
-
     @Override
     public void onClick(View v) {
-
     }
 
     @Override
     public void run() {
-
     }
 
     // Constants
 
-    public interface onItemClickListener{
+    public interface onItemClickListener {
         void onItemClick(int position);
     }
 
@@ -93,7 +92,6 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_list_item_post, viewGroup, false);
-        mProgressBar = view.findViewById(R.id.progressBar);
 
         return new ViewHolder(view);
     }
@@ -108,6 +106,12 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         User postUser = getUserForPost(currentPost);
         mUserRef = mFirebaseDatabase.getReference("users");
         mPostsRef = mFirebaseDatabase.getReference("posts");
+        currentPostRef = mPostsRef.child(currentPost.getUserId()).child(currentPost.getPostId()).getRef();
+        currentPostLikeRef = mPostsRef.child(currentPost.getUserId()).child(currentPost.getPostId()).child("Likes").getRef();
+        List<Like> likeList = currentPost.getLikeList();
+        List<Comment> commentList = currentPost.getCommentList();
+        int noOfComments = commentList.size();
+        int nrOfLikes = likeList.size();
 
         if (postUser != null) {
             Glide.with(mContext)
@@ -133,38 +137,62 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
                 .centerCrop()
                 .into(viewHolder.mFoodImg);
 
-        // Button Listeners ***************************************************
-        viewHolder.mLikes.setOnClickListener(v -> {
-            List<Like> likeList = currentPost.getLikeList();
-            for (Like lk : likeList)
-                if (lk.getUser_id().equals(currentPost.getUserId()))
-                    viewHolder.mLikes.setImageResource(R.drawable.post_like_pressed);
-                else
-                    viewHolder.mLikes.setImageResource(R.drawable.post_like_not_pressed);
-//            if (currentPost.gel().equals(mAuth.getCurrentUser().getUid())) {
-//                viewPost.toggleLikes(mPostsRef,
-//                        mUserRef,
-//                        mAuth.getCurrentUser().getUid(),
-//                        currentPost.getPostId(),
-//                        mAuth.getCurrentUser().getUid(),
-//                        viewHolder.mLikes);
-//            } else {
-//                viewPost.toggleLikes(mPostsRef,
-//                        mUserRef,
-//                        currentPost.getUserId(),
-//                        currentPost.getPostId(),
-//                        mAuth.getCurrentUser().getUid(),
-//                        viewHolder.mLikes
-//                );
-//            }
-            if (viewHolder.mLikedByCurrentUser) {
-                int nrOfLikes = currentPost.getLikeList().size();
-                if (nrOfLikes > 1) {
+        // *************************************************** Button Listeners ***************************************************
 
-                    viewHolder.likes_overview.setText(String.format(nrOfLikes + " Likes"));
-                } else
-                    viewHolder.likes_overview.setText(String.format(nrOfLikes + " Like"));
-            }
+        if (likeList.size() > 0)
+            viewHolder.mLikes.setImageResource(R.drawable.post_like_pressed);
+        else
+            viewHolder.mLikes.setImageResource(R.drawable.post_like_not_pressed);
+
+        if (nrOfLikes > 1) {
+            viewHolder.likeText.setText(String.format(nrOfLikes + " Likes"));
+        } else if (nrOfLikes == 0) {
+            viewHolder.likeText.setText(R.string.like);
+        }
+
+
+        if (noOfComments > 1) {
+            viewHolder.commentText.setText(String.format(noOfComments + " Comments"));
+        } else if (noOfComments == 0)
+            viewHolder.commentText.setText(R.string.comment);
+
+
+        viewHolder.mLikes.setOnClickListener(v -> {
+            String currentUserID = mAuth.getCurrentUser().getUid();
+            String postID = currentPost.getPostId();
+            String newLikeId = mPostsRef.child(postID).push().getKey();
+            Like newLike = new Like();
+            newLike.setUser_id(currentUserID);
+            //TODO  like for any post by any user
+            currentPostLikeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Log.d(TAG, "likeTest: dataSnapshot.gkey " + dataSnapshot.getKey());
+                        for (DataSnapshot dss : dataSnapshot.getChildren())
+                            if (dss.getValue(Like.class).getUser_id().equals(currentUserID)) {
+                                dss.getRef().removeValue();
+                                viewHolder.mLikes.setImageResource(R.drawable.post_like_not_pressed);
+                                viewHolder.mLikes.setPressed(false);
+
+                            } else {
+                                mPostsRef.child(currentPost.getUserId()).child(postID).child("Likes").child(newLikeId).setValue(newLike);
+//                                likeList.add(dss.getValue(Like.class));
+                                viewHolder.mLikes.setImageResource(R.drawable.post_like_pressed);
+                                viewHolder.mLikes.setPressed(true);
+
+                            }
+                    } else
+                        mPostsRef.child(currentPost.getUserId()).child(postID).child("Likes").child(newLikeId).setValue(newLike);
+                    viewHolder.mLikes.setImageResource(R.drawable.post_like_pressed);
+                    viewHolder.mLikes.setPressed(true);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         });
 
         viewHolder.mComments.setOnClickListener(v -> {
@@ -176,6 +204,8 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
             mContext.startActivity(intent);
 
         });
+
+
 //        viewHolder.mRecipe.setOnClickListener(v -> {
 //            // implementation for displaying the recipe for each post
 //            viewHolder.mToolbarExpasionText.setText(currentPost.getmRecipe());
@@ -187,16 +217,10 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
 //            viewHolder.mToolbarExpasionText.setText(currentPost.getmIngredients());
 //            viewHolder.focusExpandable(viewHolder, FOCUS_ANY);
 //        });
-        viewHolder.mRecipe.setOnClickListener(v ->
-                viewHolder.likes_overview.setText(currentPost.getmRecipe()));
-
-        viewHolder.mIngredients.setOnClickListener(v ->
-                viewHolder.likes_overview.setText(currentPost.getmIngredients()));
-
+        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.likes_overview.setText(currentPost.getmRecipe()));
+        viewHolder.mIngredients.setOnClickListener(v -> viewHolder.likes_overview.setText(currentPost.getmIngredients()));
+        viewHolder.mParentLayout.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> viewHolder.mPostToolbarBtnsExpansionContainer.refreshDrawableState());
         viewHolder.post_TimeStamp.setText(currentPost.getDate_created());
-
-        viewHolder.mParentLayout.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) ->
-                viewHolder.mPostToolbarBtnsExpansionContainer.refreshDrawableState());
     }
 
     @Override
@@ -219,7 +243,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         ImageButton mLikes, mComments, mRecipe, mIngredients;
         ImageButton mOptions;
         RelativeLayout mPostToolbarBtnsExpansionContainer;
-        TextView likes_overview, post_TimeStamp;
+        TextView likes_overview, post_TimeStamp, commentText, likeText;
 
         // ViewHolder item constructor
         private ViewHolder(@NonNull View itemView) {
@@ -235,7 +259,10 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
             mComments = itemView.findViewById(R.id.commentsBtnID);
             mRecipe = itemView.findViewById(R.id.recipeBtnID);
             mIngredients = itemView.findViewById(R.id.ingredientsBtnID);
-            // Expandable Toolbar and Contents
+
+            likeText = itemView.findViewById(R.id.likes_not_pressed_text);
+            commentText = itemView.findViewById(R.id.comments_text);
+
             mPostToolbarBtnsExpansionContainer = itemView.findViewById(R.id.toolbarExpansionContainerID);
 
             likes_overview = itemView.findViewById(R.id.expansionTextID);

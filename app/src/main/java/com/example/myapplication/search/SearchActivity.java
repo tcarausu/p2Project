@@ -36,7 +36,7 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         connectDatabase();
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
         initImageLoader();
         setupViewPager();
         setupBottomNavigationView();
@@ -54,7 +54,7 @@ public class SearchActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
 
     }
 
@@ -67,7 +67,7 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
     }
 
     /**

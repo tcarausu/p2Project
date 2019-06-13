@@ -514,12 +514,15 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                         .child(newLikeId)
                                         .setValue(newLike);
                                 getLikesString(mPostsRef, mUserRef, currentUserId, postId);
-                                initializeLikeList(mPost);
-
+                                likeList.add(newLike);
+//                                initializeLikeList(mPost);
+                                likesPost.setImageResource(R.drawable.post_like_pressed);
 
                             } else {
                                 dss.getRef().removeValue();
-                                initializeLikeList(mPost);
+                                likeList.remove(newLike);
+//                                initializeLikeList(mPost);
+                                likesPost.setImageResource(R.drawable.post_like_not_pressed);
                             }
                     } else
                         mPostsRef
@@ -530,6 +533,9 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                 .setValue(newLike);
                     getLikesString(mPostsRef, mUserRef, currentUserId, postId);
                     initializeLikeList(mPost);
+                    likeList.add(newLike);
+//                    initializeLikeList(mPost);
+                    likesPost.setImageResource(R.drawable.post_like_pressed);
                 }
 
                 @Override

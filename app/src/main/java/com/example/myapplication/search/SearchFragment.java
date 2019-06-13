@@ -75,7 +75,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private void connectFiorebase() {
         mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.autoDisctonnec(getActivity());
+        mFirebaseMethods.autoDisconnect(getActivity());
         user = mAuth.getCurrentUser();
         user_id = user.getUid();
         firebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
@@ -86,7 +86,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        mFirebaseMethods.autoDisctonnec(getActivity());
+        mFirebaseMethods.autoDisconnect(getActivity());
     }
 
     private void initLayout(View view) {

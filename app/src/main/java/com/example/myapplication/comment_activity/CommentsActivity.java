@@ -77,7 +77,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
         currentUser = mAuth.getCurrentUser();
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
         findWidgets();
 
         try {
@@ -130,7 +130,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.autoDisctonnec(getApplicationContext());
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
     }
 
     private void hideKeyboard() {

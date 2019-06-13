@@ -20,9 +20,11 @@ public interface TrafficLight  { //extends Transaction.Handler
 
     void removeAuthLisntener();
 
-    void autoDisctonnec(Context context);
+    void autoDisconnect(Context context);
 
     void loginChecker(Context context);
 
     void signOut();
+
+
 }
