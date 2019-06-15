@@ -46,14 +46,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.TimeZone;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -202,8 +196,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
     private void setupWidgets() {
         try {
-
-
             //check for image profile url if null, to prevent app crushing when there is no link to profile image in database
             try {
                 String profilePicURL = user.getProfile_photo();
@@ -212,16 +204,14 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
 
                 } else
                     Glide.with(this).load(profilePicURL).centerCrop().into(mProfilePhoto);
-
             } catch (Exception e) {
                 Log.e(TAG, "setProfileWidgets: Error: " + e.getMessage());
-
             }
-
             mUserName.setText(user.getUsername());
             mPostLikes.setText(mLikesString);
             mPostDescription.setText(mPost.getmDescription());
-            setTimeStampTodays();
+//            setTimeStampTodays();
+            mFirebaseMethods.setTimeStampTodays(mPostTimeStamp,mPost);
             initializeLikeList(mPost);
         } catch (NullPointerException e) {
             Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
@@ -489,7 +479,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
         getActivity().overridePendingTransition(R.anim.right_out, R.anim.left_out);
     }
 
-
     private void toggleLikes() {
 
         try {
@@ -515,14 +504,14 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                         .setValue(newLike);
                                 getLikesString(mPostsRef, mUserRef, currentUserId, postId);
                                 likeList.add(newLike);
-//                                initializeLikeList(mPost);
-                                likesPost.setImageResource(R.drawable.post_like_pressed);
+                                initializeLikeList(mPost);
+//                                likesPost.setImageResource(R.drawable.post_like_pressed);
 
                             } else {
                                 dss.getRef().removeValue();
                                 likeList.remove(newLike);
-//                                initializeLikeList(mPost);
-                                likesPost.setImageResource(R.drawable.post_like_not_pressed);
+                                initializeLikeList(mPost);
+//                                likesPost.setImageResource(R.drawable.post_like_not_pressed);
                             }
                     } else
                         mPostsRef
@@ -532,10 +521,10 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                                 .child(newLikeId)
                                 .setValue(newLike);
                     getLikesString(mPostsRef, mUserRef, currentUserId, postId);
-                    initializeLikeList(mPost);
+
                     likeList.add(newLike);
-//                    initializeLikeList(mPost);
-                    likesPost.setImageResource(R.drawable.post_like_pressed);
+                    initializeLikeList(mPost);
+//                    likesPost.setImageResource(R.drawable.post_like_pressed);
                 }
 
                 @Override
@@ -549,56 +538,6 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             Log.d(TAG, "toggleLikes: error: " + nuller.getMessage());
         }
 
-    }
-
-    /**
-     * The method gets the proper timestamp of the post creation and make the difference between
-     * current time and the time created
-     *
-     * @return the difference
-     */
-    private int getTimeStampDifference() {
-        Log.d(TAG, "getTimeStampDifference: getting TimeStamp Difference");
-        int diff;
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd__HH:mm:ss", Locale.ENGLISH);
-        sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
-        Date today = c.getTime();
-        sdf.format(today);
-        Date timeStamp = null;
-
-        final String photoTimeStamp = mPost.getDate_created();
-        try {
-            timeStamp = sdf.parse(photoTimeStamp);
-            diff = (int) (today.getTime() - timeStamp.getTime()) / 1000 / 60 / 60;
-            Log.d(TAG, "getTimeStampDifference: " + diff);
-            Log.d(TAG, "getTimeStampDifference: " + mPost.getDate_created());
-        } catch (ParseException e) {
-            Log.e(TAG, "getTimeStampDifference: ParseException " + e.getMessage());
-            diff = (int) (today.getTime() - timeStamp.getTime()) / 1000 / 60 / 60;
-        }
-        return diff;
-    }
-
-
-    private void setTimeStampTodays() {
-        int timeInHours = getTimeStampDifference();
-        if (timeInHours == 0){
-            mPostTimeStamp.setText(getString(R.string.minutes_ago));
-        }
-        if (timeInHours == 1) {
-            mPostTimeStamp.setText(getString(R.string.hour_ago));
-
-        }
-        else if (timeInHours > 1 && timeInHours < 24){
-            mPostTimeStamp.setText(String.format(getString(R.string.hours_ago),timeInHours));
-        }
-
-        else if (timeInHours == 24) {
-            mPostTimeStamp.setText(String.format(getString(R.string.one_day_ago), timeInHours / 24));
-        } else
-            if (timeInHours > 24)
-            mPostTimeStamp.setText(String.format(getString(R.string.days_ago), timeInHours / 24));
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.example.myapplication.utility_classes;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -8,11 +7,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.example.myapplication.Interfaces.TrafficLight;
 import com.example.myapplication.R;
 import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.login.LoginActivity;
+import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -25,7 +26,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -33,19 +36,19 @@ import java.util.TimeZone;
 /**
  * File created by tcarau18
  **/
-public class FirebaseMethods extends Activity implements TrafficLight, FirebaseAuth.AuthStateListener {
+public class FirebaseMethods implements TrafficLight, FirebaseAuth.AuthStateListener {
 
     private static final String TAG = "FirebaseMethods";
-    private  Context mContext;
+    private Context mContext;
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-    private static  FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+    private static FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
     private static FirebaseStorage sFirebaseStorage = FirebaseStorage.getInstance();
     private static DatabaseReference myRef = mFirebaseDatabase.getReference();
-    private  LoginManager mLoginManager = LoginManager.getInstance();
-    private  FirebaseUser currentUser = mAuth.getCurrentUser();
+    private LoginManager mLoginManager = LoginManager.getInstance();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
 
-    private  GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+    private GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("353481374608-mg7rvo8h0kgjmkuts5dcmq65h2louus5.apps.googleusercontent.com")
             .requestEmail()
             .build();
@@ -78,7 +81,6 @@ public class FirebaseMethods extends Activity implements TrafficLight, FirebaseA
 
 
     private FirebaseMethods(Context context) {
-
         // Mo.Msaad modification modification
         synchronized (FirebaseMethods.class) {
             mContext = context;
@@ -273,25 +275,28 @@ public class FirebaseMethods extends Activity implements TrafficLight, FirebaseA
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public synchronized void autoDisconnect(Context context) {
-       DatabaseReference postRef = myRef.child("posts").child(currentUser.getUid()).getRef();
-       DatabaseReference userRef = myRef.child("users").child(currentUser.getUid()).getRef();
+        try {
+            DatabaseReference postRef = myRef.child("posts").child(currentUser.getUid()).getRef();
+            DatabaseReference userRef = myRef.child("users").child(currentUser.getUid()).getRef();
 
-        if (isAuthNull(mAuth, mAuth.getCurrentUser())) {
-            overridePendingTransition(R.anim.left_enter, R.anim.left_out);
-            context.deleteSharedPreferences("fbPrefs");
-            context.deleteSharedPreferences("ggPrefs");
-
-            postRef.removeValue((databaseError, databaseReference) -> {
-                databaseReference.removeValue();
-                userRef.removeValue((databaseError1, databaseReference1) -> {
-                    databaseReference1.removeValue();
-                    removeAuthLisntener();
-                    goToWhereverWithFlags(context, LoginActivity.class);
-                    Log.d(TAG, "autoDisconnect: context" + context.getPackageName());
+            if (isAuthNull(mAuth, mAuth.getCurrentUser())) {
+                context.deleteSharedPreferences("fbPrefs");
+                context.deleteSharedPreferences("ggPrefs");
+                postRef.removeValue((databaseError, databaseReference) -> {
+                    databaseReference.removeValue();
+                    userRef.removeValue((databaseError1, databaseReference1) -> {
+                        databaseReference1.removeValue();
+                        removeAuthLisntener();
+                        goToWhereverWithFlags(context, LoginActivity.class);
+                        Log.d(TAG, "autoDisconnect: context" + context.getPackageName());
+                    });
                 });
-            });
-        } else
-            addAuthLisntener();
+            } else
+                addAuthLisntener();
+
+        } catch (NullPointerException e) {
+            Log.e(TAG, "autoDisconnect: ", e);
+        }
     }
 
     @Override
@@ -299,8 +304,8 @@ public class FirebaseMethods extends Activity implements TrafficLight, FirebaseA
         if (isAuthNull(mAuth, mAuth.getCurrentUser())) {
             signOut();
         } else goToWhereverWithFlags(context, HomeActivity.class);
-
     }
+
 
     @Override
     public synchronized void signOut() {
@@ -321,4 +326,111 @@ public class FirebaseMethods extends Activity implements TrafficLight, FirebaseA
         } else addAuthLisntener();
     }
 
+    /**
+     * The method gets the proper timestamp of the post creation and make the difference between
+     * current time and the time created
+     *
+     * @param mPost : the current viewed post
+     * @return the difference
+     * @author Mo.Msaad
+     */
+    public static int getTimeStampDifference(Post mPost) {
+
+        Log.d(TAG, "getTimeStampDifference: getting TimeStamp Difference");
+        int diff;
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd__HH:mm:ss", Locale.ENGLISH);
+        sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
+        Date today = c.getTime();
+        sdf.format(today);
+        Date timeStamp = null;
+
+        final String photoTimeStamp = mPost.getDate_created();
+        try {
+            timeStamp = sdf.parse(photoTimeStamp);
+            diff = (int) (today.getTime() - timeStamp.getTime()) / 1000 / 60 / 60;
+            Log.d(TAG, "getTimeStampDifference: " + diff);
+            Log.d(TAG, "getTimeStampDifference: " + mPost.getDate_created());
+        } catch (ParseException e) {
+            Log.e(TAG, "getTimeStampDifference: ParseException " + e.getMessage());
+            diff = (int) (today.getTime() - timeStamp.getTime()) / 1000 / 60 / 60;
+        }
+        return diff;
+    }
+
+
+    /**
+     * This Method sets the returned time from getTimeStampDifference() to accordingly last time posted
+     *
+     * @param mPostTimeStamp : the current post time stamp text view
+     * @param post           : current viewed post
+     * @author Mo.Msaad
+     **/
+    public static void setTimeStampTodays(TextView mPostTimeStamp, Post post) {
+        int timeInHours = getTimeStampDifference(post);
+        boolean sameDay = timeInHours > 1 && timeInHours < 24;
+
+
+        if (timeInHours == 0) {
+            mPostTimeStamp.setText(R.string.minutes_ago);
+        }
+        if (timeInHours == 1) {
+            mPostTimeStamp.setText(R.string.hour_ago);
+
+        } else if (sameDay) {
+            mPostTimeStamp.setText(String.format("%d Hours ago", timeInHours));
+        } else if (timeInHours == 24) {
+            mPostTimeStamp.setText("Yesterday");
+        } else if (timeInHours > 24) {
+            if (timeInHours / 24 == 1) {
+                mPostTimeStamp.setText(String.format("%d Day ago", timeInHours / 24));
+
+            } else mPostTimeStamp.setText(String.format("%d Days ago", timeInHours / 24));
+        }
+        // TODO continue to weeks, months, years ....
+    }
+
+
+    public static class ChefoodAuth {
+        private static FirebaseAuth myAuth = FirebaseAuth.getInstance();
+
+        private ChefoodAuth(FirebaseAuth myAuth) {
+            myAuth = myAuth;
+        }
+
+        public static ChefoodAuth getInstance() {
+            synchronized (FirebaseMethods.ChefoodAuth.class) {
+                return new ChefoodAuth(myAuth);
+            }
+        }
+    }
+
+    public static class ChefoodDatabase {
+        private static FirebaseDatabase myDatabase = FirebaseDatabase.getInstance();
+
+        private ChefoodDatabase(FirebaseDatabase myDatabase) {
+            myDatabase = myDatabase;
+        }
+
+        public static ChefoodDatabase getInstance() {
+            synchronized (FirebaseMethods.ChefoodDatabase.class) {
+                return new ChefoodDatabase(myDatabase);
+            }
+        }
+    }
+
+    public static class ChefoodStorage {
+        private static FirebaseStorage myStorage = FirebaseStorage.getInstance();
+
+        private ChefoodStorage(FirebaseStorage myStorage) {
+            myStorage = myStorage;
+
+        }
+
+        public static ChefoodStorage getInstance() {
+            synchronized (FirebaseMethods.ChefoodStorage.class) {
+                return new ChefoodStorage(myStorage);
+            }
+        }
+    }
 }

@@ -3,7 +3,6 @@
 //import android.content.Context;
 //import android.support.annotation.NonNull;
 //import android.support.v7.widget.RecyclerView;
-//import android.util.Log;
 //import android.view.LayoutInflater;
 //import android.view.View;
 //import android.view.ViewGroup;
@@ -13,7 +12,6 @@
 //import android.widget.RelativeLayout;
 //import android.widget.TextView;
 //
-//import com.bumptech.glide.Glide;
 //import com.example.myapplication.R;
 //import com.example.myapplication.models.Post;
 //import com.example.myapplication.models.User;
@@ -67,82 +65,82 @@
 //
 //    @Override
 //    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int index) {
-//        viewHolder.mOptions.setVisibility(View.INVISIBLE);
-//        Log.d(TAG, "onBindViewHolder: Called");
-//
-//        final Post postCurrent = mPosts.get(index);
-//        User postUser = getUserForPost(postCurrent);
-//        mUserRef = mFirebaseDatabase.getReference("users");
-//        mPostsRef = mFirebaseDatabase.getReference("posts");
-//
-//        if (postUser != null) {
-//            Glide.with(mContext)
-//                    .load(postUser.getProfile_photo())
-//                    .fitCenter()
-//                    .centerCrop()
-//                    .into(viewHolder.mProfilePic);
-//            viewHolder.mUserName.setText(postUser.getUsername());
-//
-//        } else {
-//            Glide.with(mContext)
-//                    .load(R.drawable.my_avatar)
-//                    .fitCenter()
-//                    .centerCrop()
-//                    .into(viewHolder.mProfilePic);
-//            viewHolder.mUserName.setText(R.string.loading);
-//
-//        }
-//
-//        viewHolder.mDescription.setText(postCurrent.getmDescription());
-//
-//        Glide.with(mContext)
-//                .load(postCurrent.getmFoodImgUrl())
-//                .fitCenter()
-//                .centerCrop()
-//                .into(viewHolder.mFoodImg);
-//
-//        viewHolder.mLikes.setOnClickListener(v -> {
-////            if (postCurrent.getUserId().equals(mAuth.getCurrentUser().getUid())) {
-////                viewPost.toggleLikes(mPostsRef,
-////                        mUserRef,
-////                        mAuth.getCurrentUser().getUid(),
-////                        postCurrent.getPostId(),
-////                        mAuth.getCurrentUser().getUid(),
-////                        viewHolder.mLikes
-////                );
+////        viewHolder.mOptions.setVisibility(View.INVISIBLE);
+////        Log.d(TAG, "onBindViewHolder: Called");
+////
+////        final Post postCurrent = mPosts.get(index);
+////        User postUser = getUserForPost(postCurrent);
+////        mUserRef = mFirebaseDatabase.getReference("users");
+////        mPostsRef = mFirebaseDatabase.getReference("posts");
+////
+////        if (postUser != null) {
+////            Glide.with(mContext)
+////                    .load(postUser.getProfile_photo())
+////                    .fitCenter()
+////                    .centerCrop()
+////                    .into(viewHolder.mProfilePic);
+////            viewHolder.mUserName.setText(postUser.getUsername());
+////
+////        } else {
+////            Glide.with(mContext)
+////                    .load(R.drawable.my_avatar)
+////                    .fitCenter()
+////                    .centerCrop()
+////                    .into(viewHolder.mProfilePic);
+////            viewHolder.mUserName.setText(R.string.loading);
+////
+////        }
+////
+////        viewHolder.mDescription.setText(postCurrent.getmDescription());
+////
+////        Glide.with(mContext)
+////                .load(postCurrent.getmFoodImgUrl())
+////                .fitCenter()
+////                .centerCrop()
+////                .into(viewHolder.mFoodImg);
+////
+////        viewHolder.mLikes.setOnClickListener(v -> {
+//////            if (postCurrent.getUserId().equals(mAuth.getCurrentUser().getUid())) {
+//////                viewPost.toggleLikes(mPostsRef,
+//////                        mUserRef,
+//////                        mAuth.getCurrentUser().getUid(),
+//////                        postCurrent.getPostId(),
+//////                        mAuth.getCurrentUser().getUid(),
+//////                        viewHolder.mLikes
+//////                );
+//////            } else {
+//////                viewPost.toggleLikes(mPostsRef,
+//////                        mUserRef,
+//////                        postCurrent.getUserId(),
+//////                        postCurrent.getPostId(),
+//////                        mAuth.getCurrentUser().getUid(),
+//////                        viewHolder.mLikes
+////            });
+////            if (viewHolder.mLikedByCurrentUser) {
+////                int nrOfLikes = postCurrent.getLikeList().size();
+////                if (nrOfLikes > 1) {
+////                    viewHolder.post_likes.setText(nrOfLikes + " Likes");
+////                } else
+////                    viewHolder.post_likes.setText(nrOfLikes + " Like");
 ////            } else {
-////                viewPost.toggleLikes(mPostsRef,
-////                        mUserRef,
-////                        postCurrent.getUserId(),
-////                        postCurrent.getPostId(),
-////                        mAuth.getCurrentUser().getUid(),
-////                        viewHolder.mLikes
-//            });
-//            if (viewHolder.mLikedByCurrentUser) {
-//                int nrOfLikes = postCurrent.getLikeList().size();
-//                if (nrOfLikes > 1) {
-//                    viewHolder.post_likes.setText(nrOfLikes + " Likes");
-//                } else
-//                    viewHolder.post_likes.setText(nrOfLikes + " Like");
-//            } else {
-//                int nrOfLikes = postCurrent.getLikeList().size();
-//                if (nrOfLikes > 1) {
-//                    viewHolder.post_likes.setText(nrOfLikes + " Likes");
-//                } else
-//                    viewHolder.post_likes.setText(nrOfLikes + " Like");
-//            }
-//
-//        viewHolder.mComments.setOnClickListener(v -> {
-//            // implementation for displaying the comments for each post
-//        });
-//
-//        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmRecipe()));
-//
-//        viewHolder.mIngredients.setOnClickListener(v ->
-//                viewHolder.post_likes.setText(postCurrent.getmIngredients()));
-//
-//        viewHolder.mComments.setOnClickListener(v->
-//                viewHolder.post_likes.setText(postCurrent.getCommentList().size()));
+////                int nrOfLikes = postCurrent.getLikeList().size();
+////                if (nrOfLikes > 1) {
+////                    viewHolder.post_likes.setText(nrOfLikes + " Likes");
+////                } else
+////                    viewHolder.post_likes.setText(nrOfLikes + " Like");
+////            }
+////
+////        viewHolder.mComments.setOnClickListener(v -> {
+////            // implementation for displaying the comments for each post
+////        });
+////
+////        viewHolder.mRecipe.setOnClickListener(v -> viewHolder.post_likes.setText(postCurrent.getmRecipe()));
+////
+////        viewHolder.mIngredients.setOnClickListener(v ->
+////                viewHolder.post_likes.setText(postCurrent.getmIngredients()));
+////
+////        viewHolder.mComments.setOnClickListener(v->
+////                viewHolder.post_likes.setText(postCurrent.getCommentList().size()));
 //
 //    }
 //
