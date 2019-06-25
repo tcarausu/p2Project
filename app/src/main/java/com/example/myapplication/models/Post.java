@@ -160,14 +160,6 @@ public class Post implements Parcelable {
         this.commentList = commentList;
     }
 
-    public boolean isCommentsBtnPressed() {
-        return isCommentsBtnPressed;
-    }
-
-    public void setCommentsBtnPressed(boolean commentsBtnPressed) {
-        isCommentsBtnPressed = commentsBtnPressed;
-    }
-
     @Override
     public String toString() {
         return "Post{" +

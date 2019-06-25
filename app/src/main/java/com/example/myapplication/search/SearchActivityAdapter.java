@@ -9,8 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -37,7 +35,9 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
     }
 
     public void setUserList(List<User> userList) {
+        synchronized (userList){
         this.userList = userList;
+        }
     }
 
     @NonNull
@@ -47,7 +47,6 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
 
         return new ViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(@NonNull final SearchActivityAdapter.ViewHolder viewHolder, int index) {
@@ -79,14 +78,16 @@ public class SearchActivityAdapter extends RecyclerView.Adapter<SearchActivityAd
                 dialogChoice(currentUser.getUsername(), String.valueOf(currentUser.getNrOfPosts()), currentUser.getWebsite(), viewHolder.profile_photo.getDrawable())
         );
 
-        Animation animation = AnimationUtils.loadAnimation(context, (index > lastPosition) ? R.anim.slide_up : R.anim.down_from_top);
-        viewHolder.itemView.startAnimation(animation);
+//        Animation animation = AnimationUtils.loadAnimation(context, (index > lastPosition) ? R.anim.slide_up : R.anim.down_from_top);
+//        viewHolder.itemView.startAnimation(animation);
         lastPosition = index;
     }
 
     @Override
     public int getItemCount() {
+        if (userList!= null)
         return userList.size();
+        else return 0 ;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

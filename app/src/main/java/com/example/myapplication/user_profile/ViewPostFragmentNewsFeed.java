@@ -144,12 +144,16 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
     }
 
     private void initializeLikeList(@NonNull Post post) {
+
         likeList = post.getLikeList();
+        Log.d(TAG, "initializeLikeList: likeList: " + likeList.size());
         for (Like lk : likeList) {
-            if (lk.getUser_id().equals(current_user.getUid()))
+            if (lk.getUser_id().equals(current_user.getUid())) {
                 likesPost.setImageResource(R.drawable.post_like_pressed);
-            else
+                likesPost.refreshDrawableState();
+            } else
                 likesPost.setImageResource(R.drawable.post_like_not_pressed);
+            likesPost.animate();
         }
 
     }
@@ -211,7 +215,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
             mPostLikes.setText(mLikesString);
             mPostDescription.setText(mPost.getmDescription());
 //            setTimeStampTodays();
-            mFirebaseMethods.setTimeStampTodays(mPostTimeStamp,mPost);
+            mFirebaseMethods.setTimeStampTodays(mPostTimeStamp, mPost);
             initializeLikeList(mPost);
         } catch (NullPointerException e) {
             Log.e(TAG, "toggleLikes: NullPointerException", e.getCause());
@@ -493,6 +497,7 @@ public class ViewPostFragmentNewsFeed extends Fragment implements View.OnClickLi
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
+                        likeList.clear();
                         Log.d(TAG, "likeTest: dataSnapshot.gkey " + dataSnapshot.getKey());
                         for (DataSnapshot dss : dataSnapshot.getChildren())
                             if (!dss.getValue(Like.class).getUser_id().equals(currentUserId)) {

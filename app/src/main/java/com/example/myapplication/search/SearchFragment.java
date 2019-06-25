@@ -1,9 +1,11 @@
 package com.example.myapplication.search;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -62,27 +64,28 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private List<User> userList = new ArrayList<>();
     private SearchActivityAdapter adapter;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-         connectFiorebase();
+        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
+        mAuth = FirebaseMethods.getAuth();
+
+        mFirebaseMethods.autoDisconnect(getActivity());
+        user = mAuth.getCurrentUser();
+        user_id = user.getUid();
+
+        firebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
+        myDatabaseUserRef = firebaseDatabase.getReference("users");
+
         initLayout(view);
         buttonListeners();
         getUserFromDatabase();
         return view;
     }
 
-    private void connectFiorebase() {
-        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
-        mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.autoDisconnect(getActivity());
-        user = mAuth.getCurrentUser();
-        user_id = user.getUid();
-        firebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
-        myDatabaseUserRef = firebaseDatabase.getReference("users");
-    }
 
-
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onResume() {
         super.onResume();
@@ -96,6 +99,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         search_recycler_view = view.findViewById(R.id.search_recycler_view_id);
         search_recycler_view.setHasFixedSize(true);
         search_recycler_view.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
     }
 
     private void buttonListeners() {
@@ -115,6 +120,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             myDatabaseUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    search_recycler_view.removeAllViews();
                     userList.clear();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         if (dataSnapshot.hasChildren() && ds.exists()) {
@@ -123,7 +129,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                             if (username.toLowerCase().contains(keyword.toLowerCase())) {
                                 adapter = new SearchActivityAdapter(requireContext(), userList);
-
                                 userList.add(user);
                                 adapter.setUserList(userList);
                                 search_recycler_view.setAdapter(adapter);
@@ -131,7 +136,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                             } else
                                 Toast.makeText(getApplicationContext(), "No match found", Toast.LENGTH_SHORT).show();
-
+                                break;
                         }
                     }
                 }
@@ -143,7 +148,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             });
         } else if (mSearchButton.isPressed() && TextUtils.isEmpty(keyword))
             Toast.makeText(getApplicationContext(), "Please type a keyword", Toast.LENGTH_SHORT).show();
-        search_recycler_view.removeAllViews();
+            search_recycler_view.removeAllViews();
 
     }
 

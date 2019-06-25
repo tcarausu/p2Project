@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ProgressBar;
 
 import com.example.myapplication.R;
@@ -63,8 +62,6 @@ public class HomeFragment extends Fragment {
     private String mProfilePhoto;
     private String mCurrentUserId;
     private GetData getData;
-    private boolean isScrolling = false;
-    private int currentItems, totalItems, scrolledOutItems;
 
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -92,31 +89,11 @@ public class HomeFragment extends Fragment {
         mPosts = new ArrayList<>();
         mUsers = new ArrayList<>();
         mComments = new ArrayList<>();
-        mAdapter = new RecyclerViewAdapterPostItems(getContext(), mPosts);
+        mAdapter = new RecyclerViewAdapterPostItems(getActivity(), mPosts);
         mRecyclerView.setAdapter(mAdapter);
         getData = new GetData(getActivity());
         getData.execute();
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                    isScrolling = true;
-                }
-
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (isScrolling) {
-                    mProgressBar.setVisibility(View.VISIBLE);
-                } else
-                    mProgressBar.setVisibility(View.GONE);
-            }
-
-        });
     }
 
     @Override
@@ -148,10 +125,9 @@ public class HomeFragment extends Fragment {
 
 
         private void getPostsInfo() {
-            mProgressBar.setVisibility(View.VISIBLE);
-            progresslayout.setVisibility(View.VISIBLE);
-
             try {
+                progresslayout.setVisibility(View.VISIBLE);
+                mProgressBar.setVisibility(View.VISIBLE);
                 mDatabasePostRef = firebasedatabase.getReference("posts");
                 mDatabasePostRef.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -183,7 +159,6 @@ public class HomeFragment extends Fragment {
                                         likeList.add(like);
                                     }
                                     post.setLikeList(likeList);
-
                                     // Getting comments from each post
                                     for (DataSnapshot commentSnapshot : userSnapshot.child("comments").getChildren()) {
                                         // TODO, Transform the constructor of the Comment class to receive data from firebase

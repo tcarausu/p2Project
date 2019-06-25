@@ -39,7 +39,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerViewAdapterPostItems.ViewHolder>  {
+public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerViewAdapterPostItems.ViewHolder> {
     private static final String TAG = "AdapterPostItems";
 
     // Member variables
@@ -56,15 +56,16 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
     private RecyclerView mRecyclerView;
     private List<Post> mPosts;
     private List<Like> likeList = new ArrayList<>();
-    private AdapterView.OnItemClickListener mOnItemClickListener ;
+    private AdapterView.OnItemClickListener mOnItemClickListener;
+    private boolean isLiked = false;
 
 
     public interface onItemClickListener {
         void onItemClick(int position);
     }
 
-    public void setOnItemClickListener (AdapterView.OnItemClickListener listener){
-        listener = mOnItemClickListener ;
+    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
+        listener = mOnItemClickListener;
     }
 
 
@@ -91,6 +92,7 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
     @Override
     public synchronized ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_list_item_post, viewGroup, false);
+
 
         return new ViewHolder(view);
     }
@@ -140,18 +142,29 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
         currentPostRef = mPostsRef.child(currentPost.getUserId()).child(currentPost.getPostId()).getRef();
         currentPostLikeRef = mPostsRef.child(currentPost.getUserId()).child(currentPost.getPostId()).child("Likes").getRef();
         viewHolder.setIsRecyclable(true);
-        viewHolder.itemView.refreshDrawableState();
 
         List<Comment> commentList = currentPost.getCommentList();
-        List<Like> likeList = currentPost.getLikeList();
         int noOfComments = commentList.size();
+        likeList = currentPost.getLikeList();
+
+        for (Like like : likeList)
+        if (like.getUser_id()== mAuth.getCurrentUser().getUid()){
+            viewHolder.mLikes.setImageResource(R.drawable.post_like_pressed);
+
+            return;
+        }
+        else {
+            viewHolder.mLikes.setImageResource(R.drawable.post_like_not_pressed);
+        }
+
+
 
         if (noOfComments > 1) {
-            viewHolder.commentText.setText(String.format("%d Comments",noOfComments));
+            viewHolder.commentText.setText(String.format("%d Comments", noOfComments));
         } else if (noOfComments == 0) {
             viewHolder.commentText.setText(R.string.comment);
         } else if (noOfComments == 1)
-            viewHolder.commentText.setText(String.format("%d Comment",noOfComments));
+            viewHolder.commentText.setText(String.format("%d Comment", noOfComments));
 
 
         if (postUser != null) {
@@ -194,20 +207,31 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
                         Log.d(TAG, "likeTest: dataSnapshot.gkey " + dataSnapshot.getKey());
                         for (DataSnapshot dss : dataSnapshot.getChildren()) {
                             if (dss.getValue(Like.class).getUser_id().equals(currentUserID)) {
+                                isLiked = true;
                                 dss.getRef().removeValue();
-//                                likeButtonSetter(currentPost.getUserId(), currentPost.getPostId(), viewHolder.mLikes, viewHolder.likeText);
-
+                                likeList.remove(newLike);
+                                viewHolder.mLikes.setImageResource(R.drawable.post_like_not_pressed);
+                                viewHolder.itemView.refreshDrawableState();
+                                isLiked = false;
+                                notifyDataSetChanged();
 
                             } else {
-                                mPostsRef.child(currentPost.getUserId()).child(postID).child("Likes").child(newLikeId).setValue(newLike);
-//                                likeButtonSetter(currentPost.getUserId(), currentPost.getPostId(), viewHolder.mLikes, viewHolder.likeText);
+                                dss.getRef().setValue(newLike);
+                                isLiked = true;
+//                                mPostsRef.child(currentPost.getUserId()).child(postID).child("Likes").child(newLikeId).setValue(newLike);
+                                likeList.add(newLike);
+                                viewHolder.mLikes.setImageResource(R.drawable.post_like_pressed);
+                                viewHolder.itemView.refreshDrawableState();
+                                notifyDataSetChanged();
 
                             }
                         }
                     } else
                         mPostsRef.child(currentPost.getUserId()).child(postID).child("Likes").child(newLikeId).setValue(newLike);
-//                    likeButtonSetter(currentPost.getUserId(), currentPost.getPostId(), viewHolder.mLikes, viewHolder.likeText);
-
+                    isLiked = true;
+                    viewHolder.itemView.refreshDrawableState();
+                    notifyDataSetChanged();
+                    viewHolder.mLikes.setImageResource(R.drawable.post_like_pressed);
                 }
 
                 @Override
@@ -227,37 +251,61 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
 
         });
 
-
-
-
-        viewHolder.mIngredients.setOnClickListener(v ->{
-            if (currentPost.getmIngredients().equals("")){
+        viewHolder.mIngredients.setOnClickListener(v -> {
+            if (currentPost.getmIngredients().equals("")) {
                 viewHolder.likes_overview.setText(R.string.no_ing_av);
-            }else
-            viewHolder.likes_overview.setText(currentPost.getmIngredients());
-                });
+            } else
+                viewHolder.likes_overview.setText(currentPost.getmIngredients());
+        });
 
-        viewHolder.mRecipe.setOnClickListener(v ->{
-            if (currentPost.getmRecipe().equals("")){
+        viewHolder.mRecipe.setOnClickListener(v -> {
+            if (currentPost.getmRecipe().equals("")) {
                 viewHolder.likes_overview.setText(R.string.no_rec_av);
-            }else
-            viewHolder.likes_overview.setText(currentPost.getmRecipe());
-                });
+            } else
+                viewHolder.likes_overview.setText(currentPost.getmRecipe());
+        });
 
         FirebaseMethods.setTimeStampTodays(viewHolder.post_TimeStamp, currentPost);
 
+    }
 
-//        viewHolder.mRecipe.setOnClickListener(v -> {
-//            // implementation for displaying the recipe for each post
-//            viewHolder.mToolbarExpasionText.setText(currentPost.getmRecipe());
-//            viewHolder.focusExpandable(viewHolder, FOCUS_ANY);
-//        });
-////
-//        viewHolder.mIngredients.setOnClickListener(v -> {
-//            // implementation for displaying the ingredients for each post
-//            viewHolder.mToolbarExpasionText.setText(currentPost.getmIngredients());
-//            viewHolder.focusExpandable(viewHolder, FOCUS_ANY);
-//        });
+    private void likeToggler(Post currentPost, ImageButton likeButton) {
+        String currentUserID = mAuth.getCurrentUser().getUid();
+        String postID = currentPost.getPostId();
+        String newLikeId = mPostsRef.child(postID).push().getKey();
+        Like newLike = new Like();
+        newLike.setUser_id(currentUserID);
+        //TODO  like for any post by any user
+        currentPostLikeRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Log.d(TAG, "likeTest: dataSnapshot.gkey " + dataSnapshot.getKey());
+                    for (DataSnapshot dss : dataSnapshot.getChildren()) {
+                        if (dss.getValue(Like.class).getUser_id().equals(currentUserID)) {
+                            dss.getRef().removeValue();
+                            likeButton.setImageResource(R.drawable.post_like_not_pressed);
+
+
+                        } else {
+                            mPostsRef.child(currentPost.getUserId()).child(postID).child("Likes").child(newLikeId).setValue(newLike);
+                            likeList.add(newLike);
+                            likeButton.setImageResource(R.drawable.post_like_pressed);
+                            mRecyclerView.getAdapter().notifyDataSetChanged();
+
+                        }
+                    }
+                } else
+                    mPostsRef.child(currentPost.getUserId()).child(postID).child("Likes").child(newLikeId).setValue(newLike);
+                likeButton.setImageResource(R.drawable.post_like_pressed);
+                mRecyclerView.getAdapter().notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -298,22 +346,11 @@ public class RecyclerViewAdapterPostItems extends RecyclerView.Adapter<RecyclerV
 
             likeText = itemView.findViewById(R.id.likes_not_pressed_text);
             commentText = itemView.findViewById(R.id.comments_text);
-
             mPostToolbarBtnsExpansionContainer = itemView.findViewById(R.id.toolbarExpansionContainerID);
-
             likes_overview = itemView.findViewById(R.id.expansionTextID);
             post_TimeStamp = itemView.findViewById(R.id.post_TimeStamp);
 
 
         }
-
-//        // Used to scroll recycler view over the expandable layout
-//        private void focusExpandable(ViewHolder viewHolder, int focusItem) {
-//            LinearLayoutManager lm = (LinearLayoutManager) mRecyclerView.getLayoutManager();
-//            lm.scrollToPositionWithOffset(viewHolder.getAdapterPosition(), focusItem);
-//            lm.setSmoothScrollbarEnabled(true);
-//        }
-
-
     }
 }

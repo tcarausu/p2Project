@@ -215,5 +215,8 @@
     <string name="one_day_ago">%d day ago</string>
     <string name="minutes_ago">few minutes ago</string>
     <string name="yesterday">Yesterday</string>
+    <string name="one_week_ago">%d Week ago</string>
+    <string name="weeks_ago">%d Weeks ago</string>
+    <string name="now">Just now</string>
 
 </resources>

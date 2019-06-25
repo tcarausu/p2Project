@@ -279,7 +279,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         wifiButton.setOnClickListener(v -> {
             Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-            startActivity(wifiIntent);
+            getActivity().startActivityForResult(wifiIntent, 233);
             alertDialog.dismiss();
         });
         mobileDataButton.setOnClickListener(v -> {

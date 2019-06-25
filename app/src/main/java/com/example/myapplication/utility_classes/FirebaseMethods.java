@@ -275,6 +275,7 @@ public class FirebaseMethods implements TrafficLight, FirebaseAuth.AuthStateList
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public synchronized void autoDisconnect(Context context) {
+
         try {
             DatabaseReference postRef = myRef.child("posts").child(currentUser.getUid()).getRef();
             DatabaseReference userRef = myRef.child("users").child(currentUser.getUid()).getRef();
@@ -334,59 +335,118 @@ public class FirebaseMethods implements TrafficLight, FirebaseAuth.AuthStateList
      * @return the difference
      * @author Mo.Msaad
      */
-    public static int getTimeStampDifference(Post mPost) {
+    private static int timeInMinutes(Post mPost) {
 
-        Log.d(TAG, "getTimeStampDifference: getting TimeStamp Difference");
-        int diff;
+        Log.d(TAG, "timeInMinutes: getting TimeStamp Difference");
+        int timeInMinuteas;
         Calendar c = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd__HH:mm:ss", Locale.ENGLISH);
         sdf.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
         Date today = c.getTime();
         sdf.format(today);
         Date timeStamp = null;
-
         final String photoTimeStamp = mPost.getDate_created();
+
         try {
+
             timeStamp = sdf.parse(photoTimeStamp);
-            diff = (int) (today.getTime() - timeStamp.getTime()) / 1000 / 60 / 60;
-            Log.d(TAG, "getTimeStampDifference: " + diff);
-            Log.d(TAG, "getTimeStampDifference: " + mPost.getDate_created());
+            timeInMinuteas = (int) (today.getTime() - timeStamp.getTime()) / 1000 / 60;
+            Log.d(TAG, "timeInMinutes: " + timeInMinuteas);
+            Log.d(TAG, "timeInMinutes: " + mPost.getDate_created());
+
         } catch (ParseException e) {
-            Log.e(TAG, "getTimeStampDifference: ParseException " + e.getMessage());
-            diff = (int) (today.getTime() - timeStamp.getTime()) / 1000 / 60 / 60;
+            Log.e(TAG, "timeInMinutes: ParseException " + e.getMessage());
+            timeInMinuteas = (int) (today.getTime() - timeStamp.getTime()) / 1000 / 60;
         }
-        return diff;
+        return timeInMinuteas;
+    }
+
+    private static int weeks(Post post) {
+        int weeks = days(post) / 7;
+
+        return weeks;
+    }
+
+    private static int days(Post post) {
+        int days = hours(post) / 24;
+        return days;
+    }
+
+    private static int hours(Post post) {
+        int hours = timeInMinutes(post) / 60;
+        return hours;
     }
 
 
     /**
-     * This Method sets the returned time from getTimeStampDifference() to accordingly last time posted
+     * This Method sets the returned time from timeInMinutes() to accordingly last time posted
      *
      * @param mPostTimeStamp : the current post time stamp text view
      * @param post           : current viewed post
      * @author Mo.Msaad
      **/
     public static void setTimeStampTodays(TextView mPostTimeStamp, Post post) {
-        int timeInHours = getTimeStampDifference(post);
-        boolean sameDay = timeInHours > 1 && timeInHours < 24;
+        int minutes = timeInMinutes(post);
+        int hours = hours(post);
+        int days = days(post);
+        int weeks = weeks(post);
 
+        boolean sameDay = hours > 1 && hours < 24;
 
-        if (timeInHours == 0) {
-            mPostTimeStamp.setText(R.string.minutes_ago);
+        if (hours <= 0) {
+            if (minutes<= 0){
+                mPostTimeStamp.setText(R.string.now);
+            }
+            else
+            mPostTimeStamp.setText(String.format("%d minutes ago", minutes));
+
+        } else if (hours == 1) {
+                mPostTimeStamp.setText(R.string.hour_ago);
+
+            } else if (sameDay)
+                mPostTimeStamp.setText(String.format("%d hours ago", hours));
+
+       else if (days > 0 && days < 7) {
+            if (days == 1) {
+                mPostTimeStamp.setText(R.string.yesterday);
+            } else {
+                mPostTimeStamp.setText(String.format("%d days and %d hours ago", days, hours % 24));
+            }
+
+        } else {
+            if (days == 7) {
+                mPostTimeStamp.setText(R.string.one_week_ago);
+
+            } else if (days > 7 && days < 14) {
+                mPostTimeStamp.setText(String.format("%d week and %d days ago", weeks, days % 7));
+
+            } else if (days == 14) {
+                mPostTimeStamp.setText(R.string.weeks_ago);
+            } else
+                mPostTimeStamp.setText(String.format("%d weeks and %d days ago", weeks, days % 7));
         }
-        if (timeInHours == 1) {
-            mPostTimeStamp.setText(R.string.hour_ago);
+//         if (days >= 7 && days < 14){
+//             if (days == 7){
+//                 mPostTimeStamp.setText(R.string.one_week_ago);
+//             }
+//             else if (days > 7){
+//                 mPostTimeStamp.setText(String.format("%d week and %d days ago", days/7 ,days%7));
+//             }
+//         }
+//         else {
+//             mPostTimeStamp.setText(String.format("%d weeks and %d days ago", days/7 ,days%7));
+//         }
 
-        } else if (sameDay) {
-            mPostTimeStamp.setText(String.format("%d Hours ago", timeInHours));
-        } else if (timeInHours == 24) {
-            mPostTimeStamp.setText("Yesterday");
-        } else if (timeInHours > 24) {
-            if (timeInHours / 24 == 1) {
-                mPostTimeStamp.setText(String.format("%d Day ago", timeInHours / 24));
-
-            } else mPostTimeStamp.setText(String.format("%d Days ago", timeInHours / 24));
-        }
+//            if (timeInHours / 24 == 1) {
+//                mPostTimeStamp.setText(String.format("%d Day ago", timeInHours / 24));
+//
+//            } else if (timeInHours/24 == 7)
+//                mPostTimeStamp.setText(String.format("%d week ago", 1));
+//            else if (timeInHours/24 > 7 ){
+//                int weeks = timeInHours/24/7 ;
+//                mPostTimeStamp.setText(String.format("%d week ago", 1));
+//            }
+//        }
         // TODO continue to weeks, months, years ....
     }
 

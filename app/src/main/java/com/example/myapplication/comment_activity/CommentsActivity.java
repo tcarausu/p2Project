@@ -1,5 +1,6 @@
 package com.example.myapplication.comment_activity;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -7,7 +8,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -68,7 +68,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     // Model data
     private Post currentPost;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +83,8 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
         try {
             Bundle bundle = getIntent().getExtras();
             currentPost = bundle.getParcelable("currentPost");
-            Log.d(TAG, "onCreate: currentPost: " + currentPost + "  " + "currentPost.getcommentLIst(): " + currentPost.getCommentList());
+            Log.d(TAG, "onCreate: currentPost: " + currentPost.getPostId() + "  " + "currentPost.getcommentLIst(): "
+                    + currentPost.getCommentList().size()+ "LikeList: "+currentPost.getLikeList().size());
         } catch (NullPointerException e) {
             Toast.makeText(getApplicationContext(), "nothing attached", Toast.LENGTH_LONG).show();
             Log.e(TAG, "onCreate: error: " + e.getMessage());
@@ -235,6 +236,7 @@ public class CommentsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void optionsButton() {
+
         listView.setOnItemClickListener((parent, view, position, id) -> {
             int commentId = position;
             commentRef = FirebaseMethods.getmFirebaseDatabase().getReference("posts").child(currentPost.getUserId()).child(currentPost.getPostId()).getRef();
