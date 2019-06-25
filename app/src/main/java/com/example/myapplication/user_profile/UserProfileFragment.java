@@ -2,10 +2,11 @@ package com.example.myapplication.user_profile;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -16,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +25,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.Like;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
-import com.example.myapplication.post.AddPostActivity;
+import com.example.myapplication.postActivity.AddPostActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
 import com.example.myapplication.utility_classes.GridImageAdapter;
@@ -38,6 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +62,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     //firebase
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef, postsRef, userPostCount;
     private FirebaseMethods firebaseMethods;
@@ -69,30 +69,21 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private String userId;
 
     private BottomNavigationViewEx bottomNavigationViewEx;
-
-    private TextView mEditProfile, mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mAbout;
-    private ProgressBar mProgressBar;
+    private TextView mPosts, mFollowers, mFollowing, mUserName, mDisplayName, mWebsite, mAbout;
+    private FloatingActionButton mEditProfile;
     private CircleImageView mProfilePhoto;
     private ImageView profileMenu;
     private GridView gridView;
     private Toolbar toolbar;
 
     private User user;
+    private Post post;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        firebaseMethods = FirebaseMethods.getInstance(getContext());
-        mAuth = FirebaseMethods.getAuth();
-        firebaseMethods.checkUserStateIfNull(getActivity(),mAuth);
-
-        current_user = mAuth.getCurrentUser();
-        userId = current_user.getUid();
-
-        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
-        myRef = mFirebaseDatabase.getReference();
-        postsRef = mFirebaseDatabase.getReference("users").child(userId).child("posts");
-        userPostCount = mFirebaseDatabase.getReference("posts").child(userId);
+        connectFirebase();
         initLayout(view);
         setListeners(view);
         setupFirebaseAuth();
@@ -101,6 +92,19 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         setPostCount();
 
         return view;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void connectFirebase() {
+        firebaseMethods = FirebaseMethods.getInstance(getContext());
+        mAuth = FirebaseMethods.getAuth();
+        firebaseMethods.autoDisconnect(getActivity());
+        current_user = mAuth.getCurrentUser();
+        userId = current_user.getUid();
+        mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
+        myRef = mFirebaseDatabase.getReference();
+        postsRef = mFirebaseDatabase.getReference("users").child(userId).child("posts");
+        userPostCount = mFirebaseDatabase.getReference("posts").child(userId);
     }
 
     private void initLayout(View view) {
@@ -112,8 +116,6 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         mFollowers = view.findViewById(R.id.tvFollowers);
         mFollowing = view.findViewById(R.id.tvFollowing);
         gridView = view.findViewById(R.id.grid_view_user_profile);
-        mProgressBar = view.findViewById(R.id.profile_progress_bar);
-        mProgressBar.setVisibility(View.GONE);
         mProfilePhoto = view.findViewById(R.id.profileImage);
         toolbar = view.findViewById(R.id.profileToolBar);
         bottomNavigationViewEx = view.findViewById(R.id.bottomNavigationBar);
@@ -129,44 +131,26 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
 
+    }
 
     @Override
     public void onAttach(Context context) {
+        super.onAttach(context);
+
         try {
             onGridImageSelectedListener = (OnGridImageSelectedListener) getActivity();
         } catch (ClassCastException e) {
             Log.e(TAG, "onAttach: ClassCastException" + e.getMessage());
-
         }
-        super.onAttach(context);
     }
 
     private void setupFirebaseAuth() {
-        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
-        mAuthListener = firebaseAuth -> {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-
-            if (user != null) {
-                Log.d(TAG, "onAuthStateChanged: signed in with: " + user.getUid());
-            } else Log.d(TAG, "onAuthStateChanged: signed out");
-            if (user != null) {
-                Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
-            } else
-                Log.d(TAG, "onAuthStateChanged: signed out");
-
-        };
-
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -222,13 +206,16 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 Intent intent = new Intent(getContext(), AccountSettingsActivity.class);
                 intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
                 startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+//
 
                 break;
             case R.id.profileMenu:
                 Log.d(TAG, "onClick: navigating to account settings");
 
                 ((UserProfileActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
-                firebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), AccountSettingsActivity.class);
+                firebaseMethods.goToWhereverWithFlags(getActivity(), AccountSettingsActivity.class);
+                getActivity().overridePendingTransition(R.anim.left_enter, R.anim.left_out);
 
                 break;
         }
@@ -246,11 +233,9 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                     // here i browse throught the user to get post ref count.
                     if (postCountDataSnapshot.exists()) {
                         mPosts.setText(String.valueOf(postCountDataSnapshot.getChildrenCount()));
-
                     } else
                         mPosts.setText("0");
                 }
-
             }
 
             @Override
@@ -278,74 +263,78 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
             Query query = reference
-                    .child(getString(R.string.dbname_posts))
-                    .child(mAuth.getCurrentUser().getUid());
+                    .child(getString(R.string.dbname_posts));
 
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                        Post post = new Post();
-                        Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
-                        post.setmDescription(objectMap.get(getString(R.string.field_description)).toString());
-                        post.setmFoodImgUrl(objectMap.get(getString(R.string.field_food_photo)).toString());
-                        post.setUserId(objectMap.get(getString(R.string.field_user_id)).toString());
-                        post.setmRecipe(objectMap.get(getString(R.string.field_recipe)).toString());
-                        post.setmIngredients(objectMap.get(getString(R.string.field_ingredients)).toString());
-                        post.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
-                        post.setPostId(objectMap.get(getString(R.string.field_post_id)).toString());
+            if (mAuth.getCurrentUser().getUid() != null) {
+                ((DatabaseReference) query).child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                            post = singleSnapshot.getValue(Post.class);
+                            Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
+                            post.setmDescription(objectMap.get(getString(R.string.field_description)).toString());
+                            post.setmFoodImgUrl(objectMap.get(getString(R.string.field_food_photo)).toString());
+                            post.setUserId(objectMap.get(getString(R.string.field_user_id)).toString());
+                            post.setmRecipe(objectMap.get(getString(R.string.field_recipe)).toString());
+                            post.setmIngredients(objectMap.get(getString(R.string.field_ingredients)).toString());
+                            post.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
+                            post.setPostId(objectMap.get(getString(R.string.field_post_id)).toString());
 
-                        List<Like> likeList = new ArrayList<>();
-                        for (DataSnapshot ds : singleSnapshot
-                                .child(getString(R.string.field_likes)).getChildren()) {
-                            Like like = new Like();
-                            like.setUser_id(ds.getValue(Like.class).getUser_id());
-                            likeList.add(like);
+                            List<Like> likeList = new ArrayList<>();
+                            for (DataSnapshot ds : singleSnapshot
+                                    .child(getString(R.string.field_likes)).getChildren()) {
+                                Like like = new Like();
+                                like.setUser_id(ds.getValue(Like.class).getUser_id());
+                                likeList.add(like);
+                            }
+                            post.setLikeList(likeList);
+                            posts.add(post);
                         }
-                        post.setLikeList(likeList);
-                        posts.add(post);
+
+                        //setup  our grid image
+                        int gridWidth = getResources().getDisplayMetrics().widthPixels;
+                        int imageWidth = gridWidth / NUM_GRID_COLUMNS;
+
+                        gridView.setColumnWidth(imageWidth);
+
+                        ArrayList<String> imgURLs = new ArrayList<>();
+
+                        for (int i = 0; i < posts.size(); i++) {
+                            imgURLs.add(posts.get(i).getmFoodImgUrl());
+                        }
+
+                        GridImageAdapter adapter = new GridImageAdapter(getActivity(), R.layout.layout_grid_imageview,
+                                "", imgURLs);
+
+                        gridView.setAdapter(adapter);
+                        gridView.setOnItemClickListener((parent, view, position, id) -> onGridImageSelectedListener.onGridImageSelected(posts.get(position), ACTIVITY_NUM));
+
                     }
 
-                    //setup  our grid image
-                    int gridWidth = getResources().getDisplayMetrics().widthPixels;
-                    int imageWidth = gridWidth / NUM_GRID_COLUMNS;
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    gridView.setColumnWidth(imageWidth);
+                        Log.d(TAG, "onCancelled: Query Cancelled");
 
-                    ArrayList<String> imgURLs = new ArrayList<>();
-
-                    for (int i = 0; i < posts.size(); i++) {
-                        imgURLs.add(posts.get(i).getmFoodImgUrl());
                     }
-
-                    GridImageAdapter adapter = new GridImageAdapter(getActivity(), R.layout.layout_grid_imageview,
-                            "", imgURLs);
-
-                    gridView.setAdapter(adapter);
-                    gridView.setOnItemClickListener((parent, view, position, id) -> onGridImageSelectedListener.onGridImageSelected(posts.get(position), ACTIVITY_NUM));
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    Log.d(TAG, "onCancelled: Query Cancelled");
-
-                }
-            });
+                });
+            }
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Error: Nothing to display", Toast.LENGTH_SHORT).show();
 
-            firebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), AddPostActivity.class);
+            firebaseMethods.goToWhereverWithFlags(getActivity(), AddPostActivity.class);
         }
+
     }
 
     /**
      * Bottom Navigation View setup
      */
     public void setupBottomNavigationView() {
-        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(getContext(), bottomNavigationViewEx);
+        BottomNavigationViewHelper bnvh = new BottomNavigationViewHelper(getActivity());
+
+        bnvh.setupBottomNavigationView(bottomNavigationViewEx);
+        bnvh.enableNavigation(getContext(), bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);

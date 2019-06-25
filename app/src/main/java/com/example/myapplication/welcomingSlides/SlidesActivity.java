@@ -1,9 +1,9 @@
 package com.example.myapplication.welcomingSlides;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -15,10 +15,11 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
+
 /**
  * by M.MSAAD
  **/
-public class SlidesActivity extends AppCompatActivity {
+public class SlidesActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "SlidesActivity";
     private ViewPager slideViewPager;
     private LinearLayout dotsLayout;
@@ -31,25 +32,20 @@ public class SlidesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.slide_activity);
-        mIntent = new Intent(SlidesActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        findWidgets();
         verifyFirstRun();
-        sliderAdapter = new SliderAdapter(this);
-        slideViewPager.setAdapter(sliderAdapter);
-        addDots(0);
-        slideViewPager.addOnPageChangeListener(vl);
+        setContentView(R.layout.slide_activity);
+        mIntent = new Intent(SlidesActivity.this, LoginActivity.class);
+        findWidgets();
         clickListeners();
     }
+
+
     private void clickListeners() {
-        mPrevious.setOnClickListener(v -> slideViewPager.setCurrentItem(mCurrentSlide - 1));
-        mNext.setOnClickListener(v -> { slideViewPager.setCurrentItem(mCurrentSlide + 1);
-            if (mNext.getText().equals("FINISH")) {
-                new Handler().postDelayed(() -> startActivity(mIntent), Toast.LENGTH_SHORT);
-            }
-        });
-        mSkip.setOnClickListener(v -> new Handler().postDelayed(() -> startActivity(mIntent), 500));
+        mPrevious.setOnClickListener(this);
+        mNext.setOnClickListener(this);
+        mSkip.setOnClickListener(this);
     }
+
     /**
      * created by Mo.Msaad
      */
@@ -61,10 +57,13 @@ public class SlidesActivity extends AppCompatActivity {
             editor.putBoolean("prefs", false);
             editor.apply();
         } else {// then if boolean is false we skip the slides
-            startActivity(mIntent);
+            startActivity(new Intent(SlidesActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
             Toast.makeText(getApplicationContext(), "Welcome", Toast.LENGTH_LONG).show();
         }
     }
+
     private void findWidgets() {
         slideViewPager = findViewById(R.id.slides_viewPager);
         dotsLayout = findViewById(R.id.dots_layout);
@@ -75,7 +74,6 @@ public class SlidesActivity extends AppCompatActivity {
         slideViewPager.setAdapter(sliderAdapter);
         addDots(0);
         slideViewPager.addOnPageChangeListener(vl);
-        mIntent = new Intent(SlidesActivity.this, LoginActivity.class);
 
     }
 
@@ -97,9 +95,12 @@ public class SlidesActivity extends AppCompatActivity {
             dots[position].setTextColor(getResources().getColor(R.color.white));
         }
     }
+
     ViewPager.OnPageChangeListener vl = new ViewPager.OnPageChangeListener() {
         @Override
-        public void onPageScrolled(int i, float v, int i1) {}
+        public void onPageScrolled(int i, float v, int i1) {
+        }
+
         @Override
         public void onPageSelected(final int i) {
             addDots(i);
@@ -110,16 +111,14 @@ public class SlidesActivity extends AppCompatActivity {
                 mSkip.setEnabled(true);
                 mPrevious.setVisibility(View.INVISIBLE);
                 mSkip.setVisibility(View.VISIBLE);
-            }
-            else if (mCurrentSlide == dots.length - 1) {
+            } else if (mCurrentSlide == dots.length - 1) {
                 mNext.setEnabled(true);
                 mPrevious.setEnabled(true);
                 mSkip.setEnabled(true);
                 mPrevious.setVisibility(View.VISIBLE);
-                mNext.setText("FINISH");
+                mNext.setText(getString(R.string.finito));
                 mSkip.setVisibility(View.INVISIBLE);
-            }
-            else {
+            } else {
                 mNext.setEnabled(true);
                 mPrevious.setEnabled(true);
                 mSkip.setEnabled(true);
@@ -129,11 +128,42 @@ public class SlidesActivity extends AppCompatActivity {
                 mPrevious.setText(getString(R.string.back));
             }
         }
+
         @Override
         public void onPageScrollStateChanged(int i) {
         }
     };
 
 
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.previousButton_id:
+                slideViewPager.setCurrentItem(mCurrentSlide - 1);
+                break;
+
+            case R.id.nextButton_id:
+
+                slideViewPager.setCurrentItem(mCurrentSlide + 1);
+                if (mNext.getText().equals("FINISH")) {
+                    startActivity(mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                    finish();
+
+                }
+                break;
+
+            case R.id.skipButton:
+                startActivity(mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                finish();
+                break;
+
+
+        }
+
+    }
 }
 

@@ -2,21 +2,23 @@
 <android.support.design.widget.CoordinatorLayout
 
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
 
     <FrameLayout
         android:id="@+id/useThisFragmentID"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <RelativeLayout
             android:id="@+id/login_activity"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
 
             <RelativeLayout
                 android:id="@+id/top"
@@ -38,6 +40,7 @@
             </RelativeLayout>
 
         </RelativeLayout>
+        <include layout="@layout/progress_bar_layout"/>
 
     </FrameLayout>
 

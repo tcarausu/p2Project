@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/parentLayoutID"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="24dp"
     android:background="@drawable/input_fields_frame_grey"
-    android:padding="5dp">
+    android:padding="1dp">
 
     <LinearLayout
         android:id="@+id/userProfilePicAndNameID"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="1dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/userProfilePicID"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/input_fields_frame_orange"
             android:src="@drawable/my_avatar" />
 
         <TextView
@@ -25,72 +28,76 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/input_fields_frame_orange"
             android:padding="5dp"
-            android:text="Here is the user name"
+            android:text="@string/user_name"
             android:textColor="@color/darkOrange"
             android:textSize="15sp"
             android:textStyle="italic|bold" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/layout_description"
+    <RelativeLayout
+        android:id="@+id/desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/userProfilePicAndNameID"
-        android:layout_marginTop="2dp"
-        android:orientation="horizontal">
+        android:layout_below="@id/userProfilePicAndNameID">
 
-        <RelativeLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/postDescriptionID"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight=".85">
+            android:background="@drawable/input_fields_frame_grey"
+            android:maxHeight="30dp"
+            android:maxLength="30"
+            android:padding="5dp"
+            android:text="@string/description"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="italic" />
 
-            <TextView
-                android:id="@+id/postDescriptionID"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/input_fields_frame_grey"
-                android:padding="5dp"
-                android:text="Description..."
-                android:textColor="@color/black"
-                android:textStyle="bold|italic" />
-        </RelativeLayout>
+        <ImageButton
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".15">
+            android:id="@+id/personal_post_options_menu"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:rotation="90"
+            android:src="@drawable/orange_show_more" />
 
-            <ImageButton
-                android:id="@+id/personal_post_options_menu"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:src="@drawable/orange_settings" />
-        </RelativeLayout>
+    </RelativeLayout>
 
-    </LinearLayout>
-
-
-    <com.example.myapplication.utility_classes.SquareImageView
-        android:id="@+id/foodImgID"
+    <RelativeLayout
+        android:id="@+id/postHolder"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_below="@+id/layout_description"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:background="@drawable/input_fields_frame_grey"
-        android:src="@drawable/bridge" />
+        android:layout_height="360dp"
+        android:layout_below="@id/desc"
+        android:orientation="vertical"
+        android:paddingTop="1dp">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.example.myapplication.utility_classes.SquareImageView
+                android:id="@+id/foodImgID"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:requiresFadingEdge="vertical|horizontal"
+                android:src="@drawable/bridge" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/food_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/foodImgID"
+        android:layout_below="@+id/postHolder"
         android:layout_marginTop="1dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="1dp"
         android:background="@drawable/input_fields_frame_grey"
         android:orientation="horizontal">
 
@@ -116,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/likesBtnID"
                 android:layout_centerInParent="true"
-                android:text="Like"
+                android:text="@string/like"
                 android:textColor="@color/orange"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -125,7 +132,6 @@
 
         <RelativeLayout
             android:id="@+id/comment_relative"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -146,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/commentsBtnID"
                 android:layout_centerInParent="true"
-                android:text="Comment"
+                android:text="@string/comment"
                 android:textColor="@color/orange"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -176,7 +182,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/recipeBtnID"
                 android:layout_centerInParent="true"
-                android:text="Recipe"
+                android:text="@string/recipe"
 
                 android:textColor="@color/orange"
                 android:textSize="14sp"
@@ -206,33 +212,15 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/ingredientsBtnID"
                 android:layout_centerInParent="true"
-                android:text="Ingredients"
-
+                android:text="@string/ingredients"
                 android:textColor="@color/orange"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </RelativeLayout>
     </LinearLayout>
 
-    <!--<RelativeLayout-->
-    <!--android:id="@+id/overviewLayoutID"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_below="@+id/toolbarExpansionContainerID">-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/likesOverview"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginStart="32dp"-->
-    <!--android:layout_marginEnd="32dp"-->
-    <!--android:text="Liked by whoever, eve, and 30 others"-->
-    <!--android:textColor="@color/black"-->
-    <!--android:textSize="18sp" />-->
-
-    <!--</RelativeLayout>-->
-
     <RelativeLayout
+
         android:id="@+id/toolbarExpansionContainerID"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -243,23 +231,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/input_fields_frame_grey"
-            android:textColor="@color/black"
+            android:textAlignment="center"
+            android:textColor="@color/darkOrange"
             android:textSize="18sp"
             android:textStyle="bold|italic" />
 
+        <TextView
+            android:id="@+id/post_TimeStamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/expansionTextID"
+            android:layout_marginTop="1dp"
+            android:gravity="center"
+            android:text="@string/creation_date"
+            android:textColor="@color/grey_500"
+            android:textSize="14sp"
+            android:textStyle="bold|italic" />
     </RelativeLayout>
 
 
-    <TextView
-        android:id="@+id/post_TimeStamp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbarExpansionContainerID"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="5dp"
-        android:text="3 days ago"
-        android:textColor="@color/grey_500"
-
-        android:textSize="18sp"
-        android:textStyle="bold|italic" />
 </RelativeLayout>

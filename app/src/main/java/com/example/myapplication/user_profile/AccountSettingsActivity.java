@@ -1,27 +1,31 @@
 package com.example.myapplication.user_profile;
 
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
+import com.example.myapplication.utility_classes.OurAlertDialog;
 import com.example.myapplication.utility_classes.SectionsStatePagerAdapter;
-import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
@@ -51,7 +55,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         setContentView(R.layout.activity_account_settings);
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
 
         initLayout();
         setupBottomNavigationView();
@@ -60,8 +64,10 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         getIncomingIntent();
     }
 
+
     private void initLayout() {
         listView = findViewById(R.id.listViewAccountSettings);
+
         findViewById(R.id.backArrow);
         Log.d(TAG, "onCreate: started account");
         mViewPager = findViewById(R.id.container);
@@ -73,7 +79,8 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     public void onClick(View v) {
         if (v.getId() == R.id.backArrow) {
             Log.d(TAG, "onClick: navigating to account settings");
-            goTosWithFlags(getApplicationContext(), UserProfileActivity.class);
+            mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), UserProfileActivity.class);
+            overridePendingTransition(R.anim.left_enter,R.anim.right_out);
         }
 
     }
@@ -81,14 +88,14 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     @Override
     public void onStart() {
         super.onStart();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
 
     }
 
@@ -106,12 +113,6 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         mViewPager.setCurrentItem(fragmentNr);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-
-    }
-
     private void setupFragments() {
         pagerAdapter = new SectionsStatePagerAdapter(getSupportFragmentManager());
         pagerAdapter.addFragment(new EditProfileFragment(), getString(R.string.edit_your_profile_fragment));
@@ -120,10 +121,7 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
 
     private void setupSettingsList() {
         Log.d(TAG, "setupSettingsList: initializing 'Account Settings' list");
-        ListView listView = findViewById(R.id.listViewAccountSettings);
-
         String signOut = "Sign Out";
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),
                 android.R.layout.simple_list_item_1, Collections.singletonList(signOut));
         listView.setAdapter(adapter);
@@ -131,8 +129,10 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Log.d(TAG, "onItemClick: navigating to fragment nr " + position);
 
-            if (position == 0) {
-                dialogChoice();
+            switch (position) {
+                case 0:
+                    dialogChoice();
+                    break;
             }
         });
     }
@@ -151,9 +151,12 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
      */
     public void setupBottomNavigationView() {
 
+        BottomNavigationViewHelper bnvh = new BottomNavigationViewHelper(getApplicationContext());
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
-        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavigationViewHelper.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
+
+        bnvh.setupBottomNavigationView(bottomNavigationViewEx);
+        bnvh.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
+        bnvh.overridePendingTransition(R.anim.slide_down, R.anim.slide_up);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
@@ -163,34 +166,36 @@ public class AccountSettingsActivity extends AppCompatActivity implements View.O
     // Alert dialog
     private void dialogChoice() {
 
-        final CharSequence[] options = {"SIGN-OUT", "CANCEL"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Are you sure you want to sign out?");
-        builder.setIcon(R.drawable.chefood);
+        View layoutView = getLayoutInflater().inflate(R.layout.dialog_signout_layout, null);
 
-        builder.setItems(options, (dialog, which) -> {
-            if (options[which].equals("SIGN-OUT")) {
-                Log.d(TAG, "dialogChoice: sign-out");
-                mAuth.signOut();
-                LoginManager.getInstance().logOut();
+        Button signOutButton = layoutView.findViewById(R.id.signOutButton);
+        ImageButton cancelButton = layoutView.findViewById(R.id.cancelSignOutButton);
 
+        OurAlertDialog.Builder myDialogBuilder = new OurAlertDialog.Builder(this);
+        myDialogBuilder.setView(layoutView);
+        myDialogBuilder.setIcon(R.mipmap.chefood_icones);
+        final AlertDialog alertDialog = myDialogBuilder.create();
+        WindowManager.LayoutParams wlp = alertDialog.getWindow().getAttributes();
+        wlp.windowAnimations = R.style.AlertDialogAnimation;
+        wlp.gravity = Gravity.CENTER;
+        wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
 
-                goTosWithFlags(getApplicationContext(), LoginActivity.class);
-                Toast.makeText(getApplicationContext(), "Successful Sign Out", Toast.LENGTH_SHORT).show();
+        alertDialog.getWindow().setAttributes(wlp);
+        alertDialog.setCanceledOnTouchOutside(true);
+        // Setting transparent the background (layout) of alert dialog
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
 
-            } else if (options[which].equals("CANCEL")) {
-                Log.d(TAG, "dialogChoice: cancel");
-                dialog.dismiss();
-            }
+        signOutButton.setOnClickListener(v -> {
+            mFirebaseMethods.signOut();
+            mFirebaseMethods.goToWhereverWithFlags(AccountSettingsActivity.this, LoginActivity.class);
+            overridePendingTransition(R.anim.left_enter,R.anim.right_out);
+            alertDialog.dismiss();
         });
 
-        builder.show();
+        cancelButton.setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
 
-    }
-
-    public void goTosWithFlags(Context applicationContext, Class<? extends AppCompatActivity> cl) {
-        startActivity(new Intent(applicationContext, cl)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        finish();
     }
 }

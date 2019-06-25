@@ -1,10 +1,12 @@
-package com.example.myapplication.post;
+package com.example.myapplication.postActivity;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
@@ -14,10 +16,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +32,7 @@ import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.User;
 import com.example.myapplication.user_profile.UserProfileActivity;
 import com.example.myapplication.utility_classes.FirebaseMethods;
+import com.example.myapplication.utility_classes.OurAlertDialog;
 import com.example.myapplication.utility_classes.Permissions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +40,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.List;
 import java.util.Objects;
@@ -48,87 +54,91 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class SelectPictureFragment extends Fragment implements View.OnClickListener, EasyPermissions.PermissionCallbacks {
+    //constants
     private static final String TAG = "SelectPictureFragment";
     private static final int CAMERA_REQUEST = 11;
     private static final int GALLERY_REQUEST = 22;
     private static final int PERMISSION = 123;
+    private int batteryLevel;
 
+    //firebase
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseAuth mAuth;
     private DatabaseReference myRef;
     private FirebaseMethods mFirebaseMethods;
 
+    //layout-intents
     private ImageView galleryImageView;
-    private Button mSelectPicButton;
-    private Uri mUri;
+    private FloatingActionButton mSelectPicButton;
+    private Uri mUri, savedUri;
     private Intent intent;
     private TextView nextText;
     private ImageView closePost;
     private CircleImageView circular_pic;
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            batteryLevel = (intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -3));//here i set the int battery level
-        }
-    };
-    private int batteryLevel;
+    private BroadcastReceiver broadcastReceiver ;
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select_picture, container, false);
+        registerBroadCastReceiever();
+        connectFirebase();
+        setUserProfilePic();
+        setLayout(view);
+        getSavedInstances(savedInstanceState);
+        buttonSListeners();
+
+        return view;
+    }
+
+    private void registerBroadCastReceiever() {
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                batteryLevel = (intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -3));//here i set the int battery level
+            }
+        };
         getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+    }
 
+    private void getSavedInstances(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            savedUri = Uri.parse((String) savedInstanceState.get("img"));
+            mUri = savedUri ;
+            galleryImageView.setImageURI(savedUri);
+        }
+    }
 
-        /**
-         You should unregister the receivers in onPause() and register them in onResume().
-         This way, when Android destroys and recreates the activity for the configuration change,
-         or for any reason you will still have receivers set up.
-         * **/
+    private void connectFirebase() {
         mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         intent = new Intent(getActivity(), NextActivity.class);
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
         myRef = mFirebaseDatabase.getReference("users").child(mAuth.getCurrentUser().getUid());
-        setUserProfilePic();
-        setLayout(view);
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null)
-            galleryImageView.setImageURI(Uri.parse((String) savedInstanceState.get("img")));
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null)
-            galleryImageView.setImageURI(Uri.parse((String) savedInstanceState.get("img")));
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("img", String.valueOf(mUri));
-        getFragmentManager().getFragment(outState, "SelectPictureFragment");
+        if (outState.isEmpty()) {
+            outState.putString("img", String.valueOf(mUri));
+        }
+
+
     }
 
     private void setUserProfilePic() {
-
         myRef.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                final User user = dataSnapshot.getValue(User.class);
-                if (user.getProfile_photo() == null) {
-                    Glide.with(getApplicationContext()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
+                if (dataSnapshot.exists()) {
+                    final User user = dataSnapshot.getValue(User.class);
+                    if (mAuth.getCurrentUser().getPhotoUrl().equals("")|| mAuth.getCurrentUser().getPhotoUrl().equals("photo") ) {
+                        Glide.with(getApplicationContext()).load(R.drawable.my_avatar).centerCrop().into(circular_pic);
 
-                } else
-                Glide.with(getApplicationContext()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
-
+                    } else
+                        Glide.with(getApplicationContext()).load(user.getProfile_photo()).centerCrop().into(circular_pic);
+                }
             }
 
             @Override
@@ -137,7 +147,6 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
             }
         });
     }
-
 
     @Override
     public void onStart() {
@@ -150,15 +159,15 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
 
     }
 
-
     private void setLayout(View view) {
-
         galleryImageView = view.findViewById(R.id.imageView_gallery);
         mSelectPicButton = view.findViewById(R.id.choose_pic_button);
         closePost = view.findViewById(R.id.close_share);
         nextText = view.findViewById(R.id.textview_next);
         circular_pic = view.findViewById(R.id.circular);
+    }
 
+    private void buttonSListeners() {
         closePost.setOnClickListener(this);
         circular_pic.setOnClickListener(this);
         nextText.setOnClickListener(this);
@@ -175,23 +184,18 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
      * @param resultCode  represents the Result Code
      * @param data        represents the Data requested for the URI
      */
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        assert data != null;
         boolean besoins = resultCode == RESULT_OK && requestCode == CAMERA_REQUEST && mUri != null;
 
         try {
-
             if (besoins) {
-                Glide.with(this).load(mUri)
-                        .centerCrop().into(galleryImageView);
+                Glide.with(this).load(mUri).fitCenter().into(galleryImageView);
                 intent.putExtra("imageUri", mUri.toString());
             } else if (resultCode == RESULT_OK) {
                 mUri = data.getData();
-                Glide.with(this).load(mUri).
-                        centerCrop().into(galleryImageView);
+                Glide.with(this).load(mUri).fitCenter().into(galleryImageView);
                 intent.putExtra("imageUri", mUri.toString());
             }
         } catch (Exception e) {
@@ -199,28 +203,42 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         }
     }
 
-
     /**
      * Method that will show a AlertDialog giving user ability to choose
      * to open CAMERA, GALLERY, or Cancel
      */
     private void dialogChoice() {
-        final CharSequence[] options = {"CAMERA", "GALLERY", "CANCEL"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
-        builder.setTitle("Add Image");
+        View layoutView = getLayoutInflater().inflate(R.layout.dialog_layout, null);
+        ImageButton cameraButton = layoutView.findViewById(R.id.simo_dialog_camera_button);
+        ImageButton galleryButton = layoutView.findViewById(R.id.simo_dialog_gallery_button);
+        ImageButton cancelButton = layoutView.findViewById(R.id.simo_dialog_cancel_button);
 
-        builder.setIcon(R.drawable.chefood);
-        builder.setItems(options, (dialog, which) -> {
-            if (options[which].equals("CAMERA")) {
-                takePicture();
-            } else if (options[which].equals("GALLERY")) {
-                selectPicture();
-            } else if (options[which].equals("CANCEL")) {
-                dialog.dismiss();
-            }
+        OurAlertDialog.Builder myDialogBuilder = new OurAlertDialog.Builder(getActivity());
+        myDialogBuilder.setView(layoutView);
+        myDialogBuilder.setIcon(R.mipmap.chefood_icones);
+        final AlertDialog alertDialog = myDialogBuilder.create();
+        WindowManager.LayoutParams wlp = alertDialog.getWindow().getAttributes();
+        wlp.windowAnimations = R.style.AlertDialogAnimation;
+        wlp.gravity = Gravity.CENTER;
+        wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
 
+        alertDialog.getWindow().setAttributes(wlp);
+        alertDialog.setCanceledOnTouchOutside(true);
+        // Setting transparent the background (layout) of alert dialog
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
+
+        cameraButton.setOnClickListener(v -> {
+            takePicture();
+            alertDialog.dismiss();
         });
-        builder.show();
+        galleryButton.setOnClickListener(v -> {
+            selectPicture();
+            alertDialog.dismiss();
+        });
+        cancelButton.setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
     }
 
     /**
@@ -230,8 +248,7 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "NEW PICTURE");
         values.put(MediaStore.Images.Media.DESCRIPTION, "From the camerea");
-        mUri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                values);
+        mUri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (batteryLevel > 10 && cameraIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
             Log.d(TAG, "takePicture: battery level: " + batteryLevel);
@@ -255,26 +272,21 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
 
-            /*
-             * ClickListener which will start the HomeActivity
-             */
+
             case R.id.close_share:
-
-                mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), HomeActivity.class);
-
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(), HomeActivity.class);
+                getActivity().overridePendingTransition(R.anim.left_enter,R.anim.right_out);
+                getActivity().finish();
                 break;
-            /*
-             * ClickListener that will open AddPostActivity if
-             * galleryImageView is not empty
-             */
+
             case R.id.textview_next:
                 if (mUri == null) {
                     Toast.makeText(getActivity(), R.string.please_select_picture,
                             Toast.LENGTH_LONG).show();
                 } else {
                     startActivity(intent);
+                    getActivity().overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
                 }
-
                 break;
 
             case R.id.choose_pic_button:
@@ -286,7 +298,9 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
                 checkPermissions();
                 break;
             case R.id.circular:
-                mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), UserProfileActivity.class);
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(), UserProfileActivity.class);
+                getActivity().overridePendingTransition(R.anim.left_out,R.anim.right_enter);
+                getActivity().finish();
                 break;
 
         }
@@ -317,7 +331,6 @@ public class SelectPictureFragment extends Fragment implements View.OnClickListe
     public void onResume() {
         super.onResume();
         getActivity().registerReceiver(this.broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));// this to avoid leakage of intent receiver
-
     }
 
     @Override

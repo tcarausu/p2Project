@@ -53,7 +53,7 @@
 
 
     <!--User Profile Strings-->
-    <string name="user_name">user.name</string>
+    <string name="user_name">user.name  </string>
     <string name="following">Following</string>
     <string name="numberOfFollowing">0</string>
     <string name="posts">Posts</string>
@@ -130,7 +130,7 @@
     <string name="field_username">username</string>
     <string name="field_user_id">userId</string>
     <string name="field_post_id">postId</string>
-    <string name="field_likes">mLikes</string>
+    <string name="field_likes">Likes</string>
     <string name="field_profile_photo">mProfileImgUrl</string>
     <string name="field_food_photo">mFoodImgUrl</string>
     <string name="field_recipe">mRecipe</string>
@@ -178,5 +178,45 @@
     <string name="liked_by_whoever_eve_and_30_others">Liked by whoever, eve, and 30 others</string>
     <string name="username_caption_caption">username + caption #caption</string>
     <string name="view_all_3_commentlist">View all 3 commentList</string>
+    <string name="write_a_comment">Write a comment</string>
+    <string name="add">Add</string>
+    <string name="would_you_like_to_delete_the_post">Would you like to delete this post?</string>
+    <string name="comment">Comment</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="recipe">Recipe</string>
+    <string name="comment_">Comment</string>
+    <string name="description">Description...</string>
+    <string name="_3_days_ago">3 days ago</string>
+    <string name="epsum_lorem">epsum lorem</string>
+    <string name="creation_date">creation_date</string>
+    <string name="finito">FINISH</string>
+    <string name="like">Like</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">gallery</string>
+    <string name="chose_an_option">chose an option</string>
+    <string name="mobile_data">Mobile-Data</string>
+    <string name="wifi">WIFI</string>
+    <string name="sign_out_anyway">sign out anyway</string>
+    <string name="do_you_really_want_to_sign_out">DO you really want to sign out?</string>
+    <string name="there_is_no_description_for_your_post_continue">There is no description for your post, Continue?</string>
+    <string name="report">Report</string>
+    <string name="nr_likes">%d Likes</string>
+    <string name="nr_like">%d Like</string>
+    <string name="comment_nr">%d Comment</string>
+    <string name="comments_nr">%d Comments</string>
+    <string name="no_des_av">No description available</string>
+    <string name="no_ing_av">No ingredients available</string>
+    <string name="no_rec_av">No recipe available</string>
+    <string name="hour_ago">An hour ago</string>
+    <string name="hours_ago">%d hours ago</string>
+    <string name="days_ago">%d days ago</string>
+    <string name="one_day_ago">%d day ago</string>
+    <string name="minutes_ago">few minutes ago</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="one_week_ago">%d Week ago</string>
+    <string name="weeks_ago">%d Weeks ago</string>
+    <string name="now">Just now</string>
 
 </resources>

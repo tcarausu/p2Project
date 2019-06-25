@@ -36,19 +36,18 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
-
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
         firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
         current_user = mAuth.getCurrentUser();
         checkUserDetails();
-
         init();
     }
+
 
     @Override
     protected void onResume() {
         super.onResume();
-        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+        mFirebaseMethods.autoDisconnect(getApplicationContext());
     }
 
 
@@ -92,7 +91,6 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
     private void init() {
         Log.d(TAG, "init: inflating" + getString(R.string.profile_fragment));
-
         UserProfileFragment fragment = new UserProfileFragment();
         FragmentTransaction transaction = UserProfileActivity.this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, fragment);
@@ -119,6 +117,7 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         FragmentTransaction transaction = UserProfileActivity.this.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, fragment);
         transaction.addToBackStack(getString(R.string.view_post_fragment));
+        transaction.setCustomAnimations(R.anim.fade_out,R.anim.fade_in);
         transaction.commit();
 
     }

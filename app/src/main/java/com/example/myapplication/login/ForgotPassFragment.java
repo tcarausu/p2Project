@@ -62,7 +62,8 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
             mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(getContext(), "Please check your inbox, we sent you a change password link", Toast.LENGTH_SHORT).show();
-                    mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(),getActivity(), LoginActivity.class);
+                    mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(),LoginActivity.class);
+                    getActivity().overridePendingTransition(R.anim.right_enter,R.anim.left_out);
                 } else
                     Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
             });
@@ -93,7 +94,8 @@ public class ForgotPassFragment extends Fragment implements View.OnClickListener
         switch (v.getId()) {
 
             case R.id.ForgotPass_back_button:
-                mFirebaseMethods.goToWhereverWithFlags(getActivity(),getApplicationContext(), LoginActivity.class);
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(), LoginActivity.class);
+                getActivity().overridePendingTransition(R.anim.right_enter,R.anim.left_out);
                 break;
 
             case R.id.Forgotpass_resetPass_button:
