@@ -7,10 +7,9 @@
         android:background="@drawable/border_color_top">
 
         <Toolbar
-            android:background="@color/transp"
             android:id="@+id/profileToolBar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -26,10 +25,10 @@
                     android:layout_height="wrap_content" />
 
                 <ImageView
+                    android:background="@drawable/input_fields_with_shadow"
                     android:id="@+id/close_share"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
                     android:onClick="onClick"
@@ -40,6 +39,7 @@
 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/input_fields_with_shadow"
                     android:text="@string/next"
                     android:layout_alignParentEnd="true"
                     android:padding="10dp"

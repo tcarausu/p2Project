@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import com.google.firebase.database.Exclude;
 
-public class User  implements Parcelable {
+public class User implements Parcelable {
 
     private String about;
     private String display_name;
@@ -15,6 +15,7 @@ public class User  implements Parcelable {
     private long nrOfPosts;
     private String profile_photo;
     private String website;
+
     private long phone_number;
     private String email;
 
@@ -123,7 +124,6 @@ public class User  implements Parcelable {
     public String getProfile_photo() {
         return profile_photo;
     }
-
     @Exclude
     public void setProfile_photo(String profile_photo) {
         this.profile_photo = profile_photo;
@@ -132,7 +132,6 @@ public class User  implements Parcelable {
     public String getEmail() {
         return email;
     }
-
     @Exclude
     public void setEmail(String email) {
         this.email = email;
@@ -141,7 +140,6 @@ public class User  implements Parcelable {
     public long getPhone_number() {
         return phone_number;
     }
-
     @Exclude
     public void setPhone_number(long phone_number) {
         this.phone_number = phone_number;
@@ -150,7 +148,6 @@ public class User  implements Parcelable {
     public String getWebsite() {
         return website;
     }
-
     @Exclude
     public void setWebsite(String website) {
         this.website = website;
@@ -179,7 +176,6 @@ public class User  implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
         dest.writeString(about);
         dest.writeString(display_name);
         dest.writeString(username);

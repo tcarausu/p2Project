@@ -1,82 +1,81 @@
 package com.example.myapplication.utility_classes;
 
+import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.graphics.Canvas;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ListView;
+
+import com.example.myapplication.R;
 
 public class OurAlertDialog extends android.support.v7.app.AlertDialog {
 
-    public OurAlertDialog(@NonNull Context context) {
+    private AlertDialog.Builder  mBuilder ;
+
+    public OurAlertDialog(@NonNull Context context, AlertDialog.Builder builder) {
         super(context);
+        mBuilder = builder;
+    }
+
+    public void setTitle(String s){
+        mBuilder.setTitle(s);
+    }
+
+    public void setIcone(int drawable){
+        mBuilder.setIcon(drawable);
+    }
+    public void show(){
+        mBuilder.show();
+    }
+
+    public void setView(View view){
+        mBuilder.setView(view);
+    }
+
+    public void setCanceledOnTouchOutside(boolean b){
+        mBuilder.setCancelable(b);
+    }
+
+    public void setItem(CharSequence charSequence, OnClickListener listener){
 
     }
 
-    @Override
-    public ListView getListView() {
-        return super.getListView();
+    public void dismiss(){
+        this.dismiss();
     }
 
-    @Override
-    public void setTitle(CharSequence title) {
-        super.setTitle(title);
+    public void setMessaage(CharSequence charSequence){
+        mBuilder.setMessage(charSequence);
     }
 
-    @Override
-    public void setMessage(CharSequence message) {
-        super.setMessage(message);
+    public static class MyView extends View {
+
+        public MyView(Context context) {
+            super(context);
+            init(null);
+        }
+
+        public MyView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+            init(attrs);
+        }
+
+        public MyView(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+            init(attrs );
+        }
+
+        private void init(@NonNull AttributeSet set){}
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            canvas.drawColor(getResources().getColor(R.color.orange));
+
+        }
     }
 
-    @Override
-    public void setView(View view) {
-        super.setView(view);
-    }
 
-    @Override
-    public void setView(View view, int viewSpacingLeft, int viewSpacingTop, int viewSpacingRight, int viewSpacingBottom) {
-        super.setView(view, viewSpacingLeft, viewSpacingTop, viewSpacingRight, viewSpacingBottom);
-    }
 
-    @Override
-    public void setIcon(int resId) {
-        super.setIcon(resId);
-    }
-
-    @Override
-    public void setIcon(Drawable icon) {
-        super.setIcon(icon);
-    }
-
-    @Override
-    public void setIconAttribute(int attrId) {
-        super.setIconAttribute(attrId);
-    }
-
-    @Override
-    public void setContentView(View view) {
-        super.setContentView(view);
-    }
-
-    @Nullable
-    @Override
-    public <T extends View> T findViewById(int id) {
-        return super.findViewById(id);
-    }
-
-    @Override
-    public void setTitle(int titleId) {
-        super.setTitle(titleId);
-    }
-
-    @Override
-    public void create() {
-        super.create();
-    }
-
-    @Override
-    public void dismiss() {
-        super.dismiss();
-    }
 }

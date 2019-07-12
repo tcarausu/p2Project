@@ -43,13 +43,18 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     public SignUpFragment() {
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
+        loadingBar = new ProgressDialog(this.getContext());
+        mAuth = FirebaseMethods.getAuth();
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.signup_fragment, container, false);// Inflate the layout for this fragment
-        mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
-        loadingBar = new ProgressDialog(this.getContext());
-        mAuth = FirebaseMethods.getAuth();
         findWidgets(view);
         buttonListeners();
 
@@ -110,8 +115,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                     sendVerifyEmail();
 
                     mAuth.signOut();
-                    new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getActivity(), LoginActivity.class), 500);
-                    getActivity().overridePendingTransition(R.anim.right_enter,R.anim.left_out);
+                    new Handler().postDelayed(() -> mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), LoginActivity.class), Toast.LENGTH_SHORT);
 
                 } else {
                     loadingBar.dismiss();
@@ -174,8 +178,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
 
             case R.id.SignUpFragmnt_back_button:
-                mFirebaseMethods.goToWhereverWithFlags(getActivity(),  LoginActivity.class);
-                getActivity().overridePendingTransition(R.anim.right_enter,R.anim.left_out);
+                mFirebaseMethods.goToWhereverWithFlags(getActivity(), getActivity(), LoginActivity.class);
                 break;
 
             case R.id.SignUpFragmnt_sign_upButton:

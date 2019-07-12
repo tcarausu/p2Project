@@ -28,7 +28,7 @@ public class ListViewAdapter extends ArrayAdapter<Comment> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position,View convertView,ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View viewHolder = inflater.inflate(R.layout.layout_post_comment_viewholder_item, parent,false);
 

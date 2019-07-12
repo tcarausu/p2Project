@@ -3,6 +3,7 @@ package com.example.myapplication.home;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,7 +13,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.login.LoginActivity;
-import com.example.myapplication.postActivity.AddPostActivity;
+import com.example.myapplication.post.AddPostActivity;
 import com.example.myapplication.user_profile.UserProfileActivity;
 import com.example.myapplication.utility_classes.BottomNavigationViewHelper;
 import com.example.myapplication.utility_classes.FirebaseMethods;
@@ -31,17 +32,18 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
-    private static final String TAG = "HomeActivity";
-    private final int ACTIVITY_NUM1 = 1, ACTIVITY_NUM2 = 2, ACTIVITY_NUM3 = 3, ACTIVITY_NUM4 = 4;
-    private final List<Integer> act = new ArrayList<>();
 
-    //firebase
+    private static final String TAG = "HomeActivity";
+    private static final int ACTIVITY_NUM = 0;
+
     private FirebaseAuth mAuth;
     private FirebaseUser current_user;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseMethods mFirebaseMethods;
-    private DatabaseReference mDatabasePostRef, mDatabaseUserRef, current_userRef;
+    private DatabaseReference mDatabasePostRef, mDatabaseUserRef, current_userRef, usersRef;
     private FirebaseDatabase firebasedatabase;
 
     /**
@@ -51,20 +53,17 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
-
-        connectDatabase();
-        checkDatabaseState();
-        initImageLoader();
-        setupBottomNavigationView();
-        setupViewPager();
-    }
-
-    private void connectDatabase() {
         mFirebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
         current_user = mAuth.getCurrentUser();
-        mFirebaseMethods.autoDisconnect(getApplicationContext());
+
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
         firebasedatabase = FirebaseMethods.getmFirebaseDatabase();
+        checkDatabaseState();
+        initImageLoader();
+        setupBottomNavigationView();
+        setupFirebaseAuth();
+        setupViewPager();
     }
 
 
@@ -72,7 +71,7 @@ public class HomeActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        mFirebaseMethods.autoDisconnect(getApplicationContext());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
     }
 
     @SuppressLint("RestrictedApi")
@@ -86,7 +85,8 @@ public class HomeActivity extends AppCompatActivity {
                     Log.d(TAG, "Snapshot HomeActivity, Snapshot.has children: " + dataSnapshot.hasChildren());
                     if (!dataSnapshot.exists() || !dataSnapshot.hasChildren()) {
                         Toast.makeText(getApplicationContext(), "Nothing to display, Add a post to begin", Toast.LENGTH_SHORT).show();
-                        mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), AddPostActivity.class);
+
+                        mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), AddPostActivity.class);
                     }
                 }
 
@@ -95,7 +95,7 @@ public class HomeActivity extends AppCompatActivity {
                     Log.d(TAG, "onCancelled: ");
                 }
             });
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             Log.d(TAG, "checkDatabaseState: error: " + e.getMessage());
         }
 
@@ -111,7 +111,7 @@ public class HomeActivity extends AppCompatActivity {
                         LoginManager.getInstance().logOut();
                         Toast.makeText(getApplicationContext(), "Error finding this user on the database. please login in again", Toast.LENGTH_SHORT).show();
 
-                        mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), LoginActivity.class);
+                        mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), LoginActivity.class);
                     }
                 }
 
@@ -157,32 +157,29 @@ public class HomeActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.d(TAG, "checkDatabaseState: error: " + e.getMessage());
         }
+        String s = firebasedatabase.getReference("users").getKey();
 
-        try {
-
-            current_userRef = firebasedatabase.getReference("users").child(current_user.getUid()).getRef();
-            current_userRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    mFirebaseMethods.autoDisconnect(getApplicationContext());
-                    String name = current_userRef.child("display_name").getKey();
-                    if (name.equals("Chose a user name")) {
-                        mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), UserProfileActivity.class);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-        } catch (NullPointerException e) {
-            Toast.makeText(getApplicationContext(), "what the fuck is happening?", Toast.LENGTH_LONG).show();
-//            mFirebaseMethods.autoDisconnect(getApplicationContext());
+        if (s == null) {
+            mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
         }
 
 
+        current_userRef = firebasedatabase.getReference("users").child(current_user.getUid()).getRef();
+        current_userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
+                String name = current_userRef.child("display_name").getKey();
+                if (name.equals("Chose a user name")) {
+                    mFirebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), UserProfileActivity.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -195,7 +192,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        mFirebaseMethods.autoDisconnect(getApplicationContext());
+        mFirebaseMethods.checkUserStateIfNull(getApplicationContext(), mAuth);
         checkDatabaseState();
     }
 
@@ -208,14 +205,25 @@ public class HomeActivity extends AppCompatActivity {
         adapter.addFragment(new HomeFragment()); //index 1
         ViewPager viewPager = findViewById(R.id.container);
         viewPager.setAdapter(adapter);
-
-
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.home);
     }
 
     /**
      * checks to see if @param 'user'  is logged in
      */
 
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFire-base-Auth: setting up fire-base auth");
+        mAuthListener = firebaseAuth -> {
+
+            if (current_user != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in" + current_user.getUid());
+            } else Log.d(TAG, "onAuthStateChanged: signed out");
+        };
+
+    }
 
     private void initImageLoader() {
         UniversalImageLoader imageLoader = new UniversalImageLoader(getApplicationContext());
@@ -225,45 +233,13 @@ public class HomeActivity extends AppCompatActivity {
     /**
      * Bottom Navigation View setup
      */
-    private void setupBottomNavigationView() {
-
-        BottomNavigationViewHelper bnvh = new BottomNavigationViewHelper(getApplicationContext());
+    public void setupBottomNavigationView() {
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
-        bnvh.setupBottomNavigationView(bottomNavigationViewEx);
-        bnvh.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
-
-        //Mo.Msaad.Modifications
-        MenuItem menuItem1, menuItem2, menuItem3, menuItem4;
-        act.add(ACTIVITY_NUM1);
-        act.add(ACTIVITY_NUM2);
-        act.add(ACTIVITY_NUM3);
-        act.add(ACTIVITY_NUM4);
-
-
-        switch (act.iterator().next()) {
-            case 0:
-                menuItem1 = menu.getItem(act.get(0));
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                menuItem1.setChecked(true);
-                break;
-
-            case 1:
-                menuItem2 = menu.getItem(act.get(1));
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                menuItem2.setChecked(true);
-                break;
-            case 2:
-                menuItem3 = menu.getItem(act.get(2));
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                menuItem3.setChecked(true);
-                break;
-            case 3:
-                menuItem4 = menu.getItem(act.get(3));
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                menuItem4.setChecked(true);
-                break;
-        }
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
 
     }
 

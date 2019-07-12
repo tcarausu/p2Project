@@ -114,20 +114,19 @@
         android:layout_marginBottom="5dp"
         >
 
-        <com.melnykov.fab.FloatingActionButton
+        <TextView
             android:id="@+id/editProfile"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_centerInParent="true"
             android:layout_height="wrap_content"
-            android:background="@drawable/input_fields_frame_grey_round"
-            app:fab_colorNormal="@color/orange"
-            android:src="@drawable/white_gear"
+            android:background="@drawable/input_fields_with_shadow"
+            android:clickable="true"
+            android:focusable="true"
             android:onClick="onClick"
             android:textStyle="bold"
             android:text="@string/edit_your_profile_fragment"
-            app:fab_colorPressed="@color/red"
             android:shadowColor="@color/black"
-            android:padding="10dp"
+            android:padding="5dp"
             android:textAlignment="center"
             android:textColor="@color/orange" />
 

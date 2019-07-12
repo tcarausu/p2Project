@@ -1,31 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Mo.Msaad-->
 <shape
-
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle"
-    android:dither="true"
-    android:tint="@color/orangeMainTheme"
-    android:thickness="@dimen/fab_scroll_threshold"
-    android:innerRadius="50dp"
-    android:visible="true"
-    android:innerRadiusRatio="@integer/google_play_services_version"
-    android:thicknessRatio="@integer/google_play_services_version"
-    android:tintMode="src_atop"
-
-    >
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <solid android:color="@color/black"/>
+    <solid android:color="@color/grey"/>
     <stroke
         android:width="5dp"
         android:dashGap="10dp"
-        android:dashWidth="0dp"
-        android:color="@color/orange" />
-
-
-    <corners
-        android:radius="10dp"/>
+        android:dashWidth="200dp"
+        android:color="@color/darkOrange" />
 
 
 

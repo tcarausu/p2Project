@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.models.User;
@@ -32,14 +33,10 @@ import com.google.firebase.storage.StorageReference;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class HistoryLogActivity extends AppCompatActivity {
     private static final String TAG = "HistoryLogActivity";
     private static final int ACTIVITY_NUM = 3;
-
-    private final int ACTIVITY_NUM1 = 1, ACTIVITY_NUM2 = 2, ACTIVITY_NUM3 = 3, ACTIVITY_NUM4 = 4;
-    private final List<Integer> act = new ArrayList<>();
 
 
     private RecyclerView mRecyclerView;
@@ -52,23 +49,18 @@ public class HistoryLogActivity extends AppCompatActivity {
     private FirebaseStorage mFirebaseStorage;
 
     private ArrayList<HistoryLogPostItem> mListOfPosts;
-
+    private ArrayList<User> mUsers;
     private String mCurrentUserId;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_history_log);
         connectToDatabase();
-        getCurrentUserPosts();
         setupBottomNavigationView();
-        mListOfPosts = new ArrayList<>();
-        mAdapter = new RecyclerViewAdapterHistoryLogItems(mListOfPosts);
+        getCurrentUserPosts();
         buildRecyclerView();
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.animate();
     }
 
 
@@ -76,48 +68,12 @@ public class HistoryLogActivity extends AppCompatActivity {
      * Bottom Navigation View setup
      */
     private void setupBottomNavigationView() {
-
-        BottomNavigationViewHelper bnvh = new BottomNavigationViewHelper(getApplicationContext());
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavigationBar);
-        bnvh.setupBottomNavigationView(bottomNavigationViewEx);
-        bnvh.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
+        BottomNavigationViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavigationViewHelper.enableNavigation(getApplicationContext(), bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        bnvh.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         menuItem.setChecked(true);
-//
-//        //Mo.Msaad.Modifications
-//        MenuItem menuItem1, menuItem2, menuItem3, menuItem4;
-//        act.add(ACTIVITY_NUM1);
-//        act.add(ACTIVITY_NUM2);
-//        act.add(ACTIVITY_NUM3);
-//        act.add(ACTIVITY_NUM4);
-//
-//
-//        switch (act.iterator().next()) {
-//            case 0:
-//                menuItem1 = menu.getItem(act.get(0));
-//                bnvh.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-//                menuItem1.setChecked(true);
-//                break;
-//
-//            case 1:
-//                menuItem2 = menu.getItem(act.get(1));
-//                bnvh.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-//                menuItem2.setChecked(true);
-//                break;
-//            case 2:
-//                menuItem3 = menu.getItem(act.get(2));
-//                bnvh.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-//                menuItem3.setChecked(true);
-//                break;
-//            case 3:
-//                menuItem4 = menu.getItem(act.get(3));
-//                bnvh.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-//                menuItem4.setChecked(true);
-//                break;
-//        }
-
     }
 
 
@@ -136,7 +92,7 @@ public class HistoryLogActivity extends AppCompatActivity {
     }
 
     private void getCurrentUserPosts() {
-
+        mListOfPosts = new ArrayList<>();
         // Getting the user ID branch inside posts main node
         Query query = mPostReference.child(mCurrentUserId);
 
@@ -144,36 +100,39 @@ public class HistoryLogActivity extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                mListOfPosts.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     HistoryLogPostItem post = postSnapshot.getValue(HistoryLogPostItem.class);
                     mCurrentUserReference = firebaseDatabase.getReference("users/" + mCurrentUserId);
                     mCurrentUserReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            mListOfPosts.clear();
+
                             final User user = dataSnapshot.getValue(User.class);
                             post.setUser(user);
                             mListOfPosts.add(post);
-                            mAdapter.notifyDataSetChanged();
 
                             // Checking if we got all the items from the database so we can
                             // reverse the order of the postlist and pass it in the recycler view
                             Log.d(TAG, "DataSnapshot Count  " + postSnapshot.getChildrenCount());
+
                         }
+
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.d(TAG, "onCancelled: ");
+                            Toast.makeText(getApplicationContext(), "Canceled", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "onCancelled: ");
+                Toast.makeText(getApplicationContext(), "Canceled", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     /**
@@ -183,11 +142,15 @@ public class HistoryLogActivity extends AppCompatActivity {
 
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
+
         // Declare how ViewHolder objects are going to be displayed inside adapter
         mLayoutManager = new LinearLayoutManager(HistoryLogActivity.this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
         // Create an adapter and pass it a list of data, from which
         // the ViewHolder objects will be created and managed by this adapter
+        mAdapter = new RecyclerViewAdapterHistoryLogItems(mListOfPosts);
+        mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnRecyclerItemClickListener(HistoryLogActivity.this, position -> {
             highlightViewItem(position, true);
             alertDialogDelete(position);
@@ -197,16 +160,16 @@ public class HistoryLogActivity extends AppCompatActivity {
 
     /**
      * Alert Dialog:
-     * Asking the user if he wants to delete an item from his history log
+     * Asking the user if he wants to delete an activity from his history log
      */
     private void alertDialogDelete(final int position) {
-
         View layoutView = getLayoutInflater().inflate(R.layout.alert_dialog_history_log, null);
+
         Button cancelButton = layoutView.findViewById(R.id.alertButtonCancel);
         Button deleteButton = layoutView.findViewById(R.id.alertButtonDelete);
+
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setView(layoutView);
-
 
         final AlertDialog alertDialog = dialogBuilder.create();
         WindowManager.LayoutParams wlp = alertDialog.getWindow().getAttributes();
@@ -219,6 +182,7 @@ public class HistoryLogActivity extends AppCompatActivity {
         // Setting transparent the background (layout) of alert dialog
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         alertDialog.show();
+
 
         deleteButton.setOnClickListener(v -> {
             alertDialog.dismiss();
@@ -267,7 +231,7 @@ public class HistoryLogActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.d(TAG, "onCancelled: ");
+
                 }
             });
         });

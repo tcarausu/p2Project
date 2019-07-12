@@ -3,7 +3,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/back3">
+        android:background="@drawable/border_color_top">
 
         <Toolbar
             android:id="@+id/profileToolBar"
@@ -16,13 +16,14 @@
 
                 <ImageView
                     android:id="@+id/backArrow"
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:onClick="onClick"
                     android:layout_centerVertical="true"
+                    android:background="@drawable/input_fields_with_shadow"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
-                    android:src="@drawable/arrow_left" />
+                    android:src="@drawable/orange_arrow_left" />
 
                 <TextView
                     android:id="@+id/userName"
@@ -33,20 +34,22 @@
                     android:layout_marginStart="15dp"
                     android:layout_toEndOf="@+id/backArrow"
                     android:text="@string/edit_your_profile_fragment"
-                    android:textColor="@color/white"
+                    android:textColor="@color/darkOrange"
                     android:textSize="20sp" />
 
 
                 <ImageView
                     android:id="@+id/save_changes"
-                    android:layout_width="60dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
+                    android:background="@drawable/input_fields_with_shadow"
                     android:padding="5dp"
                     android:onClick="onClick"
                     android:layout_marginStart="10dp"
-                    android:src="@drawable/white_check" />
+                    android:layout_marginEnd="20dp"
+                    android:src="@drawable/simo_designed_check" />
 
             </RelativeLayout>
 

@@ -1,55 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
+    android:background="@drawable/back3"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:weightSum="1"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="50dp">
-    <include layout="@layout/snippet_top_gallery_toolbar" />
-    </LinearLayout>
-
+    android:layout_height="match_parent">
 
 
     <RelativeLayout
-        android:layout_marginTop="10dp"
-        android:id="@+id/selctor_bck"
-        android:layout_weight=".3"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imageView_gallery"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            android:animateLayoutChanges="true"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/group6" />
+        android:layout_height="wrap_content"
+        android:id="@+id/relLayout1">
+        <include layout="@layout/snippet_top_gallery_toolbar"/>
     </RelativeLayout>
 
+    <Button
 
-    <RelativeLayout
-        android:layout_weight=".7"
+        android:animateLayoutChanges="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textSize="16sp"
+        android:textColor="@color/orange"
+        android:text="@string/choose_picture"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/input_fields_with_shadow"
+        android:id="@+id/choose_pic_button"/>
 
-        <com.melnykov.fab.FloatingActionButton
-            android:id="@+id/choose_pic_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_margin="50dp"
-            android:animateLayoutChanges="true"
-            android:src="@drawable/camera_icone"
-            app:fab_colorNormal="@color/grey"
-            app:fab_colorPressed="@color/red" />
-    </RelativeLayout>
-</LinearLayout>
+    <ImageView
+
+        android:animateLayoutChanges="true"
+        android:id="@+id/imageView_gallery"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="25dp"
+        android:layout_below="@id/choose_pic_button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/input_fields_rec_with_shadow"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>

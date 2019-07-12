@@ -1,27 +1,20 @@
-package com.example.myapplication.postActivity;
+package com.example.myapplication.post;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +25,6 @@ import com.example.myapplication.home.HomeActivity;
 import com.example.myapplication.models.Post;
 import com.example.myapplication.models.User;
 import com.example.myapplication.utility_classes.FirebaseMethods;
-import com.example.myapplication.utility_classes.OurAlertDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -46,9 +38,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final String TAG = "NextActivity";
 
-    private EditText mImageDesc, mImageIngredients, mImageRecipe;
+    private EditText mImageDesc,mImageIngredients,mImageRecipe;
     private TextView mUploadTextView;
-    private ImageView mImageViewFood, mBackImageView;
+    private ImageView mImageViewFood,mBackImageView;
     private FirebaseDatabase mFirebaseDatabase;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef, postRef, userRef;
@@ -63,32 +55,22 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
         findWidgets();
-        connectFirebase();
 
-        mUploadTextView.setOnClickListener(this);
-        mBackImageView.setOnClickListener(this);
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        firebaseMethods.autoDisconnect(getApplicationContext());
-    }
-
-    private void connectFirebase() {
         firebaseMethods = FirebaseMethods.getInstance(getApplicationContext());
         mAuth = FirebaseMethods.getAuth();
-        firebaseMethods.autoDisconnect(getApplicationContext());
         current_user = mAuth.getCurrentUser();
         mFirebaseDatabase = FirebaseMethods.getmFirebaseDatabase();
         mStorageRef = FirebaseMethods.getFirebaseStorage().getReference();
+
         String databasePath = "posts" + "/" + mAuth.getUid() + "/";
         String databasePathPic = "users" + "/" + mAuth.getUid();
+
         postRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_posts)).child(current_user.getUid());
         userRef = FirebaseDatabase.getInstance().getReference(getString(R.string.dbname_users)).child(current_user.getUid());
         mDatabaseRef = mFirebaseDatabase.getReference(databasePath);
+
         mDatabaseReferenceUserInfo = mFirebaseDatabase.getReference(databasePathPic);
+
     }
 
 
@@ -99,19 +81,18 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
         mImageRecipe = findViewById(R.id.image_recipe_edittext);
         mImageViewFood = findViewById(R.id.image_tobe_shared);
         mUploadTextView = findViewById(R.id.textview_share);
-        mBackImageView = findViewById(R.id.close_share_nextActivity);
+        mBackImageView = findViewById(R.id.close_share);
+
         imageUri = getIntent().getStringExtra("imageUri");
         Glide.with(getApplicationContext()).load(imageUri).fitCenter().into(mImageViewFood);
+        mUploadTextView.setOnClickListener(this);
+        mBackImageView.setOnClickListener(this);
+
     }
 
 
     // method for uploading image and image content to firebase storage and database
     private void uploadImage() {
-        final String description = mImageDesc.getText().toString();
-        final String ingredients = mImageIngredients.getText().toString();
-        final String recipe = mImageRecipe.getText().toString();
-
-
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading, please wait...");
         progressDialog.setIcon(R.drawable.chefood);
@@ -127,7 +108,9 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                         storageReference.getDownloadUrl().addOnCompleteListener(task1 -> {
                             URL = task1.getResult().toString();
                             Log.d(TAG, "onComplete: post URL: " + URL);
-
+                            String description = mImageDesc.getText().toString();
+                            String ingredients = mImageIngredients.getText().toString();
+                            String recipe = mImageRecipe.getText().toString();
 
                             Post postInfo = new Post(description,
                                     URL, recipe, ingredients, mAuth.getUid(),
@@ -139,6 +122,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     User currentUser = dataSnapshot.getValue(User.class);
+
                                     currentUser.setNrPosts(currentUser.getNrOfPosts() + 1);
                                     userRef.setValue(currentUser);
                                 }
@@ -154,8 +138,7 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
                             handler.postDelayed(() -> {
                                 Intent intent = new Intent(NextActivity.this, HomeActivity.class);
                                 startActivity(intent);
-                                firebaseMethods.goToWhereverWithFlags(getApplicationContext(), HomeActivity.class);
-                                overridePendingTransition(R.anim.left_enter, R.anim.left_out);
+                                firebaseMethods.goToWhereverWithFlags(getApplicationContext(), getApplicationContext(), HomeActivity.class);
                             }, 500);
                         }).addOnFailureListener(e ->
                                 Toast.makeText(NextActivity.this, "Could not Upload the picture", Toast.LENGTH_SHORT).show());
@@ -183,38 +166,28 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
      * Will ask if user wants to upload the image despite empty fields
      */
     protected void dialogConfirm() {
-        View layoutView = getLayoutInflater().inflate(R.layout.dialog_addpost_layout, null);
-        ImageButton cameraButton = layoutView.findViewById(R.id.SENDANYWAY);
-        ImageButton cancelButton = layoutView.findViewById(R.id.CANCEL_SENDANYWAY);
-        OurAlertDialog.Builder myDialogBuilder = new OurAlertDialog.Builder(this);
-        myDialogBuilder.setView(layoutView);
-        myDialogBuilder.setIcon(R.mipmap.chefood_icones);
-        final AlertDialog alertDialog = myDialogBuilder.create();
-        WindowManager.LayoutParams wlp = alertDialog.getWindow().getAttributes();
-        wlp.windowAnimations = R.style.AlertDialogAnimation;
-        wlp.gravity = Gravity.CENTER;
-        wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
 
-        alertDialog.getWindow().setAttributes(wlp);
-        alertDialog.setCanceledOnTouchOutside(true);
-        // Setting transparent the background (layout) of alert dialog
-        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        alertDialog.show();
+        final CharSequence[] options = {"Yeah", "Nope", "CANCEL"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("There is no descriptions for your post, continue?");
+        builder.setIcon(R.drawable.chefood);
+        builder.setItems(options, (dialog, which) -> {
 
-        cameraButton.setOnClickListener(v -> {
-            uploadImage();
-            alertDialog.dismiss();
+            if (options[which].equals("Yeah")) {
+                uploadImage();
+                dialog.dismiss();
+
+            } else if (options[which].equals("Nope")) {
+                dialog.dismiss();
+            }
+
         });
+        builder.show();
 
-        cancelButton.setOnClickListener(v -> {
-            hideKeyboard();
-            alertDialog.dismiss();
-        });
     }
 
     /**
-     * created byMo.Msaad
-     * checks wifi or data, displays dialog in case of data. sends auto in case of wifi.
+     * created byMo.MSaad
      **/
     private void checkWifiState() {
 
@@ -241,74 +214,48 @@ public class NextActivity extends AppCompatActivity implements View.OnClickListe
 
     private void openDialogChoice() {
 
+        final CharSequence[] options = {"Mobile data", "WIFI", "CANCEL"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select network to proceed");
+        builder.setIcon(R.drawable.chefood);
+        builder.setItems(options, (dialog, which) -> {
 
-        View layoutView = getLayoutInflater().inflate(R.layout.dialog_wifi_check, null);
-        Button wifiButton = layoutView.findViewById(R.id.WIFI);
-        Button mobileDataButton = layoutView.findViewById(R.id.DATA);
-        ImageButton cancelButton = layoutView.findViewById(R.id.CANCEL);
+            if (options[which].equals("Mobile data")) {
+                uploadImage();
 
-        OurAlertDialog.Builder myDialogBuilder = new OurAlertDialog.Builder(this);
-        myDialogBuilder.setView(layoutView);
-        myDialogBuilder.setIcon(R.mipmap.chefood_icones);
-        final AlertDialog alertDialog = myDialogBuilder.create();
-        WindowManager.LayoutParams wlp = alertDialog.getWindow().getAttributes();
-        wlp.windowAnimations = R.style.AlertDialogAnimation;
-        wlp.gravity = Gravity.CENTER;
-        wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            } else if (options[which].equals("WIFI")) {
+                Intent wifiIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                startActivity(wifiIntent);
 
-        alertDialog.getWindow().setAttributes(wlp);
-        alertDialog.setCanceledOnTouchOutside(true);
-        // Setting transparent the background (layout) of alert dialog
-        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        alertDialog.show();
+            } else if (options[which].equals("CANCEL")) {
+                dialog.dismiss();
+            }
 
-        wifiButton.setOnClickListener(v -> {
-            uploadImage();
-            alertDialog.dismiss();
         });
-        mobileDataButton.setOnClickListener(v -> {
-            checkWifiState();
-            alertDialog.dismiss();
-        });
-        cancelButton.setOnClickListener(v -> {
-            alertDialog.dismiss();
-        });
+        builder.show();
 
     }
 
-    private void hideKeyboard() {
-
-        View v = this.getCurrentFocus();
-        if (v != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        }
-    }
 
     @Override
     public void onClick(View v) {
-
-        String ingredients = mImageIngredients.getText().toString();
-        String descriptions = mImageDesc.getText().toString();
-        String recipe = mImageRecipe.getText().toString();
-
         switch (v.getId()) {
-            case R.id.textview_share:
-                hideKeyboard();
-                if (TextUtils.isEmpty(ingredients) || TextUtils.isEmpty(descriptions) || TextUtils.isEmpty(recipe))
-                    dialogConfirm();
 
-                else {
-                    hideKeyboard();
+            case R.id.textview_share:
+                if (mImageIngredients.getText().toString().equals("")
+                        || mImageDesc.getText().toString().equals("")
+                        || mImageRecipe.getText().toString().equals("")) {
+                    dialogConfirm();
+                } else {
                     checkWifiState();
                 }
+
                 break;
 
-            case R.id.close_share_nextActivity:
-                hideKeyboard();
+            case R.id.close_share:
                 Log.d(TAG, "onClick: back button working");
-                overridePendingTransition(R.anim.left_out, R.anim.right_enter);
                 finish();
+
                 break;
         }
 

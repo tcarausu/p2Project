@@ -1,11 +1,9 @@
 package com.example.myapplication.search;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -64,14 +62,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private List<User> userList = new ArrayList<>();
     private SearchActivityAdapter adapter;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         mFirebaseMethods = FirebaseMethods.getInstance(getActivity());
         mAuth = FirebaseMethods.getAuth();
 
-        mFirebaseMethods.autoDisconnect(getActivity());
+        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
         user = mAuth.getCurrentUser();
         user_id = user.getUid();
 
@@ -85,11 +82,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onResume() {
         super.onResume();
-        mFirebaseMethods.autoDisconnect(getActivity());
+        mFirebaseMethods.checkUserStateIfNull(getActivity(), mAuth);
     }
 
     private void initLayout(View view) {
@@ -120,7 +116,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             myDatabaseUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    search_recycler_view.removeAllViews();
                     userList.clear();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         if (dataSnapshot.hasChildren() && ds.exists()) {
@@ -129,6 +124,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                             if (username.toLowerCase().contains(keyword.toLowerCase())) {
                                 adapter = new SearchActivityAdapter(requireContext(), userList);
+
                                 userList.add(user);
                                 adapter.setUserList(userList);
                                 search_recycler_view.setAdapter(adapter);
@@ -136,7 +132,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                             } else
                                 Toast.makeText(getApplicationContext(), "No match found", Toast.LENGTH_SHORT).show();
-                                break;
+                            search_recycler_view.removeAllViews();
                         }
                     }
                 }
@@ -148,7 +144,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             });
         } else if (mSearchButton.isPressed() && TextUtils.isEmpty(keyword))
             Toast.makeText(getApplicationContext(), "Please type a keyword", Toast.LENGTH_SHORT).show();
-            search_recycler_view.removeAllViews();
+        search_recycler_view.removeAllViews();
 
     }
 

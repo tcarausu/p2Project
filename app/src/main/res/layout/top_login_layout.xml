@@ -68,20 +68,23 @@
             android:gravity="center">
 
             <Button
+
                 android:id="@+id/button_id_log_in"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/input_fields_frame_grey_round"
+                android:background="@drawable/input_fields_with_shadow"
+                android:drawableEnd="@drawable/log_in_icon_small"
                 android:drawablePadding="10dp"
                 android:onClick="onClick"
-                android:padding="5dp"
+                android:paddingStart="15dp"
                 android:shadowDx="5"
                 android:shadowColor="@color/black"
                 android:shadowRadius="5"
+                android:paddingEnd="5dp"
                 android:text="@string/btn_log_in"
                 android:textAllCaps="false"
                 android:textColor="@color/orangeMainTheme"
-                android:textAlignment="center"
+                android:textAlignment="textEnd"
                 android:textStyle="bold"
                 android:textSize="18sp" />
 

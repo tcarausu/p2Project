@@ -103,7 +103,6 @@
                     android:gravity="center"
                     android:horizontalSpacing="1dp"
                     android:numColumns="3"
-                    android:animateLayoutChanges="true"
                     android:stretchMode="columnWidth"
                     android:verticalSpacing="1dp">
 
